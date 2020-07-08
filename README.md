@@ -39,6 +39,10 @@ Place an existing big endian Z64 US ROM in this source root directory for asset 
 
 **The app will crash if it is attempted to be launched without romfs/!!base.pak being present.**
 
+# Python 
+Ensure you have Python 3.6+ installed, and the following python packages:
+
+pip3 install pillow zstandard tqdm xxhash
 
 
 ## Contributing
