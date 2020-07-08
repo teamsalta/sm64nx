@@ -1,0 +1,1611 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{38af6d3e-3523-4a7c-b53c-a1e73631326e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine">
+      <UniqueIdentifier>{f6e043c9-f4e5-43a2-9c2e-3e50b0379a8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game">
+      <UniqueIdentifier>{866b93c6-75ea-4fbe-904e-275a4bf8806b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game">
+      <UniqueIdentifier>{514bdf3e-006d-4029-85d0-2ac98deb4a51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{08886999-fe0b-40ac-8218-3f918bf4b2eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio">
+      <UniqueIdentifier>{9ee3dea6-f20d-412a-9ea2-4e4d3455021a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\menu">
+      <UniqueIdentifier>{e16a6d4c-645b-4169-ac51-5626bed32f50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\menu">
+      <UniqueIdentifier>{947c45da-fd3c-47c2-a2d7-128df339ebd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\buffers">
+      <UniqueIdentifier>{9ed005a0-858e-4f6d-be22-67e41768920f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\buffers">
+      <UniqueIdentifier>{9b47fc9c-9cb3-40ee-93ba-36c417d4d16a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels">
+      <UniqueIdentifier>{719f8a29-ee2d-476f-b9d0-62b8966c1696}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\levels">
+      <UniqueIdentifier>{ffbf27ff-1991-47ba-ae56-fe009325c43a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\bbh">
+      <UniqueIdentifier>{afdd2c10-d32d-4c2e-8b52-76837ad45466}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\bitdw">
+      <UniqueIdentifier>{0c1cb231-37d7-4c41-8443-40efbcab0e5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\bitfs">
+      <UniqueIdentifier>{cbe68033-a220-499f-82f8-e7f877d774ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\bits">
+      <UniqueIdentifier>{dfd8b32d-d00e-4f63-a830-2917e5c37e5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\bob">
+      <UniqueIdentifier>{9f0a09fe-6dab-4203-9dae-c75043f1e315}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\bowser_1">
+      <UniqueIdentifier>{3d4c07a3-8bec-4a33-97a9-10e7a739d5c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\bowser_2">
+      <UniqueIdentifier>{54b5f5d4-3ec6-4d65-852a-5998ee6ea24e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\bowser_3">
+      <UniqueIdentifier>{45189c1f-21a6-47c4-9b77-aafc031d7328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\castle_courtyard">
+      <UniqueIdentifier>{176b5da5-0610-466c-b6fe-8470121ffeb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\castle_grounds">
+      <UniqueIdentifier>{8ff89866-a518-4a81-9a60-43c5446ae056}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\castle_inside">
+      <UniqueIdentifier>{995165e0-0350-4e55-a679-2e490a01b7ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\ccm">
+      <UniqueIdentifier>{116c4c5a-ff48-487f-8a22-1d28de103eed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\cotmc">
+      <UniqueIdentifier>{53298069-0a8a-447d-a80c-8be7d60e5d5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\ddd">
+      <UniqueIdentifier>{713d01bf-0fd0-49ef-b7cf-84e191f220fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\ending">
+      <UniqueIdentifier>{59c41003-0f57-4c89-9d16-268c36d0b70c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\hmc">
+      <UniqueIdentifier>{0277dad6-358e-43b6-985e-1dc16ef387e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\intro">
+      <UniqueIdentifier>{66fb90ab-a81a-451d-9cb4-93d245745ceb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\jrb">
+      <UniqueIdentifier>{eb813d42-c0ef-4867-991d-acbad57a2b69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\lll">
+      <UniqueIdentifier>{b383fad2-5782-4094-9194-38801bc52955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\menu">
+      <UniqueIdentifier>{41f4d320-e729-4620-a7f5-6007df65250d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\pss">
+      <UniqueIdentifier>{8b860864-ce20-47f6-b640-3d4fc409587e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\rr">
+      <UniqueIdentifier>{614cb0a9-34bf-44b7-ba80-784aaaecb485}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\sa">
+      <UniqueIdentifier>{f0f6bb5c-5f1f-4a21-b198-208144fc5012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\sl">
+      <UniqueIdentifier>{a91fdbd3-9948-4e0c-92ab-f7755547e9f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\ssl">
+      <UniqueIdentifier>{9b8fcf46-a43f-4f5b-82d9-6987987dbdb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\thi">
+      <UniqueIdentifier>{0578174b-a436-4421-b7d9-435c56ed03e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\totwc">
+      <UniqueIdentifier>{b373aaeb-7d4d-49a0-a73c-b3351e93bebb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\ttc">
+      <UniqueIdentifier>{b0e95fb7-87d3-46a7-a8ef-9493bb712a92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\ttm">
+      <UniqueIdentifier>{3c6e7c99-d723-4cd8-bbe9-2507f308a1c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\vcutm">
+      <UniqueIdentifier>{c31e08c4-ddf7-41fc-8c2a-541d8c4f2e19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\wdw">
+      <UniqueIdentifier>{3bea485b-f2ab-41a6-9904-2108955d6113}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\wf">
+      <UniqueIdentifier>{554cb746-13f8-41f1-a6c6-99fe9b8c4043}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\levels\wmotr">
+      <UniqueIdentifier>{00fde8f5-9829-46a2-82fb-eba8dc85f8b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\bin">
+      <UniqueIdentifier>{c217233f-4003-4597-ab9a-d901338151f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\data">
+      <UniqueIdentifier>{12320319-aeef-4945-8367-049311eb1019}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\pc">
+      <UniqueIdentifier>{515369a4-e3f3-495f-a91e-45d4ba8f0f90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\pc">
+      <UniqueIdentifier>{7d09e079-611d-4c40-9478-b612f5fddd9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\pc\controller">
+      <UniqueIdentifier>{0599cdfe-4e31-4c1e-aca0-4f2c84d83b5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\pc\audio">
+      <UniqueIdentifier>{1a143d39-2250-4ec3-9a54-eb576adf67dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\pc\audio">
+      <UniqueIdentifier>{ab462aab-2890-478f-a45a-a8cdef83c66b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\pc\gfx">
+      <UniqueIdentifier>{bef487ba-ec6c-473e-8cd5-c80f94989bb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\actors">
+      <UniqueIdentifier>{7ece3365-8d85-4f30-9bca-60e64f11e7c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\actors">
+      <UniqueIdentifier>{45fc160e-c371-4c20-b81b-4ea20d2c7253}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lib">
+      <UniqueIdentifier>{6bf0b50f-ad69-447e-a5e7-d291be437e48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lib\math">
+      <UniqueIdentifier>{02dbc748-5ca0-4bb1-93ce-c8672eafddf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\build">
+      <UniqueIdentifier>{1c8ca0a8-48e3-4c06-964e-336abf4df3eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\build\sound">
+      <UniqueIdentifier>{dabb1659-fd5e-4eda-ae96-0109233e6e01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\build\bin">
+      <UniqueIdentifier>{747ca8da-2057-4da2-98ce-6ac22db42538}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\build\assets">
+      <UniqueIdentifier>{e04781e7-fef8-45e2-9774-5488c93c1648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\actors\amp">
+      <UniqueIdentifier>{e8799b75-6ce9-4f52-be7c-e2572af11100}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game\camera">
+      <UniqueIdentifier>{b29de431-3bd7-4067-9e5e-25ac30d64470}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\controller">
+      <UniqueIdentifier>{f310e584-ac2f-4f4f-bce9-de83419d79f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\player">
+      <UniqueIdentifier>{bc5d828b-fc17-4c0b-9b99-4e61d605d810}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\demos\bbh.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="assets\demos\bitdw.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="assets\demos\ccm.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="assets\demos\hmc.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="assets\demos\jrb.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="assets\demos\pss.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="assets\demos\unused.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="assets\demos\wf.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="enhancements\crash_font.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\audio\aspMain.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\audio\aspMain_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\boot\F3D_boot.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3d\new\F3D.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3d\new\F3D_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3d\old\F3D.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3d\old\F3D_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\F3DEX.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\F3DEX_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\F3DEX_NoN.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\F3DEX_NoN_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\F3DLX.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\F3DLX_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\F3DLX_NoN.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\F3DLX_NoN_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\F3DLX_Rej.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\F3DLX_Rej_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\L3DEX.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex\L3DEX_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex2\F3DEX2.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex2\F3DEX2_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex2\F3DEX2_NoN.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex2\F3DEX2_NoN_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex2\F3DLX2_Rej.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex2\F3DLX2_Rej_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex2\F3DZEX.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex2\F3DZEX_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex2\L3DEX2.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\f3dex2\L3DEX2_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\s2dex\S2DEX.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\pr\s2dex\S2DEX_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="build\us_nx\sound\sequences.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include=".clang-format" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\pc\gfx\gfx_vs.cpp">
+      <Filter>Source Files\pc\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osAiDeviceBusy.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osDequeueThread.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osDevMgrMain.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osPiCreateAccessQueue.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osSiCreateAccessQueue.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osSiDeviceBusy.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osSiRawReadIo.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osSiRawWriteIo.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osSpDeviceBusy.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osSpGetStatus.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osSpRawStartDma.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osSpSetPc.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\__osSpSetStatus.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\_Ldtob.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\_Litob.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\alBnkfNew.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\guLookAtRef.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\guMtxF2L.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\guNormalize.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\guOrthoF.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\guPerspectiveF.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\guRotateF.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\guScaleF.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\guTranslateF.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\NaN.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\osCreateMesgQueue.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\osGetThreadPri.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\osSpTaskYield.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\osSpTaskYielded.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\osViData.c">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\math\llconv.c">
+      <Filter>Source Files\lib\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\src\math\llmuldiv.c">
+      <Filter>Source Files\lib\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\pc_main.cpp">
+      <Filter>Source Files\pc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\area.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\behavior_actions.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\camera.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\debug.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\debug_course.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\display.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\envfx_bubbles.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\envfx_snow.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\game.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\geo_misc.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\hud.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\ingame_menu.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\interaction.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\level_geo.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\level_update.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\macro_special_objects.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario_actions_airborne.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario_actions_automatic.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario_actions_cutscene.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario_actions_moving.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario_actions_object.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario_actions_stationary.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario_actions_submerged.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario_misc.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario_step.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\memory.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\moving_texture.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\obj_behaviors.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\obj_behaviors_2.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\object_collision.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\object_helpers.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\object_list_processor.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\paintings.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\platform_displacement.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\print.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\rendering_graph_node.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\room.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\save_file.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\screen_transition.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\shadow.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\skybox.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\sound_init.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\spawn_object.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\spawn_sound.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\ultra_reimplementation.cpp">
+      <Filter>Source Files\pc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\nx.cpp">
+      <Filter>Source Files\pc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\mixer.cpp">
+      <Filter>Source Files\pc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\configfile.cpp">
+      <Filter>Source Files\pc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\audio\audio_sdl.cpp">
+      <Filter>Source Files\pc\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\menu\star_select.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\menu\level_select_menu.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\menu\intro_geo.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\menu\file_select.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bbh\script.cpp">
+      <Filter>Source Files\levels\bbh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bbh\leveldata.cpp">
+      <Filter>Source Files\levels\bbh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bbh\geo.cpp">
+      <Filter>Source Files\levels\bbh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bitdw\geo.cpp">
+      <Filter>Source Files\levels\bitdw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bitdw\leveldata.cpp">
+      <Filter>Source Files\levels\bitdw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bitdw\script.cpp">
+      <Filter>Source Files\levels\bitdw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bitfs\geo.cpp">
+      <Filter>Source Files\levels\bitfs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bitfs\leveldata.cpp">
+      <Filter>Source Files\levels\bitfs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bitfs\script.cpp">
+      <Filter>Source Files\levels\bitfs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bits\geo.cpp">
+      <Filter>Source Files\levels\bits</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bits\leveldata.cpp">
+      <Filter>Source Files\levels\bits</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bits\script.cpp">
+      <Filter>Source Files\levels\bits</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bob\geo.cpp">
+      <Filter>Source Files\levels\bob</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bob\leveldata.cpp">
+      <Filter>Source Files\levels\bob</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bob\script.cpp">
+      <Filter>Source Files\levels\bob</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_1\geo.cpp">
+      <Filter>Source Files\levels\bowser_1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_1\leveldata.cpp">
+      <Filter>Source Files\levels\bowser_1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_1\script.cpp">
+      <Filter>Source Files\levels\bowser_1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_2\geo.cpp">
+      <Filter>Source Files\levels\bowser_2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_2\leveldata.cpp">
+      <Filter>Source Files\levels\bowser_2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_2\script.cpp">
+      <Filter>Source Files\levels\bowser_2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_3\geo.cpp">
+      <Filter>Source Files\levels\bowser_3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_3\leveldata.cpp">
+      <Filter>Source Files\levels\bowser_3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_3\script.cpp">
+      <Filter>Source Files\levels\bowser_3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_courtyard\geo.cpp">
+      <Filter>Source Files\levels\castle_courtyard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_courtyard\leveldata.cpp">
+      <Filter>Source Files\levels\castle_courtyard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_courtyard\script.cpp">
+      <Filter>Source Files\levels\castle_courtyard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_grounds\geo.cpp">
+      <Filter>Source Files\levels\castle_grounds</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_grounds\leveldata.cpp">
+      <Filter>Source Files\levels\castle_grounds</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_grounds\script.cpp">
+      <Filter>Source Files\levels\castle_grounds</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_inside\geo.cpp">
+      <Filter>Source Files\levels\castle_inside</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_inside\leveldata.cpp">
+      <Filter>Source Files\levels\castle_inside</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_inside\script.cpp">
+      <Filter>Source Files\levels\castle_inside</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ccm\geo.cpp">
+      <Filter>Source Files\levels\ccm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ccm\leveldata.cpp">
+      <Filter>Source Files\levels\ccm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ccm\script.cpp">
+      <Filter>Source Files\levels\ccm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\cotmc\geo.cpp">
+      <Filter>Source Files\levels\cotmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\cotmc\leveldata.cpp">
+      <Filter>Source Files\levels\cotmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\cotmc\script.cpp">
+      <Filter>Source Files\levels\cotmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ddd\geo.cpp">
+      <Filter>Source Files\levels\ddd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ddd\leveldata.cpp">
+      <Filter>Source Files\levels\ddd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ddd\script.cpp">
+      <Filter>Source Files\levels\ddd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ending\geo.cpp">
+      <Filter>Source Files\levels\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ending\leveldata.cpp">
+      <Filter>Source Files\levels\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ending\script.cpp">
+      <Filter>Source Files\levels\ending</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\hmc\geo.cpp">
+      <Filter>Source Files\levels\hmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\hmc\leveldata.cpp">
+      <Filter>Source Files\levels\hmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\hmc\script.cpp">
+      <Filter>Source Files\levels\hmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\intro\geo.cpp">
+      <Filter>Source Files\levels\intro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\intro\leveldata.cpp">
+      <Filter>Source Files\levels\intro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\intro\script.cpp">
+      <Filter>Source Files\levels\intro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\jrb\geo.cpp">
+      <Filter>Source Files\levels\jrb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\jrb\leveldata.cpp">
+      <Filter>Source Files\levels\jrb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\jrb\script.cpp">
+      <Filter>Source Files\levels\jrb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\lll\geo.cpp">
+      <Filter>Source Files\levels\lll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\lll\leveldata.cpp">
+      <Filter>Source Files\levels\lll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\lll\script.cpp">
+      <Filter>Source Files\levels\lll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\menu\geo.cpp">
+      <Filter>Source Files\levels\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\menu\leveldata.cpp">
+      <Filter>Source Files\levels\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\menu\script.cpp">
+      <Filter>Source Files\levels\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\pss\geo.cpp">
+      <Filter>Source Files\levels\pss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\pss\leveldata.cpp">
+      <Filter>Source Files\levels\pss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\pss\script.cpp">
+      <Filter>Source Files\levels\pss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\rr\geo.cpp">
+      <Filter>Source Files\levels\rr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\rr\leveldata.cpp">
+      <Filter>Source Files\levels\rr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\rr\script.cpp">
+      <Filter>Source Files\levels\rr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\sa\geo.cpp">
+      <Filter>Source Files\levels\sa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\sa\leveldata.cpp">
+      <Filter>Source Files\levels\sa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\sa\script.cpp">
+      <Filter>Source Files\levels\sa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\sl\geo.cpp">
+      <Filter>Source Files\levels\sl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\sl\leveldata.cpp">
+      <Filter>Source Files\levels\sl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\sl\script.cpp">
+      <Filter>Source Files\levels\sl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ssl\geo.cpp">
+      <Filter>Source Files\levels\ssl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ssl\leveldata.cpp">
+      <Filter>Source Files\levels\ssl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ssl\script.cpp">
+      <Filter>Source Files\levels\ssl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\thi\geo.cpp">
+      <Filter>Source Files\levels\thi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\thi\leveldata.cpp">
+      <Filter>Source Files\levels\thi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\thi\script.cpp">
+      <Filter>Source Files\levels\thi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\totwc\geo.cpp">
+      <Filter>Source Files\levels\totwc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\totwc\leveldata.cpp">
+      <Filter>Source Files\levels\totwc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\totwc\script.cpp">
+      <Filter>Source Files\levels\totwc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ttc\geo.cpp">
+      <Filter>Source Files\levels\ttc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ttc\leveldata.cpp">
+      <Filter>Source Files\levels\ttc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ttc\script.cpp">
+      <Filter>Source Files\levels\ttc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ttm\geo.cpp">
+      <Filter>Source Files\levels\ttm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ttm\leveldata.cpp">
+      <Filter>Source Files\levels\ttm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\ttm\script.cpp">
+      <Filter>Source Files\levels\ttm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\vcutm\geo.cpp">
+      <Filter>Source Files\levels\vcutm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\vcutm\leveldata.cpp">
+      <Filter>Source Files\levels\vcutm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\vcutm\script.cpp">
+      <Filter>Source Files\levels\vcutm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\wdw\geo.cpp">
+      <Filter>Source Files\levels\wdw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\wdw\leveldata.cpp">
+      <Filter>Source Files\levels\wdw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\wdw\script.cpp">
+      <Filter>Source Files\levels\wdw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\wf\geo.cpp">
+      <Filter>Source Files\levels\wf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\wf\leveldata.cpp">
+      <Filter>Source Files\levels\wf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\wf\script.cpp">
+      <Filter>Source Files\levels\wf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\wmotr\geo.cpp">
+      <Filter>Source Files\levels\wmotr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\wmotr\leveldata.cpp">
+      <Filter>Source Files\levels\wmotr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\wmotr\script.cpp">
+      <Filter>Source Files\levels\wmotr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\entry.cpp">
+      <Filter>Source Files\levels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\behavior_script.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\geo_layout.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\graph_node.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\graph_node_manager.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\level_script.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\math_util.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\surface_collision.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\surface_load.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\data\behavior_data.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\buffers\gfx_output_buffer.cpp">
+      <Filter>Source Files\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\buffers\framebuffers.cpp">
+      <Filter>Source Files\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\buffers\buffers.cpp">
+      <Filter>Source Files\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\water.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\title_screen_bg.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\spooky.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\snow.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\sky.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\segment2.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\outside.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\mountain.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\machine.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\inside.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\grass.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\generic.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\fire.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\effect.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\debug_level_select.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\cave.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\common0_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\common1.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\common1_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group0.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group0_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group1.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group1_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group2.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group2_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group3.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group3_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group4.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group4_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group5.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group5_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group6.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group6_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group7.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group7_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group8.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group8_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group9.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group9_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group10.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group10_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group11.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group11_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group12.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group12_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group13.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group13_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group14.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group14_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group15.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group15_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group16.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group16_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group17.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\group17_geo.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\buffers\zbuffer.cpp">
+      <Filter>Source Files\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\levels\scripts.cpp">
+      <Filter>Source Files\levels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\actors\common0.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\external.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\globals_end.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\globals_start.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\load.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\memory.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\playback.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\seqplayer.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\synthesis.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\effects.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\data.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\bbh_skybox.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\bidw_skybox.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\bitfs_skybox.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\bits_skybox.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\ccm_skybox.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\cloud_floor_skybox.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\clouds_skybox.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\ssl_skybox.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\water_skybox.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bin\wdw_skybox.cpp">
+      <Filter>Source Files\bin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\time.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\asset.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\options.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\mario_state.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\hook_bhv.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\hook_geo.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\hook_dl.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\hook_texture.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\hook_level.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\gfx\gfx_cc.cpp">
+      <Filter>Source Files\pc\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\hook_macro.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\controller\controller.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\controller\controllers.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\controller\keyboard.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\controller\tas.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\controller\sdl.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\player\player.cpp">
+      <Filter>Source Files\player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\player\players.cpp">
+      <Filter>Source Files\player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\gfx\fast64.cpp">
+      <Filter>Source Files\pc\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\data\demo_data.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\data\mario_anim_data.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\engine\behavior_script.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\geo_layout.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\graph_node.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\level_script.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\math_util.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\surface_collision.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\surface_load.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\level_update.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\macro_special_objects.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\main.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\main_entry.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\mario.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\mario_actions_airborne.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\mario_actions_automatic.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\mario_actions_cutscene.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\mario_actions_moving.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\mario_actions_object.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\mario_actions_stationary.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\mario_actions_submerged.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\mario_misc.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\mario_step.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\memory.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\moving_texture.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\obj_behaviors.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\obj_behaviors_2.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\object_collision.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\object_helpers.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\object_helpers2.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\object_list_processor.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\paintings.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\platform_displacement.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\print.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\profiler.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\rendering_graph_node.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\room.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\save_file.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\screen_transition.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\segment2.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\segment7.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\shadow.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\skybox.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\sound_init.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\spawn_object.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\spawn_sound.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\area.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\behavior_actions.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\camera.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\debug.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\debug_course.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\decompress.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\display.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\envfx_bubbles.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\envfx_snow.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\eu_translation.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\game.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\geo_misc.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\hud.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\ingame_menu.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\interaction.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\level_geo.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\data.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\effects.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\external.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\internal.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\load.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\memory.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\playback.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\seqplayer.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\synthesis.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\menu\debug_level_select.h">
+      <Filter>Header Files\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\menu\file_select.h">
+      <Filter>Header Files\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\menu\intro_geo.h">
+      <Filter>Header Files\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\menu\level_select_menu.h">
+      <Filter>Header Files\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\menu\star_select.h">
+      <Filter>Header Files\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\buffers\buffers.h">
+      <Filter>Header Files\buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\buffers\framebuffers.h">
+      <Filter>Header Files\buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\buffers\gfx_output_buffer.h">
+      <Filter>Header Files\buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\buffers\zbuffer.h">
+      <Filter>Header Files\buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\levels\course_defines.h">
+      <Filter>Header Files\levels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\levels\entry.h">
+      <Filter>Header Files\levels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\levels\level_defines.h">
+      <Filter>Header Files\levels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\levels\scripts.h">
+      <Filter>Header Files\levels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\configfile.h">
+      <Filter>Header Files\pc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\mixer.h">
+      <Filter>Header Files\pc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\controller\controller_api.h">
+      <Filter>Header Files\pc\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\controller\controller_emscripten_keyboard.h">
+      <Filter>Header Files\pc\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\controller\controller_keyboard.h">
+      <Filter>Header Files\pc\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\controller\controller_recorded_tas.h">
+      <Filter>Header Files\pc\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\controller\controller_sdl.h">
+      <Filter>Header Files\pc\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\controller\controller_wup.h">
+      <Filter>Header Files\pc\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\controller\controller_xinput.h">
+      <Filter>Header Files\pc\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\audio\audio_alsa.h">
+      <Filter>Header Files\pc\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\audio\audio_api.h">
+      <Filter>Header Files\pc\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\audio\audio_null.h">
+      <Filter>Header Files\pc\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\audio\audio_pulse.h">
+      <Filter>Header Files\pc\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\audio\audio_sdl.h">
+      <Filter>Header Files\pc\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\audio\audio_wasapi.h">
+      <Filter>Header Files\pc\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\common0.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\common1.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group0.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group1.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group2.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group3.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group4.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group5.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group6.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group7.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group8.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group9.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group10.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group11.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group12.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group13.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group14.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group15.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group16.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\actors\group17.h">
+      <Filter>Header Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\src\hardware.h">
+      <Filter>Source Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\src\libaudio_internal.h">
+      <Filter>Source Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\src\libultra_internal.h">
+      <Filter>Source Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\src\osAi.h">
+      <Filter>Source Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\src\osContInternal.h">
+      <Filter>Source Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\gfx\platform_sdl2.h">
+      <Filter>Source Files\pc\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\gfx\driver_opengl.h">
+      <Filter>Source Files\pc\gfx</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
