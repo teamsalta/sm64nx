@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug Opt|x64">
+      <Configuration>Debug Opt</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{A7BFE800-41BD-44F2-A71D-94F31F732D86}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Opt|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Opt|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\include;..\;..\src;..\build\us_nx;..\build\us_nx\include;..\external\include;</IncludePath>
+    <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\external\x64;$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Opt|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\include;..\;..\src;..\build\us_nx;..\build\us_nx\include;..\external\include;</IncludePath>
+    <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\external\x64;$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\include;..\;..\src;..\build\us_nx;..\build\us_nx\include;..\external\include;</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\external\x64;$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;opengl32.lib;glu32.lib;glew32s.lib;libzstd_staticd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <CreateHotPatchableImage>
+      </CreateHotPatchableImage>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>/EDITANDCONTINUE %(AdditionalOptions)</AdditionalOptions>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+    </Link>
+    <ClCompile>
+      <PreprocessorDefinitions>GLEW_STATIC;ENABLE_MOUSE;WIN64;_WIN64;VERSION_US;_WINDOWS;NON_MATCHING;AVOID_UB;F3DEX_GBI_2E;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Opt|x64'">
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;opengl32.lib;glu32.lib;glew32s.lib;libzstd_staticd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <CreateHotPatchableImage>
+      </CreateHotPatchableImage>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>/EDITANDCONTINUE %(AdditionalOptions)</AdditionalOptions>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+    </Link>
+    <ClCompile>
+      <PreprocessorDefinitions>GLEW_STATIC;ENABLE_MOUSE;WIN64;_WIN64;VERSION_US;_WINDOWS;NON_MATCHING;AVOID_UB;F3DEX_GBI_2E;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <WarningLevel>Level1</WarningLevel>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>ENABLE_MOUSE;GLEW_STATIC;WIN64;_WIN64;VERSION_US;_WINDOWS;NON_MATCHING;AVOID_UB;F3DEX_GBI_2E;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;opengl32.lib;glew32s.lib;libzstd_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include=".clang-format" />
+    <None Include="assets\demos\bbh.bin" />
+    <None Include="assets\demos\bitdw.bin" />
+    <None Include="assets\demos\ccm.bin" />
+    <None Include="assets\demos\hmc.bin" />
+    <None Include="assets\demos\jrb.bin" />
+    <None Include="assets\demos\pss.bin" />
+    <None Include="assets\demos\unused.bin" />
+    <None Include="assets\demos\wf.bin" />
+    <None Include="build\us_nx\sound\sequences.bin" />
+    <None Include="enhancements\crash_font.bin" />
+    <None Include="lib\pr\audio\aspMain.bin" />
+    <None Include="lib\pr\audio\aspMain_data.bin" />
+    <None Include="lib\pr\boot\F3D_boot.bin" />
+    <None Include="lib\pr\f3dex2\F3DEX2.bin" />
+    <None Include="lib\pr\f3dex2\F3DEX2_data.bin" />
+    <None Include="lib\pr\f3dex2\F3DEX2_NoN.bin" />
+    <None Include="lib\pr\f3dex2\F3DEX2_NoN_data.bin" />
+    <None Include="lib\pr\f3dex2\F3DLX2_Rej.bin" />
+    <None Include="lib\pr\f3dex2\F3DLX2_Rej_data.bin" />
+    <None Include="lib\pr\f3dex2\F3DZEX.bin" />
+    <None Include="lib\pr\f3dex2\F3DZEX_data.bin" />
+    <None Include="lib\pr\f3dex2\L3DEX2.bin" />
+    <None Include="lib\pr\f3dex2\L3DEX2_data.bin" />
+    <None Include="lib\pr\f3dex\F3DEX.bin" />
+    <None Include="lib\pr\f3dex\F3DEX_data.bin" />
+    <None Include="lib\pr\f3dex\F3DEX_NoN.bin" />
+    <None Include="lib\pr\f3dex\F3DEX_NoN_data.bin" />
+    <None Include="lib\pr\f3dex\F3DLX.bin" />
+    <None Include="lib\pr\f3dex\F3DLX_data.bin" />
+    <None Include="lib\pr\f3dex\F3DLX_NoN.bin" />
+    <None Include="lib\pr\f3dex\F3DLX_NoN_data.bin" />
+    <None Include="lib\pr\f3dex\F3DLX_Rej.bin" />
+    <None Include="lib\pr\f3dex\F3DLX_Rej_data.bin" />
+    <None Include="lib\pr\f3dex\L3DEX.bin" />
+    <None Include="lib\pr\f3dex\L3DEX_data.bin" />
+    <None Include="lib\pr\f3d\new\F3D.bin" />
+    <None Include="lib\pr\f3d\new\F3D_data.bin" />
+    <None Include="lib\pr\f3d\old\F3D.bin" />
+    <None Include="lib\pr\f3d\old\F3D_data.bin" />
+    <None Include="lib\pr\s2dex\S2DEX.bin" />
+    <None Include="lib\pr\s2dex\S2DEX_data.bin" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\actors\common0.cpp" />
+    <ClCompile Include="..\actors\common0_geo.cpp" />
+    <ClCompile Include="..\actors\common1.cpp" />
+    <ClCompile Include="..\actors\common1_geo.cpp" />
+    <ClCompile Include="..\actors\group0.cpp" />
+    <ClCompile Include="..\actors\group0_geo.cpp" />
+    <ClCompile Include="..\actors\group1.cpp" />
+    <ClCompile Include="..\actors\group10.cpp" />
+    <ClCompile Include="..\actors\group10_geo.cpp" />
+    <ClCompile Include="..\actors\group11.cpp" />
+    <ClCompile Include="..\actors\group11_geo.cpp" />
+    <ClCompile Include="..\actors\group12.cpp" />
+    <ClCompile Include="..\actors\group12_geo.cpp" />
+    <ClCompile Include="..\actors\group13.cpp" />
+    <ClCompile Include="..\actors\group13_geo.cpp" />
+    <ClCompile Include="..\actors\group14.cpp" />
+    <ClCompile Include="..\actors\group14_geo.cpp" />
+    <ClCompile Include="..\actors\group15.cpp" />
+    <ClCompile Include="..\actors\group15_geo.cpp" />
+    <ClCompile Include="..\actors\group16.cpp" />
+    <ClCompile Include="..\actors\group16_geo.cpp" />
+    <ClCompile Include="..\actors\group17.cpp" />
+    <ClCompile Include="..\actors\group17_geo.cpp" />
+    <ClCompile Include="..\actors\group1_geo.cpp" />
+    <ClCompile Include="..\actors\group2.cpp" />
+    <ClCompile Include="..\actors\group2_geo.cpp" />
+    <ClCompile Include="..\actors\group3.cpp" />
+    <ClCompile Include="..\actors\group3_geo.cpp" />
+    <ClCompile Include="..\actors\group4.cpp" />
+    <ClCompile Include="..\actors\group4_geo.cpp" />
+    <ClCompile Include="..\actors\group5.cpp" />
+    <ClCompile Include="..\actors\group5_geo.cpp" />
+    <ClCompile Include="..\actors\group6.cpp" />
+    <ClCompile Include="..\actors\group6_geo.cpp" />
+    <ClCompile Include="..\actors\group7.cpp" />
+    <ClCompile Include="..\actors\group7_geo.cpp" />
+    <ClCompile Include="..\actors\group8.cpp" />
+    <ClCompile Include="..\actors\group8_geo.cpp" />
+    <ClCompile Include="..\actors\group9.cpp" />
+    <ClCompile Include="..\actors\group9_geo.cpp" />
+    <ClCompile Include="..\bin\bbh_skybox.cpp" />
+    <ClCompile Include="..\bin\bidw_skybox.cpp" />
+    <ClCompile Include="..\bin\bitfs_skybox.cpp" />
+    <ClCompile Include="..\bin\bits_skybox.cpp" />
+    <ClCompile Include="..\bin\cave.cpp" />
+    <ClCompile Include="..\bin\ccm_skybox.cpp" />
+    <ClCompile Include="..\bin\clouds_skybox.cpp" />
+    <ClCompile Include="..\bin\cloud_floor_skybox.cpp" />
+    <ClCompile Include="..\bin\debug_level_select.cpp" />
+    <ClCompile Include="..\bin\effect.cpp" />
+    <ClCompile Include="..\bin\fire.cpp" />
+    <ClCompile Include="..\bin\generic.cpp" />
+    <ClCompile Include="..\bin\grass.cpp" />
+    <ClCompile Include="..\bin\inside.cpp" />
+    <ClCompile Include="..\bin\machine.cpp" />
+    <ClCompile Include="..\bin\mountain.cpp" />
+    <ClCompile Include="..\bin\outside.cpp" />
+    <ClCompile Include="..\bin\segment2.cpp" />
+    <ClCompile Include="..\bin\sky.cpp" />
+    <ClCompile Include="..\bin\snow.cpp" />
+    <ClCompile Include="..\bin\spooky.cpp" />
+    <ClCompile Include="..\bin\ssl_skybox.cpp" />
+    <ClCompile Include="..\bin\title_screen_bg.cpp" />
+    <ClCompile Include="..\bin\water.cpp" />
+    <ClCompile Include="..\bin\water_skybox.cpp" />
+    <ClCompile Include="..\bin\wdw_skybox.cpp" />
+    <ClCompile Include="..\data\behavior_data.cpp" />
+    <ClCompile Include="..\data\demo_data.cpp" />
+    <ClCompile Include="..\data\mario_anim_data.cpp" />
+    <ClCompile Include="..\levels\bbh\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bbh\leveldata.cpp" />
+    <ClCompile Include="..\levels\bbh\script.cpp" />
+    <ClCompile Include="..\levels\bitdw\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bitdw\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bitdw\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bitfs\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bitfs\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bitfs\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bits\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bits\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bits\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bob\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bob\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bob\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_1\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_1\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_1\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_2\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_2\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_2\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_3\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_3\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\bowser_3\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_courtyard\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_courtyard\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_courtyard\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_grounds\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_grounds\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_grounds\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_inside\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_inside\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\castle_inside\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ccm\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ccm\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ccm\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\cotmc\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\cotmc\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\cotmc\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ddd\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ddd\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ddd\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ending\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ending\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ending\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\entry.cpp" />
+    <ClCompile Include="..\levels\hmc\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\hmc\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\hmc\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\intro\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\intro\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\intro\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\jrb\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\jrb\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\jrb\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\lll\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\lll\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\lll\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\menu\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\menu\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\menu\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\pss\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\pss\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\pss\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\rr\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\rr\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\rr\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\sa\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\sa\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\sa\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\scripts.cpp" />
+    <ClCompile Include="..\levels\sl\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\sl\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\sl\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ssl\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ssl\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ssl\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\thi\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\thi\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\thi\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\totwc\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\totwc\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\totwc\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ttc\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ttc\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ttc\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ttm\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\ttm\leveldata.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug Opt|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\levels\ttm\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\vcutm\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\vcutm\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\vcutm\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\wdw\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\wdw\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\wdw\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\wf\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\wf\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\wf\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\wmotr\geo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\wmotr\leveldata.cpp">
+    </ClCompile>
+    <ClCompile Include="..\levels\wmotr\script.cpp">
+    </ClCompile>
+    <ClCompile Include="..\lib\src\alBnkfNew.c" />
+    <ClCompile Include="..\lib\src\guLookAtRef.c" />
+    <ClCompile Include="..\lib\src\guMtxF2L.c" />
+    <ClCompile Include="..\lib\src\guNormalize.c" />
+    <ClCompile Include="..\lib\src\guOrthoF.c" />
+    <ClCompile Include="..\lib\src\guPerspectiveF.c" />
+    <ClCompile Include="..\lib\src\guRotateF.c" />
+    <ClCompile Include="..\lib\src\guScaleF.c" />
+    <ClCompile Include="..\lib\src\guTranslateF.c" />
+    <ClCompile Include="..\lib\src\math\llconv.c" />
+    <ClCompile Include="..\lib\src\math\llmuldiv.c" />
+    <ClCompile Include="..\lib\src\NaN.c" />
+    <ClCompile Include="..\lib\src\osCreateMesgQueue.c" />
+    <ClCompile Include="..\lib\src\osGetThreadPri.c" />
+    <ClCompile Include="..\lib\src\osSpTaskYield.c" />
+    <ClCompile Include="..\lib\src\osSpTaskYielded.c" />
+    <ClCompile Include="..\lib\src\osViData.c" />
+    <ClCompile Include="..\lib\src\_Ldtob.c" />
+    <ClCompile Include="..\lib\src\_Litob.c" />
+    <ClCompile Include="..\lib\src\__osAiDeviceBusy.c" />
+    <ClCompile Include="..\lib\src\__osDequeueThread.c" />
+    <ClCompile Include="..\lib\src\__osDevMgrMain.c" />
+    <ClCompile Include="..\lib\src\__osPiCreateAccessQueue.c" />
+    <ClCompile Include="..\lib\src\__osSiCreateAccessQueue.c" />
+    <ClCompile Include="..\lib\src\__osSiDeviceBusy.c" />
+    <ClCompile Include="..\lib\src\__osSiRawReadIo.c" />
+    <ClCompile Include="..\lib\src\__osSiRawWriteIo.c" />
+    <ClCompile Include="..\lib\src\__osSpDeviceBusy.c" />
+    <ClCompile Include="..\lib\src\__osSpGetStatus.c" />
+    <ClCompile Include="..\lib\src\__osSpRawStartDma.c" />
+    <ClCompile Include="..\lib\src\__osSpSetPc.c" />
+    <ClCompile Include="..\lib\src\__osSpSetStatus.c" />
+    <ClCompile Include="..\src\audio\data.cpp" />
+    <ClCompile Include="..\src\audio\effects.cpp" />
+    <ClCompile Include="..\src\audio\external.cpp" />
+    <ClCompile Include="..\src\audio\globals_end.cpp" />
+    <ClCompile Include="..\src\audio\globals_start.cpp" />
+    <ClCompile Include="..\src\audio\load.cpp" />
+    <ClCompile Include="..\src\audio\memory.cpp" />
+    <ClCompile Include="..\src\audio\playback.cpp" />
+    <ClCompile Include="..\src\audio\seqplayer.cpp" />
+    <ClCompile Include="..\src\audio\synthesis.cpp" />
+    <ClCompile Include="..\src\buffers\buffers.cpp" />
+    <ClCompile Include="..\src\buffers\framebuffers.cpp" />
+    <ClCompile Include="..\src\buffers\gfx_output_buffer.cpp" />
+    <ClCompile Include="..\src\buffers\zbuffer.cpp" />
+    <ClCompile Include="..\src\controller\controller.cpp" />
+    <ClCompile Include="..\src\controller\controllers.cpp" />
+    <ClCompile Include="..\src\controller\keyboard.cpp" />
+    <ClCompile Include="..\src\controller\sdl.cpp" />
+    <ClCompile Include="..\src\controller\tas.cpp" />
+    <ClCompile Include="..\src\engine\asset.cpp" />
+    <ClCompile Include="..\src\engine\behavior_script.cpp" />
+    <ClCompile Include="..\src\engine\geo_layout.cpp" />
+    <ClCompile Include="..\src\engine\graph_node.cpp" />
+    <ClCompile Include="..\src\engine\graph_node_manager.cpp" />
+    <ClCompile Include="..\src\engine\hook_bhv.cpp" />
+    <ClCompile Include="..\src\engine\hook_dl.cpp" />
+    <ClCompile Include="..\src\engine\hook_geo.cpp" />
+    <ClCompile Include="..\src\engine\hook_level.cpp" />
+    <ClCompile Include="..\src\engine\hook_macro.cpp" />
+    <ClCompile Include="..\src\engine\hook_texture.cpp" />
+    <ClCompile Include="..\src\engine\level_script.cpp" />
+    <ClCompile Include="..\src\engine\math_util.cpp" />
+    <ClCompile Include="..\src\engine\surface_collision.cpp" />
+    <ClCompile Include="..\src\engine\surface_load.cpp" />
+    <ClCompile Include="..\src\engine\time.cpp" />
+    <ClCompile Include="..\src\game\area.cpp" />
+    <ClCompile Include="..\src\game\behavior_actions.cpp" />
+    <ClCompile Include="..\src\game\camera.cpp" />
+    <ClCompile Include="..\src\game\debug.cpp" />
+    <ClCompile Include="..\src\game\debug_course.cpp" />
+    <ClCompile Include="..\src\game\display.cpp" />
+    <ClCompile Include="..\src\game\envfx_bubbles.cpp" />
+    <ClCompile Include="..\src\game\envfx_snow.cpp" />
+    <ClCompile Include="..\src\game\game.cpp" />
+    <ClCompile Include="..\src\game\geo_misc.cpp" />
+    <ClCompile Include="..\src\game\hud.cpp" />
+    <ClCompile Include="..\src\game\ingame_menu.cpp" />
+    <ClCompile Include="..\src\game\interaction.cpp" />
+    <ClCompile Include="..\src\game\level_geo.cpp" />
+    <ClCompile Include="..\src\game\level_update.cpp" />
+    <ClCompile Include="..\src\game\macro_special_objects.cpp" />
+    <ClCompile Include="..\src\game\mario.cpp" />
+    <ClCompile Include="..\src\game\mario_actions_airborne.cpp" />
+    <ClCompile Include="..\src\game\mario_actions_automatic.cpp" />
+    <ClCompile Include="..\src\game\mario_actions_cutscene.cpp" />
+    <ClCompile Include="..\src\game\mario_actions_moving.cpp" />
+    <ClCompile Include="..\src\game\mario_actions_object.cpp" />
+    <ClCompile Include="..\src\game\mario_actions_stationary.cpp" />
+    <ClCompile Include="..\src\game\mario_actions_submerged.cpp" />
+    <ClCompile Include="..\src\game\mario_misc.cpp" />
+    <ClCompile Include="..\src\game\mario_state.cpp" />
+    <ClCompile Include="..\src\game\mario_step.cpp" />
+    <ClCompile Include="..\src\game\memory.cpp" />
+    <ClCompile Include="..\src\game\moving_texture.cpp" />
+    <ClCompile Include="..\src\game\object_collision.cpp" />
+    <ClCompile Include="..\src\game\object_helpers.cpp" />
+    <ClCompile Include="..\src\game\object_list_processor.cpp" />
+    <ClCompile Include="..\src\game\obj_behaviors.cpp" />
+    <ClCompile Include="..\src\game\obj_behaviors_2.cpp" />
+    <ClCompile Include="..\src\game\options.cpp" />
+    <ClCompile Include="..\src\game\paintings.cpp" />
+    <ClCompile Include="..\src\game\platform_displacement.cpp" />
+    <ClCompile Include="..\src\game\print.cpp" />
+    <ClCompile Include="..\src\game\rendering_graph_node.cpp" />
+    <ClCompile Include="..\src\game\room.cpp" />
+    <ClCompile Include="..\src\game\save_file.cpp" />
+    <ClCompile Include="..\src\game\screen_transition.cpp" />
+    <ClCompile Include="..\src\game\shadow.cpp" />
+    <ClCompile Include="..\src\game\skybox.cpp" />
+    <ClCompile Include="..\src\game\sound_init.cpp" />
+    <ClCompile Include="..\src\game\spawn_object.cpp" />
+    <ClCompile Include="..\src\game\spawn_sound.cpp" />
+    <ClCompile Include="..\src\menu\file_select.cpp" />
+    <ClCompile Include="..\src\menu\intro_geo.cpp" />
+    <ClCompile Include="..\src\menu\level_select_menu.cpp" />
+    <ClCompile Include="..\src\menu\star_select.cpp" />
+    <ClCompile Include="..\src\pc\audio\audio_sdl.cpp" />
+    <ClCompile Include="..\src\pc\configfile.cpp" />
+    <ClCompile Include="..\src\pc\gfx\fast64.cpp" />
+    <ClCompile Include="..\src\pc\gfx\gfx_cc.cpp" />
+    <ClCompile Include="..\src\pc\gfx\gfx_vs.cpp" />
+    <ClCompile Include="..\src\pc\mixer.cpp" />
+    <ClCompile Include="..\src\pc\nx.cpp" />
+    <ClCompile Include="..\src\pc\pc_main.cpp" />
+    <ClCompile Include="..\src\pc\ultra_reimplementation.cpp" />
+    <ClCompile Include="..\src\player\player.cpp" />
+    <ClCompile Include="..\src\player\players.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\actors\common0.h" />
+    <ClInclude Include="..\actors\common1.h" />
+    <ClInclude Include="..\actors\group0.h" />
+    <ClInclude Include="..\actors\group1.h" />
+    <ClInclude Include="..\actors\group10.h" />
+    <ClInclude Include="..\actors\group11.h" />
+    <ClInclude Include="..\actors\group12.h" />
+    <ClInclude Include="..\actors\group13.h" />
+    <ClInclude Include="..\actors\group14.h" />
+    <ClInclude Include="..\actors\group15.h" />
+    <ClInclude Include="..\actors\group16.h" />
+    <ClInclude Include="..\actors\group17.h" />
+    <ClInclude Include="..\actors\group2.h" />
+    <ClInclude Include="..\actors\group3.h" />
+    <ClInclude Include="..\actors\group4.h" />
+    <ClInclude Include="..\actors\group5.h" />
+    <ClInclude Include="..\actors\group6.h" />
+    <ClInclude Include="..\actors\group7.h" />
+    <ClInclude Include="..\actors\group8.h" />
+    <ClInclude Include="..\actors\group9.h" />
+    <ClInclude Include="..\levels\course_defines.h" />
+    <ClInclude Include="..\levels\entry.h" />
+    <ClInclude Include="..\levels\level_defines.h" />
+    <ClInclude Include="..\levels\scripts.h" />
+    <ClInclude Include="..\lib\src\hardware.h" />
+    <ClInclude Include="..\lib\src\libaudio_internal.h" />
+    <ClInclude Include="..\lib\src\libultra_internal.h" />
+    <ClInclude Include="..\lib\src\osAi.h" />
+    <ClInclude Include="..\lib\src\osContInternal.h" />
+    <ClInclude Include="..\src\audio\data.h" />
+    <ClInclude Include="..\src\audio\effects.h" />
+    <ClInclude Include="..\src\audio\external.h" />
+    <ClInclude Include="..\src\audio\internal.h" />
+    <ClInclude Include="..\src\audio\load.h" />
+    <ClInclude Include="..\src\audio\memory.h" />
+    <ClInclude Include="..\src\audio\playback.h" />
+    <ClInclude Include="..\src\audio\seqplayer.h" />
+    <ClInclude Include="..\src\audio\synthesis.h" />
+    <ClInclude Include="..\src\buffers\buffers.h" />
+    <ClInclude Include="..\src\buffers\framebuffers.h" />
+    <ClInclude Include="..\src\buffers\gfx_output_buffer.h" />
+    <ClInclude Include="..\src\buffers\zbuffer.h" />
+    <ClInclude Include="..\src\engine\behavior_script.h" />
+    <ClInclude Include="..\src\engine\geo_layout.h" />
+    <ClInclude Include="..\src\engine\graph_node.h" />
+    <ClInclude Include="..\src\engine\level_script.h" />
+    <ClInclude Include="..\src\engine\math_util.h" />
+    <ClInclude Include="..\src\engine\surface_collision.h" />
+    <ClInclude Include="..\src\engine\surface_load.h" />
+    <ClInclude Include="..\src\game\area.h" />
+    <ClInclude Include="..\src\game\behavior_actions.h" />
+    <ClInclude Include="..\src\game\camera.h" />
+    <ClInclude Include="..\src\game\debug.h" />
+    <ClInclude Include="..\src\game\debug_course.h" />
+    <ClInclude Include="..\src\game\decompress.h" />
+    <ClInclude Include="..\src\game\display.h" />
+    <ClInclude Include="..\src\game\envfx_bubbles.h" />
+    <ClInclude Include="..\src\game\envfx_snow.h" />
+    <ClInclude Include="..\src\game\eu_translation.h" />
+    <ClInclude Include="..\src\game\game.h" />
+    <ClInclude Include="..\src\game\geo_misc.h" />
+    <ClInclude Include="..\src\game\hud.h" />
+    <ClInclude Include="..\src\game\ingame_menu.h" />
+    <ClInclude Include="..\src\game\interaction.h" />
+    <ClInclude Include="..\src\game\level_geo.h" />
+    <ClInclude Include="..\src\game\level_update.h" />
+    <ClInclude Include="..\src\game\macro_special_objects.h" />
+    <ClInclude Include="..\src\game\main.h" />
+    <ClInclude Include="..\src\game\main_entry.h" />
+    <ClInclude Include="..\src\game\mario.h" />
+    <ClInclude Include="..\src\game\mario_actions_airborne.h" />
+    <ClInclude Include="..\src\game\mario_actions_automatic.h" />
+    <ClInclude Include="..\src\game\mario_actions_cutscene.h" />
+    <ClInclude Include="..\src\game\mario_actions_moving.h" />
+    <ClInclude Include="..\src\game\mario_actions_object.h" />
+    <ClInclude Include="..\src\game\mario_actions_stationary.h" />
+    <ClInclude Include="..\src\game\mario_actions_submerged.h" />
+    <ClInclude Include="..\src\game\mario_misc.h" />
+    <ClInclude Include="..\src\game\mario_step.h" />
+    <ClInclude Include="..\src\game\memory.h" />
+    <ClInclude Include="..\src\game\moving_texture.h" />
+    <ClInclude Include="..\src\game\object_collision.h" />
+    <ClInclude Include="..\src\game\object_helpers.h" />
+    <ClInclude Include="..\src\game\object_helpers2.h" />
+    <ClInclude Include="..\src\game\object_list_processor.h" />
+    <ClInclude Include="..\src\game\obj_behaviors.h" />
+    <ClInclude Include="..\src\game\obj_behaviors_2.h" />
+    <ClInclude Include="..\src\game\paintings.h" />
+    <ClInclude Include="..\src\game\platform_displacement.h" />
+    <ClInclude Include="..\src\game\print.h" />
+    <ClInclude Include="..\src\game\profiler.h" />
+    <ClInclude Include="..\src\game\rendering_graph_node.h" />
+    <ClInclude Include="..\src\game\room.h" />
+    <ClInclude Include="..\src\game\save_file.h" />
+    <ClInclude Include="..\src\game\screen_transition.h" />
+    <ClInclude Include="..\src\game\segment2.h" />
+    <ClInclude Include="..\src\game\segment7.h" />
+    <ClInclude Include="..\src\game\shadow.h" />
+    <ClInclude Include="..\src\game\skybox.h" />
+    <ClInclude Include="..\src\game\sound_init.h" />
+    <ClInclude Include="..\src\game\spawn_object.h" />
+    <ClInclude Include="..\src\game\spawn_sound.h" />
+    <ClInclude Include="..\src\menu\debug_level_select.h" />
+    <ClInclude Include="..\src\menu\file_select.h" />
+    <ClInclude Include="..\src\menu\intro_geo.h" />
+    <ClInclude Include="..\src\menu\level_select_menu.h" />
+    <ClInclude Include="..\src\menu\star_select.h" />
+    <ClInclude Include="..\src\pc\audio\audio_alsa.h" />
+    <ClInclude Include="..\src\pc\audio\audio_api.h" />
+    <ClInclude Include="..\src\pc\audio\audio_null.h" />
+    <ClInclude Include="..\src\pc\audio\audio_pulse.h" />
+    <ClInclude Include="..\src\pc\audio\audio_sdl.h" />
+    <ClInclude Include="..\src\pc\audio\audio_wasapi.h" />
+    <ClInclude Include="..\src\pc\configfile.h" />
+    <ClInclude Include="..\src\pc\controller\controller_api.h" />
+    <ClInclude Include="..\src\pc\controller\controller_emscripten_keyboard.h" />
+    <ClInclude Include="..\src\pc\controller\controller_keyboard.h" />
+    <ClInclude Include="..\src\pc\controller\controller_recorded_tas.h" />
+    <ClInclude Include="..\src\pc\controller\controller_sdl.h" />
+    <ClInclude Include="..\src\pc\controller\controller_wup.h" />
+    <ClInclude Include="..\src\pc\controller\controller_xinput.h" />
+    <ClInclude Include="..\src\pc\gfx\driver_opengl.h" />
+    <ClInclude Include="..\src\pc\gfx\platform_sdl2.h" />
+    <ClInclude Include="..\src\pc\mixer.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
