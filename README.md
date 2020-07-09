@@ -8,7 +8,7 @@ is also an ongoing effort.
 It builds the following ROMs:
 
 This repo does not include all assets necessary to run the game.
-**Any binaries posted here do not include requird assets from the base ROM
+**Any binaries posted here do not include required assets from the base ROM
 A prior copy of the game is required to extract the required assets.**
 
 # Purpose
