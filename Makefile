@@ -145,9 +145,11 @@ ULTRA_BIN_DIRS := lib/bin
 
 MIPSISET := -mips2 -32
 
-
+ifeq ($(TARGET_SWITCH), 1)
 OPT_FLAGS := -O3
-
+else
+OPT_FLAGS := -O2
+endif
 
 # File dependencies and variables for specific files
 #include Makefile.split
