@@ -8,7 +8,7 @@ is also an ongoing effort.
 It builds the following ROMs:
 
 This repo does not include all assets necessary to run the game.
-**Any binaries posted here do not include required assets from the base ROM
+**Any binaries posted here do not include requird assets from the base ROM
 A prior copy of the game is required to extract the required assets.**
 
 # Purpose
@@ -53,3 +53,8 @@ discuss what you would like to change.
 Run clang-format on your code to ensure it meets the project's coding standards.
 
 Official discord: https://discord.gg/27JtCWs
+
+##Running 
+**Make sure The built executable is in the root of the Repo or else It won't detect !!base.pak and Your rom**
+
+If Your Game isn't running after you did the last step change the name of !!base.pak to base.pak 
