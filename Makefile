@@ -161,10 +161,14 @@ ifeq ($(TARGET_SWITCH), 1)
 OPT_FLAGS := -O3
 else
 OPT_FLAGS := -O2
-else
+endif
+
+
 ifeq ($(DEBUG_BUILD), 1)
 OPT_FLAGS := -g
-else
+endif
+
+
 ifeq ($(TARGET_RPI), 1)
 OPT_FLAGS := -O3 
 endif
