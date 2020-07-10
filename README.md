@@ -11,6 +11,9 @@ This repo does not include all assets necessary to run the game.
 **Any binaries posted here do not include required assets from the base ROM
 A prior copy of the game is required to extract the required assets.**
 
+# Installation
+The recommended way to build this project is with Visual Studio on windows, a guide is located [here](build-windows-visual-studio/README.md)
+
 # Purpose
 
 The purpose of this project is to extend the original SM64 decompilation to focus on non-N64 platforms, to not be contrained by the limitations of N64 hardware.  One of the main ways this is accomplished is by loading game assets externally at runtime, rather than compile them in.
