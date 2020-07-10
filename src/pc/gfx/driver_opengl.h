@@ -31,10 +31,12 @@
 #include "gfx_cc.h"
 #include "renderer.h"
 
+#ifndef __SWITCH__
 #define ENABLE_NOISE_FILTER
+#endif
 
 #ifdef ENABLE_NOISE_FILTER
-#define SHADER_VERSION "#version 110\nprecision mediump float;"
+#define SHADER_VERSION "#version 110"
 #else
 #define SHADER_VERSION "#version 100\nprecision mediump float;"
 #endif

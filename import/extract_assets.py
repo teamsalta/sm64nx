@@ -4,6 +4,7 @@ import os
 import json
 import hashlib
 import xxhash
+import platform
 
 tools_dir = '../tools/'
 
@@ -11,7 +12,7 @@ tools_dir = os.path.abspath(tools_dir)
 
 def executablePath(file):
 	path = os.path.join(tools_dir, file)
-	if '.' not in file:
+	if '.' not in file and platform.system() == 'Windows':
 		return path + '.exe'
 	return path
 	

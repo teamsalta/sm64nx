@@ -8,6 +8,7 @@ import os
 import re
 import struct
 import sys
+import platform
 
 TYPE_CTL = 1
 TYPE_TBL = 2
@@ -17,7 +18,7 @@ print('tools_dir = %s' % tools_dir)
 
 def executablePath(file):
 	path = os.path.join(tools_dir, file)
-	if '.' not in file:
+	if '.' not in file and platform.system() == 'Windows':
 		return path + '.exe'
 	return path
 

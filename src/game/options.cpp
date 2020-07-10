@@ -123,7 +123,7 @@ namespace sm64
 
 		bool Base::load()
 		{
-#ifdef __SWITCH__
+#if defined(__SWITCH__) && !defined(BUILD_NRO)
 			if(mountSaveData() != 0)
 			{
 				return false;
@@ -139,7 +139,7 @@ namespace sm64
 				result = _load(f, this);
 				fclose(f);
 			}
-#ifdef __SWITCH__
+#if defined(__SWITCH__) && !defined(BUILD_NRO)
 			unmountSaveData();
 #endif
 			return result;
@@ -147,7 +147,7 @@ namespace sm64
 
 		bool Base::save()
 		{
-#ifdef __SWITCH__
+#if defined(__SWITCH__) && !defined(BUILD_NRO)
 			if(mountSaveData() != 0)
 			{
 				return false;
@@ -161,7 +161,7 @@ namespace sm64
 
 			if(!f)
 			{
-#ifdef __SWITCH__
+#if defined(__SWITCH__) && !defined(BUILD_NRO)
 				unmountSaveData();
 #endif
 				return false;
@@ -173,7 +173,7 @@ namespace sm64
 
 			fclose(f);
 
-#ifdef __SWITCH__
+#if defined(__SWITCH__) && !defined(BUILD_NRO)
 			commitSave();
 			unmountSaveData();
 #endif

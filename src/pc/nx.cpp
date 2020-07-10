@@ -29,31 +29,15 @@ void initialize()
 
 	g_initialized  = 1;
 
-	/*smInitialize();
-	fsInitialize();
-	romfsInit();*/
-	
-	//appletInitialize();
 	accountInitialize(AccountServiceType_Application);
 	
-	//if (hosversionBefore(8, 0, 0) || true)
+
+	if (appletSetCpuBoostMode(ApmCpuBoostMode_Type1))
 	{
-		//if (pcvSetClockRate(PcvModule_CpuBus, clock()))
-		if (appletSetCpuBoostMode(ApmCpuBoostMode_Type1))
-		{
-			return;
-		}
 	}
-	/*else
-	{
-		ClkrstSession session = { 0 };
-		clkrstOpenSession(&session, PcvModuleId_CpuBus, 3);
-		if (clkrstSetClockRate(&session, clock()))
-		{
-		}
-		clkrstCloseSession(&session);
-	}*/
 }
+
+#ifndef BUILD_NRO
 
 int appletEnsureSaveData(AccountUid uid)
 {
@@ -107,4 +91,5 @@ int commitSave()
 	return fsdevCommitDevice("sv");
 }
 
+#endif
 #endif
