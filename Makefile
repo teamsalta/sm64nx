@@ -255,10 +255,11 @@ $(info $(PATH))
 PORTLIBS ?= $(DEVKITPRO)/portlibs/switch
 LIBNX ?= $(DEVKITPRO)/libnx
 
-APP_TITLE := Super Mario 64
-APP_AUTHOR := Nintendo, some autists
+APP_TITLE := Super Mario 64 NX
+APP_AUTHOR := Some Autists
 APP_VERSION := 1_$(VERSION)
-APP_ICON := nx_icon.jpg
+APP_ICON := icon.jpg
+ROMFS	:=	romfs
 
 AS := aarch64-none-elf-as
 CC := aarch64-none-elf-gcc
@@ -269,9 +270,13 @@ OBJDUMP := aarch64-none-elf-objdump
 OBJCOPY := aarch64-none-elf-objcopy
 STRIP := aarch64-none-elf-strip
 
+ifneq ($(ROMFS),)
+	export NROFLAGS += --romfsdir=$(CURDIR)/$(ROMFS)
+endif
+
 ARCH := -march=armv8-a+crc+crypto+simd -mtune=cortex-a57 -mtp=soft -ftls-model=local-exec -fPIC
-CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(ARCH) $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -DUSE_SDL=2 -D__SWITCH__=1 -Wno-narrowing -fpermissive -std=gnu++17
-CFLAGS := $(ARCH) $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -DUSE_SDL=2 -D__SWITCH__=1 -Wno-narrowing -fpermissive -std=gnu++17
+CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(ARCH) $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -DUSE_SDL=2 -D__SWITCH__=1 -Wno-narrowing -fpermissive -std=gnu++17 -DBUILD_NRO
+CFLAGS := $(ARCH) $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -DUSE_SDL=2 -D__SWITCH__=1 -Wno-narrowing -fpermissive -std=gnu++17 -DBUILD_NRO
 ASFLAGS := -march=armv8-a+crc+crypto -I include -I $(BUILD_DIR) $(VERSION_ASFLAGS)
 LDFLAGS := -specs=$(LIBNX)/switch.specs $(ARCH) -no-pie -L$(LIBNX)/lib -L$(PORTLIBS)/lib -lSDL2 -lEGL -lGLESv2 -lglapi -ldrm_nouveau -lnx -lm -lzstd -lz -lstdc++
 
@@ -388,8 +393,9 @@ $(EXE): $(O_FILES) $(MIO0_FILES:.mio0=.o) $(ULTRA_O_FILES)
 
 ifeq ($(TARGET_SWITCH), 1)
 
+
 %.nro: %.stripped %.nacp
-	@elf2nro $< $@ --nacp=$*.nacp --icon=$(APP_ICON)
+	@elf2nro $< $@ --nacp=$*.nacp --icon=$(APP_ICON) --romfsdir=$(ROMFS)
 	@echo built ... $(notdir $@)
 
 %.nacp:
