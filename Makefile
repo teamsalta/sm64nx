@@ -18,7 +18,7 @@ GRUCODE ?= f3d_old
 NON_MATCHING ?= 0
 
 # Build for Switch
-TARGET_SWITCH ?= 1
+TARGET_SWITCH ?= 0
 
 
 NON_MATCHING := 1
