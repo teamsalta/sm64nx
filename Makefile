@@ -20,6 +20,11 @@ NON_MATCHING ?= 0
 # Build for Switch
 TARGET_SWITCH ?= 0
 
+## Debug Build
+
+DEBUG_BUILD ?= 0
+
+
 
 NON_MATCHING := 1
 GRUCODE := f3dex2e
@@ -149,7 +154,13 @@ ifeq ($(TARGET_SWITCH), 1)
 OPT_FLAGS := -O3
 else
 OPT_FLAGS := -O2
+else
+ifeq ($(DEBUG_BUILD), 1)
+OPT_FLAGS := -g
 endif
+
+
+
 
 # File dependencies and variables for specific files
 #include Makefile.split
