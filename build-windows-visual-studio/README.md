@@ -52,10 +52,10 @@ Restart your computer
 
 Open a cmd window as Administrator and paste in:
 ```
-python -m pip install --upgrade pip and
+python -m pip install --upgrade pip 
 ```
 
-press Enter
+and press Enter
 
 Once that finishes paste in
 
