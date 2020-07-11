@@ -76,7 +76,6 @@ namespace sm64::gfx::platform
 	public:
 		SDL_Window *wnd;
 
-		int vsync_enabled = 0;
 		unsigned int window_width = DESIRED_SCREEN_WIDTH;
 		unsigned int window_height = DESIRED_SCREEN_HEIGHT;
 		bool fullscreen_state;
@@ -108,17 +107,8 @@ namespace sm64::gfx::platform
 #endif
 
 			SDL_GL_CreateContext(wnd);
-
-			vsync_enabled = 1;
-#ifdef __SWITCH__
-#ifdef ENABLE_60FPS
 			SDL_GL_SetSwapInterval(1);
-#else
-			SDL_GL_SetSwapInterval(2);
-#endif
-#else
 			set_vsync();
-#endif
 		}
 
 		void set_fullscreen(bool on, bool call_callback)
@@ -152,33 +142,22 @@ namespace sm64::gfx::platform
 #endif
 		}
 
-		bool set_vsync()
+		void set_vsync()
 		{
-			SDL_GL_SwapWindow(wnd);
-			SDL_GL_SwapWindow(wnd);
-			SDL_GL_SwapWindow(wnd);
-			SDL_GL_SwapWindow(wnd);
-			SDL_GL_SwapWindow(wnd);
-			SDL_GL_SwapWindow(wnd);
-			SDL_GL_SwapWindow(wnd);
-			SDL_GL_SwapWindow(wnd);
-			const u32 start = SDL_GetTicks();
-			SDL_GL_SwapWindow(wnd);
-			SDL_GL_SwapWindow(wnd);
-			SDL_GL_SwapWindow(wnd);
-			SDL_GL_SwapWindow(wnd);
-			const u32 end = SDL_GetTicks();
+			if (SDL_GetNumVideoDisplays() > 0)
+			{
+				SDL_DisplayMode mode;
 
-			const float average = 4.0 * 1000.0 / (end - start);
+				if (SDL_GetDisplayMode(0, 0, &mode) == 0) // assume highest resolution display is the one in use
+				{
+					m_refreshInterval = std::chrono::microseconds(1000 * 1000 / mode.refresh_rate);
+					return;
+				}
+			}
 
-#ifdef ENABLE_60FPS
-			const int scaler = (average / 60.0f) + 0.5f;
-#else
-			const int scaler = (average / 30.0f) + 0.5f;
-#endif
+			m_refreshInterval = std::chrono::microseconds(1000 * 1000 / 60); // assume 60 fps
 
-			SDL_GL_SetSwapInterval(MAX(1, scaler));
-			return true;
+			return;
 		}
 
 		void set_fullscreen_changed_callback(void(*on_fullscreen_changed)(bool is_now_fullscreen))
@@ -234,25 +213,9 @@ namespace sm64::gfx::platform
 			return true;
 		}
 
-		static void sync_framerate_with_timer()
-		{
-			// Number of milliseconds a frame should take (30 fps)
-			const Uint32 FRAME_TIME = 1000 / 30;
-			static Uint32 last_time;
-			Uint32 elapsed = SDL_GetTicks() - last_time;
-
-			if(elapsed < FRAME_TIME)
-				SDL_Delay(FRAME_TIME - elapsed);
-			last_time += FRAME_TIME;
-		}
 
 		void swap_buffers_begin()
 		{
-			if(!vsync_enabled)
-			{
-				sync_framerate_with_timer();
-			}
-
 			SDL_GL_SwapWindow(wnd);
 		}
 

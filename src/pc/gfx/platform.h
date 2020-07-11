@@ -1,10 +1,12 @@
 #pragma once
 #include "types.h"
+#include <chrono>
 
 extern void create_next_audio_buffer(s16 *samples, u32 num_samples);
-void send_display_list(struct SPTask *spTask);
-void game_loop_one_iteration(void);
-void dispatch_audio_sptask(struct SPTask *spTask);
+void send_display_list(SPTask *spTask);
+void game_loop_one_iteration();
+void process_physics();
+void dispatch_audio_sptask(SPTask *spTask);
 
 void game_init(void *arg);
 void create_next_audio_buffer(s16 *samples, u32 num_samples);
@@ -47,5 +49,10 @@ namespace sm64::gfx::platform
 
 			end_frame();
 		}
+
+		const std::chrono::microseconds& refreshInterval() const { return m_refreshInterval; }
+
+	protected:
+		std::chrono::microseconds m_refreshInterval;
 	};
 }

@@ -15,6 +15,11 @@
 #include "fast64.h"
 #include "pc/audio/audio_api.h"
 
+#if defined(_MSC_VER) && defined(DEBUG)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 
 extern AudioAPI audio_sdl;
 extern AudioAPI* audio_api;
@@ -2211,12 +2216,18 @@ namespace sm64::gfx
 		{
 			gfx_sp_reset();
 
-			if(!gfx_wapi.begin_frame())
+			if (dropped_frame)
 			{
-				dropped_frame = true;
 				return;
 			}
-			dropped_frame = false;
+
+			if(!gfx_wapi.begin_frame())
+			{
+				//dropped_frame = true;
+				return;
+			}
+
+			//dropped_frame = false;
 
 			gfx_rapi.start_frame();
 			run_dl(commands);
@@ -2231,7 +2242,11 @@ namespace sm64::gfx
 			if(!dropped_frame)
 			{
 				gfx_rapi.finish_render();
+
+				const auto now = std::chrono::high_resolution_clock::now();
+				m_lastFrameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_currentFrameStartTime);
 				gfx_wapi.swap_buffers_end();
+				m_lastSwapDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now);
 			}
 		}
 	};
@@ -2241,30 +2256,69 @@ namespace sm64::gfx
 		return new Fast64T<platform::Sdl, opengl::Opengl>();
 	}
 
+	void Fast64::physics_loop()
+	{
+	}
+
 	void Fast64::run_loop()
 	{
+		m_nextFrameTime = std::chrono::high_resolution_clock::now();
+		auto lastFrameDuration = std::chrono::microseconds(0);
+		m_refreshRate = gfx_wapi.refreshInterval();
+		const auto m_refreshRate2 = std::chrono::microseconds(1000 * 1000 / 60);
+
+
 		while(1)
 		{
-			start_frame();
-			game_loop_one_iteration();
+			//const auto frameAlignment = (m_refreshRate - (m_lastFrameDuration % m_refreshRate)) / 2;
+			const std::chrono::time_point<std::chrono::steady_clock> targetFrameStart = m_nextFrameTime - (m_lastFrameDuration % m_refreshRate);// +std::chrono::microseconds(5000);// -frameAlignment;
 
-			int samples_left = audio_api->buffered();
-			u32 num_audio_samples = samples_left < audio_api->get_desired_buffered() ? 544 : 528;
+			auto const timeDelta = std::chrono::duration_cast<std::chrono::microseconds>(targetFrameStart - std::chrono::high_resolution_clock::now());
 
-#ifdef ENABLE_60FPS
-			s16 audio_buffer[544 * 2];
-			create_next_audio_buffer(audio_buffer, num_audio_samples);
-			audio_api->play((const u8*)audio_buffer, num_audio_samples * 4);
-#else
-			s16 audio_buffer[544 * 2 * 2];
-			for(int i = 0; i < 2; i++)
+			if (timeDelta <= std::chrono::microseconds(0))
 			{
-				create_next_audio_buffer(audio_buffer + i * (num_audio_samples * 2), num_audio_samples);
-			}
-			audio_api->play((const u8*)audio_buffer, 2 * num_audio_samples * 4);
+				dropped_frame = std::chrono::high_resolution_clock::now() > targetFrameStart + m_refreshRate;
+
+#if defined(_MSC_VER) && defined(DEBUG)
+				static int dropped_frames = 0;
+
+				if (dropped_frame)
+				{
+					char buffer[32];
+					sprintf(buffer, "dropped frame %d\r\n", ++dropped_frames);
+					OutputDebugString(buffer);
+				}
 #endif
 
-			end_frame();
+				m_currentFrameStartTime = std::chrono::high_resolution_clock::now();
+				start_frame();
+				game_loop_one_iteration();
+
+				int samples_left = audio_api->buffered();
+				u32 num_audio_samples = samples_left < audio_api->get_desired_buffered() ? 544 : 528;
+
+#ifdef ENABLE_60FPS
+				s16 audio_buffer[544 * 2];
+				create_next_audio_buffer(audio_buffer, num_audio_samples);
+				audio_api->play((const u8*)audio_buffer, num_audio_samples * 4);
+#else
+				s16 audio_buffer[544 * 2 * 2];
+				for (int i = 0; i < 2; i++)
+				{
+					create_next_audio_buffer(audio_buffer + i * (num_audio_samples * 2), num_audio_samples);
+				}
+				audio_api->play((const u8*)audio_buffer, 2 * num_audio_samples * 4);
+#endif
+
+				end_frame();
+				m_lastFrameTime = std::chrono::high_resolution_clock::now();
+
+				m_nextFrameTime += std::chrono::microseconds(1000 * 1000 / 60);
+			}
+			else
+			{
+				int y = 0;
+			}
 		}
 	}
 
