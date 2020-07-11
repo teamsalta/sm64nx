@@ -1049,7 +1049,12 @@ Gfx* Geo18_802D5D0C(s32 run, UNUSED struct GraphNode* node, UNUSED f32 c[4][4])
 		gLastPaintingUpdateCounter = gPaintingUpdateCounter;
 		gPaintingUpdateCounter	   = gAreaUpdateCounter;
 		find_floor(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &surface);
-		gPaintingMarioFloorType = surface->type;
+
+		if (surface)
+		{
+			gPaintingMarioFloorType = surface->type;
+		}
+
 		gPaintingMarioXPos	= gMarioObject->oPosX;
 		gPaintingMarioYPos	= gMarioObject->oPosY;
 		gPaintingMarioZPos	= gMarioObject->oPosZ;
