@@ -115,6 +115,9 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <PropertyGroup Label="Globals">
+	<LocalDebuggerWorkingDirectory>$(ProjectDir)\..\</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
   <ItemGroup>
     <None Include=".clang-format" />
     <None Include="assets\demos\bbh.bin" />
