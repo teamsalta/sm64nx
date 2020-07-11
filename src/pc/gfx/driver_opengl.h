@@ -656,6 +656,7 @@ namespace sm64::gfx::opengl
 
 		void end_frame()
 		{
+			glFinish();
 		}
 
 		static void finish_render()

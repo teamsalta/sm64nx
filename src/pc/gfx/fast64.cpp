@@ -2248,6 +2248,7 @@ namespace sm64::gfx
 				const auto now = std::chrono::high_resolution_clock::now();
 				m_lastFrameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_currentFrameStartTime);
 				gfx_wapi.swap_buffers_end();
+				gfx_rapi.end_frame();
 				m_lastSwapDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now);
 			}
 		}
@@ -2272,8 +2273,9 @@ namespace sm64::gfx
 
 		while(1)
 		{
-			const auto frameAlignment = (m_refreshRate - (m_lastFrameDuration % m_refreshRate)) / 2;
-			const std::chrono::time_point<std::chrono::steady_clock> targetFrameStart = m_nextFrameTime - MIN(m_lastFrameDuration + frameAlignment, m_refreshRate);
+			//const auto frameAlignment = (m_refreshRate - (m_lastFrameDuration % m_refreshRate)) / 2;
+			//const std::chrono::time_point<std::chrono::steady_clock> targetFrameStart = m_nextFrameTime - MIN(m_lastFrameDuration + frameAlignment, m_lastSwapDuration);
+			const std::chrono::time_point<std::chrono::steady_clock> targetFrameStart = m_nextFrameTime - m_lastFrameDuration;
 
 			auto const timeDelta = std::chrono::duration_cast<std::chrono::microseconds>(targetFrameStart - std::chrono::high_resolution_clock::now());
 
@@ -2283,6 +2285,15 @@ namespace sm64::gfx
 
 #if defined(_MSC_VER) && defined(DEBUG)
 				static int dropped_frames = 0;
+				static u64 frame_counter = 0;
+
+				if (frame_counter++ % (60 * 3) == 0)
+				{
+					char buffer[64];
+					float ms = m_lastSwapDuration.count() / 1000.0f;
+					sprintf(buffer, "swap duration %2.2f ms\r\n", ms);
+					OutputDebugString(buffer);
+				}
 
 				if (dropped_frame)
 				{
