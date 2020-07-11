@@ -14,9 +14,11 @@
 #include "xxhash64.h"
 #include "fast64.h"
 #include "pc/audio/audio_api.h"
+#include <algorithm>
 
 #if defined(_MSC_VER) && defined(DEBUG)
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <windows.h>
 #endif
 
@@ -2270,8 +2272,8 @@ namespace sm64::gfx
 
 		while(1)
 		{
-			//const auto frameAlignment = (m_refreshRate - (m_lastFrameDuration % m_refreshRate)) / 2;
-			const std::chrono::time_point<std::chrono::steady_clock> targetFrameStart = m_nextFrameTime - (m_lastFrameDuration % m_refreshRate);// +std::chrono::microseconds(5000);// -frameAlignment;
+			const auto frameAlignment = (m_refreshRate - (m_lastFrameDuration % m_refreshRate)) / 2;
+			const std::chrono::time_point<std::chrono::steady_clock> targetFrameStart = m_nextFrameTime - MIN(m_lastFrameDuration + frameAlignment, m_refreshRate);
 
 			auto const timeDelta = std::chrono::duration_cast<std::chrono::microseconds>(targetFrameStart - std::chrono::high_resolution_clock::now());
 
@@ -2317,7 +2319,7 @@ namespace sm64::gfx
 			}
 			else
 			{
-				int y = 0;
+				std::this_thread::sleep_for(std::chrono::microseconds(500));
 			}
 		}
 	}
