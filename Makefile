@@ -20,6 +20,16 @@ NON_MATCHING ?= 0
 # Build for Switch
 TARGET_SWITCH ?= 0
 
+## Debug Build
+
+DEBUG_BUILD ?= 0
+
+## Build for RPI
+
+TARGET_RPI ?= 0
+
+
+
 
 NON_MATCHING := 1
 GRUCODE := f3dex2e
@@ -145,11 +155,26 @@ ULTRA_BIN_DIRS := lib/bin
 
 MIPSISET := -mips2 -32
 
+##Build Type
+
 ifeq ($(TARGET_SWITCH), 1)
 OPT_FLAGS := -O3
 else
 OPT_FLAGS := -O2
 endif
+
+
+ifeq ($(DEBUG_BUILD), 1)
+OPT_FLAGS := -g
+endif
+
+
+ifeq ($(TARGET_RPI), 1)
+OPT_FLAGS := -O3 
+endif
+
+
+
 
 # File dependencies and variables for specific files
 #include Makefile.split
