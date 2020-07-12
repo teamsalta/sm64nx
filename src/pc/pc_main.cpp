@@ -107,12 +107,24 @@ bool verifyIntegrity()
 		}
 	}
 
+	if (!hasRom)
+	{
+		sm64::log("error: unable to locate Z64 rom.\n");
+	}
+
+	if (!hasPak)
+	{
+		sm64::log("error: unable to locate romfs/!!base.pak\n");
+	}
+
 	free(buffer);
 	return hasRom && hasPak;
 }
 
 void main_func(void)
 {
+	sm64::log("initializing app\n");
+
 	if(!verifyIntegrity())
 	{
 		return;

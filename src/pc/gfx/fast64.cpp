@@ -15,6 +15,8 @@
 #include "fast64.h"
 #include "pc/audio/audio_api.h"
 #include <algorithm>
+#include <thread>
+#include <chrono>
 
 #if defined(_MSC_VER) && defined(DEBUG)
 #define WIN32_LEAN_AND_MEAN
@@ -178,12 +180,8 @@ namespace sm64::gfx
 	static RSP rsp;
 	static RDP rdp;
 
-#ifdef DEBUG
-	static platform::Sdl gfx_wapi("SM64", false);
-#else
-	static platform::Sdl gfx_wapi("SM64", true);
-#endif
-	static opengl::Opengl gfx_rapi;
+	static platform::Sdl* gfx_wapi = nullptr;
+	static opengl::Opengl* gfx_rapi = nullptr;
 	
 	static const ColorCombiner* prev_combiner = nullptr;
 	static std::unordered_map<u64, TextureNode> g_textureCache;
@@ -194,6 +192,12 @@ namespace sm64::gfx
 	public:
 		Fast64T() : Fast64()
 		{
+#ifdef DEBUG
+			gfx_wapi = new platform::Sdl("SM64", false);
+#else
+			g_gfx_wapi = new platform::Sdl("SM64", true);
+#endif
+			gfx_rapi = new opengl::Opengl();
 			// Used in the 120 star TAS
 			static u32 precomp_shaders[] = {
 				0x01200200,
@@ -236,7 +240,7 @@ namespace sm64::gfx
 			{
 				int num = buf_vbo_num_tris;
 
-				gfx_rapi.draw_triangles(buf_vbo, buf_vbo_len, buf_vbo_num_tris);
+				gfx_rapi->draw_triangles(buf_vbo, buf_vbo_len, buf_vbo_num_tris);
 				buf_vbo_len = 0;
 				buf_vbo_num_tris = 0;
 			}
@@ -244,11 +248,11 @@ namespace sm64::gfx
 
 		static ShaderProgram* lookup_or_create_shader_program(uint32_t shader_id)
 		{
-			struct ShaderProgram *prg = gfx_rapi.lookup_shader(shader_id);
+			struct ShaderProgram *prg = gfx_rapi->lookup_shader(shader_id);
 			if(prg == NULL)
 			{
-				gfx_rapi.unload_shader(rendering_state.shader_program);
-				prg = gfx_rapi.create_and_load_new_shader(shader_id);
+				gfx_rapi->unload_shader(rendering_state.shader_program);
+				prg = gfx_rapi->create_and_load_new_shader(shader_id);
 				rendering_state.shader_program = prg;
 			}
 			return prg;
@@ -356,15 +360,15 @@ namespace sm64::gfx
 
 			if(node.isValid())
 			{
-				gfx_rapi.select_texture(tile, node);
+				gfx_rapi->select_texture(tile, node);
 
 				return true;
 			}
 
-			node.texture_id = gfx_rapi.new_texture();
+			node.texture_id = gfx_rapi->new_texture();
 
-			gfx_rapi.select_texture(tile, node);
-			gfx_rapi.set_sampler_parameters(tile, node);
+			gfx_rapi->select_texture(tile, node);
+			gfx_rapi->set_sampler_parameters(tile, node);
 			node.cms = 0;
 			node.cmt = 0;
 			node.linear_filter = false;
@@ -392,14 +396,14 @@ namespace sm64::gfx
 			uint32_t width = rdp.texture_tile.line_size_bytes / 2;
 			uint32_t height = rdp.loaded_texture[tile].size_bytes / rdp.texture_tile.line_size_bytes;
 
-			gfx_rapi.upload_texture(rgba32_buf, width, height, node);
+			gfx_rapi->upload_texture(rgba32_buf, width, height, node);
 		}
 
 		static void import_texture_rgba32(int tile, TextureNode& node)
 		{
 			uint32_t width = rdp.texture_tile.line_size_bytes / 2;
 			uint32_t height = (rdp.loaded_texture[tile].size_bytes / 2) / rdp.texture_tile.line_size_bytes;
-			gfx_rapi.upload_texture(rdp.loaded_texture[tile].addr, width, height, node);
+			gfx_rapi->upload_texture(rdp.loaded_texture[tile].addr, width, height, node);
 		}
 
 		static void import_texture_ia4(int tile, TextureNode& node)
@@ -424,7 +428,7 @@ namespace sm64::gfx
 			uint32_t width = rdp.texture_tile.line_size_bytes * 2;
 			uint32_t height = rdp.loaded_texture[tile].size_bytes / rdp.texture_tile.line_size_bytes;
 
-			gfx_rapi.upload_texture(rgba32_buf, width, height, node);
+			gfx_rapi->upload_texture(rgba32_buf, width, height, node);
 		}
 
 		static void import_texture_ia8(int tile, TextureNode& node)
@@ -447,7 +451,7 @@ namespace sm64::gfx
 			uint32_t width = rdp.texture_tile.line_size_bytes;
 			uint32_t height = rdp.loaded_texture[tile].size_bytes / rdp.texture_tile.line_size_bytes;
 
-			gfx_rapi.upload_texture(rgba32_buf, width, height, node);
+			gfx_rapi->upload_texture(rgba32_buf, width, height, node);
 		}
 
 		static void import_texture_ia16(int tile, TextureNode& node)
@@ -470,7 +474,7 @@ namespace sm64::gfx
 			uint32_t width = rdp.texture_tile.line_size_bytes / 2;
 			uint32_t height = rdp.loaded_texture[tile].size_bytes / rdp.texture_tile.line_size_bytes;
 
-			gfx_rapi.upload_texture(rgba32_buf, width, height, node);
+			gfx_rapi->upload_texture(rgba32_buf, width, height, node);
 		}
 
 		static void import_texture_i4(int tile, TextureNode& node)
@@ -494,7 +498,7 @@ namespace sm64::gfx
 			uint32_t width = rdp.texture_tile.line_size_bytes * 2;
 			uint32_t height = rdp.loaded_texture[tile].size_bytes / rdp.texture_tile.line_size_bytes;
 
-			gfx_rapi.upload_texture(rgba32_buf, width, height, node);
+			gfx_rapi->upload_texture(rgba32_buf, width, height, node);
 		}
 
 		static void import_texture_i8(int tile, TextureNode& node)
@@ -516,7 +520,7 @@ namespace sm64::gfx
 			uint32_t width = rdp.texture_tile.line_size_bytes;
 			uint32_t height = rdp.loaded_texture[tile].size_bytes / rdp.texture_tile.line_size_bytes;
 
-			gfx_rapi.upload_texture(rgba32_buf, width, height, node);
+			gfx_rapi->upload_texture(rgba32_buf, width, height, node);
 		}
 
 		static void import_texture_ci4(int tile, TextureNode& node)
@@ -541,7 +545,7 @@ namespace sm64::gfx
 			uint32_t width = rdp.texture_tile.line_size_bytes * 2;
 			uint32_t height = rdp.loaded_texture[tile].size_bytes / rdp.texture_tile.line_size_bytes;
 
-			gfx_rapi.upload_texture(rgba32_buf, width, height, node);
+			gfx_rapi->upload_texture(rgba32_buf, width, height, node);
 		}
 
 		static void import_texture_ci8(int tile, TextureNode& node)
@@ -565,7 +569,7 @@ namespace sm64::gfx
 			uint32_t width = rdp.texture_tile.line_size_bytes;
 			uint32_t height = rdp.loaded_texture[tile].size_bytes / rdp.texture_tile.line_size_bytes;
 
-			gfx_rapi.upload_texture(rgba32_buf, width, height, node);
+			gfx_rapi->upload_texture(rgba32_buf, width, height, node);
 		}
 
 		struct AssetHeader
@@ -598,7 +602,7 @@ namespace sm64::gfx
 
 				if (object)
 				{
-					gfx_rapi.upload_texture(object->ptr(), object->width, object->height, *rendering_state.textures[tile]);
+					gfx_rapi->upload_texture(object->ptr(), object->width, object->height, *rendering_state.textures[tile]);
 					return;
 				}
 				else
@@ -615,7 +619,7 @@ namespace sm64::gfx
 
 				if(object)
 				{
-					gfx_rapi.upload_texture(object->ptr(), object->width, object->height, *rendering_state.textures[tile]);
+					gfx_rapi->upload_texture(object->ptr(), object->width, object->height, *rendering_state.textures[tile]);
 					return;
 				}
 			}
@@ -980,7 +984,7 @@ namespace sm64::gfx
 			if(depth_test != rendering_state.depth_test)
 			{
 				flush();
-				gfx_rapi.set_depth_test(depth_test);
+				gfx_rapi->set_depth_test(depth_test);
 				rendering_state.depth_test = depth_test;
 			}
 
@@ -988,7 +992,7 @@ namespace sm64::gfx
 			if(z_upd != rendering_state.depth_mask)
 			{
 				flush();
-				gfx_rapi.set_depth_mask(z_upd);
+				gfx_rapi->set_depth_mask(z_upd);
 				rendering_state.depth_mask = z_upd;
 			}
 
@@ -996,7 +1000,7 @@ namespace sm64::gfx
 			if(zmode_decal != rendering_state.decal_mode)
 			{
 				flush();
-				gfx_rapi.set_zmode_decal(zmode_decal);
+				gfx_rapi->set_zmode_decal(zmode_decal);
 				rendering_state.decal_mode = zmode_decal;
 			}
 
@@ -1005,13 +1009,13 @@ namespace sm64::gfx
 				if(memcmp(&rdp.viewport, &rendering_state.viewport, sizeof(rdp.viewport)) != 0)
 				{
 					flush();
-					gfx_rapi.set_viewport(rdp.viewport.x, rdp.viewport.y, rdp.viewport.width, rdp.viewport.height);
+					gfx_rapi->set_viewport(rdp.viewport.x, rdp.viewport.y, rdp.viewport.width, rdp.viewport.height);
 					rendering_state.viewport = rdp.viewport;
 				}
 				if(memcmp(&rdp.scissor, &rendering_state.scissor, sizeof(rdp.scissor)) != 0)
 				{
 					flush();
-					gfx_rapi.set_scissor(rdp.scissor.x, rdp.scissor.y, rdp.scissor.width, rdp.scissor.height);
+					gfx_rapi->set_scissor(rdp.scissor.x, rdp.scissor.y, rdp.scissor.width, rdp.scissor.height);
 					rendering_state.scissor = rdp.scissor;
 				}
 				rdp.viewport_or_scissor_changed = false;
@@ -1044,19 +1048,19 @@ namespace sm64::gfx
 			if(prg != rendering_state.shader_program)
 			{
 				flush();
-				gfx_rapi.unload_shader(rendering_state.shader_program);
-				gfx_rapi.load_shader(prg);
+				gfx_rapi->unload_shader(rendering_state.shader_program);
+				gfx_rapi->load_shader(prg);
 				rendering_state.shader_program = prg;
 			}
 			if(use_alpha != rendering_state.alpha_blend)
 			{
 				flush();
-				gfx_rapi.set_use_alpha(use_alpha);
+				gfx_rapi->set_use_alpha(use_alpha);
 				rendering_state.alpha_blend = use_alpha;
 			}
 			uint8_t num_inputs;
 			bool used_textures[2];
-			gfx_rapi.shader_get_info(prg, &num_inputs, used_textures);
+			gfx_rapi->shader_get_info(prg, &num_inputs, used_textures);
 
 			for(int i = 0; i < 2; i++)
 			{
@@ -1081,7 +1085,7 @@ namespace sm64::gfx
 							rendering_state.textures[i]->cms = rdp.texture_tile.cms;
 							rendering_state.textures[i]->cmt = rdp.texture_tile.cmt;
 
-							gfx_rapi.set_sampler_parameters(i, *rendering_state.textures[i]);
+							gfx_rapi->set_sampler_parameters(i, *rendering_state.textures[i]);
 						}
 					}
 				}
@@ -1092,7 +1096,7 @@ namespace sm64::gfx
 			uint32_t tex_height = (rdp.texture_tile.lrt - rdp.texture_tile.ult + 4) / 4;
 
 #ifdef ENABLE_Z_TEST
-			bool z_is_from_0_to_1 = gfx_rapi.z_is_from_0_to_1();
+			bool z_is_from_0_to_1 = gfx_rapi->z_is_from_0_to_1();
 #endif
 
 			for(int i = 0; i < 3; i++)
@@ -1197,15 +1201,11 @@ namespace sm64::gfx
 		{
 			uint32_t cc_id = rdp.combine_mode;
 
-			bool use_alpha = (rdp.other_mode_l & (G_BL_A_MEM << 18)) == 0;
-			bool use_fog = (rdp.other_mode_l >> 30) == G_BL_CLR_FOG;
-			bool texture_edge = (rdp.other_mode_l & CVG_X_ALPHA) == CVG_X_ALPHA;
-			bool use_noise = (rdp.other_mode_l & G_AC_DITHER) == G_AC_DITHER;
-
-			if(texture_edge)
-			{
-				use_alpha = true;
-			}
+			
+			const bool use_fog = (rdp.other_mode_l >> 30) == G_BL_CLR_FOG;
+			const bool texture_edge = (rdp.other_mode_l & CVG_X_ALPHA) == CVG_X_ALPHA;
+			const bool use_noise = (rdp.other_mode_l & G_AC_DITHER) == G_AC_DITHER;
+			const bool use_alpha = ((rdp.other_mode_l & (G_BL_A_MEM << 18)) == 0) || texture_edge;
 
 			if(use_alpha) cc_id |= SHADER_OPT_ALPHA;
 			if(use_fog) cc_id |= SHADER_OPT_FOG;
@@ -1222,20 +1222,20 @@ namespace sm64::gfx
 			if(prg != rendering_state.shader_program)
 			{
 				flush();
-				gfx_rapi.unload_shader(rendering_state.shader_program);
-				gfx_rapi.load_shader(prg);
+				gfx_rapi->unload_shader(rendering_state.shader_program);
+				gfx_rapi->load_shader(prg);
 				rendering_state.shader_program = prg;
 			}
 			if(use_alpha != rendering_state.alpha_blend)
 			{
 				flush();
-				gfx_rapi.set_use_alpha(use_alpha);
+				gfx_rapi->set_use_alpha(use_alpha);
 				rendering_state.alpha_blend = use_alpha;
 			}
 
 			uint8_t num_inputs;
 			bool used_textures[2];
-			gfx_rapi.shader_get_info(prg, &num_inputs, used_textures);
+			gfx_rapi->shader_get_info(prg, &num_inputs, used_textures);
 
 			for(int i = 0; i < 2; i++)
 			{
@@ -1260,7 +1260,7 @@ namespace sm64::gfx
 							rendering_state.textures[i]->cms = rdp.texture_tile.cms;
 							rendering_state.textures[i]->cmt = rdp.texture_tile.cmt;
 
-							gfx_rapi.set_sampler_parameters(i, *rendering_state.textures[i]);
+							gfx_rapi->set_sampler_parameters(i, *rendering_state.textures[i]);
 						}
 					}
 				}
@@ -1269,6 +1269,50 @@ namespace sm64::gfx
 			bool use_texture = used_textures[0] || used_textures[1];
 			uint32_t tex_width = (rdp.texture_tile.lrs - rdp.texture_tile.uls + 4) / 4;
 			uint32_t tex_height = (rdp.texture_tile.lrt - rdp.texture_tile.ult + 4) / 4;
+
+			bool depth_test = (rsp.geometry_mode & G_ZBUFFER) == G_ZBUFFER;
+			if (depth_test != rendering_state.depth_test)
+			{
+				flush();
+				gfx_rapi->set_depth_test(depth_test);
+				rendering_state.depth_test = depth_test;
+			}
+
+			bool z_upd = (rdp.other_mode_l & Z_UPD) == Z_UPD;
+			if (z_upd != rendering_state.depth_mask)
+			{
+				flush();
+				gfx_rapi->set_depth_mask(z_upd);
+				rendering_state.depth_mask = z_upd;
+			}
+
+			bool zmode_decal = (rdp.other_mode_l & ZMODE_DEC) == ZMODE_DEC;
+			if (zmode_decal != rendering_state.decal_mode)
+			{
+				flush();
+				gfx_rapi->set_zmode_decal(zmode_decal);
+				rendering_state.decal_mode = zmode_decal;
+			}
+
+			if (rdp.viewport_or_scissor_changed)
+			{
+				if (memcmp(&rdp.viewport, &rendering_state.viewport, sizeof(rdp.viewport)) != 0)
+				{
+					flush();
+					gfx_rapi->set_viewport(rdp.viewport.x, rdp.viewport.y, rdp.viewport.width, rdp.viewport.height);
+					rendering_state.viewport = rdp.viewport;
+				}
+				if (memcmp(&rdp.scissor, &rendering_state.scissor, sizeof(rdp.scissor)) != 0)
+				{
+					flush();
+					gfx_rapi->set_scissor(rdp.scissor.x, rdp.scissor.y, rdp.scissor.width, rdp.scissor.height);
+					rendering_state.scissor = rdp.scissor;
+				}
+				rdp.viewport_or_scissor_changed = false;
+			}
+
+			const auto mode_cull = rsp.geometry_mode & G_CULL_BOTH;
+			const auto mode_mdsft_textfilt = rdp.other_mode_h & (3U << G_MDSFT_TEXTFILT);
 
 			while(count > 0)
 			{
@@ -1291,7 +1335,7 @@ namespace sm64::gfx
 
 				const LoadedVertex* v_arr[3] = { &v1, &v2, &v3 };
 
-				if((rsp.geometry_mode & G_CULL_BOTH) != 0)
+				if(mode_cull != 0)
 				{
 					float dx1 = v1.x / (v1.w) - v2.x / (v2.w);
 					float dy1 = v1.y / (v1.w) - v2.y / (v2.w);
@@ -1306,7 +1350,7 @@ namespace sm64::gfx
 						cross = -cross;
 					}
 
-					switch(rsp.geometry_mode & G_CULL_BOTH)
+					switch(mode_cull)
 					{
 						case G_CULL_FRONT:
 							if(cross <= 0) continue;
@@ -1318,53 +1362,10 @@ namespace sm64::gfx
 							// Why is this even an option?
 							continue;
 					}
-				}
-
-				bool depth_test = (rsp.geometry_mode & G_ZBUFFER) == G_ZBUFFER;
-				if(depth_test != rendering_state.depth_test)
-				{
-					flush();
-					gfx_rapi.set_depth_test(depth_test);
-					rendering_state.depth_test = depth_test;
-				}
-
-				bool z_upd = (rdp.other_mode_l & Z_UPD) == Z_UPD;
-				if(z_upd != rendering_state.depth_mask)
-				{
-					flush();
-					gfx_rapi.set_depth_mask(z_upd);
-					rendering_state.depth_mask = z_upd;
-				}
-
-				bool zmode_decal = (rdp.other_mode_l & ZMODE_DEC) == ZMODE_DEC;
-				if(zmode_decal != rendering_state.decal_mode)
-				{
-					flush();
-					gfx_rapi.set_zmode_decal(zmode_decal);
-					rendering_state.decal_mode = zmode_decal;
-				}
-
-				if(rdp.viewport_or_scissor_changed)
-				{
-					if(memcmp(&rdp.viewport, &rendering_state.viewport, sizeof(rdp.viewport)) != 0)
-					{
-						flush();
-						gfx_rapi.set_viewport(rdp.viewport.x, rdp.viewport.y, rdp.viewport.width, rdp.viewport.height);
-						rendering_state.viewport = rdp.viewport;
-					}
-					if(memcmp(&rdp.scissor, &rendering_state.scissor, sizeof(rdp.scissor)) != 0)
-					{
-						flush();
-						gfx_rapi.set_scissor(rdp.scissor.x, rdp.scissor.y, rdp.scissor.width, rdp.scissor.height);
-						rendering_state.scissor = rdp.scissor;
-					}
-					rdp.viewport_or_scissor_changed = false;
-				}
-
-				
+				}				
 
 #ifdef ENABLE_Z_TEST
-				bool z_is_from_0_to_1 = gfx_rapi.z_is_from_0_to_1();
+				bool z_is_from_0_to_1 = gfx_rapi->z_is_from_0_to_1();
 #endif
 
 				for(int i = 0; i < 3; i++)
@@ -1386,12 +1387,14 @@ namespace sm64::gfx
 					{
 						float u = (v_arr[i]->u - rdp.texture_tile.uls * 8) / 32.0f;
 						float v = (v_arr[i]->v - rdp.texture_tile.ult * 8) / 32.0f;
-						if((rdp.other_mode_h & (3U << G_MDSFT_TEXTFILT)) != G_TF_POINT)
+
+						if(mode_mdsft_textfilt != G_TF_POINT)
 						{
 							// Linear filter adds 0.5f to the coordinates
 							u += 0.5f;
 							v += 0.5f;
 						}
+
 						buf_vbo[buf_vbo_len++] = u / tex_width;
 						buf_vbo[buf_vbo_len++] = v / tex_height;
 					}
@@ -2198,13 +2201,13 @@ namespace sm64::gfx
 
 		static void gfx_get_dimensions(uint32_t *width, uint32_t *height)
 		{
-			gfx_wapi.get_dimensions(width, height);
+			gfx_wapi->get_dimensions(width, height);
 		}
 
 		void start_frame()
 		{
-			gfx_wapi.handle_events();
-			gfx_wapi.get_dimensions(&gfx_current_dimensions.width, &gfx_current_dimensions.height);
+			gfx_wapi->handle_events();
+			gfx_wapi->get_dimensions(&gfx_current_dimensions.width, &gfx_current_dimensions.height);
 			if(gfx_current_dimensions.height == 0)
 			{
 				// Avoid division by zero
@@ -2223,7 +2226,7 @@ namespace sm64::gfx
 				return;
 			}
 
-			if(!gfx_wapi.begin_frame())
+			if(!gfx_wapi->begin_frame())
 			{
 				//dropped_frame = true;
 				return;
@@ -2231,24 +2234,24 @@ namespace sm64::gfx
 
 			//dropped_frame = false;
 
-			gfx_rapi.start_frame();
+			gfx_rapi->start_frame();
 			run_dl(commands);
 			flush();
 
-			gfx_rapi.end_frame();
-			gfx_wapi.swap_buffers_begin();
+			gfx_rapi->end_frame();
+			gfx_wapi->swap_buffers_begin();
 		}
 
 		void end_frame()
 		{
 			if(!dropped_frame)
 			{
-				gfx_rapi.finish_render();
+				gfx_rapi->finish_render();
 
 				const auto now = std::chrono::high_resolution_clock::now();
 				m_lastFrameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_currentFrameStartTime);
-				gfx_wapi.swap_buffers_end();
-				gfx_rapi.end_frame();
+				gfx_wapi->swap_buffers_end();
+				gfx_rapi->end_frame();
 				m_lastSwapDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now);
 			}
 		}
@@ -2267,7 +2270,7 @@ namespace sm64::gfx
 	{
 		m_nextFrameTime = std::chrono::high_resolution_clock::now();
 		auto lastFrameDuration = std::chrono::microseconds(0);
-		m_refreshRate = gfx_wapi.refreshInterval();
+		m_refreshRate = gfx_wapi->refreshInterval();
 		const auto m_refreshRate2 = std::chrono::microseconds(1000 * 1000 / 60);
 
 
@@ -2275,7 +2278,7 @@ namespace sm64::gfx
 		{
 			//const auto frameAlignment = (m_refreshRate - (m_lastFrameDuration % m_refreshRate)) / 2;
 			//const std::chrono::time_point<std::chrono::steady_clock> targetFrameStart = m_nextFrameTime - MIN(m_lastFrameDuration + frameAlignment, m_lastSwapDuration);
-			const std::chrono::time_point<std::chrono::steady_clock> targetFrameStart = m_nextFrameTime - m_lastFrameDuration;
+			const std::chrono::time_point<std::chrono::high_resolution_clock> targetFrameStart = m_nextFrameTime - m_lastFrameDuration;
 
 			auto const timeDelta = std::chrono::duration_cast<std::chrono::microseconds>(targetFrameStart - std::chrono::high_resolution_clock::now());
 

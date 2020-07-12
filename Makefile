@@ -166,6 +166,7 @@ endif
 
 ifeq ($(DEBUG_BUILD), 1)
 OPT_FLAGS := -g
+OPT_FLAGS := -DDEBUG
 endif
 
 

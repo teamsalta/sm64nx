@@ -15,7 +15,7 @@
 #include <filesystem>
 #include <unordered_map>
 #include <memory>
-
+#include "game/debug.h"
 #include "hook_geo.h"
 #include "hook_dl.h"
 #include "hook_bhv.h"
@@ -605,10 +605,12 @@ namespace sm64
 
 		IDatabase* loadDb(const std::string& dbfile)
 		{
+			log("loading db %s\n", dbfile.c_str());
 			FILE* f = fopen(dbfile.c_str(), "rb");
 
 			if(!f)
 			{
+				log("failed to load db %s\n", dbfile.c_str());
 				return nullptr;
 			}
 
@@ -620,6 +622,7 @@ namespace sm64
 
 			if(!m_size)
 			{
+				log("failed to get db size %s\n", dbfile.c_str());
 				fclose(f);
 				return nullptr;
 			}
@@ -630,6 +633,7 @@ namespace sm64
 
 			if(!m_buffer)
 			{
+				log("failed to alloc db %s\n", dbfile.c_str());
 				fclose(f);
 				return nullptr;
 			}
@@ -663,6 +667,8 @@ namespace sm64
 				return new Database<Header64>(m_buffer);
 			}
 
+			log("loading %d entries\n", (int)header->entryCount);
+
 			delete m_buffer;
 			return nullptr;
 		}
@@ -672,12 +678,13 @@ namespace sm64
 			public:
 			Databases()
 			{
+				log("initializing pak databases\n");
 				std::vector<std::filesystem::path> paks;
-#ifdef _MSC_VER
-				loadDir("romfs/", paks);
-#else
+#ifdef __SWITCH__
 				loadDir("romfs:/", paks);
 				loadDir("sdmc:/switch/sm64/", paks);
+#else
+				loadDir("romfs/", paks);	
 #endif
 
 				std::sort(paks.begin(), paks.end());// , std::greater<std::filesystem::path>());
@@ -697,10 +704,10 @@ namespace sm64
 					}
 				}
 
-#ifdef _MSC_VER
-				loadLooseDir("romfs", true);
-#else
+#ifdef __SWITCH__
 				loadLooseDir("sdmc:/switch/sm64/", true);
+#else
+				loadLooseDir("romfs", true);
 #endif
 			}
 

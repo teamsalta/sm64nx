@@ -64,4 +64,29 @@ namespace sm64
 
 		hook::level::reg((const LevelCommand*)level, hash);
 	}
+
+	static FILE* g_logHandle = nullptr;
+
+	static FILE* logHandle()
+	{
+		if (!g_logHandle)
+		{
+			g_logHandle = fopen("sm64.log", "w");
+		}
+		return g_logHandle;
+	}
+
+	void log(const char* format, ...)
+	{
+		static char printBuffer[4096];
+		va_list args;
+		va_start(args, format);
+		vsprintf(printBuffer, format, args);
+
+		fprintf(logHandle(), "%s", printBuffer);
+		fflush(logHandle());
+
+
+		va_end(args);
+	}
 } // namespace sm64

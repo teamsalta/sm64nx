@@ -27,9 +27,9 @@ namespace sm64::gfx
 
 	protected:
 		std::mutex m_mutex;
-		std::chrono::time_point<std::chrono::steady_clock> m_nextFrameTime;
-		std::chrono::time_point<std::chrono::steady_clock> m_currentFrameStartTime;
-		std::chrono::time_point<std::chrono::steady_clock> m_lastFrameTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> m_nextFrameTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> m_currentFrameStartTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> m_lastFrameTime;
 		std::chrono::duration<u64, std::micro> m_lastFrameDuration;
 		std::chrono::duration<u64, std::micro> m_lastSwapDuration;
 		std::chrono::microseconds m_refreshRate;

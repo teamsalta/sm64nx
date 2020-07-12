@@ -5,6 +5,7 @@
 #include "engine/hook_macro.h"
 #include "engine/hook_geo.h"
 #include "engine/hook_dl.h"
+#include <stdarg.h>
 
 #ifndef DISABLE_HOOKS
 #define EXPORT_DL(v) static ExportDl export_##v(v, #v)
@@ -35,6 +36,7 @@
 
 namespace sm64
 {
+	void log(const char* format, ...);
 	void closeExportFile();
 
 	struct ExportDl
