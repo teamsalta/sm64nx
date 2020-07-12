@@ -195,7 +195,7 @@ namespace sm64::gfx
 #ifdef DEBUG
 			gfx_wapi = new platform::Sdl("SM64", false);
 #else
-			g_gfx_wapi = new platform::Sdl("SM64", true);
+			gfx_wapi = new platform::Sdl("SM64", true);
 #endif
 			gfx_rapi = new opengl::Opengl();
 			// Used in the 120 star TAS
