@@ -12,6 +12,7 @@ import re
 from macro import *
 from dialog import *
 from collision import *
+from model_ids import *
 
 OPTIMIZE_TRIANGLES = 1
 OPTIMIZE_VERTICIES = 1
@@ -110,6 +111,8 @@ geo_snufit_scale_body = Geo18_8030D9AC
 
 geo_update_held_mario_pos = geo_update_projectile_pos_from_parent
 #geo_update_held_mario_pos = 
+#geo_offset_klepto_debug = Unknown802A3E84
+geo_offset_klepto_held_object = Geo18_802A45E4
 
 
 OBJ_LIST_PLAYER			= 0
@@ -2984,7 +2987,7 @@ class Bhv(Asset):
 		self.write64(_SHIFTL(a, 16, 16) | _SHIFTL(b, 0, 16))
 		
 	def BC_W(self, a):
-		self.write64((uintptr_t)(u32)(a))
+		self.write64(a)
 		
 	def BC_PTR(self, a):
 		self.write(self.op(a))
@@ -3446,7 +3449,6 @@ class Gfx(Asset):
 			if v0 != 0:
 				print('param not 0: %d at offset %d' % (v0, v.vertexOffset()))
 			if v.vertexParent is None:
-				print('eeew')
 				self.buffer.write(self.op( _SHIFTL(G_VTX,24,8)|_SHIFTL((n),12,8)|_SHIFTL((v0)+(n),1,7) ))
 			
 				if n != v.vertexCount():

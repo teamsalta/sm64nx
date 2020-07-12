@@ -4,7 +4,7 @@ from itertools import chain
 buffer = 'sm64.py '
 actors = []
 
-groups = [['star', 'unagi'], ['bobomb', 'bowling_ball'], ['koopa_without_shell', 'koopa'], ['pokey_body_part', 'pokey']]
+groups = [['star', 'unagi'], ['bobomb', 'bowling_ball'], ['koopa_without_shell', 'koopa'], ['pokey_body_part', 'pokey'], ['mario_cap', 'star', 'transparent_star', 'klepto', 'ukiki']]
 flatten_group = list(chain.from_iterable(groups))
 
 for fn in os.listdir('actors'):
@@ -46,6 +46,8 @@ def isListValid(lst):
 for lst in groups:
 	if not isListValid(lst):
 		continue
+	print('group: ' + ', '.join(lst))
+	
 	tmp = ''
 	for i in lst:
 		path = os.path.join('actors', i)
@@ -62,9 +64,11 @@ for lst in groups:
 			tmp += ' ' + geo
 			
 	if len(tmp) > 0:
-		actors.append(fn)
+		actors.append('_'.join(lst))
 		with open('_'.join(lst) + '.bat', 'w') as f:
 			f.write('sm64.py ' + tmp + ' > ' + '_'.join(lst) + '.py')
+	else:
+		print('could not get any data for ' + ', '.join(lst))
 			
 	buffer += tmp
 		
@@ -75,7 +79,7 @@ with open('all_actors.bat', 'w') as f:
 	
 with open('build_seq.bat', 'w') as f:
 	for actor in actors:
-		f.write('start ' + actor + '.bat' + '\n')
+		f.write('call ' + actor + '.bat' + '\n')
 		
 with open('run_seq.bat', 'w') as f:
 	for actor in actors:
