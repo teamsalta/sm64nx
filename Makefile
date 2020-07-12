@@ -313,10 +313,7 @@ AS := as
 CC := gcc
 CXX := g++
 
-ifeq ($(WINDOWS_BUILD),1)
-  LD := $(CXX)
-else
-  LD := $(CC)
+LD := $(CXX)
   
 endif
 CPP := cpp -P
@@ -331,8 +328,8 @@ else ifeq ($(OS),Windows_NT)
 CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -DUSE_SDL=2 -Wno-narrowing -fpermissive -std=gnu++17 -DGLEW_STATIC
 CFLAGS := $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -DUSE_SDL=2 -Wno-narrowing -fpermissive -std=gnu++17 -DGLEW_STATIC
 else
-CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17 -DGLEW_STATIC
-CFLAGS := $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17 -DGLEW_STATIC
+CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17
+CFLAGS := $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17
 endif
 
 ASFLAGS := -I include -I $(BUILD_DIR) $(VERSION_ASFLAGS)
@@ -345,7 +342,7 @@ ifeq ($(OS),Windows_NT)
 # mingw
 LDFLAGS := -static -lm -lglew32 -lopengl32 `sdl2-config --static-libs` -no-pie -lpthread -static-libgcc -lzstd -lole32 -loleaut32 -limm32 -lversion -lwinmm -lsetupapi
 else
-LDFLAGS := -static -lm -lGL `sdl2-config --static-libs` -no-pie -lpthread -lasound -lX11 -lXrandr -lpulse
+LDFLAGS := -lm -lGL `sdl2-config --libs` -no-pie -lpthread -lasound -lzstd -lX11 -lXrandr -lpulse
 endif
 endif
 
