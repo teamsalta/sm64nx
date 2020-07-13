@@ -315,7 +315,6 @@ CXX := g++
 
 LD := $(CXX)
   
-endif
 CPP := cpp -P
 OBJDUMP := objdump
 OBJCOPY := objcopy
