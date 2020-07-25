@@ -128,19 +128,31 @@ namespace sm64
 			u8 m_padding[0x40];
 		};
 
-		/*class Game
+		class Game
 		{
 		public:
+			Game();
 			u8& overclock();
 			u8 framerate();
 			u8& setFramerate();
 			float framerateScaler() const;
 			u8 framerateScalerInv() const;
+
+			bool& disableSound();
+			bool& fullscreen();
+			const bool mirror() const;
+			bool& setMirror();
+
 		protected:
 			u8 m_overclock;
 			u8 m_framerate;
-			u8 m_padding[0x38];
-		};*/
+			bool m_disableSound;
+			bool m_fullscreen;
+			bool m_mirror;
+			u8 m_padding[0x40 - 5];
+		};
+
+		static_assert(sizeof(Game) == 0x40, "Game Incorrect Size");
 
 		class Base
 		{
@@ -158,22 +170,22 @@ namespace sm64
 			const Mods& mods() const { return m_mods; }
 			Mods& mods() { return m_mods; }
 
-			/*const Game& game() const
+			const Game& game() const
 			{
 				return m_game;
 			}
 			Game& game()
 			{
 				return m_game;
-			}*/
+			}
 
 		protected:
 			Camera m_camera;
 			Cheats m_cheats;
 			Mods m_mods;
-			//Game m_game;
+			Game m_game;
 
-			u8 junk[0x400 - 0x80 - sizeof(Mods)];
+			u8 junk[0x400 - 0x80 - sizeof(Mods) - sizeof(Game)];
 		};
 
 		static_assert(sizeof(Base) == 0x400, "Option size incorrect");

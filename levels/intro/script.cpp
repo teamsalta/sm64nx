@@ -19,6 +19,7 @@
 #include "levels/intro/header.h"
 
 #define FORCE_DEMO
+//#define SKIP_DEMO
 
 const LevelScript level_intro_entry_1[] = {
     INIT_LEVEL(),
@@ -66,6 +67,9 @@ const LevelScript level_intro_entry_2[] = {
 #endif
 	CLEAR_DEMO_PTR(), // we need to do this or else file select will be tainted with inputs
 	GET_OR_SET(/*op*/ OP_GET, /*var*/ 5),
+#ifdef SKIP_DEMO
+	JUMP(script_intro_L1),
+#endif
 	JUMP_IF(/*op*/ OP_EQ, /*arg*/ 1, script_intro_L1), // was start pressed when demo ended last time?
 	SET_MENU_MUSIC(/*seq*/ 0x0002),
 	TRANSITION(/*transType*/ WARP_TRANSITION_FADE_FROM_STAR, /*time*/ 20, /*color*/ 0x00, 0x00, 0x00),

@@ -5,6 +5,8 @@ namespace sm64::gfx
 {
 	struct ShaderProgram;
 
+	const u64 INVALID_VBO = 0xFFFFFFFFFFFFFFFF;
+
 	struct TextureNode
 	{
 		TextureNode() : texture_addr(nullptr), fmt(0), siz(0), texture_id(0), cms(0), cmt(0), linear_filter(0), mipmap(0)
@@ -99,6 +101,20 @@ namespace sm64::gfx
 		}
 
 		void set_use_alpha(bool use_alpha)
+		{
+		}
+
+		u64 create_vbo(float buf_vbo[], size_t buf_vbo_len, size_t buf_vbo_num_tris)
+		{
+			return INVALID_VBO;
+		}
+
+		u64 delete_vbo(u64 handle)
+		{
+			return INVALID_VBO;
+		}
+
+		void draw_triangles(u64 handle, size_t buf_vbo_num_tris)
 		{
 		}
 

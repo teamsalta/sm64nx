@@ -92,7 +92,7 @@ static s8 sAllFilesExist = FALSE;
 
 // Defines the value of the save slot selected in the menu.
 // Mario A: 1 | Mario B: 2 | Mario C: 3 | Mario D: 4
-static s8 sSelectedFileNum = 0;
+s8 sSelectedFileNum = 0;
 
 // Which coin score mode to use when scoring files. 0 for local
 // coin high score, 1 for high score across all files.

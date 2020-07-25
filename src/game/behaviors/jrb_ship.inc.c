@@ -48,6 +48,7 @@ void bhv_jrb_sliding_box_loop(void)
 	s16 sp1E;
 	if(o->oJrbSlidingBoxUnkF4 == NULL)
 	{
+		sp1E = 0;
 		sp3C = obj_nearest_object_with_behavior(sm64::bhv::bhvInSunkenShip3());
 		if(sp3C != NULL) // NULL check only for assignment, not for dereference?
 			o->oJrbSlidingBoxUnkF4 = sp3C;

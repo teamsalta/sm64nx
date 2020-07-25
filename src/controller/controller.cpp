@@ -92,6 +92,12 @@ namespace sm64::hid
 		// 0.5x A presses are a good meme
 		buttonDown = m_state.button;
 
+		if (sm64::config().game().mirror())
+		{
+			rawStickX = -rawStickX;
+			r_rawStickX = -r_rawStickX;
+		}
+
 		// reset the controller's x and y floats.
 		this->stickX = 0;
 		this->stickY = 0;

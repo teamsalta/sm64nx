@@ -29,7 +29,7 @@
 static struct Object* sStarSelectorModels[8];
 
 // The act the course is loaded as, affects whether some objects spawn.
-static s8 sLoadedActNum;
+s8 sLoadedActNum;
 
 // Number of obtained stars, excluding the coin star.
 static u8 sObtainedStars;
@@ -48,7 +48,7 @@ static s8 sSelectedActIndex = 0;
 static s8 sSelectableStarIndex = 0;
 
 // Act Selector menu timer that keeps counting until you choose an act.
-static s32 sActSelectorMenuTimer = 0;
+s32 sActSelectorMenuTimer = 0;
 
 /**
  * Act Selector Star Type Loop Action
@@ -174,7 +174,7 @@ void bhv_act_selector_init(void)
  * Also handles 2 star selector types whenever the star is selected
  * or not, the types are defined in bhv_act_selector_star_type_loop.
  */
-void bhv_act_selector_loop(void)
+void bhv_act_selector_loop()
 {
 	s8 i;
 	u8 starIndexCounter;
@@ -225,7 +225,7 @@ void bhv_act_selector_loop(void)
 /**
  * Print the course number selected with the wood rgba16 course texture.
  */
-static void print_course_number(void)
+static void print_course_number()
 {
 	u8 courseNum[4];
 
@@ -259,7 +259,7 @@ static void print_course_number(void)
 /**
  * Print act selector strings, some with special checks.
  */
-static void print_act_selector_strings(void)
+static void print_act_selector_strings()
 {
 	// TODO: EU relocates level and act name tables to translation segment 0x19
 #ifndef VERSION_EU
@@ -338,7 +338,7 @@ Gfx* geo_act_selector_strings(s16 callContext, UNUSED struct GraphNode* node)
  * Initiates act selector values before entering a main course.
  * Also load how much stars a course has, without counting the 100 coin star.
  */
-s32 lvl_init_act_selector_values_and_stars(UNUSED s32 arg, UNUSED s32 unused)
+s32 lvl_init_act_selector_values_and_stars(s32 arg, s32 unused)
 {
 	u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1);
 
@@ -364,7 +364,7 @@ s32 lvl_init_act_selector_values_and_stars(UNUSED s32 arg, UNUSED s32 unused)
  * Loads act selector button actions with selected act value checks.
  * Also updates objects and returns act number selected after is choosen.
  */
-s32 lvl_update_obj_and_load_act_button_actions(UNUSED s32 arg, UNUSED s32 unused)
+s32 lvl_update_obj_and_load_act_button_actions(s32 arg, s32 unused)
 {
 	if(sActSelectorMenuTimer >= 11 * FRAME_RATE_SCALER_INV)
 	{
@@ -382,6 +382,7 @@ s32 lvl_update_obj_and_load_act_button_actions(UNUSED s32 arg, UNUSED s32 unused
 				sLoadedActNum = sInitSelectedActNum;
 			}
 			gDialogCourseActNum = sSelectedActIndex + 1;
+			sActSelectorMenuTimer = -1;
 		}
 	}
 

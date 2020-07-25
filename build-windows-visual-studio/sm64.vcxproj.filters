@@ -1607,5 +1607,8 @@
     <ClInclude Include="..\src\pc\gfx\driver_opengl.h">
       <Filter>Source Files\pc\gfx</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\pc\gfx\shaders.h">
+      <Filter>Source Files\pc\gfx</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

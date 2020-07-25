@@ -2,12 +2,17 @@
 #include "game/options.h"
 #include <stdio.h>
 #include "xxhash64.h"
+#include "game/area.h"
+#include "game/ingame_menu.h"
 
 #ifdef __SWITCH__
 #include "pc/nx.h"
 #endif
 
 extern u32 gGlobalTimer;
+extern s32 sActSelectorMenuTimer;
+extern s16 gMenuMode;
+extern s8 sSelectedFileNum;
 
 namespace sm64
 {
@@ -169,7 +174,7 @@ namespace sm64
 
 			fseek(f, SEEK_SET, 0);
 
-			fwrite(this, 1, sizeof(Base), f);
+			auto r = fwrite(this, 1, sizeof(Base), f);
 
 			fclose(f);
 
@@ -180,7 +185,11 @@ namespace sm64
 			return true;
 		}
 
-		/*
+		Game::Game()
+		{
+			memset(this, 0, sizeof(*this));
+		}
+		
 		u8& Game::overclock()
 		{
 			return m_overclock;
@@ -188,7 +197,6 @@ namespace sm64
 
 		u8 Game::framerate()
 		{
-			FRAME_RATE_SCALER;
 			return m_framerate;
 		}
 
@@ -206,7 +214,57 @@ namespace sm64
 		{
 			return 2;
 		}
-		*/
+
+		bool& Game::fullscreen()
+		{
+			return m_fullscreen;
+		}
+
+		const bool Game::mirror() const
+		{
+			if (!m_mirror)
+			{
+				return false;
+			}
+
+			if (gCurrLevelNum == 1)
+			{
+				return false;
+			}
+
+			if (get_dialog_id() != -1)
+			{
+				return false;
+			}
+
+			if (sActSelectorMenuTimer != 0)
+			{
+				return false;
+			}
+
+			if (gMenuMode != -1)
+			{
+				return false;
+			}
+
+			if (sSelectedFileNum == 0)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		bool& Game::setMirror()
+		{
+			return m_mirror;
+		}
+
+		bool& Game::disableSound()
+		{
+			return m_disableSound;
+		}
+		
 
 		Camera::Camera() : m_distanceScaler(1.0f), m_yawReturnScaler(1.0f), m_disableDistanceClip(false), m_useClassicCamera(false), m_mousexInvert(false), m_mouseyInvert(false), m_mousexScaler(1.0f), m_mouseyScaler(1.0f)
 		{

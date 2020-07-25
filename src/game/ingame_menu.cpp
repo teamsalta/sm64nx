@@ -33,6 +33,11 @@ extern s16 gCurrSaveFileNum;
 
 extern u8 main_menu_seg7_table_0700ABD0[];
 
+namespace sm64::gfx
+{
+	void set_fullscreen(bool value);
+}
+
 u16 gDialogColorFadeTimer;
 s8 gLastDialogLineNum;
 s32 gDialogVariable;
@@ -136,11 +141,14 @@ void create_dl_translation_matrix(s8 pushOp, f32 x, f32 y, f32 z)
 
 	guTranslate(matrix, x, y, z);
 
-	if(pushOp == MENU_MTX_PUSH)
+	if (pushOp == MENU_MTX_PUSH)
+	{
 		gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-
-	if(pushOp == MENU_MTX_NOPUSH)
+	}
+	else if (pushOp == MENU_MTX_NOPUSH)
+	{
 		gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+	}
 }
 
 void create_dl_rotation_matrix(s8 pushOp, f32 a, f32 x, f32 y, f32 z)
@@ -2697,12 +2705,17 @@ namespace sm64::menu::item
 	class Bool : public Base
 	{
 		public:
-		Bool(const std::string& title, bool* value) : Base(title, nullptr), m_value(value), m_trueString("ON"), m_falseString("OFF")
+		Bool(const std::string& title, bool* value, const std::function<void(bool)>& onChange = nullptr) : Base(title, nullptr), m_value(value), m_trueString("ON"), m_falseString("OFF"), m_onBoolChange(onChange)
 		{
 			m_onChange = [this](s64 v) {
 				if(m_value)
 				{
 					*m_value = v != 0;
+
+					if (m_onBoolChange)
+					{
+						m_onBoolChange(*m_value);
+					}
 				}
 			};
 		}
@@ -2729,6 +2742,11 @@ namespace sm64::menu::item
 			if(m_value)
 			{
 				*m_value = !*m_value;
+
+				if (m_onBoolChange)
+				{
+					m_onBoolChange(*m_value);
+				}
 			}
 		}
 
@@ -2736,6 +2754,7 @@ namespace sm64::menu::item
 		bool* m_value;
 		hud::String m_trueString;
 		hud::String m_falseString;
+		std::function<void(bool)> m_onBoolChange;
 	};
 } // namespace sm64::menu::item
 
@@ -2871,15 +2890,18 @@ namespace sm64::menu
 	public:
 		Game() : Dialog("GAME")
 		{
-			// m_items.push_back(new sm64::menu::item::EnumFloat("DISTANCE SCALER", {1.0f, 1.25f, 1.5f, 2.0f, 3.0f}, &sm64::config().camera().distanceScaler()));
-
-			//m_items.push_back(new sm64::menu::item::Bool("OVERCLOCK", &sm64::config().game().overclock()));
-
+#ifndef __SWITCH__
+			m_items.push_back(new sm64::menu::item::Bool("FULL SCREEN", &sm64::config().game().fullscreen(), [](bool value) {
+				sm64::gfx::set_fullscreen(value);
+			}));
+#endif
+			m_items.push_back(new sm64::menu::item::Bool("MIRROR MODE", &sm64::config().game().setMirror()));
+			m_items.push_back(new sm64::menu::item::Bool("DISABLE SOUND", &sm64::config().game().disableSound()));
 		}
 
 		void render(const s16 x, const s16 y, const s16 yIndex = 15) override
 		{
-			print_hud_colorful_str(std::string("CAMERA"), DIALOG_TITLE_X, DIALOG_TITLE_Y);
+			print_hud_colorful_str(std::string("GAME"), DIALOG_TITLE_X, DIALOG_TITLE_Y);
 			Dialog::render(x, y, yIndex);
 		}
 	};
@@ -3137,7 +3159,7 @@ s8 subMenu		     = 0;
 
 static std::vector<sm64::menu::Dialog*>& menus()
 {
-	static std::vector<sm64::menu::Dialog*> sMenus = { new sm64::menu::Camera(), new sm64::menu::Mods(), new sm64::menu::Cheats(), new sm64::menu::Credits() };
+	static std::vector<sm64::menu::Dialog*> sMenus = { new sm64::menu::Game(), new sm64::menu::Camera(), new sm64::menu::Mods(), new sm64::menu::Cheats(), new sm64::menu::Credits() };
 	return sMenus;
 }
 

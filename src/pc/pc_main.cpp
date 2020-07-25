@@ -156,9 +156,11 @@ void main_func(void)
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(_MSC_VER)
 #include <windows.h>
+#include <shellscalingapi.h>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
 {
+	SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE);
 	main_func();
 	return 0;
 }

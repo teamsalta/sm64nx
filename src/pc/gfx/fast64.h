@@ -17,11 +17,11 @@ namespace sm64::gfx
 	class Fast64
 	{
 	public:
-		virtual void start_frame() = 0;
-		virtual void end_frame() = 0;
-		virtual void run_loop();
-		virtual void physics_loop();
-		virtual void run(Gfx *commands);
+		void start_frame();
+		void end_frame();
+		void run_loop();
+		void physics_loop();
+		void run(Gfx *commands);
 
 		static Fast64* createContext();
 

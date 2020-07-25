@@ -79,7 +79,7 @@ namespace sm64::gfx::platform
 		unsigned int window_width = DESIRED_SCREEN_WIDTH;
 		unsigned int window_height = DESIRED_SCREEN_HEIGHT;
 		bool fullscreen_state;
-		void(*on_fullscreen_changed_callback)(bool is_now_fullscreen);
+		void(*on_fullscreen_changed_callback)(bool is_now_fullscreen) = NULL;
 
 		Sdl(const char *game_name, bool start_in_fullscreen)
 		{
@@ -97,7 +97,7 @@ namespace sm64::gfx::platform
 #ifdef __SWITCH__
 			wnd = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 #else
-			wnd = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+			wnd = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
 
 			if(start_in_fullscreen)
@@ -120,10 +120,14 @@ namespace sm64::gfx::platform
 			}
 			fullscreen_state = on;
 
+			SDL_DisplayMode mode;
+			SDL_GetDesktopDisplayMode(SDL_GetWindowDisplayIndex(wnd), &mode);
+
+			m_refreshInterval = std::chrono::microseconds(1000 * 1000 / mode.refresh_rate);
+
 			if(on)
 			{
-				SDL_DisplayMode mode;
-				SDL_GetDesktopDisplayMode(0, &mode);
+				
 				window_width = mode.w;
 				window_height = mode.h;
 			}
@@ -148,7 +152,7 @@ namespace sm64::gfx::platform
 			{
 				SDL_DisplayMode mode;
 
-				if (SDL_GetDisplayMode(0, 0, &mode) == 0) // assume highest resolution display is the one in use
+				if (SDL_GetDesktopDisplayMode(SDL_GetWindowDisplayIndex(wnd), &mode) == 0) // assume highest resolution display is the one in use
 				{
 					m_refreshInterval = std::chrono::microseconds(1000 * 1000 / mode.refresh_rate);
 					return;

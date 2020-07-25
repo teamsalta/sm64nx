@@ -19,8 +19,8 @@
 
 struct TextLabel
 {
-	u32 x;
-	u32 y;
+	s32 x;
+	s32 y;
 	s16 length;
 	char buffer[50];
 };
@@ -435,9 +435,6 @@ void render_textrect(s32 x, s32 y, s32 pos)
 	s32 rectX;
 	s32 rectY;
 
-#ifdef TARGET_N64
-	clip_to_bounds(&rectBaseX, &rectBaseY);
-#endif
 	rectX = rectBaseX;
 	rectY = rectBaseY;
 	gSPTextureRectangle(gDisplayListHead++, rectX << 2, rectY << 2, (rectX + 15) << 2, (rectY + 15) << 2, G_TX_RENDERTILE, 0, 0, 4 << 10, 1 << 10);
@@ -480,26 +477,8 @@ void render_text_labels(void)
 
 			if(glyphIndex != GLYPH_SPACE)
 			{
-#ifdef VERSION_EU
-				// Beta Key was removed by EU, so glyph slot reused.
-				// This produces a colorful Ü.
-				if(glyphIndex == GLYPH_BETA_KEY)
-				{
-					add_glyph_texture(GLYPH_U);
-					render_textrect(sTextLabels[i]->x, sTextLabels[i]->y, j);
-
-					add_glyph_texture(GLYPH_UMLAUT);
-					render_textrect(sTextLabels[i]->x, sTextLabels[i]->y + 3, j);
-				}
-				else
-				{
-					add_glyph_texture(glyphIndex);
-					render_textrect(sTextLabels[i]->x, sTextLabels[i]->y, j);
-				}
-#else
 				add_glyph_texture(glyphIndex);
 				render_textrect(sTextLabels[i]->x, sTextLabels[i]->y, j);
-#endif
 			}
 		}
 
