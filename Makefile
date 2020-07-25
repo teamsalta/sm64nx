@@ -28,7 +28,9 @@ DEBUG_BUILD ?= 0
 
 TARGET_RPI ?= 0
 
+##### Build with clang
 
+CLANG ?= 0
 
 
 NON_MATCHING := 1
@@ -39,7 +41,25 @@ ifeq ($(OS),Windows_NT)
   WINDOWS_BUILD := 1
 endif
 
+ifeq ($(DEBUG_BUILD),1)
+   OPT_FLAGS := -g
+endif
 
+ifeq ($(BUILD_RPI),1)
+   OPTFLAGS := -O3
+else
+  OPTFLAGS := -O2
+endif
+
+ifeq ($(CLANG),1)
+  CC := clang
+  CXX := clang++
+  CPP := clang-cpp -P
+else
+ CC := gcc
+ CXX := g++
+ CPP := cpp -P
+endif
 
 # Release
 
@@ -310,12 +330,9 @@ else # TARGET_SWITCH
 
 AS := as
 
-CC := gcc
-CXX := g++
 
 LD := $(CXX)
-  
-CPP := cpp -P
+
 OBJDUMP := objdump
 OBJCOPY := objcopy
 
