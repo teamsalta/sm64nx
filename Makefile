@@ -28,10 +28,18 @@ DEBUG_BUILD ?= 0
 
 TARGET_RPI ?= 0
 
-##### Build with clang
+####Build with clang
+CLANG := 0
 
-CLANG ?= 0
-
+ifeq ($(CLANG),1)
+CC := clang
+CXX := clang++
+CPP := clang-cpp -P
+else
+CC := gcc
+CXX := g++
+CPP := cpp -P
+endif
 
 NON_MATCHING := 1
 GRUCODE := f3dex2e
@@ -41,25 +49,7 @@ ifeq ($(OS),Windows_NT)
   WINDOWS_BUILD := 1
 endif
 
-ifeq ($(DEBUG_BUILD),1)
-   OPT_FLAGS := -g
-endif
 
-ifeq ($(BUILD_RPI),1)
-   OPTFLAGS := -O3
-else
-  OPTFLAGS := -O2
-endif
-
-ifeq ($(CLANG),1)
-  CC := clang
-  CXX := clang++
-  CPP := clang-cpp -P
-else
- CC := gcc
- CXX := g++
- CPP := cpp -P
-endif
 
 # Release
 
@@ -186,12 +176,13 @@ endif
 
 ifeq ($(DEBUG_BUILD), 1)
 OPT_FLAGS := -g
-OPT_FLAGS := -DDEBUG
 endif
 
 
 ifeq ($(TARGET_RPI), 1)
-OPT_FLAGS := -O3 
+OPT_FLAGS := -O3
+else
+OPT_FLAGS := -O2 
 endif
 
 
@@ -330,8 +321,8 @@ else # TARGET_SWITCH
 
 AS := as
 
-
 LD := $(CXX)
+  
 
 OBJDUMP := objdump
 OBJCOPY := objcopy
