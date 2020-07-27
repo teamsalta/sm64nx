@@ -9,7 +9,7 @@ void bhv_black_smoke_bowser_loop(void)
 {
 	if(o->oTimer == 0)
 	{
-		o->oForwardVel		  = RandomFloat() * 2 + 0.5;
+		o->oForwardVel		  = Randomf() * 2 + 0.5;
 		o->oMoveAngleYaw	  = RandomU16();
 		o->oVelY		  = 8;
 		o->oBlackSmokeBowserUnkF4 = o->header.gfx.scale[0];
@@ -23,8 +23,8 @@ void bhv_black_smoke_mario_loop(void)
 	if(o->oTimer == 0)
 	{
 		obj_set_pos_relative(gMarioObject, 0, 0, -30.0f);
-		o->oForwardVel	 = RandomFloat() * 2 + 0.5;
-		o->oMoveAngleYaw = (gMarioObject->oMoveAngleYaw + 0x7000) + RandomFloat() * 8192.0f;
+		o->oForwardVel	 = Randomf() * 2 + 0.5;
+		o->oMoveAngleYaw = (gMarioObject->oMoveAngleYaw + 0x7000) + Randomf() * 8192.0f;
 		o->oVelY	 = 8;
 	}
 	o->oMoveAngleYaw += o->oAngleVelYaw * FRAME_RATE_SCALER;

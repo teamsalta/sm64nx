@@ -25,7 +25,7 @@ void bhv_koopa_shell_underwater_loop(void)
 			func_802AA0D4();
 			break;
 		case HELD_HELD:
-			func_8029FA5C(-1, 0);
+			s_mode_catch(-1, 0);
 			break;
 		case HELD_THROWN:
 		case HELD_DROPPED:

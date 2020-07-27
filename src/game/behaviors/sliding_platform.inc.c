@@ -21,7 +21,7 @@ void bhv_wf_sliding_platform_init(void)
 			break;
 	}
 
-	o->oTimer = RandomFloat() * 100.0f / FRAME_RATE_SCALER;
+	o->oTimer = Randomf() * 100.0f / FRAME_RATE_SCALER;
 }
 
 void bhv_wf_sliding_platform_loop(void)

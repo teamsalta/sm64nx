@@ -83,7 +83,7 @@ void ActionHeaveHo3(void) // actually throw mario
 		o->numCollidedObjs = 20;
 	}
 
-	if(func_8029F788())
+	if(s_check_animeend())
 		o->oAction = 1;
 }
 
@@ -107,9 +107,9 @@ void (*sHeaveHoActions[])(void) = {ActionHeaveHo0, ActionHeaveHo1, ActionHeaveHo
 
 void func_802B18B4(void)
 {
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	s_modejmp(sHeaveHoActions);
-	obj_move_standard(-78);
+	s_enemymove(-78);
 	if(o->oMoveFlags & (0x40 | 0x20 | 0x10 | 0x8))
 		o->oGraphYOffset = -15.0f;
 	else
@@ -136,7 +136,7 @@ void bhv_heave_ho_loop(void)
 			func_802B18B4();
 			break;
 		case HELD_HELD:
-			func_8029FA5C(0, 0);
+			s_mode_catch(0, 0);
 			break;
 		case HELD_THROWN:
 			obj_get_dropped();

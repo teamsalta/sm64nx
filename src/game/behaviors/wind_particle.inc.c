@@ -49,13 +49,13 @@ void func_802C76E0(s32 a0, f32 a1, f32 a2, f32 a3, f32 a4)
 {
 	if((frameCounter & 1) != 0)
 	{
-		spawn_object_relative_with_scale(a0, a2, a3, a4, 0.5f, o, MODEL_WHITE_PARTICLE_DL, sm64::bhv::bhvTinyWhiteWindParticle());
-		spawn_object_relative_with_scale(a0, a2, a3, a4, a1, o, MODEL_NONE, sm64::bhv::bhvWindParticle());
+		s_makeobj_chain_scale(a0, a2, a3, a4, 0.5f, o, MODEL_WHITE_PARTICLE_DL, sm64::bhv::bhvTinyWhiteWindParticle());
+		s_makeobj_chain_scale(a0, a2, a3, a4, a1, o, MODEL_NONE, sm64::bhv::bhvWindParticle());
 	}
 	else
 	{
-		spawn_object_relative_with_scale(a0, a2, a3, a4, a1, o, MODEL_MIST, sm64::bhv::bhvWindParticle());
+		s_makeobj_chain_scale(a0, a2, a3, a4, a1, o, MODEL_MIST, sm64::bhv::bhvWindParticle());
 	}
 
-	spawn_object_relative_with_scale(a0, a2, a3, a4, a1, o, MODEL_NONE, sm64::bhv::bhvWindParticle());
+	s_makeobj_chain_scale(a0, a2, a3, a4, a1, o, MODEL_NONE, sm64::bhv::bhvWindParticle());
 }

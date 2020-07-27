@@ -12,7 +12,7 @@ void bhv_small_piranha_flame_loop(void)
 		}
 		else
 		{
-			sp2C		       = RandomFloat() - 0.5f;
+			sp2C		       = Randomf() - 0.5f;
 			o->header.gfx.scale[1] = o->header.gfx.scale[2] * (1.0f + 0.7f * sp2C);
 			o->header.gfx.scale[0] = o->header.gfx.scale[2] * (0.9f - 0.5f * sp2C);
 
@@ -21,20 +21,20 @@ void bhv_small_piranha_flame_loop(void)
 	}
 	else
 	{
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		if(approach_f32_ptr(&o->oSmallPiranhaFlameStartSpeed, o->oSmallPiranhaFlameEndSpeed, 0.6f * FRAME_RATE_SCALER))
 		{
-			obj_rotate_yaw_toward(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
 		}
 
 		obj_compute_vel_from_move_pitch(o->oSmallPiranhaFlameStartSpeed);
-		obj_move_standard(-78);
+		s_enemymove(-78);
 		spawn_object_with_scale(o, o->oSmallPiranhaFlameModel, sm64::bhv::bhvSmallPiranhaFlame(), 0.4f * o->header.gfx.scale[0]);
 
 		if(o->oTimer > o->oSmallPiranhaFlameUnk100)
 		{
-			spawn_object_relative_with_scale(1, 0, o->oGraphYOffset, 0, o->header.gfx.scale[0], o, o->oSmallPiranhaFlameModel, sm64::bhv::bhvFlyguyFlame());
+			s_makeobj_chain_scale(1, 0, o->oGraphYOffset, 0, o->header.gfx.scale[0], o, o->oSmallPiranhaFlameModel, sm64::bhv::bhvFlyguyFlame());
 
 			o->oSmallPiranhaFlameUnk100 = random_linear_offset(8, 15) * FRAME_RATE_SCALER_INV;
 			o->oTimer		    = 0;

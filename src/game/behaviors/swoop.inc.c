@@ -25,11 +25,11 @@ static struct ObjectHitbox sSwoopHitbox = {
  */
 static void swoop_act_idle(void)
 {
-	set_obj_animation_and_sound_state(1);
+	s_set_skelanimeNo(1);
 
 	if(approach_f32_ptr(&o->header.gfx.scale[0], 1.0f, 0.05f * FRAME_RATE_SCALER) && o->oDistanceToMario < 1500.0f)
 	{
-		if(obj_rotate_yaw_toward(o->oAngleToMario, 800 / FRAME_RATE_SCALER_INV))
+		if(s_chase_angleY(o->oAngleToMario, 800 / FRAME_RATE_SCALER_INV))
 		{
 			objsound(SOUND_OBJ2_SWOOP);
 			o->oAction = SWOOP_ACT_MOVE;
@@ -47,7 +47,7 @@ static void swoop_act_idle(void)
 static void swoop_act_move(void)
 {
 	func_8029ED98(0, 2.0f);
-	if(func_8029F788())
+	if(s_check_animeend())
 	{
 		objsound(SOUND_OBJ_UNKNOWN6);
 	}
@@ -107,7 +107,7 @@ static void swoop_act_move(void)
 		obj_move_pitch_approach(o->oSwoopTargetPitch, 140 / FRAME_RATE_SCALER_INV);
 
 		// Jitter yaw a bit
-		obj_rotate_yaw_toward(o->oSwoopTargetYaw + (s32)(3000 * coss(4000 * (frameCounter / FRAME_RATE_SCALER_INV))), 1200);
+		s_chase_angleY(o->oSwoopTargetYaw + (s32)(3000 * coss(4000 * (frameCounter / FRAME_RATE_SCALER_INV))), 1200);
 		obj_roll_to_match_yaw_turn(o->oSwoopTargetYaw, 0x3000, 500);
 
 		// Jitter roll a bit
@@ -126,7 +126,7 @@ void bhv_swoop_update(void)
 	{
 		o->oDeathSound = SOUND_OBJ_SWOOP_DEATH;
 
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		switch(o->oAction)
 		{
@@ -139,7 +139,7 @@ void bhv_swoop_update(void)
 		}
 
 		s_set_scale(o->header.gfx.scale[0]);
-		obj_move_standard(78);
+		s_enemymove(78);
 
 		obj_check_attacks(&sSwoopHitbox, o->oAction);
 	}

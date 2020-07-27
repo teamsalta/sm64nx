@@ -7,7 +7,7 @@ f32 func_802F54F8(void)
 	f32 sp1C;
 
 	sp20 = find_water_level(o->oPosX, o->oPosZ);
-	sp1C = find_floor(o->oPosX, o->oPosY, o->oPosZ, &sp24);
+	sp1C = mcBGGroundCheck(o->oPosX, o->oPosY, o->oPosZ, &sp24);
 	if(sp20 > sp1C + o->oFloatingPlatformUnkFC)
 	{
 		o->oFloatingPlatformUnkF4 = 0;

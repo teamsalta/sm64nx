@@ -6,8 +6,8 @@ void bhv_piranha_particle_loop(void)
 {
 	if(o->oTimer == 0)
 	{
-		o->oVelY	 = 20.0f + 20.0f * RandomFloat();
-		o->oForwardVel	 = 20.0f + 20.0f * RandomFloat();
+		o->oVelY	 = 20.0f + 20.0f * Randomf();
+		o->oForwardVel	 = 20.0f + 20.0f * Randomf();
 		o->oMoveAngleYaw = RandomU16();
 	}
 	s_optionmove_F();
@@ -17,7 +17,7 @@ void ActionMrIParticle0(void)
 {
 	s_set_scale(3.0f);
 	o->oForwardVel = 20.0f;
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	if(0x8000 & o->oInteractStatus)
 		o->oAction = 1;
 	else if((o->oTimer >= 101 * FRAME_RATE_SCALER_INV) || (0x200 & o->oMoveFlags) || (8 & (s16)o->activeFlags))
@@ -55,7 +55,7 @@ void func_802A525C(void)
 
 void bhv_mr_i_body_loop(void)
 {
-	copy_object_pos_and_angle(o, o->parentObj);
+	s_copy_worldXYZ_angleXYZ(o, o->parentObj);
 	if(!(8 & o->activeFlags))
 	{
 		copy_object_scale(o, o->parentObj);
@@ -243,14 +243,14 @@ void ActionMrI2()
 		{
 			func_802A525C();
 			o->oMrIUnk104 = 0;
-			o->oMrIUnk108 = (s32)(RandomFloat() * 50.0f + 50.0f);
+			o->oMrIUnk108 = (s32)(Randomf() * 50.0f + 50.0f);
 		}
 		o->oMrIUnk104++;
 	}
 	else
 	{
 		o->oMrIUnk104 = 0;
-		o->oMrIUnk108 = (s32)(RandomFloat() * 50.0f + 50.0f);
+		o->oMrIUnk108 = (s32)(Randomf() * 50.0f + 50.0f);
 	}
 
 	if(o->oDistanceToMario > 800.0f)
@@ -265,14 +265,14 @@ void ActionMrI1(void)
 	s16 sp1C;
 	s16 sp1A;
 	sp1E = angle_to_object(o, gMarioObject);
-	sp1C = abs_angle_diff(o->oMoveAngleYaw, sp1E);
-	sp1A = abs_angle_diff(o->oMoveAngleYaw, gMarioObject->oFaceAngleYaw);
+	sp1C = s_calc_dangle(o->oMoveAngleYaw, sp1E);
+	sp1A = s_calc_dangle(o->oMoveAngleYaw, gMarioObject->oFaceAngleYaw);
 	if(o->oTimer == 0)
 	{
 		s_hitON();
 		o->oMoveAnglePitch = 0;
 		o->oMrIUnk104	   = 30;
-		o->oMrIUnk108	   = RandomFloat() * 20.0f;
+		o->oMrIUnk108	   = Randomf() * 20.0f;
 		if(o->oMrIUnk108 & 1)
 			o->oAngleVelYaw = -256;
 		else
@@ -295,7 +295,7 @@ void ActionMrI1(void)
 	if(o->oMrIUnk108 + 80 < o->oMrIUnk104)
 	{
 		o->oMrIUnk104 = 0;
-		o->oMrIUnk108 = RandomFloat() * 80.0f;
+		o->oMrIUnk108 = Randomf() * 80.0f;
 		func_802A525C();
 	}
 }

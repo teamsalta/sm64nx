@@ -3,7 +3,7 @@
 // bullet bill smoke
 void bhv_white_puff_smoke_init(void)
 {
-	s_set_scale(RandomFloat() * 2 + 2.0);
+	s_set_scale(Randomf() * 2 + 2.0);
 }
 
 void bhv_bullet_bill_init(void)
@@ -25,7 +25,7 @@ void ActionBulletBill0(void)
 
 void ActionBulletBill1(void)
 {
-	s16 sp1E = abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw);
+	s16 sp1E = s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw);
 	if(sp1E < 0x2000 && 400.0f < o->oDistanceToMario && o->oDistanceToMario < 1500.0f)
 		o->oAction = 2;
 }
@@ -44,13 +44,13 @@ void ActionBulletBill2(void)
 	else
 	{
 		if(o->oTimer > 70 * FRAME_RATE_SCALER_INV)
-			obj_update_floor_and_walls();
+			s_enemybgcheck();
 
 		s_makeobj_nowpos(o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke());
 		o->oForwardVel = 30.0f;
 
 		if(o->oDistanceToMario > 300.0f)
-			obj_rotate_yaw_toward(o->oAngleToMario, 0x100 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(o->oAngleToMario, 0x100 / FRAME_RATE_SCALER_INV);
 
 		if(o->oTimer == 50 * FRAME_RATE_SCALER_INV)
 		{

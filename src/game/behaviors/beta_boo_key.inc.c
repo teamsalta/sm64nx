@@ -54,8 +54,8 @@ void bhv_alpha_boo_key_loop(void)
 static void beta_boo_key_dropped_loop(void)
 {
 	// Apply standard physics to the key
-	obj_update_floor_and_walls();
-	obj_move_standard(78);
+	s_enemybgcheck();
+	s_enemymove(78);
 
 	// Slowly increase the Y offset to make the model aligned correctly.
 	// This is spread out over 13 frames so that it's not noticable.

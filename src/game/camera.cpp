@@ -677,8 +677,8 @@ void set_camera_shake_from_hit(s16 shake)
 			break;
 
 		case SHAKE_SHOCK:
-			set_camera_pitch_shake(RandomFloat() * 64.f, 0x8, 0x8000);
-			set_camera_yaw_shake(RandomFloat() * 64.f, 0x8, 0x8000);
+			set_camera_pitch_shake(Randomf() * 64.f, 0x8, 0x8000);
+			set_camera_yaw_shake(Randomf() * 64.f, 0x8, 0x8000);
 			break;
 	}
 }
@@ -911,7 +911,7 @@ void set_camera_height(struct Camera* c, f32 goalHeight)
 	}
 	else
 	{
-		camFloorHeight	 = find_floor(c->pos[0], c->pos[1] + 100.f, c->pos[2], &surface) + baseOff;
+		camFloorHeight	 = mcBGGroundCheck(c->pos[0], c->pos[1] + 100.f, c->pos[2], &surface) + baseOff;
 		marioFloorHeight = baseOff + sMarioGeometry.currFloorHeight;
 
 		if(camFloorHeight < marioFloorHeight)
@@ -956,7 +956,7 @@ s16 look_down_slopes(s16 camYaw)
 	f32 xOff = sMarioCamState->pos[0] + sins(camYaw) * 40.f;
 	f32 zOff = sMarioCamState->pos[2] + coss(camYaw) * 40.f;
 
-	floorDY = find_floor(xOff, sMarioCamState->pos[1], zOff, &floor) - sMarioCamState->pos[1];
+	floorDY = mcBGGroundCheck(xOff, sMarioCamState->pos[1], zOff, &floor) - sMarioCamState->pos[1];
 
 	if(floor != NULL)
 	{
@@ -1422,7 +1422,7 @@ void shake_camera_handheld(Vec3f pos, Vec3f focus)
 			sHandheldShakeTimer -= 1.f;
 
 			// Code dead, this is set to be 0 before it is used.
-			sHandheldShakeInc = RandomFloat() * 0.5f;
+			sHandheldShakeInc = Randomf() * 0.5f;
 			if(sHandheldShakeInc < 0.02f)
 			{
 				sHandheldShakeInc = 0.02f;
@@ -1925,15 +1925,15 @@ void random_vec3s(Vec3s dst, s16 xRange, s16 yRange, s16 zRange)
 	f32 tempYRange;
 	f32 tempZRange;
 
-	randomFloat = RandomFloat();
+	randomFloat = Randomf();
 	tempXRange  = xRange;
 	dst[0]	    = randomFloat * tempXRange - tempXRange / 2;
 
-	randomFloat = RandomFloat();
+	randomFloat = Randomf();
 	tempYRange  = yRange;
 	dst[1]	    = randomFloat * tempYRange - tempYRange / 2;
 
-	randomFloat = RandomFloat();
+	randomFloat = Randomf();
 	tempZRange  = zRange;
 	dst[2]	    = randomFloat * tempZRange - tempZRange / 2;
 }
@@ -2810,7 +2810,7 @@ s16 next_lakitu_state(Vec3f& newPos, Vec3f& newFoc, const Vec3f curPos, const Ve
 
 		if(gCamera->cutscene != 0 || !(gameCameraControl & CAM_MOVE_C_UP_MODE))
 		{
-			floorHeight = find_floor(newPos[0], newPos[1], newPos[2], &floor);
+			floorHeight = mcBGGroundCheck(newPos[0], newPos[1], newPos[2], &floor);
 			if(floorHeight != -11000.f)
 			{
 				if((floorHeight += 125.f) > newPos[1])
@@ -3786,7 +3786,7 @@ s32 update_boss_fight_camera(struct Camera* c, Vec3f& focus, Vec3f& pos)
 	// When C-Down is not active, this
 	vec3f_set_dist_and_angle(focus, pos, focusDistance, 0x1000, yaw);
 	// Find the floor of the arena
-	pos[1] = find_floor(c->areaCenX, 20000.f, c->areaCenZ, &floor);
+	pos[1] = mcBGGroundCheck(c->areaCenX, 20000.f, c->areaCenZ, &floor);
 	if(floor != NULL)
 	{
 		nx     = floor->normal.x;
@@ -4109,7 +4109,7 @@ s32 mode_behind_mario(struct Camera* c)
 	// Keep the camera above the water surface if swimming
 	if(c->mode == CAMERA_MODE_WATER_SURFACE)
 	{
-		floorHeight = find_floor(c->pos[0], c->pos[1], c->pos[2], &floor);
+		floorHeight = mcBGGroundCheck(c->pos[0], c->pos[1], c->pos[2], &floor);
 		newPos[1]   = marioState->waterLevel + 120;
 		if(newPos[1] < (floorHeight += 120.f))
 		{
@@ -4216,7 +4216,7 @@ s16 update_slide_camera(struct Camera* c)
 		sStatusFlags |= CAM_FLAG_BLOCK_SMOOTH_MOVEMENT;
 
 		// Stay above the slide floor
-		floorHeight = find_floor(c->pos[0], c->pos[1] + 200.f, c->pos[2], &floor) + 125.f;
+		floorHeight = mcBGGroundCheck(c->pos[0], c->pos[1] + 200.f, c->pos[2], &floor) + 125.f;
 		if(c->pos[1] < floorHeight)
 		{
 			c->pos[1] = floorHeight;
@@ -4395,11 +4395,11 @@ s16 update_new_camera(struct Camera* c)
 
 	marioFloorHeight = 125.f + sMarioGeometry.currFloorHeight;
 	marioFloor	 = sMarioGeometry.currFloor;
-	camFloorHeight	 = find_floor(cPos[0], cPos[1] + 50.f, cPos[2], &cFloor) + 125.f;
+	camFloorHeight	 = mcBGGroundCheck(cPos[0], cPos[1] + 50.f, cPos[2], &cFloor) + 125.f;
 	for(scale = 0.1f; scale < 1.f; scale += 0.2f)
 	{
 		scale_along_line(tempPos, cPos, sMarioCamState->pos, scale);
-		tempFloorHeight = find_floor(tempPos[0], tempPos[1], tempPos[2], &tempFloor) + 125.f;
+		tempFloorHeight = mcBGGroundCheck(tempPos[0], tempPos[1], tempPos[2], &tempFloor) + 125.f;
 
 		if(tempFloor != NULL && tempFloorHeight > marioFloorHeight)
 		{
@@ -4784,11 +4784,11 @@ s16 update_default_camera(struct Camera* c)
 
 	marioFloorHeight = 125.f + sMarioGeometry.currFloorHeight;
 	marioFloor	 = sMarioGeometry.currFloor;
-	camFloorHeight	 = find_floor(cPos[0], cPos[1] + 50.f, cPos[2], &cFloor) + 125.f;
+	camFloorHeight	 = mcBGGroundCheck(cPos[0], cPos[1] + 50.f, cPos[2], &cFloor) + 125.f;
 	for(scale = 0.1f; scale < 1.f; scale += 0.2f)
 	{
 		scale_along_line(tempPos, cPos, sMarioCamState->pos, scale);
-		tempFloorHeight = find_floor(tempPos[0], tempPos[1], tempPos[2], &tempFloor) + 125.f;
+		tempFloorHeight = mcBGGroundCheck(tempPos[0], tempPos[1], tempPos[2], &tempFloor) + 125.f;
 
 		if(tempFloor != NULL && tempFloorHeight > marioFloorHeight)
 		{
@@ -5146,7 +5146,7 @@ s32 update_spiral_stairs_camera(struct Camera* c, Vec3f& focus, Vec3f& pos)
 	checkPos[0] = focus[0] + (cPos[0] - focus[0]) * 0.7f;
 	checkPos[1] = focus[1] + (cPos[1] - focus[1]) * 0.7f + 300.f;
 	checkPos[2] = focus[2] + (cPos[2] - focus[2]) * 0.7f;
-	floorHeight = find_floor(checkPos[0], checkPos[1] + 50.f, checkPos[2], &floor);
+	floorHeight = mcBGGroundCheck(checkPos[0], checkPos[1] + 50.f, checkPos[2], &floor);
 
 	if(floorHeight != -11000.f)
 	{
@@ -5298,7 +5298,7 @@ s32 exit_c_up(struct Camera* c)
 						{
 							break;
 						}
-						floorHeight = find_floor(curPos[0], curPos[1] + 150.f, curPos[2], &surface) + 10.f;
+						floorHeight = mcBGGroundCheck(curPos[0], curPos[1] + 150.f, curPos[2], &surface) + 10.f;
 						if(surface != NULL && floorHeight > curPos[1])
 						{
 							break;
@@ -5721,7 +5721,7 @@ void update_lakitu(struct Camera* c)
 		if(c->mode != CAMERA_MODE_C_UP && c->cutscene == 0)
 		{
 			gCheckingSurfaceCollisionsForCamera = TRUE;
-			distToFloor			    = find_floor(gLakituState.pos[0], gLakituState.pos[1] + 20.0f, gLakituState.pos[2], &floor);
+			distToFloor			    = mcBGGroundCheck(gLakituState.pos[0], gLakituState.pos[1] + 20.0f, gLakituState.pos[2], &floor);
 
 			if(distToFloor != -11000.f)
 			{
@@ -5840,7 +5840,7 @@ void update_new_lakitu(struct Camera* c)
 		if(c->mode != CAMERA_MODE_C_UP && c->cutscene == 0)
 		{
 			gCheckingSurfaceCollisionsForCamera = TRUE;
-			distToFloor			    = find_floor(gLakituState.pos[0], gLakituState.pos[1] + 20.0f, gLakituState.pos[2], &floor);
+			distToFloor			    = mcBGGroundCheck(gLakituState.pos[0], gLakituState.pos[1] + 20.0f, gLakituState.pos[2], &floor);
 
 			if(distToFloor != -11000.f)
 			{
@@ -6361,7 +6361,7 @@ void init_camera(struct Camera* c)
 	offset_rotated(c->pos, sMarioCamState->pos, marioOffset, sMarioCamState->faceAngle);
 	if(c->mode != CAMERA_MODE_BEHIND_MARIO)
 	{
-		c->pos[1] = find_floor(sMarioCamState->pos[0], sMarioCamState->pos[1] + 100.f, sMarioCamState->pos[2], &floor) + 125.f;
+		c->pos[1] = mcBGGroundCheck(sMarioCamState->pos[0], sMarioCamState->pos[1] + 100.f, sMarioCamState->pos[2], &floor) + 125.f;
 	}
 	vec3f_copy(c->focus, sMarioCamState->pos);
 	vec3f_copy(gLakituState.curPos, c->pos);
@@ -7261,7 +7261,7 @@ CmdRet cam_castle_lobby_entrance(UNUSED struct Camera* c)
 CmdRet cam_castle_look_upstairs(struct Camera* c)
 {
 	struct Surface* floor;
-	f32 floorHeight = find_floor(c->pos[0], c->pos[1], c->pos[2], &floor);
+	f32 floorHeight = mcBGGroundCheck(c->pos[0], c->pos[1], c->pos[2], &floor);
 
 	// If mario is on the first few steps, fix the camera pos, making it look up
 	if((sMarioGeometry.currFloorHeight > 1229.f) && (floorHeight < 1229.f) && (sCSideButtonYaw == 0))
@@ -7276,7 +7276,7 @@ CmdRet cam_castle_look_upstairs(struct Camera* c)
 CmdRet cam_castle_basement_look_downstairs(struct Camera* c)
 {
 	struct Surface* floor;
-	f32 floorHeight = find_floor(c->pos[0], c->pos[1], c->pos[2], &floor);
+	f32 floorHeight = mcBGGroundCheck(c->pos[0], c->pos[1], c->pos[2], &floor);
 
 	// Fix the camera pos, making it look downwards. Only active on the top few steps
 	if((floorHeight > -110.f) && (sCSideButtonYaw == 0))
@@ -8139,7 +8139,7 @@ void resolve_geometry_collisions(Vec3f pos, UNUSED Vec3f lastGood)
 	struct Surface* surf;
 
 	f32_find_wall_collision(&pos[0], &pos[1], &pos[2], 0.f, 100.f);
-	floorY = find_floor(pos[0], pos[1] + 50.f, pos[2], &surf);
+	floorY = mcBGGroundCheck(pos[0], pos[1] + 50.f, pos[2], &surf);
 	ceilY  = find_ceil(pos[0], pos[1] - 50.f, pos[2], &surf);
 
 	if((-11000.f != floorY) && (20000.f == ceilY))
@@ -8296,7 +8296,7 @@ void find_mario_floor_and_ceil(struct PlayerGeometry* pg)
 	s16 tempCheckingSurfaceCollisionsForCamera = gCheckingSurfaceCollisionsForCamera;
 	gCheckingSurfaceCollisionsForCamera	   = TRUE;
 
-	if(find_floor(sMarioCamState->pos[0], sMarioCamState->pos[1] + 10.f, sMarioCamState->pos[2], &surf) != -11000.f)
+	if(mcBGGroundCheck(sMarioCamState->pos[0], sMarioCamState->pos[1] + 10.f, sMarioCamState->pos[2], &surf) != -11000.f)
 	{
 		pg->currFloorType = surf->type;
 	}
@@ -8315,7 +8315,7 @@ void find_mario_floor_and_ceil(struct PlayerGeometry* pg)
 	}
 
 	gCheckingSurfaceCollisionsForCamera = FALSE;
-	pg->currFloorHeight		    = find_floor(sMarioCamState->pos[0], sMarioCamState->pos[1] + 10.f, sMarioCamState->pos[2], &pg->currFloor);
+	pg->currFloorHeight		    = mcBGGroundCheck(sMarioCamState->pos[0], sMarioCamState->pos[1] + 10.f, sMarioCamState->pos[2], &pg->currFloor);
 	pg->currCeilHeight		    = find_ceil(sMarioCamState->pos[0], sMarioCamState->pos[1] - 10.f, sMarioCamState->pos[2], &pg->currCeil);
 	pg->waterHeight			    = find_water_level(sMarioCamState->pos[0], sMarioCamState->pos[2]);
 	gCheckingSurfaceCollisionsForCamera = tempCheckingSurfaceCollisionsForCamera;
@@ -8492,7 +8492,7 @@ s16 cutscene_common_set_dialog_state(s32 state)
 {
 	s16 timer = gCutsceneTimer;
 	// If the dialog ended, return CUTSCENE_LOOP, which would end the cutscene shot
-	if(set_mario_npc_dialog(state) == 2)
+	if(CtrlPlayerDialog(state) == 2)
 	{
 		timer = CUTSCENE_LOOP;
 	}
@@ -8524,7 +8524,7 @@ static UNUSED void unused_cutscene_mario_dialog_looking_up(UNUSED struct Camera*
  */
 CmdRet cutscene_intro_peach_start_letter_music(UNUSED struct Camera* c)
 {
-	func_8031FFB4(0, 60, 40);
+	Na_SeqVolMute(0, 60, 40);
 	cutscene_intro_peach_play_message_music();
 }
 
@@ -8711,7 +8711,7 @@ void set_flag_post_door(struct Camera* c)
 
 void cutscene_soften_music(UNUSED struct Camera* c)
 {
-	func_8031FFB4(0, 60, 40);
+	Na_SeqVolMute(0, 60, 40);
 }
 
 void cutscene_unsoften_music(UNUSED struct Camera* c)
@@ -10864,7 +10864,7 @@ CmdRet cutscene_non_painting_set_cam_pos(struct Camera* c)
 
 		default:
 			offset_rotated(c->pos, sCutsceneVars[7].point, sCutsceneVars[5].point, sCutsceneVars[7].angle);
-			c->pos[1] = find_floor(c->pos[0], c->pos[1] + 1000.f, c->pos[2], &floor) + 125.f;
+			c->pos[1] = mcBGGroundCheck(c->pos[0], c->pos[1] + 1000.f, c->pos[2], &floor) + 125.f;
 			break;
 	}
 }
@@ -11723,7 +11723,7 @@ CmdRet cutscene_enter_painting(struct Camera* c)
 		approach_vec3f_asymptotic(c->focus, focus, 0.1f, 0.1f, 0.1f);
 		focusOffset[2] = -(((ripplingPainting->vSize * 1000.f) / 2.0f) / 307.f);
 		offset_rotated(focus, paintingPos, focusOffset, paintingAngle);
-		floorHeight = find_floor(focus[0], focus[1] + 500.f, focus[2], &highFloor) + 125.f;
+		floorHeight = mcBGGroundCheck(focus[0], focus[1] + 500.f, focus[2], &highFloor) + 125.f;
 
 		if(focus[1] < floorHeight)
 		{
@@ -11739,7 +11739,7 @@ CmdRet cutscene_enter_painting(struct Camera* c)
 			approach_vec3f_asymptotic(c->pos, focus, 0.9f, 0.9f, 0.9f);
 		}
 
-		find_floor(sMarioCamState->pos[0], sMarioCamState->pos[1] + 50.f, sMarioCamState->pos[2], &floor);
+		mcBGGroundCheck(sMarioCamState->pos[0], sMarioCamState->pos[1] + 50.f, sMarioCamState->pos[2], &floor);
 
 		if((floor->type < SURFACE_PAINTING_WOBBLE_A6) || (floor->type > SURFACE_PAINTING_WARP_F9))
 		{
@@ -11779,7 +11779,7 @@ CmdRet cutscene_exit_painting_start(struct Camera* c)
 	sCutsceneVars[0].angle[2] = 0;
 	offset_rotated(c->focus, sCutsceneVars[0].point, sCutsceneVars[1].point, sCutsceneVars[0].angle);
 	offset_rotated(c->pos, sCutsceneVars[0].point, sCutsceneVars[2].point, sCutsceneVars[0].angle);
-	floorHeight = find_floor(c->pos[0], c->pos[1] + 10.f, c->pos[2], &floor);
+	floorHeight = mcBGGroundCheck(c->pos[0], c->pos[1] + 10.f, c->pos[2], &floor);
 
 	if(floorHeight != -11000.f)
 	{
@@ -11819,7 +11819,7 @@ CmdRet cutscene_exit_painting_move_to_floor(struct Camera* c)
 	Vec3f floorHeight;
 
 	vec3f_copy(floorHeight, sMarioCamState->pos);
-	floorHeight[1] = find_floor(sMarioCamState->pos[0], sMarioCamState->pos[1] + 10.f, sMarioCamState->pos[2], &floor);
+	floorHeight[1] = mcBGGroundCheck(sMarioCamState->pos[0], sMarioCamState->pos[1] + 10.f, sMarioCamState->pos[2], &floor);
 
 	if(floor != NULL)
 	{
@@ -11944,7 +11944,7 @@ CmdRet cutscene_enter_cannon_raise(struct Camera* c)
 		offset_rotated(c->focus, c->focus, cannonFocus, cannonAngle);
 	}
 
-	floorHeight = find_floor(c->pos[0], c->pos[1] + 500.f, c->pos[2], &floor) + 100.f;
+	floorHeight = mcBGGroundCheck(c->pos[0], c->pos[1] + 500.f, c->pos[2], &floor) + 100.f;
 
 	if(c->pos[1] < floorHeight)
 	{
@@ -12832,7 +12832,7 @@ void set_fov_shake_from_point_preset(u8 preset, f32 posX, f32 posY, f32 posZ)
  */
 static UNUSED void unused_displace_obj_randomly(struct Object* o, f32 xRange, f32 yRange, f32 zRange)
 {
-	f32 rnd = RandomFloat();
+	f32 rnd = Randomf();
 
 	o->oPosX += (rnd * xRange - xRange / 2.f);
 	o->oPosY += (rnd * yRange - yRange / 2.f);
@@ -12844,7 +12844,7 @@ static UNUSED void unused_displace_obj_randomly(struct Object* o, f32 xRange, f3
  */
 static UNUSED void unused_rotate_obj_randomly(struct Object* o, f32 pitchRange, f32 yawRange)
 {
-	f32 rnd = RandomFloat();
+	f32 rnd = Randomf();
 
 	o->oMoveAnglePitch += (s16)(rnd * pitchRange - pitchRange / 2.f);
 	o->oMoveAngleYaw += (s16)(rnd * yawRange - yawRange / 2.f);

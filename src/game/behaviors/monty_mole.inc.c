@@ -148,7 +148,7 @@ static struct Object* monty_mole_select_available_hole(f32 minDistToMario)
 
 	if(numAvailableHoles != 0)
 	{
-		s32 selectedHole = (s32)(RandomFloat() * numAvailableHoles);
+		s32 selectedHole = (s32)(Randomf() * numAvailableHoles);
 
 		hole		  = sMontyMoleHoleList;
 		numAvailableHoles = 0;
@@ -272,14 +272,14 @@ static void monty_mole_act_select_hole(void)
  */
 static void monty_mole_act_rise_from_hole(void)
 {
-	set_obj_animation_and_sound_state(1);
+	s_set_skelanimeNo(1);
 
 	if(o->oMontyMoleHeightRelativeToFloor >= 49.0f)
 	{
 		o->oPosY = o->oFloorHeight + 50.0f;
 		o->oVelY = 0.0f;
 
-		if(func_8029F788())
+		if(s_check_animeend())
 		{
 			o->oAction = MONTY_MOLE_ACT_SPAWN_ROCK;
 		}
@@ -296,7 +296,7 @@ static void monty_mole_act_spawn_rock(void)
 
 	if(func_802F92B0(2))
 	{
-		if(o->oBehParams2ndByte != MONTY_MOLE_BP_NO_ROCK && abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x4000 && (rock = s_makeobj_nowpos(o, MODEL_PEBBLE, sm64::bhv::bhvMontyMoleRock())) != NULL)
+		if(o->oBehParams2ndByte != MONTY_MOLE_BP_NO_ROCK && s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw) < 0x4000 && (rock = s_makeobj_nowpos(o, MODEL_PEBBLE, sm64::bhv::bhvMontyMoleRock())) != NULL)
 		{
 			o->prevObj = rock;
 			o->oAction = MONTY_MOLE_ACT_THROW_ROCK;
@@ -333,7 +333,7 @@ static void monty_mole_act_throw_rock(void)
 		o->prevObj = NULL;
 	}
 
-	if(func_8029F788())
+	if(s_check_animeend())
 	{
 		o->oAction = MONTY_MOLE_ACT_BEGIN_JUMP_INTO_HOLE;
 	}
@@ -380,7 +380,7 @@ static void monty_mole_hide_in_hole(void)
  */
 static void monty_mole_act_hide(void)
 {
-	set_obj_animation_and_sound_state(1);
+	s_set_skelanimeNo(1);
 
 	if(o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND)
 	{
@@ -401,7 +401,7 @@ static void monty_mole_act_jump_out_of_hole(void)
 {
 	if(o->oVelY > 0.0f)
 	{
-		set_obj_animation_and_sound_state(9);
+		s_set_skelanimeNo(9);
 	}
 	else
 	{
@@ -424,7 +424,7 @@ void bhv_monty_mole_update(void)
 	// PARTIAL_UPDATE
 
 	o->oDeathSound = SOUND_OBJ_DYING_ENEMY1;
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	o->oMontyMoleHeightRelativeToFloor = o->oPosY - o->oFloorHeight;
 
@@ -497,7 +497,7 @@ void bhv_monty_mole_update(void)
 		o->prevObj = NULL;
 	}
 
-	obj_move_standard(78);
+	s_enemymove(78);
 }
 
 /**
@@ -535,7 +535,7 @@ static void monty_mole_rock_act_held(void)
  */
 static void monty_mole_rock_act_move(void)
 {
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	if(o->oMoveFlags & (OBJ_MOVE_MASK_ON_GROUND | OBJ_MOVE_ENTERED_WATER))
 	{
@@ -543,7 +543,7 @@ static void monty_mole_rock_act_move(void)
 		s_remove_obj(o);
 	}
 
-	obj_move_standard(78);
+	s_enemymove(78);
 }
 
 /**

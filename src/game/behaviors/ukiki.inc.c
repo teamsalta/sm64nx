@@ -78,30 +78,30 @@ void idle_ukiki_taunt(void)
 	if(o->oSubAction == UKIKI_SUB_ACT_TAUNT_NONE)
 	{
 		// Subaction is between 1 and 4.
-		o->oSubAction = (s32)(RandomFloat() * 4.0f + 1.0f);
+		o->oSubAction = (s32)(Randomf() * 4.0f + 1.0f);
 
 		// Counter keeps track of the iterations done, while ToBeDone
 		// is the count of iterations to be done (between 2 and 5).
 		o->oUkikiTauntCounter	= 0;
-		o->oUkikiTauntsToBeDone = (s16)(RandomFloat() * 4.0f + 2.0f);
+		o->oUkikiTauntsToBeDone = (s16)(Randomf() * 4.0f + 2.0f);
 	}
 
 	// Switch goes from 1-4.
 	switch(o->oSubAction)
 	{
 		case UKIKI_SUB_ACT_TAUNT_ITCH:
-			set_obj_animation_and_sound_state(UKIKI_ANIM_ITCH);
+			s_set_skelanimeNo(UKIKI_ANIM_ITCH);
 
-			if(func_8029F788())
+			if(s_check_animeend())
 			{
 				o->oSubAction = UKIKI_SUB_ACT_TAUNT_NONE;
 			}
 			break;
 
 		case UKIKI_SUB_ACT_TAUNT_SCREECH:
-			set_obj_animation_and_sound_state(UKIKI_ANIM_SCREECH);
+			s_set_skelanimeNo(UKIKI_ANIM_SCREECH);
 
-			if(func_8029F788())
+			if(s_check_animeend())
 			{
 				o->oUkikiTauntCounter++;
 			}
@@ -113,9 +113,9 @@ void idle_ukiki_taunt(void)
 			break;
 
 		case UKIKI_SUB_ACT_TAUNT_JUMP_CLAP:
-			set_obj_animation_and_sound_state(UKIKI_ANIM_JUMP_CLAP);
+			s_set_skelanimeNo(UKIKI_ANIM_JUMP_CLAP);
 
-			if(func_8029F788())
+			if(s_check_animeend())
 			{
 				o->oUkikiTauntCounter++;
 			}
@@ -127,9 +127,9 @@ void idle_ukiki_taunt(void)
 			break;
 
 		case UKIKI_SUB_ACT_TAUNT_HANDSTAND:
-			set_obj_animation_and_sound_state(UKIKI_ANIM_HANDSTAND);
+			s_set_skelanimeNo(UKIKI_ANIM_HANDSTAND);
 
-			if(func_8029F788())
+			if(s_check_animeend())
 			{
 				o->oSubAction = UKIKI_SUB_ACT_TAUNT_NONE;
 			}
@@ -153,7 +153,7 @@ void ukiki_act_idle(void)
 		}
 		else if(o->oDistanceToMario <= 700.0f && 200.0f < o->oDistanceToMario)
 		{
-			if(abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) > 0x1000)
+			if(s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw) > 0x1000)
 			{
 				o->oAction = UKIKI_ACT_TURN_TO_MARIO;
 			}
@@ -216,7 +216,7 @@ void ukiki_act_return_home(void)
 {
 	UNUSED s32 unused;
 
-	set_obj_animation_and_sound_state(UKIKI_ANIM_RUN);
+	s_set_skelanimeNo(UKIKI_ANIM_RUN);
 	o->oMoveAngleYaw = obj_angle_to_home();
 	o->oForwardVel	 = 10.0f;
 
@@ -254,7 +254,7 @@ void ukiki_act_unused_turn(void)
 
 	if(o->oSubAction == UKIKI_SUB_ACT_TAUNT_JUMP_CLAP)
 	{
-		obj_rotate_yaw_toward(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 	}
 }
 
@@ -268,12 +268,12 @@ void ukiki_act_turn_to_mario(void)
 	// Initialize the action with a random fVel from 2-5.
 	if(o->oTimer == 0)
 	{
-		o->oForwardVel = RandomFloat() * 3.0f + 2.0f;
+		o->oForwardVel = Randomf() * 3.0f + 2.0f;
 	}
 
-	set_obj_animation_and_sound_state(UKIKI_ANIM_TURN);
+	s_set_skelanimeNo(UKIKI_ANIM_TURN);
 
-	facingMario = obj_rotate_yaw_toward(o->oAngleToMario, 0x800 / FRAME_RATE_SCALER_INV);
+	facingMario = s_chase_angleY(o->oAngleToMario, 0x800 / FRAME_RATE_SCALER_INV);
 
 	if(facingMario)
 	{
@@ -309,11 +309,11 @@ void ukiki_act_run(void)
 
 	if(o->oTimer == 0)
 	{
-		o->oUkikiChaseFleeRange = RandomFloat() * 100.0f + 350.0f;
+		o->oUkikiChaseFleeRange = Randomf() * 100.0f + 350.0f;
 	}
 
-	set_obj_animation_and_sound_state(UKIKI_ANIM_RUN);
-	obj_rotate_yaw_toward(goalYaw, 0x800 / FRAME_RATE_SCALER_INV);
+	s_set_skelanimeNo(UKIKI_ANIM_RUN);
+	s_chase_angleY(goalYaw, 0x800 / FRAME_RATE_SCALER_INV);
 
 	//! @bug (Ukikispeedia) This function sets forward speed to 0.9 * Mario's
 	//! forward speed, which means ukiki can move at hyperspeed rates.
@@ -365,7 +365,7 @@ void ukiki_act_jump(void)
 	{
 		if(o->oTimer == 0)
 		{
-			func_8029FA1C(RandomFloat() * 10.0f + 45.0f, UKIKI_ANIM_JUMP);
+			func_8029FA1C(Randomf() * 10.0f + 45.0f, UKIKI_ANIM_JUMP);
 		}
 		else if(o->oMoveFlags & OBJ_MOVE_MASK_NOT_AIR)
 		{
@@ -376,10 +376,10 @@ void ukiki_act_jump(void)
 	else
 	{
 		o->oForwardVel = 0.0f;
-		set_obj_animation_and_sound_state(UKIKI_ANIM_LAND);
+		s_set_skelanimeNo(UKIKI_ANIM_LAND);
 		s_hitON();
 
-		if(func_8029F788())
+		if(s_check_animeend())
 		{
 			o->oAction = UKIKI_ACT_RUN;
 		}
@@ -421,14 +421,14 @@ void ukiki_act_go_to_cage(void)
 	switch(o->oSubAction)
 	{
 		case UKIKI_SUB_ACT_CAGE_RUN_TO_CAGE:
-			set_obj_animation_and_sound_state(UKIKI_ANIM_RUN);
+			s_set_skelanimeNo(UKIKI_ANIM_RUN);
 
 			o->oPathedWaypointsS16 = sCageUkikiPath;
 
 			if(obj_follow_path(0) != PATH_REACHED_END)
 			{
 				o->oForwardVel = 10.0f;
-				obj_rotate_yaw_toward(o->oPathedTargetYaw, 0x400 / FRAME_RATE_SCALER_INV);
+				s_chase_angleY(o->oPathedTargetYaw, 0x400 / FRAME_RATE_SCALER_INV);
 				o->oPosY = o->oFloorHeight;
 			}
 			else
@@ -439,8 +439,8 @@ void ukiki_act_go_to_cage(void)
 			break;
 
 		case UKIKI_SUB_ACT_CAGE_WAIT_FOR_MARIO:
-			set_obj_animation_and_sound_state(UKIKI_ANIM_JUMP_CLAP);
-			obj_rotate_yaw_toward(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
+			s_set_skelanimeNo(UKIKI_ANIM_JUMP_CLAP);
+			s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 
 			if(func_802A3FF8(200.0f, 30.0f, 0x7FFF))
 			{
@@ -452,7 +452,7 @@ void ukiki_act_go_to_cage(void)
 			}
 
 		case UKIKI_SUB_ACT_CAGE_TALK_TO_MARIO:
-			set_obj_animation_and_sound_state(UKIKI_ANIM_HANDSTAND);
+			s_set_skelanimeNo(UKIKI_ANIM_HANDSTAND);
 
 			if(obj_update_dialog_with_cutscene(3, 1, CUTSCENE_DIALOG, DIALOG_080))
 			{
@@ -461,9 +461,9 @@ void ukiki_act_go_to_cage(void)
 			break;
 
 		case UKIKI_SUB_ACT_CAGE_TURN_TO_CAGE:
-			set_obj_animation_and_sound_state(UKIKI_ANIM_RUN);
+			s_set_skelanimeNo(UKIKI_ANIM_RUN);
 
-			if(obj_rotate_yaw_toward(yawToCage, 0x400 / FRAME_RATE_SCALER_INV))
+			if(s_chase_angleY(yawToCage, 0x400 / FRAME_RATE_SCALER_INV))
 			{
 				o->oForwardVel = 10.0f;
 				o->oSubAction++;
@@ -485,7 +485,7 @@ void ukiki_act_go_to_cage(void)
 			if(o->oMoveFlags & OBJ_MOVE_LANDED)
 			{
 				Na_NazoClearBgm();
-				set_obj_animation_and_sound_state(UKIKI_ANIM_JUMP_CLAP);
+				s_set_skelanimeNo(UKIKI_ANIM_JUMP_CLAP);
 				o->oSubAction++;
 				o->oUkikiCageSpinTimer		     = 32 * FRAME_RATE_SCALER_INV;
 				obj->parentObj->oUkikiCageNextAction = UKIKI_CAGE_ACT_SPIN;
@@ -549,7 +549,7 @@ void ukiki_free_loop(void)
 {
 	s32 steepSlopeAngleDegrees;
 
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	s_modejmp(sUkikiActions);
 
 	if(o->oAction == UKIKI_ACT_GO_TO_CAGE || o->oAction == UKIKI_ACT_RETURN_HOME)
@@ -561,12 +561,12 @@ void ukiki_free_loop(void)
 		steepSlopeAngleDegrees = -20;
 	}
 
-	obj_move_standard(steepSlopeAngleDegrees);
+	s_enemymove(steepSlopeAngleDegrees);
 	handle_hat_ukiki_reset();
 
 	if(!(o->oMoveFlags & OBJ_MOVE_MASK_IN_WATER))
 	{
-		exec_anim_sound_state(sUkikiSoundStates);
+		s_enemysound(sUkikiSoundStates);
 	}
 }
 
@@ -598,7 +598,7 @@ void cage_ukiki_held_loop(void)
 		switch(o->oUkikiTextState)
 		{
 			case UKIKI_TEXT_DEFAULT:
-				if(set_mario_npc_dialog(2) == 2)
+				if(CtrlPlayerDialog(2) == 2)
 				{
 					CallMessageYesNo(DIALOG_079);
 					o->oUkikiTextState = UKIKI_TEXT_CAGE_TEXTBOX;
@@ -608,7 +608,7 @@ void cage_ukiki_held_loop(void)
 			case UKIKI_TEXT_CAGE_TEXTBOX:
 				if(gDialogResponse != 0)
 				{
-					set_mario_npc_dialog(0);
+					CtrlPlayerDialog(0);
 					if(gDialogResponse == 1)
 					{
 						o->oInteractionSubtype |= INT_SUBTYPE_DROP_IMMEDIATELY;
@@ -663,7 +663,7 @@ void hat_ukiki_held_loop(void)
 			break;
 
 		case UKIKI_TEXT_STEAL_HAT:
-			if(obj_update_dialog(2, 2, DIALOG_100, 0))
+			if(s_call_enemydemo(2, 2, DIALOG_100, 0))
 			{
 				o->oInteractionSubtype |= INT_SUBTYPE_DROP_IMMEDIATELY;
 				o->oUkikiTextState = UKIKI_TEXT_STOLE_HAT;
@@ -674,10 +674,10 @@ void hat_ukiki_held_loop(void)
 			break;
 
 		case UKIKI_TEXT_HAS_HAT:
-			if(obj_update_dialog(2, 18, DIALOG_101, 0))
+			if(s_call_enemydemo(2, 18, DIALOG_101, 0))
 			{
 				mario_retrieve_cap();
-				set_mario_npc_dialog(0);
+				CtrlPlayerDialog(0);
 				o->oUkikiHasHat &= ~UKIKI_HAT_ON;
 				o->oUkikiTextState = UKIKI_TEXT_GAVE_HAT_BACK;
 			}
@@ -720,7 +720,7 @@ void bhv_ukiki_loop(void)
 			break;
 
 		case HELD_HELD:
-			func_8029FA5C(UKIKI_ANIM_HELD, 0);
+			s_mode_catch(UKIKI_ANIM_HELD, 0);
 			copy_object_pos(o, gMarioObject);
 
 			if(o->oBehParams2ndByte == UKIKI_HAT)

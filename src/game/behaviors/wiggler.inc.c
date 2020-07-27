@@ -235,7 +235,7 @@ static void wiggler_act_walk(void)
 	{
 		if(o->oWigglerTextStatus == WIGGLER_TEXT_STATUS_AWAIT_DIALOG)
 		{
-			func_8031FFB4(0, 60, 40);
+			Na_SeqVolMute(0, 60, 40);
 			o->oWigglerTextStatus = WIGGLER_TEXT_STATUS_SHOWING_DIALOG;
 		}
 
@@ -294,7 +294,7 @@ static void wiggler_act_walk(void)
 		// If moving at high speeds, could overflow. But can't reach such speeds
 		// in practice
 		yawTurnSpeed = (s16)(30.0f * o->oForwardVel);
-		obj_rotate_yaw_toward(o->oWigglerTargetYaw, yawTurnSpeed / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oWigglerTargetYaw, yawTurnSpeed / FRAME_RATE_SCALER_INV);
 		obj_face_yaw_approach(o->oMoveAngleYaw, 2 * yawTurnSpeed / FRAME_RATE_SCALER_INV);
 
 		obj_face_pitch_approach(0, 0x320 / FRAME_RATE_SCALER_INV);
@@ -494,7 +494,7 @@ void bhv_wiggler_update(void)
 				func_8029F6F0();
 			}
 
-			obj_update_floor_and_walls();
+			s_enemybgcheck();
 			switch(o->oAction)
 			{
 				case WIGGLER_ACT_WALK:
@@ -514,7 +514,7 @@ void bhv_wiggler_update(void)
 					break;
 			}
 
-			obj_move_standard(-78);
+			s_enemymove(-78);
 		}
 
 		// Update segment 0 with data from the wiggler object

@@ -45,7 +45,7 @@ extern void obj_set_gfx_pos_from_pos(struct Object*);
 extern void translate_object_local(struct Object*, s16, s16);
 extern void copy_object_pos(struct Object*, struct Object*);
 extern void copy_object_angle(struct Object*, struct Object*);
-extern struct Object* obj_find_nearest_object_with_behavior(const BehaviorScript*, f32*);
+extern struct Object* s_search_nearobject(const BehaviorScript*, f32*);
 extern void obj_move_y(f32, f32, f32);
 static s32 clear_move_flag(u32*, s32);
 extern void s_burneffect(s32, s32, f32);
@@ -202,7 +202,7 @@ Gfx* geo_switch_area(s32 run, struct GraphNode* node, void* context)
 		{
 			gFindFloorIncludeSurfaceIntangible = TRUE;
 
-			find_floor(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &sp20);
+			mcBGGroundCheck(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &sp20);
 
 			if(sp20)
 			{
@@ -361,7 +361,7 @@ void obj_forward_vel_approach_upward(f32 target, f32 increment)
 	}
 }
 
-s32 approach_f32_signed(f32* value, f32 target, f32 increment)
+s32 s_chase_speed(f32* value, f32 target, f32 increment)
 {
 	s32 reachedTarget = FALSE;
 
@@ -447,7 +447,7 @@ s16 approach_s16_symmetric(s16 value, s16 target, s16 increment)
 	return value;
 }
 
-s32 obj_rotate_yaw_toward(s16 target, s16 increment)
+s32 s_chase_angleY(s16 target, s16 increment)
 {
 	s16 startYaw;
 
@@ -609,10 +609,10 @@ struct Object* spawn_water_splash(struct Object* parent, struct WaterSplashParam
 		translate_object_xyz_random(newObj, params->moveRange);
 	}
 
-	newObj->oForwardVel = RandomFloat() * params->randForwardVelScale + params->randForwardVelOffset;
-	newObj->oVelY	    = RandomFloat() * params->randYVelScale + params->randYVelOffset;
+	newObj->oForwardVel = Randomf() * params->randForwardVelScale + params->randForwardVelOffset;
+	newObj->oVelY	    = Randomf() * params->randYVelScale + params->randYVelOffset;
 
-	randomScale = RandomFloat() * params->randSizeScale + params->randSizeOffset;
+	randomScale = Randomf() * params->randSizeScale + params->randSizeOffset;
 	scale_object(newObj, randomScale);
 
 	return newObj;
@@ -640,7 +640,7 @@ struct Object* s_makeobj_nowpos(struct Object* parent, s32 model, const Behavior
 	struct Object* obj;
 
 	obj = spawn_object_at_origin(parent, 0, model, behavior);
-	copy_object_pos_and_angle(obj, parent);
+	s_copy_worldXYZ_angleXYZ(obj, parent);
 
 	return obj;
 }
@@ -667,7 +667,7 @@ struct Object* spawn_object_with_scale(struct Object* parent, s32 model, const B
 	struct Object* obj;
 
 	obj = spawn_object_at_origin(parent, 0, model, behavior);
-	copy_object_pos_and_angle(obj, parent);
+	s_copy_worldXYZ_angleXYZ(obj, parent);
 	scale_object(obj, scale);
 
 	return obj;
@@ -683,7 +683,7 @@ struct Object* s_makeobj_chain(s16 behaviorParam, s16 relativePosX, s16 relative
 {
 	struct Object* obj = spawn_object_at_origin(parent, 0, model, behavior);
 
-	copy_object_pos_and_angle(obj, parent);
+	s_copy_worldXYZ_angleXYZ(obj, parent);
 	set_object_parent_relative_pos(obj, relativePosX, relativePosY, relativePosZ);
 	build_relative_object_transform(obj);
 
@@ -693,7 +693,7 @@ struct Object* s_makeobj_chain(s16 behaviorParam, s16 relativePosX, s16 relative
 	return obj;
 }
 
-struct Object* spawn_object_relative_with_scale(s16 behaviorParam, s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 scale, struct Object* parent, s32 model, const BehaviorScript* behavior)
+struct Object* s_makeobj_chain_scale(s16 behaviorParam, s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 scale, struct Object* parent, s32 model, const BehaviorScript* behavior)
 {
 	struct Object* obj;
 
@@ -715,7 +715,7 @@ void copy_object_graph_y_offset(struct Object* dst, struct Object* src)
 	dst->oGraphYOffset = src->oGraphYOffset;
 }
 
-void copy_object_pos_and_angle(struct Object* dst, struct Object* src)
+void s_copy_worldXYZ_angleXYZ(struct Object* dst, struct Object* src)
 {
 	copy_object_pos(dst, src);
 	copy_object_angle(dst, src);
@@ -843,7 +843,7 @@ void SetObjAnimation(s32 arg0)
 	geo_obj_init_animation(&o->header.gfx, sp1C + arg0);
 }
 
-void set_obj_animation_and_sound_state(s32 arg0)
+void s_set_skelanimeNo(s32 arg0)
 {
 	struct Animation** sp1C = o->oAnimations;
 	geo_obj_init_animation(&o->header.gfx, sp1C + arg0);
@@ -965,7 +965,7 @@ struct Object* s_find_obj(const BehaviorScript* behavior)
 	struct Object* obj;
 	f32 dist;
 
-	obj = obj_find_nearest_object_with_behavior(behavior, &dist);
+	obj = s_search_nearobject(behavior, &dist);
 
 	return obj;
 }
@@ -975,7 +975,7 @@ f32 obj_dist_to_nearest_object_with_behavior(const BehaviorScript* behavior)
 	struct Object* obj;
 	f32 dist;
 
-	obj = obj_find_nearest_object_with_behavior(behavior, &dist);
+	obj = s_search_nearobject(behavior, &dist);
 	if(obj == NULL)
 	{
 		dist = 15000.0f;
@@ -984,7 +984,7 @@ f32 obj_dist_to_nearest_object_with_behavior(const BehaviorScript* behavior)
 	return dist;
 }
 
-struct Object* obj_find_nearest_object_with_behavior(const BehaviorScript* behavior, f32* dist)
+struct Object* s_search_nearobject(const BehaviorScript* behavior, f32* dist)
 {
 	uintptr_t* behaviorAddr	  = (uintptr_t*)segmented_to_virtual((void*)behavior);
 	struct Object* closestObj = NULL;
@@ -1033,7 +1033,7 @@ struct Object* obj_find_nearest_yaw_angle_object_with_behavior(const BehaviorScr
 		{
 			if(obj->activeFlags != ACTIVE_FLAGS_DEACTIVATED && obj != o)
 			{
-				s16 objDist = abs_angle_diff(object_lookat_yaw(o, obj), o->oMoveAngleYaw); // abs_angle_diff();  dist_between_objects(o, obj);
+				s16 objDist = s_calc_dangle(object_lookat_yaw(o, obj), o->oMoveAngleYaw); // s_calc_dangle();  dist_between_objects(o, obj);
 				if(closestObj == NULL || objDist < minDist)
 				{
 					closestObj = obj;
@@ -1178,7 +1178,7 @@ void func_8029F6F0(void)
 	}
 }
 
-void func_8029F728(void)
+void s_stop_animeend(void)
 {
 	s32 sp4 = o->header.gfx.unk38.frame();
 	s32 sp0 = o->header.gfx.unk38.curAnim->lastFrame - 2;
@@ -1192,7 +1192,7 @@ void func_8029F728(void)
 	}
 }
 
-s32 func_8029F788(void)
+s32 s_check_animeend(void)
 {
 	u32 flags	 = (s32)o->header.gfx.unk38.curAnim->flags;
 	s32 currentFrame = o->header.gfx.unk38.frame();
@@ -1230,7 +1230,7 @@ s32 func_8029F828(void)
 	}
 }
 
-s32 obj_check_anim_frame(s32 frame)
+s32 s_check_animenumber(s32 frame)
 {
 	s32 animFrame = o->header.gfx.unk38.frame();
 
@@ -1302,17 +1302,17 @@ s32 mario_is_dive_sliding(void)
 void func_8029FA1C(f32 sp18, s32 sp1C)
 {
 	o->oVelY = sp18;
-	set_obj_animation_and_sound_state(sp1C);
+	s_set_skelanimeNo(sp1C);
 }
 
-void func_8029FA5C(s32 sp18, s32 sp1C)
+void s_mode_catch(s32 sp18, s32 sp1C)
 {
 	s_hitOFF();
 	obj_disable_rendering();
 
 	if(sp18 >= 0)
 	{
-		set_obj_animation_and_sound_state(sp18);
+		s_set_skelanimeNo(sp18);
 	}
 
 	o->oAction = sp1C;
@@ -1343,7 +1343,7 @@ static void obj_move_after_thrown_or_dropped(f32 forwardVel, f32 velY)
 	}
 }
 
-void obj_get_thrown_or_placed(f32 forwardVel, f32 velY, s32 thrownAction)
+void s_mode_throw(f32 forwardVel, f32 velY, s32 thrownAction)
 {
 	if(o->behavior == segmented_to_virtual(sm64::bhv::bhvBowser()))
 	{
@@ -1439,13 +1439,13 @@ void make_object_tangible(struct Object* obj)
 void obj_update_floor_height(void)
 {
 	struct Surface* floor;
-	o->oFloorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
+	o->oFloorHeight = mcBGGroundCheck(o->oPosX, o->oPosY, o->oPosZ, &floor);
 }
 
 struct Surface* obj_update_floor_height_and_get_floor(void)
 {
 	struct Surface* floor;
-	o->oFloorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
+	o->oFloorHeight = mcBGGroundCheck(o->oPosX, o->oPosY, o->oPosZ, &floor);
 	return floor;
 }
 
@@ -1490,7 +1490,7 @@ static s32 obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlopes)
 	f32 intendedX = o->oPosX + (o->oVelX * FRAME_RATE_SCALER);
 	f32 intendedZ = o->oPosZ + (o->oVelZ * FRAME_RATE_SCALER);
 
-	f32 intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
+	f32 intendedFloorHeight = mcBGGroundCheck(intendedX, o->oPosY, intendedZ, &intendedFloor);
 	f32 deltaFloorHeight	= intendedFloorHeight - o->oFloorHeight;
 
 	o->oMoveFlags &= ~OBJ_MOVE_HIT_EDGE;
@@ -1741,7 +1741,7 @@ void obj_unused_resolve_wall_collisions(f32 offsetY, f32 radius)
 	}
 }
 
-s16 abs_angle_diff(s16 x0, s16 x1)
+s16 s_calc_dangle(s16 x0, s16 x1)
 {
 	s16 diff = x1 - x0;
 
@@ -1956,7 +1956,7 @@ void obj_shake_y(f32 amount)
 	}
 }
 
-void obj_start_cam_event(struct Object* obj, s32 cameraEvent)
+void s_set_camerainfo(struct Object* obj, s32 cameraEvent)
 {
 	camPlayerInfo->cameraEvent = (s16)cameraEvent;
 	gSecondCameraFocus	   = o;
@@ -1994,7 +1994,7 @@ static void spawn_object_loot_coins(struct Object* obj, s32 numCoins, f32 sp30, 
 	struct Surface* floor;
 	struct Object* coin;
 
-	spawnHeight = find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
+	spawnHeight = mcBGGroundCheck(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
 
 	if(obj->oPosY - spawnHeight > 100.0f)
 	{
@@ -2099,7 +2099,7 @@ static s32 obj_detect_steep_floor(s16 steepAngleDegrees)
 	{
 		intendedX	    = o->oPosX + o->oVelX;
 		intendedZ	    = o->oPosZ + o->oVelZ;
-		intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
+		intendedFloorHeight = mcBGGroundCheck(intendedX, o->oPosY, intendedZ, &intendedFloor);
 		deltaFloorHeight    = intendedFloorHeight - o->oFloorHeight;
 
 		if(intendedFloorHeight < -10000.0f)
@@ -2147,7 +2147,7 @@ s32 obj_resolve_wall_collisions(void)
 			wall	 = collisionData.walls[collisionData.numWalls - 1];
 
 			o->oWallAngle = atan2s(wall->normal.z, wall->normal.x);
-			if(abs_angle_diff(o->oWallAngle, o->oMoveAngleYaw) > 0x4000)
+			if(s_calc_dangle(o->oWallAngle, o->oMoveAngleYaw) > 0x4000)
 			{
 				return 1;
 			}
@@ -2224,12 +2224,12 @@ static void obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegrees)
 	}
 }
 
-void obj_update_floor_and_walls(void)
+void s_enemybgcheck(void)
 {
 	obj_update_floor_and_resolve_wall_collisions(60);
 }
 
-void obj_move_standard(s16 steepSlopeAngleDegrees)
+void s_enemymove(s16 steepSlopeAngleDegrees)
 {
 	f32 gravity	 = o->oGravity;
 	f32 bounce	 = o->oBounce;
@@ -2516,26 +2516,26 @@ void chain_segment_init(struct ChainSegment* segment)
 
 f32 random_f32_around_zero(f32 diameter)
 {
-	return RandomFloat() * diameter - diameter / 2.0f;
+	return Randomf() * diameter - diameter / 2.0f;
 }
 
 void scale_object_random(struct Object* obj, f32 rangeLength, f32 minScale)
 {
-	f32 scale = RandomFloat() * rangeLength + minScale;
+	f32 scale = Randomf() * rangeLength + minScale;
 	scale_object_xyz(obj, scale, scale, scale);
 }
 
 void translate_object_xyz_random(struct Object* obj, f32 rangeLength)
 {
-	obj->oPosX += RandomFloat() * rangeLength - rangeLength * 0.5f * FRAME_RATE_SCALER;
-	obj->oPosY += RandomFloat() * rangeLength - rangeLength * 0.5f * FRAME_RATE_SCALER;
-	obj->oPosZ += RandomFloat() * rangeLength - rangeLength * 0.5f * FRAME_RATE_SCALER;
+	obj->oPosX += Randomf() * rangeLength - rangeLength * 0.5f * FRAME_RATE_SCALER;
+	obj->oPosY += Randomf() * rangeLength - rangeLength * 0.5f * FRAME_RATE_SCALER;
+	obj->oPosZ += Randomf() * rangeLength - rangeLength * 0.5f * FRAME_RATE_SCALER;
 }
 
 void translate_object_xz_random(struct Object* obj, f32 rangeLength)
 {
-	obj->oPosX += RandomFloat() * rangeLength - rangeLength * 0.5f * FRAME_RATE_SCALER;
-	obj->oPosZ += RandomFloat() * rangeLength - rangeLength * 0.5f * FRAME_RATE_SCALER;
+	obj->oPosX += Randomf() * rangeLength - rangeLength * 0.5f * FRAME_RATE_SCALER;
+	obj->oPosZ += Randomf() * rangeLength - rangeLength * 0.5f * FRAME_RATE_SCALER;
 }
 
 static void func_802A297C(struct Object* a0)
@@ -2586,7 +2586,7 @@ void obj_spawn_particles(struct SpawnParticlesInfo* info)
 
 	for(i = 0; i < numParticles; i++)
 	{
-		scale = RandomFloat() * (info->sizeRange * 0.1f) + info->sizeBase * 0.1f;
+		scale = Randomf() * (info->sizeRange * 0.1f) + info->sizeBase * 0.1f;
 
 		particle = s_makeobj_nowpos(o, info->model, sm64::bhv::bhvWhitePuffExplosion());
 
@@ -2596,8 +2596,8 @@ void obj_spawn_particles(struct SpawnParticlesInfo* info)
 		particle->oDragStrength	    = info->dragStrength;
 
 		particle->oPosY += info->offsetY;
-		particle->oForwardVel = RandomFloat() * info->forwardVelRange + info->forwardVelBase;
-		particle->oVelY	      = RandomFloat() * info->velYRange + info->velYBase;
+		particle->oForwardVel = Randomf() * info->forwardVelRange + info->forwardVelBase;
+		particle->oVelY	      = Randomf() * info->velYRange + info->velYBase;
 
 		scale_object_xyz(particle, scale, scale, scale);
 	}
@@ -2928,7 +2928,7 @@ s32 obj_is_mario_moving_fast_or_in_air(s32 speedThreshold)
 	}
 }
 
-s32 item_in_array(s8 item, s8* array)
+s32 s_check_chartable(s8 item, s8* array)
 {
 	while(*array != -1)
 	{
@@ -2952,9 +2952,9 @@ void bhv_init_room(void)
 	struct Surface* floor;
 	f32 floorHeight;
 
-	if(item_in_array(activeStageNo, sLevelsWithRooms))
+	if(s_check_chartable(activeStageNo, sLevelsWithRooms))
 	{
-		floorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
+		floorHeight = mcBGGroundCheck(o->oPosX, o->oPosY, o->oPosZ, &floor);
 
 		if(floor != NULL)
 		{
@@ -2966,7 +2966,7 @@ void bhv_init_room(void)
 			{
 				// Floor probably belongs to a platform object. Try looking
 				// underneath it
-				find_floor(o->oPosX, floorHeight - 100.0f, o->oPosZ, &floor);
+				mcBGGroundCheck(o->oPosX, floorHeight - 100.0f, o->oPosZ, &floor);
 				if(floor != NULL)
 				{
 					//! Technically possible that the room could still be 0 here
@@ -3180,11 +3180,11 @@ static void obj_end_dialog(s32 dialogFlags, s32 dialogResult)
 
 	if(!(dialogFlags & DIALOG_UNK1_FLAG_4))
 	{
-		set_mario_npc_dialog(0);
+		CtrlPlayerDialog(0);
 	}
 }
 
-s32 obj_update_dialog(s32 actionArg, s32 dialogFlags, s32 dialogID, s32 unused)
+s32 s_call_enemydemo(s32 actionArg, s32 dialogFlags, s32 dialogID, s32 unused)
 {
 	s32 dialogResponse = 0;
 
@@ -3207,7 +3207,7 @@ s32 obj_update_dialog(s32 actionArg, s32 dialogFlags, s32 dialogID, s32 unused)
 			// after time is stopped
 
 		case DIALOG_UNK1_INTERRUPT_MARIO_ACTION:
-			if(set_mario_npc_dialog(actionArg) == 2)
+			if(CtrlPlayerDialog(actionArg) == 2)
 			{
 				o->oDialogState++;
 			}
@@ -3290,14 +3290,14 @@ s32 obj_update_dialog_with_cutscene(s32 actionArg, s32 dialogFlags, s32 cutscene
 		case DIALOG_UNK2_TURN_AND_INTERRUPT_MARIO_ACTION:
 			if(dialogFlags & DIALOG_UNK2_FLAG_0)
 			{
-				doneTurning = obj_rotate_yaw_toward(angle_to_object(o, gMarioObject), 0x800);
+				doneTurning = s_chase_angleY(angle_to_object(o, gMarioObject), 0x800);
 				if(o->oDialogResponse >= 0x21)
 				{
 					doneTurning = TRUE;
 				}
 			}
 
-			if(set_mario_npc_dialog(actionArg) == 2 && doneTurning)
+			if(CtrlPlayerDialog(actionArg) == 2 && doneTurning)
 			{
 				o->oDialogResponse = 0;
 				o->oDialogState++;
@@ -3340,7 +3340,7 @@ s32 obj_update_dialog_with_cutscene(s32 actionArg, s32 dialogFlags, s32 cutscene
 			}
 			else
 			{
-				set_mario_npc_dialog(0);
+				CtrlPlayerDialog(0);
 			}
 			break;
 	}
@@ -3360,7 +3360,7 @@ s32 obj_has_model(u16 a0)
 	}
 }
 
-void obj_align_gfx_with_floor(void)
+void s_set_mtxmode(void)
 {
 	struct Surface* floor;
 	Vec3f floorNormal;
@@ -3370,7 +3370,7 @@ void obj_align_gfx_with_floor(void)
 	position[1] = o->oPosY;
 	position[2] = o->oPosZ;
 
-	find_floor(position[0], position[1], position[2], &floor);
+	mcBGGroundCheck(position[0], position[1], position[2], &floor);
 	if(floor != NULL)
 	{
 		floorNormal[0] = floor->normal.x;
@@ -3449,20 +3449,20 @@ void copy_object_behavior_params(struct Object* dst, struct Object* src)
 
 void func_802A4A70(s32 sp18, s32 sp1C)
 {
-	set_obj_animation_and_sound_state(sp18);
+	s_set_skelanimeNo(sp18);
 	o->header.gfx.unk38.setFrameRaw(sp1C);
 }
 
-s32 func_802A4AB0(s32 sp18)
+s32 s_setanime_endcheck(s32 sp18)
 {
-	set_obj_animation_and_sound_state(sp18);
-	return func_8029F788();
+	s_set_skelanimeNo(sp18);
+	return s_check_animeend();
 }
 
 void func_802A4AEC(s32 sp18)
 {
-	set_obj_animation_and_sound_state(sp18);
-	func_8029F728();
+	s_set_skelanimeNo(sp18);
+	s_stop_animeend();
 }
 
 s32 obj_check_grabbed_mario(void)
@@ -3502,7 +3502,7 @@ s32 player_performed_grab_escape_action(void)
 
 void obj_unused_play_footstep_sound(s32 animFrame1, s32 animFrame2, s32 sound)
 {
-	if(obj_check_anim_frame(animFrame1) || obj_check_anim_frame(animFrame2))
+	if(s_check_animenumber(animFrame1) || s_check_animenumber(animFrame2))
 	{
 		objsound(sound);
 	}

@@ -2317,7 +2317,7 @@ namespace sm64::gfx
 					gfx_sp_tri1(C1(16, 8) / 2, C1(8, 8) / 2, C1(0, 8) / 2);
 					break;
 				case G_VTX:
-					gfx_sp_vertex(C0(12, 8), C0(1, 7) - C0(12, 8), (const Vtx*)cmd->words.w1, true);
+					gfx_sp_vertex(C0(12, 8), C0(1, 7) - C0(12, 8), (const Vtx*)cmd->words.w1, false);
 					break;
 				case G_MTX:
 					gfx_sp_matrix(C0(0, 8) ^ G_MTX_PUSH, (const u32*)(cmd->words.w1));
@@ -2336,7 +2336,7 @@ namespace sm64::gfx
 				}
 				break;
 				case G_VTX_BUF:
-					gfx_sp_vertex(g_vtx_buf_size, g_vtx_buf_dest, (const Vtx*)cmd->words.w1, true);
+					gfx_sp_vertex(g_vtx_buf_size, g_vtx_buf_dest, (const Vtx*)cmd->words.w1, false);
 
 					break;
 				case G_MOVEMEM:
@@ -2545,79 +2545,133 @@ namespace sm64::gfx
 
 	void Fast64::run_loop()
 	{
-		m_nextFrameTime		  = std::chrono::high_resolution_clock::now();
-		auto lastFrameDuration	  = std::chrono::microseconds(0);
-		m_refreshRate		  = gfx_wapi->refreshInterval();
-		const auto m_refreshRate2 = std::chrono::microseconds(1000 * 1000 / 60);
+		m_nextFrameTime = std::chrono::high_resolution_clock::now();
+		m_refreshRate = gfx_wapi->refreshInterval();
 
 		while(1)
 		{
-			// const auto frameAlignment = (m_refreshRate - (m_lastFrameDuration % m_refreshRate)) / 2;
-			// const std::chrono::time_point<std::chrono::steady_clock> targetFrameStart = m_nextFrameTime - MIN(m_lastFrameDuration + frameAlignment, m_lastSwapDuration);
-			const std::chrono::time_point<std::chrono::high_resolution_clock> targetFrameStart = m_nextFrameTime - m_lastFrameDuration;
-
-			auto const timeDelta = std::chrono::duration_cast<std::chrono::microseconds>(targetFrameStart - std::chrono::high_resolution_clock::now());
-
-			if(timeDelta <= std::chrono::microseconds(0))
+			if (sm64::config().game().paceFrames())
 			{
-				dropped_frame = std::chrono::high_resolution_clock::now() > targetFrameStart + m_refreshRate + std::chrono::milliseconds(2);
-
-#if defined(_MSC_VER) && defined(DEBUG)
-				static int dropped_frames = 0;
-				static u64 frame_counter  = 0;
-
-				if(frame_counter++ % (60 * 3) == 0)
-				{
-					char buffer[64];
-					float ms = m_lastSwapDuration.count() / 1000.0f;
-					sprintf(buffer, "swap duration %2.2f ms\r\n", ms);
-					OutputDebugString(buffer);
-				}
-
-				if(dropped_frame)
-				{
-					char buffer[32];
-					int diff = (std::chrono::high_resolution_clock::now() - (targetFrameStart + m_refreshRate)).count() / 1000000;
-					sprintf(buffer, "dropped frame %d, missed by %d ms\r\n", ++dropped_frames, diff);
-					OutputDebugString(buffer);
-				}
-#endif
-
-				m_currentFrameStartTime = std::chrono::high_resolution_clock::now();
-				start_frame();
-				game_loop_one_iteration();
-
-				int samples_left      = audio_api->buffered();
-				u32 num_audio_samples = samples_left < audio_api->get_desired_buffered() ? 544 : 528;
-
-#ifdef ENABLE_60FPS
-				s16 audio_buffer[544 * 2];
-				create_next_audio_buffer(audio_buffer, num_audio_samples);
-				if(!config().game().disableSound())
-				{
-					audio_api->play((const u8*)audio_buffer, num_audio_samples * 4);
-				}
-#else
-				s16 audio_buffer[544 * 2 * 2];
-				for(int i = 0; i < 2; i++)
-				{
-					create_next_audio_buffer(audio_buffer + i * (num_audio_samples * 2), num_audio_samples);
-				}
-				if(!config().game().disableSound())
-				{
-					audio_api->play((const u8*)audio_buffer, 2 * num_audio_samples * 4);
-				}
-#endif
-
-				end_frame();
-				m_lastFrameTime = std::chrono::high_resolution_clock::now();
-
-				m_nextFrameTime += std::chrono::microseconds(1000 * 1000 / 60);
+				run_paced_loop();
 			}
 			else
 			{
-				std::this_thread::sleep_for(std::chrono::microseconds(500));
+				run_locked_loop();
 			}
+		}
+	}
+
+	void Fast64::run_locked_loop()
+	{
+		dropped_frame = false;
+		start_frame();
+		game_loop_one_iteration();
+
+		int samples_left      = audio_api->buffered();
+		u32 num_audio_samples = samples_left < audio_api->get_desired_buffered() ? 544 : 528;
+
+#ifdef ENABLE_60FPS
+		s16 audio_buffer[544 * 2];
+		create_next_audio_buffer(audio_buffer, num_audio_samples);
+		if(!config().game().disableSound())
+		{
+			audio_api->play((const u8*)audio_buffer, num_audio_samples * 4);
+		}
+#else
+		s16 audio_buffer[544 * 2 * 2];
+		for(int i = 0; i < 2; i++)
+		{
+			create_next_audio_buffer(audio_buffer + i * (num_audio_samples * 2), num_audio_samples);
+		}
+		if(!config().game().disableSound())
+		{
+			audio_api->play((const u8*)audio_buffer, 2 * num_audio_samples * 4);
+		}
+#endif
+
+		end_frame();
+		m_lastFrameTime = std::chrono::high_resolution_clock::now();
+
+		m_nextFrameTime += std::chrono::microseconds(1000 * 1000 / 60);
+	}
+
+	void Fast64::run_paced_loop()
+	{
+		// const auto frameAlignment = (m_refreshRate - (m_lastFrameDuration % m_refreshRate)) / 2;
+		// const std::chrono::time_point<std::chrono::steady_clock> targetFrameStart = m_nextFrameTime - MIN(m_lastFrameDuration + frameAlignment, m_lastSwapDuration);
+		const std::chrono::time_point<std::chrono::high_resolution_clock> targetFrameStart = m_nextFrameTime - m_lastFrameDuration;
+
+		auto timeDelta = std::chrono::duration_cast<std::chrono::microseconds>(targetFrameStart - std::chrono::high_resolution_clock::now());
+
+		if(timeDelta <= std::chrono::microseconds(0))
+		{
+			dropped_frame = std::chrono::high_resolution_clock::now() > targetFrameStart + m_refreshRate + std::chrono::milliseconds(2);
+
+#if defined(_MSC_VER) && defined(DEBUG)
+			static int dropped_frames = 0;
+			static u64 frame_counter  = 0;
+
+			if(frame_counter++ % (60 * 3) == 0)
+			{
+				char buffer[128];
+				float ms = m_lastSwapDuration.count() / 1000.0f;
+				sprintf(buffer, "swap duration %2.2f ms\r\n", ms);
+				OutputDebugString(buffer);
+			}
+
+			if(dropped_frame)
+			{
+				char buffer[128];
+				int diff = (std::chrono::high_resolution_clock::now() - (targetFrameStart + m_refreshRate)).count() / 1000000;
+				sprintf(buffer, "dropped frame %d, missed by %d ms\r\n", ++dropped_frames, diff);
+				OutputDebugString(buffer);
+			}
+#endif
+
+			if (dropped_frame)
+			{
+				if (timeDelta < m_refreshRate * -4)
+				{
+					m_lastFrameDuration = std::chrono::duration<u64, std::micro>(0);
+					m_nextFrameTime = std::chrono::high_resolution_clock::now();
+					return;
+				}
+			}
+
+			m_currentFrameStartTime = std::chrono::high_resolution_clock::now();
+			start_frame();
+			game_loop_one_iteration();
+
+			int samples_left      = audio_api->buffered();
+			u32 num_audio_samples = samples_left < audio_api->get_desired_buffered() ? 544 : 528;
+
+#ifdef ENABLE_60FPS
+			s16 audio_buffer[544 * 2];
+			create_next_audio_buffer(audio_buffer, num_audio_samples);
+			if(!config().game().disableSound())
+			{
+				audio_api->play((const u8*)audio_buffer, num_audio_samples * 4);
+			}
+#else
+			s16 audio_buffer[544 * 2 * 2];
+			for(int i = 0; i < 2; i++)
+			{
+				create_next_audio_buffer(audio_buffer + i * (num_audio_samples * 2), num_audio_samples);
+			}
+			if(!config().game().disableSound())
+			{
+				audio_api->play((const u8*)audio_buffer, 2 * num_audio_samples * 4);
+			}
+#endif
+
+			end_frame();
+			m_lastFrameTime = std::chrono::high_resolution_clock::now();
+
+			m_nextFrameTime += std::chrono::microseconds(1000 * 1000 / 60);
+		}
+		else
+		{
+			std::this_thread::sleep_for(std::chrono::microseconds(500));
 		}
 	}
 } // namespace sm64::gfx

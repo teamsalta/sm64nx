@@ -15,7 +15,7 @@ void bhv_bowser_key_unlock_door_loop(void)
 {
 	s32 animTimer = o->header.gfx.unk38.frame();
 
-	set_obj_animation_and_sound_state(0);
+	s_set_skelanimeNo(0);
 
 	if(animTimer < 38)
 		o->oBowserKeyScale = 0.0f;
@@ -38,7 +38,7 @@ void bhv_bowser_key_course_exit_loop(void)
 {
 	s32 animTimer = o->header.gfx.unk38.frame();
 
-	set_obj_animation_and_sound_state(1);
+	s_set_skelanimeNo(1);
 
 	if(animTimer < 38)
 	{

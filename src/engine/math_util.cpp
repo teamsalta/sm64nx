@@ -471,9 +471,9 @@ void mtxf_align_terrain_triangle(Mat4& mtx, const Vec3f pos, const s16 yaw, cons
 	point2[0] = pos[0] + radius * sins(yaw + 0xD555);
 	point2[2] = pos[2] + radius * coss(yaw + 0xD555);
 
-	point0[1] = find_floor(point0[0], pos[1] + 150, point0[2], &sp74);
-	point1[1] = find_floor(point1[0], pos[1] + 150, point1[2], &sp74);
-	point2[1] = find_floor(point2[0], pos[1] + 150, point2[2], &sp74);
+	point0[1] = mcBGGroundCheck(point0[0], pos[1] + 150, point0[2], &sp74);
+	point1[1] = mcBGGroundCheck(point1[0], pos[1] + 150, point1[2], &sp74);
+	point2[1] = mcBGGroundCheck(point2[0], pos[1] + 150, point2[2], &sp74);
 
 	if(point0[1] - pos[1] < minY)
 	{

@@ -8,8 +8,8 @@
 void bhv_unused_particle_spawn_loop(void)
 {
 	s32 i;
-	obj_update_floor_and_walls();
-	obj_move_standard(78);
+	s_enemybgcheck();
+	s_enemymove(78);
 
 	if(o->oMoveFlags & OBJ_MOVE_ON_GROUND)
 	{

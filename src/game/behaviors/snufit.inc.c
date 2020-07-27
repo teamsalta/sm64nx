@@ -118,7 +118,7 @@ void bhv_snufit_loop(void)
 				o->oMoveAnglePitch = -0x2000;
 			}
 
-			obj_rotate_yaw_toward(o->oAngleToMario, 2000 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(o->oAngleToMario, 2000 / FRAME_RATE_SCALER_INV);
 		}
 		else
 		{
@@ -170,7 +170,7 @@ void bhv_snufit_balls_loop(void)
 
 	if(o->oGravity == 0.0f)
 	{
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		obj_compute_vel_from_move_pitch(40.0f);
 		if(obj_check_attacks(&sSnufitBulletHitbox, 1))
@@ -188,7 +188,7 @@ void bhv_snufit_balls_loop(void)
 			obj_die_if_health_non_positive();
 		}
 
-		obj_move_standard(78);
+		s_enemymove(78);
 	}
 	else
 	{

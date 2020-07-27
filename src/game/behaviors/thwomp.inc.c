@@ -3,7 +3,7 @@
 void ActionGrindelThwomp4(void)
 {
 	if(o->oTimer == 0)
-		o->oThwompUnkF4 = RandomFloat() * 10.0f + 20.0f;
+		o->oThwompUnkF4 = Randomf() * 10.0f + 20.0f;
 	if(o->oTimer > o->oThwompUnkF4 * FRAME_RATE_SCALER_INV)
 		o->oAction = 0;
 }
@@ -35,7 +35,7 @@ void ActionGrindelThwomp3(void)
 void ActionGrindelThwomp1(void)
 {
 	if(o->oTimer == 0)
-		o->oThwompUnkF4 = RandomFloat() * 30.0f + 10.0f;
+		o->oThwompUnkF4 = Randomf() * 30.0f + 10.0f;
 	if(o->oTimer > o->oThwompUnkF4 * FRAME_RATE_SCALER_INV)
 		o->oAction = 2;
 }

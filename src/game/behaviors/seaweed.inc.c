@@ -2,7 +2,7 @@
 
 void bhv_seaweed_init(void)
 {
-	o->header.gfx.unk38.setFrameRaw(RandomFloat() * 80.0f);
+	o->header.gfx.unk38.setFrameRaw(Randomf() * 80.0f);
 }
 
 void bhv_seaweed_bundle_init(void)
@@ -25,7 +25,7 @@ void bhv_seaweed_bundle_init(void)
 	seaweed->header.gfx.scale[0] = 0.8;
 	seaweed->header.gfx.scale[1] = 0.9;
 	seaweed->header.gfx.scale[2] = 0.8;
-	seaweed->header.gfx.unk38.setFrameRaw(RandomFloat() * 80.0f);
+	seaweed->header.gfx.unk38.setFrameRaw(Randomf() * 80.0f);
 
 	seaweed			     = s_makeobj_nowpos(o, MODEL_SEAWEED, sm64::bhv::bhvSeaweed());
 	seaweed->oFaceAngleYaw	     = 40500;
@@ -34,7 +34,7 @@ void bhv_seaweed_bundle_init(void)
 	seaweed->header.gfx.scale[0] = 0.8;
 	seaweed->header.gfx.scale[1] = 0.8;
 	seaweed->header.gfx.scale[2] = 0.8;
-	seaweed->header.gfx.unk38.setFrameRaw(RandomFloat() * 80.0f);
+	seaweed->header.gfx.unk38.setFrameRaw(Randomf() * 80.0f);
 
 	seaweed			     = s_makeobj_nowpos(o, MODEL_SEAWEED, sm64::bhv::bhvSeaweed());
 	seaweed->oFaceAngleYaw	     = 57236;
@@ -43,5 +43,5 @@ void bhv_seaweed_bundle_init(void)
 	seaweed->header.gfx.scale[0] = 1.2;
 	seaweed->header.gfx.scale[1] = 1.2;
 	seaweed->header.gfx.scale[2] = 1.2;
-	seaweed->header.gfx.unk38.setFrameRaw(RandomFloat() * 80.0f);
+	seaweed->header.gfx.unk38.setFrameRaw(Randomf() * 80.0f);
 }

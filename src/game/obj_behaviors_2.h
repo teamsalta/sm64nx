@@ -27,7 +27,7 @@ extern f32 sMontyMoleLastKilledPosZ;
 extern struct Object* sMasterTreadmill;
 
 void shelled_koopa_attack_handler(s32);
-void obj_spit_fire(s16, s16, s16, f32, s32, f32, f32, s16);
+void i_set_fireball(s16, s16, s16, f32, s32, f32, f32, s16);
 void obj_spit_bouncing_fire(s16, s16, s16, f32, s32, f32, f32, s16);
 void obj_set_speed_to_zero(void);
 

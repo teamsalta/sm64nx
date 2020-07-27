@@ -26,13 +26,13 @@ void bhv_wind_loop(void)
 			o->oPosY += (80.0f + random_f32_around_zero(200.0f)) / FRAME_RATE_SCALER_INV;
 			o->oPosZ += (coss(o->oMoveAngleYaw + 0x8000) * sp2E) / FRAME_RATE_SCALER_INV; // -coss(a) * sp2E
 			o->oMoveAngleYaw += random_f32_around_zero(4000.0f * FRAME_RATE_SCALER);
-			o->oForwardVel = RandomFloat() * 70.0f + 50.0f;
+			o->oForwardVel = Randomf() * 70.0f + 50.0f;
 		}
 		else
 		{
 			translate_object_xz_random(o, 600.0f);
 			o->oPosY -= (sp2E - 200) / FRAME_RATE_SCALER_INV; // 300
-			o->oVelY	 = RandomFloat() * 30.0f + 50.0f;
+			o->oVelY	 = Randomf() * 30.0f + 50.0f;
 			o->oMoveAngleYaw = RandomU16();
 			o->oForwardVel	 = 10.0f;
 		}
@@ -42,7 +42,7 @@ void bhv_wind_loop(void)
 	if(o->oTimer > 8 * FRAME_RATE_SCALER_INV)
 		s_remove_obj(o);
 
-	o->oFaceAnglePitch += 4000.0f + 2000.0f * RandomFloat() * FRAME_RATE_SCALER;
-	o->oFaceAngleYaw += 4000.0f + 2000.0f * RandomFloat() * FRAME_RATE_SCALER;
+	o->oFaceAnglePitch += 4000.0f + 2000.0f * Randomf() * FRAME_RATE_SCALER;
+	o->oFaceAngleYaw += 4000.0f + 2000.0f * Randomf() * FRAME_RATE_SCALER;
 	s_optionmove_F();
 }

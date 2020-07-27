@@ -29,7 +29,7 @@ static void handle_merry_go_round_music(void)
 		struct Surface* marioFloor;
 		u16 marioFloorType;
 
-		find_floor(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &marioFloor);
+		mcBGGroundCheck(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &marioFloor);
 
 		if(marioFloor == NULL)
 		{

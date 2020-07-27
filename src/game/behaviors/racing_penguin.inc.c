@@ -64,7 +64,7 @@ static void racing_penguin_act_prepare_for_race(void)
 		o->oForwardVel = 20.0f;
 	}
 
-	obj_rotate_yaw_toward(0x4000, 2500 / FRAME_RATE_SCALER_INV);
+	s_chase_angleY(0x4000, 2500 / FRAME_RATE_SCALER_INV);
 }
 
 static void racing_penguin_act_race(void)
@@ -102,12 +102,12 @@ static void racing_penguin_act_race(void)
 		clamp_f32(&targetSpeed, minSpeed, 150.0f);
 		obj_forward_vel_approach(targetSpeed, 0.4f * FRAME_RATE_SCALER);
 
-		set_obj_animation_and_sound_state(1);
-		obj_rotate_yaw_toward(o->oPathedTargetYaw, (s32)(15.0f * FRAME_RATE_SCALER * o->oForwardVel));
+		s_set_skelanimeNo(1);
+		s_chase_angleY(o->oPathedTargetYaw, (s32)(15.0f * FRAME_RATE_SCALER * o->oForwardVel));
 
 		if(func_8029F828() && (o->oMoveFlags & 0x00000003))
 		{
-			spawn_object_relative_with_scale(0, 0, -100, 0, 4.0f, o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke2());
+			s_makeobj_chain_scale(0, 0, -100, 0, 4.0f, o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke2());
 		}
 	}
 
@@ -147,9 +147,9 @@ static void racing_penguin_act_show_final_text(void)
 
 	if(o->oRacingPenguinFinalTextbox == 0)
 	{
-		if(obj_rotate_yaw_toward(0, 200 / FRAME_RATE_SCALER_INV))
+		if(s_chase_angleY(0, 200 / FRAME_RATE_SCALER_INV))
 		{
-			set_obj_animation_and_sound_state(3);
+			s_set_skelanimeNo(3);
 			o->oForwardVel = 0.0f;
 
 			if(obj_is_mario_in_range_and_ready_to_speak(400.0f, 400.0f))
@@ -174,7 +174,7 @@ static void racing_penguin_act_show_final_text(void)
 		}
 		else
 		{
-			set_obj_animation_and_sound_state(0);
+			s_set_skelanimeNo(0);
 
 			play_penguin_walking_sound(1);
 
@@ -198,7 +198,7 @@ static void racing_penguin_act_show_final_text(void)
 
 void bhv_racing_penguin_update(void)
 {
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	switch(o->oAction)
 	{
@@ -222,8 +222,8 @@ void bhv_racing_penguin_update(void)
 			break;
 	}
 
-	obj_move_standard(78);
-	obj_align_gfx_with_floor();
+	s_enemymove(78);
+	s_set_mtxmode();
 	s_player_slideout_RH(sRacingPenguinData[o->oBehParams2ndByte].radius, sRacingPenguinData[o->oBehParams2ndByte].height);
 }
 

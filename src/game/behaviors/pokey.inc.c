@@ -54,7 +54,7 @@ void bhv_pokey_body_part_update(void)
 		}
 		else
 		{
-			obj_update_floor_and_walls();
+			s_enemybgcheck();
 			obj_update_blinking(&o->oPokeyBodyPartBlinkTimer, 30 * FRAME_RATE_SCALER_INV, 60 * FRAME_RATE_SCALER_INV, 4 * FRAME_RATE_SCALER_INV);
 
 			// If the body part above us is dead, then decrease body part index
@@ -144,7 +144,7 @@ void bhv_pokey_body_part_update(void)
 				o->oPokeyBodyPartDeathDelayAfterHeadKilled = (o->oBehParams2ndByte << 2) + 20;
 			}
 
-			obj_move_standard(-78);
+			s_enemymove(-78);
 		}
 	}
 	else
@@ -214,7 +214,7 @@ static void pokey_act_wander(void)
 	else
 	{
 		treat_far_home_as_mario(1000.0f);
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		if(o->oPokeyHeadWasKilled)
 		{
@@ -308,11 +308,11 @@ static void pokey_act_wander(void)
 					}
 				}
 
-				obj_rotate_yaw_toward(o->oPokeyTargetYaw, 0x200 / FRAME_RATE_SCALER_INV);
+				s_chase_angleY(o->oPokeyTargetYaw, 0x200 / FRAME_RATE_SCALER_INV);
 			}
 		}
 
-		obj_move_standard(-78);
+		s_enemymove(-78);
 	}
 }
 

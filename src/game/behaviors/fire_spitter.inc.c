@@ -30,7 +30,7 @@ static void fire_spitter_act_spit_fire(void)
 		else
 		{
 			objsound(SOUND_OBJ_FLAME_BLOWN);
-			obj_spit_fire(0, 0, 0, 5.0f, MODEL_RED_FLAME_SHADOW, 20.0f, 15.0f, 0x1000);
+			i_set_fireball(0, 0, 0, 5.0f, MODEL_RED_FLAME_SHADOW, 20.0f, 15.0f, 0x1000);
 		}
 	}
 }
@@ -39,7 +39,7 @@ void bhv_fire_spitter_update(void)
 {
 	s_set_scale(o->header.gfx.scale[0]);
 	o->oGraphYOffset = 40.0f;
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	switch(o->oAction)
 	{
@@ -51,5 +51,5 @@ void bhv_fire_spitter_update(void)
 			break;
 	}
 
-	obj_move_standard(78);
+	s_enemymove(78);
 }

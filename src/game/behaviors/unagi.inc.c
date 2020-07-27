@@ -57,7 +57,7 @@ void unagi_act_1_4(s32 arg0)
 {
 	if(o->oSoundStateID == 3)
 	{
-		if(obj_check_anim_frame(30))
+		if(s_check_animenumber(30))
 		{
 			o->oForwardVel = 40.0f;
 		}
@@ -68,16 +68,16 @@ void unagi_act_1_4(s32 arg0)
 		{
 			if(o->oAction != arg0 && (o->oPathedPrevWaypointFlags & 0xFF) >= 7)
 			{
-				set_obj_animation_and_sound_state(3);
+				s_set_skelanimeNo(3);
 			}
 			else
 			{
-				set_obj_animation_and_sound_state(2);
+				s_set_skelanimeNo(2);
 			}
 		}
 	}
 
-	if(obj_check_anim_frame(6))
+	if(s_check_animenumber(6))
 	{
 		objsound(SOUND_GENERAL_MOVING_WATER);
 	}
@@ -89,7 +89,7 @@ void unagi_act_1_4(s32 arg0)
 
 	o->oMoveAnglePitch = o->oFaceAnglePitch = approach_s16_symmetric(o->oMoveAnglePitch, o->oPathedTargetPitch, 50 / FRAME_RATE_SCALER_INV);
 
-	obj_rotate_yaw_toward(o->oPathedTargetYaw, 120 / FRAME_RATE_SCALER_INV);
+	s_chase_angleY(o->oPathedTargetYaw, 120 / FRAME_RATE_SCALER_INV);
 	obj_roll_to_match_yaw_turn(o->oPathedTargetYaw, 0x2000, 100 / FRAME_RATE_SCALER_INV);
 
 	obj_forward_vel_approach(10.0f, 0.2f * FRAME_RATE_SCALER);
@@ -118,7 +118,7 @@ void unagi_act_3(void)
 {
 	if(o->oUnagiUnkF4 < 0.0f)
 	{
-		set_obj_animation_and_sound_state(6);
+		s_set_skelanimeNo(6);
 
 		if((o->oUnagiUnkF4 += 10.0f * FRAME_RATE_SCALER) > 0.0f)
 		{
@@ -129,7 +129,7 @@ void unagi_act_3(void)
 	{
 		if(o->oUnagiUnkF4 == 0.0f)
 		{
-			set_obj_animation_and_sound_state(6);
+			s_set_skelanimeNo(6);
 
 			if(o->oTimer > 60 * FRAME_RATE_SCALER_INV && o->oUnagiUnk1AC < 1000.0f)
 			{
@@ -150,19 +150,19 @@ void unagi_act_3(void)
 		}
 		else if(o->oUnagiUnk110 == 0.0f)
 		{
-			set_obj_animation_and_sound_state(0);
+			s_set_skelanimeNo(0);
 			if(func_8029F828())
 			{
 				if(o->oUnagiUnk1AC < 1000.0f)
 				{
 					o->oAction     = 4;
 					o->oForwardVel = o->oUnagiUnkF8;
-					set_obj_animation_and_sound_state(1);
+					s_set_skelanimeNo(1);
 				}
 				else
 				{
 					o->oUnagiUnk110 = -50.0f;
-					set_obj_animation_and_sound_state(4);
+					s_set_skelanimeNo(4);
 				}
 			}
 		}

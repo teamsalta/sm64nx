@@ -265,6 +265,21 @@ namespace sm64
 			return m_disableSound;
 		}
 
+		bool Game::noStarExit() const
+		{
+			return m_noStarExit;
+		}
+
+		bool& Game::setNoStarExit()
+		{
+			return m_noStarExit;
+		}
+
+		bool& Game::paceFrames()
+		{
+			return m_paceFrames;
+		}
+
 		Camera::Camera() : m_distanceScaler(1.0f), m_yawReturnScaler(1.0f), m_disableDistanceClip(false), m_useClassicCamera(false), m_mousexInvert(false), m_mouseyInvert(false), m_mousexScaler(1.0f), m_mouseyScaler(1.0f)
 		{
 			memset(junk, 0, sizeof(junk));

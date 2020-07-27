@@ -20,6 +20,8 @@ namespace sm64::gfx
 		void start_frame();
 		void end_frame();
 		void run_loop();
+		void run_paced_loop();
+		void run_locked_loop();
 		void physics_loop();
 		void run(Gfx* commands);
 

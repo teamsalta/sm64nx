@@ -18,7 +18,7 @@
 #define object_and_int(object, offset, value) object->OBJECT_FIELD_S32(offset) &= (s32)(value)
 
 u16 RandomU16(void);
-float RandomFloat(void);
+float Randomf(void);
 s32 RandomSign(void);
 
 void func_80383D68(struct Object* object);

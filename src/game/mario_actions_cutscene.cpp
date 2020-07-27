@@ -171,8 +171,8 @@ void DrawStaffRoll(void)
 
 void BehEndPeachLoop(void)
 {
-	set_obj_animation_and_sound_state(sEndPeachAnimation);
-	if(func_8029F788())
+	s_set_skelanimeNo(sEndPeachAnimation);
+	if(s_check_animeend())
 	{
 		// anims: 0-3, 4, 5, 6-8, 9, 10, 11
 		if(sEndPeachAnimation < 3 || sEndPeachAnimation == 6 || sEndPeachAnimation == 7)
@@ -186,8 +186,8 @@ void BehEndToadLoop(void)
 {
 	s32 toadAnimIndex = (gCurrentObject->oPosX >= 0.0f);
 
-	set_obj_animation_and_sound_state(sEndToadAnims[toadAnimIndex]);
-	if(func_8029F788())
+	s_set_skelanimeNo(sEndToadAnims[toadAnimIndex]);
+	if(s_check_animeend())
 	{
 		// 0-1, 2-3, 4, 5, 6, 7
 		if(sEndToadAnims[toadAnimIndex] == 0 || sEndToadAnims[toadAnimIndex] == 2)
@@ -232,7 +232,7 @@ static f32 func_8025BC14(struct Object* o)
 	sp1C = o->header.gfx.pos[1] + 10.0f;
 	sp18 = o->header.gfx.pos[2] + sp24[2];
 
-	return find_floor(sp20, sp1C, sp18, &surf);
+	return mcBGGroundCheck(sp20, sp1C, sp18, &surf);
 }
 
 /**
@@ -263,7 +263,7 @@ s32 mario_ready_to_speak(void)
 // 0 = not in dialog
 // 1 = starting dialog
 // 2 = speaking
-s32 set_mario_npc_dialog(s32 actionArg)
+s32 CtrlPlayerDialog(s32 actionArg)
 {
 	s32 dialogState = 0;
 
@@ -677,7 +677,7 @@ s32 PlayerRecord::act_debug_free_move()
 
 	resolve_and_return_wall_collisions(pos, 60.0f, 50.0f);
 
-	floorHeight = find_floor(pos[0], pos[1], pos[2], &surf);
+	floorHeight = mcBGGroundCheck(pos[0], pos[1], pos[2], &surf);
 	if(surf != NULL)
 	{
 		if(pos[1] < floorHeight)
@@ -773,7 +773,14 @@ void PlayerRecord::general_star_dance_handler(s32 isInWater)
 		}
 		else
 		{
+			CmdRet cutscene_exit_painting_end(struct Camera* c);
 			this->ChangePlayerStatus(isInWater ? ACT_WATER_IDLE : ACT_IDLE, 0);
+
+			set_fov_function(CAM_FOV_DEFAULT);
+			if (isInWater)
+			{
+				cutscene_exit_painting_end(area->camera);
+			}
 		}
 	}
 }
@@ -2457,7 +2464,7 @@ void PlayerRecord::end_peach_cutscene_run_to_peach()
 		advance_cutscene_step();
 	}
 
-	this->pos[1] = find_floor(this->pos[0], this->pos[1], this->pos[2], &surf);
+	this->pos[1] = mcBGGroundCheck(this->pos[0], this->pos[1], this->pos[2], &surf);
 
 	this->set_mario_anim_with_accel(MARIO_ANIM_RUNNING, 0x00080000 / FRAME_RATE_SCALER_INV);
 	func_80263AD4(9, 45);
@@ -2507,7 +2514,7 @@ void PlayerRecord::end_peach_cutscene_dialog_1()
 
 		case 230 * FRAME_RATE_SCALER_INV:
 			CallEndingDemoMessage(160, 227, 0, 30);
-			func_8031FFB4(0, 60, 40);
+			Na_SeqVolMute(0, 60, 40);
 			AudStartSound(SOUND_PEACH_MARIO, sEndPeachObj->header.gfx.cameraToObject);
 			break;
 

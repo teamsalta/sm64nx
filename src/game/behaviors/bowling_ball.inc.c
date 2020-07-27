@@ -188,7 +188,7 @@ void bhv_generic_bowling_ball_spawner_loop(void)
 	{
 		if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, o->oBBallSpawnerMaxSpawnDist))
 		{
-			if((s32)(RandomFloat() * o->oBBallSpawnerSpawnOdds / FRAME_RATE_SCALER) == 0)
+			if((s32)(Randomf() * o->oBBallSpawnerSpawnOdds / FRAME_RATE_SCALER) == 0)
 			{
 				bowlingBall		       = s_makeobj_nowpos(o, MODEL_BOWLING_BALL, sm64::bhv::bhvBowlingBall());
 				bowlingBall->oBehParams2ndByte = o->oBehParams2ndByte;
@@ -211,7 +211,7 @@ void bhv_thi_bowling_ball_spawner_loop(void)
 	{
 		if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 12000))
 		{
-			if((s32)(RandomFloat() * 1.5) == 0)
+			if((s32)(Randomf() * 1.5) == 0)
 			{
 				bowlingBall		       = s_makeobj_nowpos(o, MODEL_BOWLING_BALL, sm64::bhv::bhvBowlingBall());
 				bowlingBall->oBehParams2ndByte = o->oBehParams2ndByte;

@@ -472,7 +472,7 @@ s32 ObjMoveEvent(void)
 		collisionFlags += OBJ_COL_FLAG_HIT_WALL;
 	}
 
-	floorY = find_floor(objX + objVelX, objY, objZ + objVelZ, &sObjFloor);
+	floorY = mcBGGroundCheck(objX + objVelX, objY, objZ + objVelZ, &sObjFloor);
 
 	if(turn_obj_away_from_steep_floor(sObjFloor, floorY, objVelX, objVelZ) == 1)
 	{
@@ -626,10 +626,10 @@ void obj_return_and_displace_home(struct Object* obj, f32 homeX, UNUSED f32 home
 	s16 angleToNewHome;
 	f32 homeDistX, homeDistZ;
 
-	if((s32)(RandomFloat() * 50.0f) == 0)
+	if((s32)(Randomf() * 50.0f) == 0)
 	{
-		obj->oHomeX = (f32)(baseDisp * 2) * RandomFloat() - (f32)baseDisp + homeX;
-		obj->oHomeZ = (f32)(baseDisp * 2) * RandomFloat() - (f32)baseDisp + homeZ;
+		obj->oHomeX = (f32)(baseDisp * 2) * Randomf() - (f32)baseDisp + homeX;
+		obj->oHomeZ = (f32)(baseDisp * 2) * Randomf() - (f32)baseDisp + homeZ;
 	}
 
 	homeDistX	   = obj->oHomeX - obj->oPosX;
@@ -693,8 +693,8 @@ void obj_spawn_yellow_coins(struct Object* obj, s8 nCoins)
 	for(count = 0; count < nCoins; count++)
 	{
 		coin		    = s_makeobj_nowpos(obj, MODEL_YELLOW_COIN, sm64::bhv::bhvMovingYellowCoin());
-		coin->oForwardVel   = RandomFloat() * 20;
-		coin->oVelY	    = RandomFloat() * 40 + 20;
+		coin->oForwardVel   = Randomf() * 20;
+		coin->oVelY	    = Randomf() * 40 + 20;
 		coin->oMoveAngleYaw = RandomU16();
 	}
 }
@@ -777,12 +777,12 @@ s16 trigger_obj_dialog_when_facing(s32* inDialog, s16 dialogID, f32 dist, s32 ac
 	{
 		*inDialog = 1;
 
-		if(set_mario_npc_dialog(actionArg) == 2)
+		if(CtrlPlayerDialog(actionArg) == 2)
 		{ // If Mario is speaking.
 			dialogueResponse = cutscene_object_with_dialog(CUTSCENE_DIALOG, o, dialogID);
 			if(dialogueResponse != 0)
 			{
-				set_mario_npc_dialog(0);
+				CtrlPlayerDialog(0);
 				*inDialog = 0;
 				return dialogueResponse;
 			}
@@ -843,10 +843,10 @@ s32 obj_lava_death(void)
 	{
 		objsound(SOUND_OBJ_BULLY_EXPLODE_2);
 		deathSmoke = s_makeobj_nowpos(o, MODEL_SMOKE, sm64::bhv::bhvBobombBullyDeathSmoke());
-		deathSmoke->oPosX += RandomFloat() * 20.0f;
-		deathSmoke->oPosY += RandomFloat() * 20.0f;
-		deathSmoke->oPosZ += RandomFloat() * 20.0f;
-		deathSmoke->oForwardVel = RandomFloat() * 10.0f;
+		deathSmoke->oPosX += Randomf() * 20.0f;
+		deathSmoke->oPosY += Randomf() * 20.0f;
+		deathSmoke->oPosZ += Randomf() * 20.0f;
+		deathSmoke->oForwardVel = Randomf() * 10.0f;
 	}
 
 	return FALSE;

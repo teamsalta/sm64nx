@@ -28,7 +28,7 @@ static void eyerok_spawn_hand(s16 side, s32 model, const BehaviorScript* behavio
 {
 	struct Object* hand;
 
-	hand = spawn_object_relative_with_scale(side, -500 * side, 0, 300, 1.5f, o, model, behavior);
+	hand = s_makeobj_chain_scale(side, -500 * side, 0, 300, 1.5f, o, model, behavior);
 	if(hand != NULL)
 	{
 		hand->oFaceAngleYaw -= 0x4000 * side;
@@ -57,7 +57,7 @@ static void eyerok_boss_act_wake_up(void)
 		{
 			if(o->oSubAction == 0)
 			{
-				func_8031FFB4(0, 60, 40);
+				Na_SeqVolMute(0, 60, 40);
 				o->oSubAction += 1;
 			}
 
@@ -205,7 +205,7 @@ void bhv_eyerok_boss_loop(void)
 
 static s32 eyerok_hand_check_attacked(void)
 {
-	if(o->oEyerokReceivedAttack != 0 && abs_angle_diff(o->oAngleToMario, o->oFaceAngleYaw) < 0x3000)
+	if(o->oEyerokReceivedAttack != 0 && s_calc_dangle(o->oAngleToMario, o->oFaceAngleYaw) < 0x3000)
 	{
 		objsound(SOUND_OBJ2_EYEROK_SOUND_SHORT);
 
@@ -246,7 +246,7 @@ static void eyerok_hand_act_sleep(void)
 {
 	if(o->parentObj->oAction != EYEROK_BOSS_ACT_SLEEP && ++o->oEyerokHandWakeUpTimer > (-3 * o->oBehParams2ndByte) * FRAME_RATE_SCALER_INV)
 	{
-		if(func_8029F788())
+		if(s_check_animeend())
 		{
 			o->parentObj->oEyerokBossNumHands += 1;
 			o->oAction	 = EYEROK_HAND_ACT_IDLE;
@@ -277,7 +277,7 @@ static void eyerok_hand_act_sleep(void)
 
 static void eyerok_hand_act_idle(void)
 {
-	set_obj_animation_and_sound_state(2);
+	s_set_skelanimeNo(2);
 
 	if(o->parentObj->oAction == EYEROK_BOSS_ACT_FIGHT)
 	{
@@ -360,7 +360,7 @@ static void eyerok_hand_act_show_eye(void)
 {
 	UNUSED s16 val06;
 
-	set_obj_animation_and_sound_state(5);
+	s_set_skelanimeNo(5);
 	func_802F9378(0, 0, SOUND_OBJ_EYEROK_SHOW_EYE);
 
 	if(!eyerok_hand_check_attacked())
@@ -371,7 +371,7 @@ static void eyerok_hand_act_show_eye(void)
 			{
 				o->oAnimState += 1;
 			}
-			else if(func_8029F788())
+			else if(s_check_animeend())
 			{
 				val06	   = (s16)(o->oAngleToMario - o->oFaceAngleYaw) * o->oBehParams2ndByte;
 				o->oAction = EYEROK_HAND_ACT_CLOSE;
@@ -513,7 +513,7 @@ static void eyerok_hand_act_target_mario(void)
 	{
 		obj_forward_vel_approach(50.0f, 5.0f * FRAME_RATE_SCALER);
 		approach_f32_ptr(&o->oPosY, o->oHomeY + 300.0f, 20.0f * FRAME_RATE_SCALER);
-		obj_rotate_yaw_toward(o->oAngleToMario, 4000 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oAngleToMario, 4000 / FRAME_RATE_SCALER_INV);
 	}
 }
 
@@ -532,7 +532,7 @@ static void eyerok_hand_act_smash(void)
 			}
 			else
 			{
-				sp1E = abs_angle_diff(o->oFaceAngleYaw, o->oAngleToMario);
+				sp1E = s_calc_dangle(o->oFaceAngleYaw, o->oAngleToMario);
 				if(o->oDistanceToMario < 300.0f && sp1E > 0x2000 && sp1E < 0x6000)
 				{
 					o->oAction = EYEROK_HAND_ACT_FIST_SWEEP;
@@ -661,7 +661,7 @@ void bhv_eyerok_hand_loop(void)
 	}
 	else
 	{
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		switch(o->oAction)
 		{
@@ -713,7 +713,7 @@ void bhv_eyerok_hand_loop(void)
 		}
 
 		o->oEyerokReceivedAttack = obj_check_attacks(&sEyerokHitbox, o->oAction);
-		obj_move_standard(-78);
+		s_enemymove(-78);
 	}
 
 	stMainMoveBG();

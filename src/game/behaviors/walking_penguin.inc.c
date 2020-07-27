@@ -30,7 +30,7 @@ void bhv_walking_penguin_loop(void)
 	f32 sp28;
 	f32 sp24	= 100.0f;
 	o->oAngleVelYaw = 0;
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	switch(o->oAction)
 	{
@@ -88,7 +88,7 @@ void bhv_walking_penguin_loop(void)
 				o->oAction = 0;
 			break;
 	}
-	obj_move_standard(-78);
+	s_enemymove(-78);
 
 	if(sm64::config().camera().disableDistanceClip())
 	{

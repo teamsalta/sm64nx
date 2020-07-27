@@ -38,7 +38,7 @@ void ActionElevator1(void)
 	objsound_level(SOUND_ENV_ELEVATOR1);
 	if(o->oTimer == 0 && s_rideon_player())
 		func_802AD01C();
-	approach_f32_signed(&o->oVelY, 10.0f, 2.0f * FRAME_RATE_SCALER);
+	s_chase_speed(&o->oVelY, 10.0f, 2.0f * FRAME_RATE_SCALER);
 	o->oPosY += o->oVelY * FRAME_RATE_SCALER;
 	if(o->oPosY > o->oElevatorUnkF8)
 	{
@@ -57,7 +57,7 @@ void ActionElevator2() // Pretty similar code to action 1
 	objsound_level(SOUND_ENV_ELEVATOR1);
 	if(o->oTimer == 0 && s_rideon_player())
 		func_802AD01C();
-	approach_f32_signed(&o->oVelY, -10.0f, -2.0f * FRAME_RATE_SCALER);
+	s_chase_speed(&o->oVelY, -10.0f, -2.0f * FRAME_RATE_SCALER);
 	o->oPosY += o->oVelY * FRAME_RATE_SCALER;
 	if(o->oPosY < o->oElevatorUnkF4)
 	{

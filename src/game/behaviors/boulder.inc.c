@@ -66,7 +66,7 @@ void bhv_big_boulder_generator_loop(void)
 		if((o->oTimer % (64 * FRAME_RATE_SCALER_INV)) == 0)
 		{
 			sp1C		    = s_makeobj_nowpos(o, MODEL_HMC_ROLLING_ROCK, sm64::bhv::bhvBigBoulder());
-			sp1C->oMoveAngleYaw = RandomFloat() * 4096.0f;
+			sp1C->oMoveAngleYaw = Randomf() * 4096.0f;
 		}
 	}
 	else
@@ -74,7 +74,7 @@ void bhv_big_boulder_generator_loop(void)
 		if((o->oTimer % (128 * FRAME_RATE_SCALER_INV)) == 0)
 		{
 			sp1C		    = s_makeobj_nowpos(o, MODEL_HMC_ROLLING_ROCK, sm64::bhv::bhvBigBoulder());
-			sp1C->oMoveAngleYaw = RandomFloat() * 4096.0f;
+			sp1C->oMoveAngleYaw = Randomf() * 4096.0f;
 		}
 	}
 }

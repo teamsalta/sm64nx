@@ -97,7 +97,7 @@ s32 PlayerRecord::set_pole_position(f32 offsetY)
 		marioObj->oMarioPolePos = this->pos[1] - this->usedObj->oPosY;
 	}
 
-	floorHeight = find_floor(this->pos[0], this->pos[1], this->pos[2], &floor);
+	floorHeight = mcBGGroundCheck(this->pos[0], this->pos[1], this->pos[2], &floor);
 	if(this->pos[1] < floorHeight)
 	{
 		this->pos[1] = floorHeight;
@@ -343,7 +343,7 @@ s32 PlayerRecord::perform_hanging_step(Vec3f nextPos)
 	f32 ceilOffset;
 
 	this->wall  = resolve_and_return_wall_collisions(nextPos, 50.0f, 50.0f);
-	floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+	floorHeight = mcBGGroundCheck(nextPos[0], nextPos[1], nextPos[2], &floor);
 	ceilHeight  = vec3f_find_ceil(nextPos, floorHeight, &ceil);
 
 	if(floor == NULL)
@@ -564,7 +564,7 @@ s32 PlayerRecord::let_go_of_ledge()
 	this->pos[0] -= 60.0f * FRAME_RATE_SCALER * sins(this->faceAngle[1]);
 	this->pos[2] -= 60.0f * FRAME_RATE_SCALER * coss(this->faceAngle[1]);
 
-	floorHeight = find_floor(this->pos[0], this->pos[1], this->pos[2], &floor);
+	floorHeight = mcBGGroundCheck(this->pos[0], this->pos[1], this->pos[2], &floor);
 	if(floorHeight < this->pos[1] - 100.0f)
 	{
 		this->pos[1] -= 100.0f * FRAME_RATE_SCALER;
@@ -917,7 +917,7 @@ s32 PlayerRecord::act_tornado_twirling()
 
 	f32_find_wall_collision(&nextPos[0], &nextPos[1], &nextPos[2], 60.0f, 50.0f);
 
-	floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+	floorHeight = mcBGGroundCheck(nextPos[0], nextPos[1], nextPos[2], &floor);
 	if(floor != NULL)
 	{
 		this->floor	  = floor;

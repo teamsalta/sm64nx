@@ -56,10 +56,10 @@ void bhv_pyramid_top_spinning(void)
 	if(o->oTimer < 90 * FRAME_RATE_SCALER_INV)
 	{
 		pyramidFragment				   = s_makeobj_nowpos(o, MODEL_DIRT_ANIMATION, sm64::bhv::bhvPyramidTopFragment());
-		pyramidFragment->oForwardVel		   = RandomFloat() * 10.0f + 20.0f;
+		pyramidFragment->oForwardVel		   = Randomf() * 10.0f + 20.0f;
 		pyramidFragment->oMoveAngleYaw		   = RandomU16();
 		pyramidFragment->oPyramidTopFragmentsScale = 0.8f;
-		pyramidFragment->oGravity		   = RandomFloat() + 2.0f;
+		pyramidFragment->oGravity		   = Randomf() + 2.0f;
 	}
 
 	// After enough time, transition to the exploding state.
@@ -83,11 +83,11 @@ void bhv_pyramid_top_explode(void)
 	for(i = 0; i < 30; i++)
 	{
 		pyramidFragment				   = s_makeobj_nowpos(o, MODEL_DIRT_ANIMATION, sm64::bhv::bhvPyramidTopFragment());
-		pyramidFragment->oForwardVel		   = RandomFloat() * 50 + 80;
-		pyramidFragment->oVelY			   = RandomFloat() * 80 + 20;
+		pyramidFragment->oForwardVel		   = Randomf() * 50 + 80;
+		pyramidFragment->oVelY			   = Randomf() * 80 + 20;
 		pyramidFragment->oMoveAngleYaw		   = RandomU16();
 		pyramidFragment->oPyramidTopFragmentsScale = 3;
-		pyramidFragment->oGravity		   = RandomFloat() * 2 + 5;
+		pyramidFragment->oGravity		   = Randomf() * 2 + 5;
 	}
 
 	// Deactivate the pyramid top.

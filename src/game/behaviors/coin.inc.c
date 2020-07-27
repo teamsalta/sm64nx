@@ -56,8 +56,8 @@ void bhv_temp_coin_loop(void)
 
 void bhv_coin_init(void)
 {
-	o->oVelY	 = RandomFloat() * 10.0f + 30 + o->oCoinUnk110;
-	o->oForwardVel	 = RandomFloat() * 10.0f;
+	o->oVelY	 = Randomf() * 10.0f + 30 + o->oCoinUnk110;
+	o->oForwardVel	 = Randomf() * 10.0f;
 	o->oMoveAngleYaw = RandomU16();
 	obj_set_behavior(sm64::bhv::bhvYellowCoin());
 	s_set_hitparam(o, &sYellowCoinHitbox);
@@ -68,9 +68,9 @@ void bhv_coin_loop(void)
 {
 	struct Surface* sp1C;
 	s16 sp1A;
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	obj_if_hit_wall_bounce_away();
-	obj_move_standard(-62);
+	s_enemymove(-62);
 	if((sp1C = o->oFloor) != NULL)
 	{
 		if(o->oMoveFlags & OBJ_MOVE_ON_GROUND)
@@ -81,7 +81,7 @@ void bhv_coin_loop(void)
 			if(sp1C->normal.y < 0.9)
 			{
 				sp1A = atan2s(sp1C->normal.z, sp1C->normal.x);
-				obj_rotate_yaw_toward(sp1A, 0x400 / FRAME_RATE_SCALER_INV);
+				s_chase_angleY(sp1A, 0x400 / FRAME_RATE_SCALER_INV);
 			}
 		}
 	}
@@ -224,7 +224,7 @@ void bhv_coin_formation_loop(void)
 
 void ActionCoinInsideBoo1(void)
 {
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	obj_if_hit_wall_bounce_away();
 
 	if(o->oMoveFlags & OBJ_MOVE_13)
@@ -237,7 +237,7 @@ void ActionCoinInsideBoo1(void)
 		obj_set_behavior(sm64::bhv::bhvYellowCoin());
 	}
 
-	obj_move_standard(-30);
+	s_enemymove(-30);
 	bhv_coin_sparkles_init();
 
 	if(obj_has_model(MODEL_BLUE_COIN))
@@ -291,6 +291,6 @@ void bhv_golden_coin_sparkles_loop(void)
 	UNUSED s32 unused;
 	f32 sp24 = 30.0f;
 	sp2C	 = s_makeobj_nowpos(o, MODEL_SPARKLES, sm64::bhv::bhvCoinSparkles());
-	sp2C->oPosX += RandomFloat() * FRAME_RATE_SCALER * sp24 - sp24 / 2;
-	sp2C->oPosZ += RandomFloat() * FRAME_RATE_SCALER * sp24 - sp24 / 2;
+	sp2C->oPosX += Randomf() * FRAME_RATE_SCALER * sp24 - sp24 / 2;
+	sp2C->oPosZ += Randomf() * FRAME_RATE_SCALER * sp24 - sp24 / 2;
 }

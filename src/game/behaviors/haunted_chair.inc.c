@@ -17,7 +17,7 @@ void bhv_haunted_chair_init(void)
 	struct Object* val04;
 	f32 val00;
 
-	val04 = obj_find_nearest_object_with_behavior(sm64::bhv::bhvMadPiano(), &val00);
+	val04 = s_search_nearobject(sm64::bhv::bhvMadPiano(), &val00);
 	if(val04 != NULL && val00 < 300.0f)
 	{
 		o->parentObj = val04;
@@ -127,7 +127,7 @@ void haunted_chair_act_0(void)
 
 void haunted_chair_act_1(void)
 {
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	if(o->oTimer < 70 * FRAME_RATE_SCALER_INV)
 	{
@@ -171,7 +171,7 @@ void haunted_chair_act_1(void)
 	}
 
 	obj_check_attacks(&sHauntedChairHitbox, o->oAction);
-	obj_move_standard(78);
+	s_enemymove(78);
 }
 
 void bhv_haunted_chair_loop(void)

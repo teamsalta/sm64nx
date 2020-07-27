@@ -29,9 +29,9 @@ void bhv_bowser_bomb_explosion_loop(void)
 	if((o->oTimer % 4 == 0) && (o->oTimer < 20))
 	{
 		mineSmoke = s_makeobj_nowpos(o, MODEL_BOWSER_SMOKE, sm64::bhv::bhvBowserBombSmoke());
-		mineSmoke->oPosX += RandomFloat() * FRAME_RATE_SCALER * 600.0f - 400.0f;
-		mineSmoke->oPosZ += RandomFloat() * FRAME_RATE_SCALER * 600.0f - 400.0f;
-		mineSmoke->oVelY += RandomFloat() * 10.0f * FRAME_RATE_SCALER;
+		mineSmoke->oPosX += Randomf() * FRAME_RATE_SCALER * 600.0f - 400.0f;
+		mineSmoke->oPosZ += Randomf() * FRAME_RATE_SCALER * 600.0f - 400.0f;
+		mineSmoke->oVelY += Randomf() * 10.0f * FRAME_RATE_SCALER;
 	}
 
 	if((o->oTimer / FRAME_RATE_SCALER_INV) % 2 == 0)

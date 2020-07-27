@@ -123,10 +123,12 @@ void main_func(void)
 {
 	sm64::log("initializing app\n");
 
+#ifndef BUILD_NSO
 	if(!verifyIntegrity())
 	{
 		return;
 	}
+#endif
 
 	static u64 pool[0x165000 / 8 / 4 * sizeof(void*)];
 	main_pool_init(pool, pool + sizeof(pool) / sizeof(pool[0]));

@@ -6,8 +6,8 @@ void func_802C61CC(void)
 	s32 sp28	= 0;
 	if(o->oForwardVel < 5.0f)
 	{
-		sp28 = obj_check_anim_frame(0);
-		sp28 |= obj_check_anim_frame(23);
+		sp28 = s_check_animenumber(0);
+		sp28 |= s_check_animenumber(23);
 	}
 	else
 	{
@@ -31,7 +31,7 @@ void ActionWhomp0(void)
 			if(o->oDistanceToMario < 600.0f)
 			{
 				o->oSubAction++;
-				func_8031FFB4(0, 60, 40);
+				Na_SeqVolMute(0, 60, 40);
 			}
 			else
 			{
@@ -72,7 +72,7 @@ void ActionWhomp1(void)
 	s16 sp26;
 	f32 sp20;
 	f32 sp1C;
-	sp26 = abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw);
+	sp26 = s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw);
 	sp20 = obj_lateral_dist_to_home();
 	if(activeStageNo == LEVEL_BITS)
 		sp1C = 200.0f;
@@ -100,10 +100,10 @@ void ActionWhomp2(void)
 	s16 sp1E;
 	func_8029ED98(0, 1.0f);
 	o->oForwardVel = 3.0f;
-	obj_rotate_yaw_toward(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
+	s_chase_angleY(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
 	if(o->oTimer > 30 * FRAME_RATE_SCALER_INV)
 	{
-		sp1E = abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw);
+		sp1E = s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw);
 		if(sp1E < 0x2000)
 		{
 			if(o->oDistanceToMario < 1500.0f)
@@ -127,7 +127,7 @@ void ActionWhomp3(void)
 {
 	o->oForwardVel = 0.0f;
 	func_8029ED98(1, 1.0f);
-	if(func_8029F788())
+	if(s_check_animeend())
 		o->oAction = 4;
 }
 
@@ -302,9 +302,9 @@ void (*sWhompActions[])(void) = {ActionWhomp0, ActionWhomp1, ActionWhomp2, Actio
 // MM
 void bhv_whomp_loop(void)
 {
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	s_modejmp(sWhompActions);
-	obj_move_standard(-20);
+	s_enemymove(-20);
 
 	if(o->oAction != 9)
 	{

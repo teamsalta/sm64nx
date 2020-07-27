@@ -242,7 +242,7 @@ void ObjRandomBlink(s32* blinkTimer)
 {
 	if(*blinkTimer == 0)
 	{
-		if((s16)(RandomFloat() * 100.0f) == 0)
+		if((s16)(Randomf() * 100.0f) == 0)
 		{
 			o->oAnimState = 1;
 			*blinkTimer   = 1 * FRAME_RATE_SCALER_INV;
@@ -310,9 +310,9 @@ void bhv_bobomb_loop(void)
 
 void bhv_bobomb_fuse_smoke_init(void)
 {
-	o->oPosX += (s32)(RandomFloat() * 80.0f) - 40;
-	o->oPosY += (s32)(RandomFloat() * 80.0f) + 60;
-	o->oPosZ += (s32)(RandomFloat() * 80.0f) - 40;
+	o->oPosX += (s32)(Randomf() * 80.0f) - 40;
+	o->oPosY += (s32)(Randomf() * 80.0f) + 60;
+	o->oPosZ += (s32)(Randomf() * 80.0f) - 40;
 	s_set_scale(1.2f);
 }
 
@@ -388,7 +388,7 @@ void BobombBuddyCannonLoop(s16 dialogFirstText, s16 dialogSecondText)
 			break;
 
 		case BOBOMB_BUDDY_CANNON_STOP_TALKING:
-			set_mario_npc_dialog(0);
+			CtrlPlayerDialog(0);
 
 			o->activeFlags &= ~0x20; /* bit 5 */
 			o->oBobombBuddyHasTalkedToMario = BOBOMB_BUDDY_HAS_TALKED;
@@ -401,7 +401,7 @@ void BobombBuddyCannonLoop(s16 dialogFirstText, s16 dialogSecondText)
 
 void BobombBuddyTalkLoop(void)
 {
-	if(set_mario_npc_dialog(1) == 2)
+	if(CtrlPlayerDialog(1) == 2)
 	{
 		o->activeFlags |= 0x20; /* bit 5 */
 
@@ -410,7 +410,7 @@ void BobombBuddyTalkLoop(void)
 			case BOBOMB_BUDDY_ROLE_ADVICE:
 				if(cutscene_object_with_dialog(CUTSCENE_DIALOG, o, o->oBehParams2ndByte) != BOBOMB_BUDDY_BP_STYPE_GENERIC)
 				{
-					set_mario_npc_dialog(0);
+					CtrlPlayerDialog(0);
 
 					o->activeFlags &= ~0x20; /* bit 5 */
 					o->oBobombBuddyHasTalkedToMario = BOBOMB_BUDDY_HAS_TALKED;

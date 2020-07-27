@@ -217,7 +217,7 @@ static void platform_on_track_act_move_along_track(void)
 		if(!((u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_DONT_TURN_YAW))
 		{
 			s16 targetFaceYaw = o->oMoveAngleYaw + 0x4000;
-			s16 yawSpeed	  = abs_angle_diff(targetFaceYaw, o->oFaceAngleYaw) / 20;
+			s16 yawSpeed	  = s_calc_dangle(targetFaceYaw, o->oFaceAngleYaw) / 20;
 
 			initialAngle = o->oFaceAngleYaw;
 			clamp_s16(&yawSpeed, 100, 500);
@@ -228,7 +228,7 @@ static void platform_on_track_act_move_along_track(void)
 		// Turn face roll and compute roll vel
 		if(((u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_DONT_TURN_ROLL))
 		{
-			s16 rollSpeed = abs_angle_diff(o->oMoveAnglePitch, o->oFaceAngleRoll) / 20;
+			s16 rollSpeed = s_calc_dangle(o->oMoveAnglePitch, o->oFaceAngleRoll) / 20;
 
 			initialAngle = o->oFaceAngleRoll;
 			clamp_s16(&rollSpeed, 100, 500);

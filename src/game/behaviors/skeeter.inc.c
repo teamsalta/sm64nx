@@ -29,7 +29,7 @@ static void skeeter_spawn_waves(void)
 
 	for(i = 0; i < 4; i++)
 	{
-		spawn_object_relative_with_scale(0, D_80331C38[i].unk00, 0, D_80331C38[i].unk02, 0.8f, o, MODEL_WATER_WAVES_SURF, sm64::bhv::bhvSkeeterWave());
+		s_makeobj_chain_scale(0, D_80331C38[i].unk00, 0, D_80331C38[i].unk02, 0.8f, o, MODEL_WATER_WAVES_SURF, sm64::bhv::bhvSkeeterWave());
 	}
 }
 
@@ -37,17 +37,17 @@ static void skeeter_act_idle(void)
 {
 	if(o->oMoveFlags & 0x00000003)
 	{
-		set_obj_animation_and_sound_state(3);
+		s_set_skelanimeNo(3);
 		o->oForwardVel = 0.0f;
 
-		if(o->oTimer > o->oSkeeterWaitTime && func_8029F788())
+		if(o->oTimer > o->oSkeeterWaitTime && s_check_animeend())
 		{
 			o->oAction = SKEETER_ACT_WALK;
 		}
 	}
 	else
 	{
-		set_obj_animation_and_sound_state(1);
+		s_set_skelanimeNo(1);
 
 		if(o->oMoveFlags & 0x00000010)
 		{
@@ -58,7 +58,7 @@ static void skeeter_act_idle(void)
 				{
 					o->oSkeeterWaitTime -= 1;
 				}
-				else if(func_8029F788())
+				else if(s_check_animeend())
 				{
 					objsound(SOUND_OBJ_WALKING_WATER);
 					o->oAction	  = SKEETER_ACT_LUNGE;
@@ -79,7 +79,7 @@ static void skeeter_act_lunge(void)
 	else
 	{
 		skeeter_spawn_waves();
-		set_obj_animation_and_sound_state(0);
+		s_set_skelanimeNo(0);
 
 		if(o->oMoveFlags & 0x00000200)
 		{
@@ -150,7 +150,7 @@ static void skeeter_act_walk(void)
 					{
 						o->oSkeeterWaitTime -= 1;
 					}
-					else if(func_8029F788() != 0)
+					else if(s_check_animeend() != 0)
 					{
 						if(RandomU16() & 0x0003)
 						{
@@ -167,7 +167,7 @@ static void skeeter_act_walk(void)
 			}
 		}
 
-		obj_rotate_yaw_toward(o->oSkeeterTargetAngle, 0x400 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oSkeeterTargetAngle, 0x400 / FRAME_RATE_SCALER_INV);
 	}
 }
 
@@ -176,7 +176,7 @@ void bhv_skeeter_update(void)
 	o->oDeathSound = SOUND_OBJ_SNUFIT_SKEETER_DEATH;
 	treat_far_home_as_mario(1000.0f);
 
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	switch(o->oAction)
 	{
@@ -192,7 +192,7 @@ void bhv_skeeter_update(void)
 	}
 
 	obj_check_attacks(&sSkeeterHitbox, o->oAction);
-	obj_move_standard(-78);
+	s_enemymove(-78);
 }
 
 void bhv_skeeter_wave_update(void)

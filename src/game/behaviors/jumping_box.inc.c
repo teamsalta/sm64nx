@@ -20,14 +20,14 @@ void ActionJumpingBox0(void)
 			o->oSubAction++;
 		if(o->oTimer > o->oJumpingBoxUnkF4 * FRAME_RATE_SCALER_INV)
 		{
-			o->oVelY = RandomFloat() * 5.0f + 15.0f;
+			o->oVelY = Randomf() * 5.0f + 15.0f;
 			o->oSubAction++;
 		}
 	}
 	else if(o->oMoveFlags & 2)
 	{
 		o->oSubAction	    = 0;
-		o->oJumpingBoxUnkF8 = RandomFloat() * 60.0f + 30.0f;
+		o->oJumpingBoxUnkF8 = Randomf() * 60.0f + 30.0f;
 	}
 }
 
@@ -47,8 +47,8 @@ void func_802B1F84(void)
 	s_change_shape(MODEL_BREAKABLE_BOX);
 	s_set_scale(0.5f);
 	s_set_hitparam(o, &sJumpingBoxHitbox);
-	obj_update_floor_and_walls();
-	obj_move_standard(78);
+	s_enemybgcheck();
+	s_enemymove(78);
 	s_modejmp(sJumpingBoxActions);
 }
 
@@ -62,10 +62,10 @@ void bhv_jumping_box_loop(void)
 		case HELD_HELD:
 			copy_object_pos(o, gMarioObject);
 			s_change_shape(MODEL_BREAKABLE_BOX_SMALL);
-			func_8029FA5C(-1, 0);
+			s_mode_catch(-1, 0);
 			break;
 		case HELD_THROWN:
-			obj_get_thrown_or_placed(40.0f, 20.0f, 1);
+			s_mode_throw(40.0f, 20.0f, 1);
 			break;
 		case HELD_DROPPED:
 			obj_get_dropped();

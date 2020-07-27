@@ -10,8 +10,8 @@ s32 D_8032F330[] = {SOUND_GENERAL_CLOSE_WOOD_DOOR, SOUND_GENERAL_CLOSE_IRON_DOOR
 
 void func_802AC070(s32 sp18)
 {
-	set_obj_animation_and_sound_state(sp18);
-	if(func_8029F788())
+	s_set_skelanimeNo(sp18);
+	if(s_check_animeend())
 		o->oAction = 0;
 }
 
@@ -60,7 +60,7 @@ void bhv_door_loop(void)
 	switch(o->oAction)
 	{
 		case 0:
-			set_obj_animation_and_sound_state(0);
+			s_set_skelanimeNo(0);
 			break;
 		case 1:
 			func_802AC070(1);
@@ -89,7 +89,7 @@ void bhv_door_init(void)
 	f32 x = o->oPosX;
 	f32 z = o->oPosZ;
 	struct Surface* floor;
-	find_floor(x, o->oPosY, z, &floor);
+	mcBGGroundCheck(x, o->oPosY, z, &floor);
 	if(floor != NULL)
 	{
 		o->oDoorUnkF8 = floor->room;
@@ -97,7 +97,7 @@ void bhv_door_init(void)
 
 	x = o->oPosX + sins(o->oMoveAngleYaw) * 200.0f;
 	z = o->oPosZ + coss(o->oMoveAngleYaw) * 200.0f;
-	find_floor(x, o->oPosY, z, &floor);
+	mcBGGroundCheck(x, o->oPosY, z, &floor);
 	if(floor != NULL)
 	{
 		o->oDoorUnkFC = floor->room;
@@ -105,7 +105,7 @@ void bhv_door_init(void)
 
 	x = o->oPosX + sins(o->oMoveAngleYaw) * -200.0f;
 	z = o->oPosZ + coss(o->oMoveAngleYaw) * -200.0f;
-	find_floor(x, o->oPosY, z, &floor);
+	mcBGGroundCheck(x, o->oPosY, z, &floor);
 	if(floor != NULL)
 	{
 		o->oDoorUnk100 = floor->room;

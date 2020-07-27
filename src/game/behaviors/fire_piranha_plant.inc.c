@@ -61,7 +61,7 @@ static void fire_piranha_plant_act_hide(void)
 		o->oMoveAngleYaw += (s32)(o->oFirePiranhaPlantDeathSpinVel * FRAME_RATE_SCALER);
 		approach_f32_ptr(&o->oFirePiranhaPlantDeathSpinVel, 0.0f, 200.0f * FRAME_RATE_SCALER);
 
-		if(func_8029F788())
+		if(s_check_animeend())
 		{
 			if(--o->oFirePiranhaPlantDeathSpinTimer == 0)
 			{
@@ -105,7 +105,7 @@ static void fire_piranha_plant_act_hide(void)
 		}
 	}
 
-	func_8029F728();
+	s_stop_animeend();
 }
 
 static void fire_piranha_plant_act_grow(void)
@@ -118,20 +118,20 @@ static void fire_piranha_plant_act_grow(void)
 		{
 			objsound(SOUND_OBJ_PIRANHA_PLANT_SHRINK);
 			o->oAction = FIRE_PIRANHA_PLANT_ACT_HIDE;
-			set_obj_animation_and_sound_state(0);
+			s_set_skelanimeNo(0);
 		}
 		else if(o->oTimer < 50 * FRAME_RATE_SCALER_INV)
 		{
-			obj_rotate_yaw_toward(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 		}
 		else
 		{ // TODO: Check if we can put these conditionals on same line
 			if(obj_is_rendering_enabled())
 			{
-				if(obj_check_anim_frame(56))
+				if(s_check_animenumber(56))
 				{
 					objsound(SOUND_OBJ_FLAME_BLOWN);
-					obj_spit_fire(0, (s32)(30.0f * o->oFirePiranhaPlantNeutralScale), (s32)(140.0f * o->oFirePiranhaPlantNeutralScale), 2.5f * o->oFirePiranhaPlantNeutralScale, MODEL_RED_FLAME_SHADOW, 20.0f, 15.0f, 0x1000);
+					i_set_fireball(0, (s32)(30.0f * o->oFirePiranhaPlantNeutralScale), (s32)(140.0f * o->oFirePiranhaPlantNeutralScale), 2.5f * o->oFirePiranhaPlantNeutralScale, MODEL_RED_FLAME_SHADOW, 20.0f, 15.0f, 0x1000);
 				}
 			}
 		}
@@ -167,7 +167,7 @@ void bhv_fire_piranha_plant_update(void)
 		}
 		else
 		{
-			set_obj_animation_and_sound_state(2);
+			s_set_skelanimeNo(2);
 		}
 
 		o->oAction			   = FIRE_PIRANHA_PLANT_ACT_HIDE;

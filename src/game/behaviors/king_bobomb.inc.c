@@ -13,13 +13,13 @@ void ActionKingBobomb0(void)
 	{
 		s_hitOFF();
 		gSecondCameraFocus = o;
-		set_obj_animation_and_sound_state(5);
+		s_set_skelanimeNo(5);
 		obj_set_pos_to_home();
 		o->oHealth = 3;
 		if(obj_is_mario_in_range_and_ready_to_speak(500.0f, 100.0f))
 		{
 			o->oSubAction++;
-			func_8031FFB4(0, 60, 40);
+			Na_SeqVolMute(0, 60, 40);
 		}
 	}
 	else if(obj_update_dialog_with_cutscene(2, 1, CUTSCENE_DIALOG, DIALOG_017))
@@ -47,9 +47,9 @@ void ActionKingBobomb2(void)
 	}
 	if(o->oKingBobombUnk100 == 0)
 	{
-		if(obj_check_anim_frame(15))
+		if(s_check_animenumber(15))
 			s_call_Viewshake(SHAKE_POS_SMALL);
-		if(func_802A4AB0(4))
+		if(s_setanime_endcheck(4))
 			o->oKingBobombUnk100++;
 	}
 	else
@@ -60,11 +60,11 @@ void ActionKingBobomb2(void)
 			o->oKingBobombUnk100 = 2;
 		}
 		else
-			set_obj_animation_and_sound_state(11);
+			s_set_skelanimeNo(11);
 		if(o->oKingBobombUnk108 == 0)
 		{
 			o->oForwardVel = 3.0f;
-			obj_rotate_yaw_toward(o->oAngleToMario, 0x100 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(o->oAngleToMario, 0x100 / FRAME_RATE_SCALER_INV);
 		}
 		else
 		{
@@ -90,7 +90,7 @@ void ActionKingBobomb3(void)
 		o->oKingBobombUnkFC  = 0;
 		if(o->oTimer == 0)
 			objsound(SOUND_OBJ_UNKNOWN3);
-		if(func_802A4AB0(0))
+		if(s_setanime_endcheck(0))
 		{
 			o->oSubAction++;
 			func_802A4A70(1, 0);
@@ -100,7 +100,7 @@ void ActionKingBobomb3(void)
 	{
 		if(o->oSubAction == 1)
 		{
-			set_obj_animation_and_sound_state(1);
+			s_set_skelanimeNo(1);
 			o->oKingBobombUnkFC += player_performed_grab_escape_action();
 
 			if(o->oKingBobombUnkFC > 10)
@@ -113,7 +113,7 @@ void ActionKingBobomb3(void)
 			else
 			{
 				o->oForwardVel = 3.0f;
-				if(o->oKingBobombUnk104 > 20 && obj_rotate_yaw_toward(0, 0x400 / FRAME_RATE_SCALER_INV))
+				if(o->oKingBobombUnk104 > 20 && s_chase_angleY(0, 0x400 / FRAME_RATE_SCALER_INV))
 				{
 					o->oSubAction++;
 					func_802A4A70(9, 22);
@@ -123,13 +123,13 @@ void ActionKingBobomb3(void)
 		}
 		else
 		{
-			set_obj_animation_and_sound_state(9);
-			if(obj_check_anim_frame(31))
+			s_set_skelanimeNo(9);
+			if(s_check_animenumber(31))
 			{
 				o->oKingBobombUnk88 = 2;
 				objsound(SOUND_OBJ_UNKNOWN4);
 			}
-			else if(func_8029F788())
+			else if(s_check_animeend())
 			{
 				o->oAction = 1;
 				o->oInteractStatus &= ~(INT_STATUS_GRABBED_MARIO);
@@ -142,7 +142,7 @@ void ActionKingBobomb1(void)
 {
 	o->oForwardVel = 0;
 	o->oVelY       = 0;
-	set_obj_animation_and_sound_state(11);
+	s_set_skelanimeNo(11);
 	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 512 / FRAME_RATE_SCALER_INV);
 	if(o->oDistanceToMario < 2500.0f)
 		o->oAction = 2;
@@ -167,7 +167,7 @@ void ActionKingBobomb6(void)
 			o->oInteractType = 8;
 			s_hitON();
 		}
-		if(func_802A4AB0(2))
+		if(s_setanime_endcheck(2))
 			o->oKingBobombUnk104++;
 		if(o->oKingBobombUnk104 > 3)
 		{
@@ -179,7 +179,7 @@ void ActionKingBobomb6(void)
 	{
 		if(o->oSubAction == 1)
 		{
-			if(func_802A4AB0(10))
+			if(s_setanime_endcheck(10))
 			{
 				o->oSubAction++;
 				o->oInteractType = 2;
@@ -188,8 +188,8 @@ void ActionKingBobomb6(void)
 		}
 		else
 		{
-			set_obj_animation_and_sound_state(11);
-			if(obj_rotate_yaw_toward(o->oAngleToMario, 0x800 / FRAME_RATE_SCALER_INV) == 1)
+			s_set_skelanimeNo(11);
+			if(s_chase_angleY(o->oAngleToMario, 0x800 / FRAME_RATE_SCALER_INV) == 1)
 				o->oAction = 2;
 		}
 	}
@@ -197,7 +197,7 @@ void ActionKingBobomb6(void)
 
 void ActionKingBobomb7(void)
 {
-	set_obj_animation_and_sound_state(2);
+	s_set_skelanimeNo(2);
 	if(obj_update_dialog_with_cutscene(2, 2, CUTSCENE_DIALOG, DIALOG_116))
 	{
 		obj_remove_sound(SOUND_OBJ_KING_WHOMP_DEATH);
@@ -248,7 +248,7 @@ void ActionKingBobomb4()
 		}
 		else
 		{
-			if(func_802A4AB0(10))
+			if(s_setanime_endcheck(10))
 				o->oAction = 5; // Go back to top of hill
 			o->oSubAction++;
 		}
@@ -282,14 +282,14 @@ void ActionKingBobomb5()
 				o->oForwardVel	    = 0;
 				o->oGravity	    = -4.0f;
 				o->oKingBobombUnkF8 = 0;
-				set_obj_animation_and_sound_state(7);
+				s_set_skelanimeNo(7);
 				objsound(SOUND_OBJ_KING_BOBOMB);
 				s_call_Viewshake(SHAKE_POS_SMALL);
 				o->oSubAction++;
 			}
 			break;
 		case 2:
-			if(func_802A4AB0(7))
+			if(s_setanime_endcheck(7))
 				o->oSubAction++;
 			break;
 		case 3:
@@ -328,13 +328,13 @@ struct SoundState sKingBobombSoundStates[] = {
 
 void func_802A7748(void)
 {
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	if(o->oKingBobombUnkF8 == 0)
-		obj_move_standard(-78);
+		s_enemymove(-78);
 	else
 		s_optionmove_F();
 	s_modejmp(sKingBobombActions);
-	exec_anim_sound_state(sKingBobombSoundStates);
+	s_enemysound(sKingBobombSoundStates);
 
 	if(!sm64::config().camera().disableDistanceClip())
 	{
@@ -361,11 +361,11 @@ void bhv_king_bobomb_loop(void)
 			func_802A7748();
 			break;
 		case HELD_HELD:
-			func_8029FA5C(6, 1);
+			s_mode_catch(6, 1);
 			break;
 		case HELD_THROWN:
 		case HELD_DROPPED:
-			obj_get_thrown_or_placed(sp34, sp30, 4);
+			s_mode_throw(sp34, sp30, 4);
 			s_hitOFF();
 			o->oPosY += 20.0f * FRAME_RATE_SCALER;
 			break;

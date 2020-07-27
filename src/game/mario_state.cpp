@@ -702,7 +702,7 @@ f32 PlayerRecord::find_floor_height_relative_polar(s16 angleFromMario, f32 distF
 	f32 y = sins(this->faceAngle[1] + angleFromMario) * distFromMario;
 	f32 x = coss(this->faceAngle[1] + angleFromMario) * distFromMario;
 
-	floorY = find_floor(this->pos[0] + y, this->pos[1] + 100.0f, this->pos[2] + x, &floor);
+	floorY = mcBGGroundCheck(this->pos[0] + y, this->pos[1] + 100.0f, this->pos[2] + x, &floor);
 
 	return floorY;
 }
@@ -720,8 +720,8 @@ s16 PlayerRecord::find_floor_slope(s16 yawOffset)
 	f32 x = sins(this->faceAngle[1] + yawOffset) * 5.0f;
 	f32 z = coss(this->faceAngle[1] + yawOffset) * 5.0f;
 
-	forwardFloorY  = find_floor(this->pos[0] + x, this->pos[1] + 100.0f, this->pos[2] + z, &floor);
-	backwardFloorY = find_floor(this->pos[0] - x, this->pos[1] + 100.0f, this->pos[2] - z, &floor);
+	forwardFloorY  = mcBGGroundCheck(this->pos[0] + x, this->pos[1] + 100.0f, this->pos[2] + z, &floor);
+	backwardFloorY = mcBGGroundCheck(this->pos[0] - x, this->pos[1] + 100.0f, this->pos[2] - z, &floor);
 
 	//! If Mario is near OOB, these floorY's can sometimes be -11000.
 	//  This will cause these to be off and give improper slopes.
@@ -1433,7 +1433,7 @@ void PlayerRecord::update_mario_geometry_inputs()
 	f32_find_wall_collision(&this->pos[0], &this->pos[1], &this->pos[2], 60.0f, 50.0f);
 	f32_find_wall_collision(&this->pos[0], &this->pos[1], &this->pos[2], 30.0f, 24.0f);
 
-	this->floorHeight = find_floor(this->pos[0], this->pos[1], this->pos[2], &this->floor);
+	this->floorHeight = mcBGGroundCheck(this->pos[0], this->pos[1], this->pos[2], &this->floor);
 
 	// If Mario is OOB, move his position to his graphical position (which was not updated)
 	// and check for the floor there.
@@ -1442,7 +1442,7 @@ void PlayerRecord::update_mario_geometry_inputs()
 	if(this->floor == NULL)
 	{
 		vec3f_copy(this->pos, this->marioObj->header.gfx.pos);
-		this->floorHeight = find_floor(this->pos[0], this->pos[1], this->pos[2], &this->floor);
+		this->floorHeight = mcBGGroundCheck(this->pos[0], this->pos[1], this->pos[2], &this->floor);
 	}
 
 	this->ceilHeight = vec3f_find_ceil(&this->pos[0], this->floorHeight, &this->ceil);
@@ -1887,7 +1887,7 @@ void PlayerRecord::init()
 	vec3s_set(marioWorks->angleVel, 0, 0, 0);
 	vec3s_to_vec3f(marioWorks->pos, marioActor->startPos);
 	vec3f_set(marioWorks->vel, 0, 0, 0);
-	marioWorks->floorHeight = find_floor(marioWorks->pos[0], marioWorks->pos[1], marioWorks->pos[2], &marioWorks->floor);
+	marioWorks->floorHeight = mcBGGroundCheck(marioWorks->pos[0], marioWorks->pos[1], marioWorks->pos[2], &marioWorks->floor);
 
 	if(marioWorks->pos[1] < marioWorks->floorHeight)
 	{

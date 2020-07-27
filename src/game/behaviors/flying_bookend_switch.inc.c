@@ -80,14 +80,14 @@ void flying_bookend_act_1(void)
 
 void flying_bookend_act_2(void)
 {
-	set_obj_animation_and_sound_state(1);
-	obj_update_floor_and_walls();
+	s_set_skelanimeNo(1);
+	s_enemybgcheck();
 
 	if(o->oForwardVel == 0.0f)
 	{
 		obj_turn_pitch_toward_mario(120.0f, 1000 / FRAME_RATE_SCALER_INV);
 		o->oFaceAnglePitch = o->oMoveAnglePitch + 0x7FFF;
-		obj_rotate_yaw_toward(o->oAngleToMario, 1000 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oAngleToMario, 1000 / FRAME_RATE_SCALER_INV);
 
 		if(o->oTimer > 30 * FRAME_RATE_SCALER_INV)
 		{
@@ -95,7 +95,7 @@ void flying_bookend_act_2(void)
 		}
 	}
 
-	obj_move_standard(78);
+	s_enemymove(78);
 }
 
 void flying_bookend_act_3(void)

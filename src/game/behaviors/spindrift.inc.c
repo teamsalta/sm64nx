@@ -17,7 +17,7 @@ void bhv_spindrift_loop(void)
 	o->activeFlags |= 0x400;
 	if(obj_set_hitbox_and_die_if_attacked(&sSpindriftHitbox, SOUND_OBJ_DYING_ENEMY1, 0))
 		obj_change_action(1);
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	switch(o->oAction)
 	{
 		case 0:
@@ -26,7 +26,7 @@ void bhv_spindrift_loop(void)
 				o->oAngleToMario = obj_angle_to_home();
 			else if(o->oDistanceToMario > 300.0f)
 				o->oAngleToMario = angle_to_object(o, gMarioObject);
-			obj_rotate_yaw_toward(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 			break;
 		case 1:
 			o->oFlags &= ~8;
@@ -39,5 +39,5 @@ void bhv_spindrift_loop(void)
 			}
 			break;
 	}
-	obj_move_standard(-60);
+	s_enemymove(-60);
 }

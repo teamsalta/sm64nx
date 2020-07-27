@@ -12,7 +12,7 @@
 void piranha_plant_act_idle(void)
 {
 	s_hitOFF();
-	set_obj_animation_and_sound_state(8);
+	s_set_skelanimeNo(8);
 
 #if BUGFIX_PIRANHA_PLANT_STATE_RESET
 	/**
@@ -81,7 +81,7 @@ void piranha_plant_act_sleeping(void)
 	s_hitON();
 	o->oInteractType = INTERACT_BOUNCE_TOP;
 
-	set_obj_animation_and_sound_state(8);
+	s_set_skelanimeNo(8);
 
 	obj_set_hitbox_radius_and_height(250.0f, 200.0f);
 	obj_set_hurtbox_radius_and_height(150.0f, 100.0f);
@@ -167,9 +167,9 @@ void piranha_plant_reset_when_far(void)
 void piranha_plant_attacked(void)
 {
 	s_hitOFF();
-	set_obj_animation_and_sound_state(2);
+	s_set_skelanimeNo(2);
 	o->oInteractStatus = 0;
-	if(func_8029F788())
+	if(s_check_animeend())
 		o->oAction = PIRANHA_PLANT_ACT_SHRINK_AND_DIE;
 #if BUGFIX_PIRANHA_PLANT_STATE_RESET
 	piranha_plant_reset_when_far(); // see this function's comment
@@ -230,7 +230,7 @@ void piranha_plant_act_wait_to_respawn(void)
  */
 void piranha_plant_act_respawn(void)
 {
-	set_obj_animation_and_sound_state(8);
+	s_set_skelanimeNo(8);
 	if(o->oTimer == 0)
 	{
 		o->oPiranhaPlantScale = 0.3f;
@@ -275,13 +275,13 @@ void piranha_plant_act_biting(void)
 
 	o->oInteractType = INTERACT_DAMAGE;
 
-	set_obj_animation_and_sound_state(0);
+	s_set_skelanimeNo(0);
 
 	obj_set_hitbox_radius_and_height(150.0f, 100.0f);
 	obj_set_hurtbox_radius_and_height(150.0f, 100.0f);
 
 	// Play a bite sound effect on certain frames.
-	if(item_in_array(frame, sPiranhaPlantBiteSoundFrames))
+	if(s_check_chartable(frame, sPiranhaPlantBiteSoundFrames))
 	{
 		objsound(SOUND_OBJ2_PIRANHA_PLANT_BITE);
 	}
@@ -290,7 +290,7 @@ void piranha_plant_act_biting(void)
 	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 
 	if(o->oDistanceToMario > 500.0f)
-		if(func_8029F788())
+		if(s_check_animeend())
 			o->oAction = PIRANHA_PLANT_ACT_STOPPED_BITING;
 
 	// If the player is wearing the Metal Cap and interacts with the Piranha
@@ -323,9 +323,9 @@ s32 mario_moving_fast_enough_to_make_piranha_plant_bite(void)
 void piranha_plant_act_stopped_biting(void)
 {
 	s_hitOFF();
-	set_obj_animation_and_sound_state(6);
+	s_set_skelanimeNo(6);
 
-	if(func_8029F788())
+	if(s_check_animeend())
 		o->oAction = PIRANHA_PLANT_ACT_SLEEPING;
 
 	/**

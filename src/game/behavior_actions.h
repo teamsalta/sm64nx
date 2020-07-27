@@ -555,7 +555,7 @@ extern Gfx* geo_move_mario_part_from_parent(s32 run, UNUSED struct GraphNode* no
 
 // Bowser
 extern Gfx* Geo18_802B7D44(s32 a0, struct GraphNode* node, UNUSED s32 a2);
-extern Gfx* Geo18_802B798C(s32 run, UNUSED struct GraphNode* node, Mat4 mtx);
+extern Gfx* KopaProc1(s32 run, UNUSED struct GraphNode* node, Mat4 mtx);
 extern Gfx* geo_switch_bowser_eyes(s32 run, struct GraphNode* node, UNUSED Mat4* mtx);
 
 // Tuxie

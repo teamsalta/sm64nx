@@ -42,7 +42,7 @@ static void dorrie_act_move(void)
 
 	startYaw	    = o->oMoveAngleYaw;
 	o->oDorrieNeckAngle = -0x26F4;
-	set_obj_animation_and_sound_state(1);
+	s_set_skelanimeNo(1);
 
 	if(o->oDorrieForwardDistToMario < 320.0f && o->oDorrieGroundPounded)
 	{
@@ -88,13 +88,13 @@ static void dorrie_begin_head_raise(s32 liftingMario)
 
 static void dorrie_act_lower_head(void)
 {
-	if(func_802F92EC(2, 35) || obj_check_anim_frame(34))
+	if(func_802F92EC(2, 35) || s_check_animenumber(34))
 	{
 		func_8029F6F0();
 
 		if(gMarioObject->platform == o)
 		{
-			if(o->oDorrieOffsetY == -17.0f && o->oDorrieForwardDistToMario > 780.0f && set_mario_npc_dialog(2) == 1)
+			if(o->oDorrieOffsetY == -17.0f && o->oDorrieForwardDistToMario > 780.0f && CtrlPlayerDialog(2) == 1)
 			{
 				dorrie_begin_head_raise(TRUE);
 			}
@@ -117,19 +117,19 @@ static void dorrie_act_lower_head(void)
 static void dorrie_act_raise_head(void)
 {
 	o->collisionData = segmented_to_virtual(dorrie_seg6_collision_0600F644);
-	if(func_8029F788())
+	if(s_check_animeend())
 	{
 		o->oAction = DORRIE_ACT_MOVE;
 	}
 	else if(o->oDorrieLiftingMario && o->header.gfx.unk38.animFrameAccelAssist < ((74 << 16) - 0x8000))
 	{
-		if(set_mario_npc_dialog(2) == 2)
+		if(CtrlPlayerDialog(2) == 2)
 		{
 			o->oDorrieHeadRaiseSpeed += 0x1CC / FRAME_RATE_SCALER_INV;
 
-			if(obj_check_anim_frame(73))
+			if(s_check_animenumber(73))
 			{
-				set_mario_npc_dialog(0);
+				CtrlPlayerDialog(0);
 			}
 			dorrie_raise_head();
 		}

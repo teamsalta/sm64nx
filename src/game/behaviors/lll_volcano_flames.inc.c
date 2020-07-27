@@ -21,11 +21,11 @@ void func_802BBFDC(void)
 	sp1C = s_makeobj_nowpos(o, MODEL_RED_FLAME, sm64::bhv::bhvVolcanoFlames());
 	sp1C->oPosY += 550.0f;
 	sp1C->oMoveAngleYaw = RandomU16() << 0x10 >> 0x10;
-	sp1C->oForwardVel   = RandomFloat() * 40.0f + 20.0f;
-	sp1C->oVelY	    = RandomFloat() * 50.0f + 10.0f;
+	sp1C->oForwardVel   = Randomf() * 40.0f + 20.0f;
+	sp1C->oVelY	    = Randomf() * 50.0f + 10.0f;
 
-	size = RandomFloat() * 6.0 + 3.0;
+	size = Randomf() * 6.0 + 3.0;
 	scale_object_xyz(sp1C, size, size, size);
-	if(RandomFloat() < 0.1)
+	if(Randomf() < 0.1)
 		objsound(SOUND_GENERAL_VOLCANO_EXPLOSION);
 }

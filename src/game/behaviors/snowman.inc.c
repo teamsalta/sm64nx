@@ -141,14 +141,14 @@ void bhv_snowmans_bottom_loop(void)
 	switch(o->oAction)
 	{
 		case 0:
-			if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 400) == 1 && set_mario_npc_dialog(1) == 2)
+			if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 400) == 1 && CtrlPlayerDialog(1) == 2)
 			{
 				sp1E = cutscene_object_with_dialog(CUTSCENE_DIALOG, o, DIALOG_110);
 				if(sp1E)
 				{
 					o->oForwardVel = 10.0f;
 					o->oAction     = 1;
-					set_mario_npc_dialog(0);
+					CtrlPlayerDialog(0);
 				}
 			}
 			break;

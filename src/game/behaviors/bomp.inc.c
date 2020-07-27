@@ -4,7 +4,7 @@ void bhv_small_bomp_init(void)
 {
 	o->oFaceAngleYaw -= 0x4000;
 	o->oSmallBompInitX = o->oPosX;
-	o->oTimer	   = RandomFloat() * 100.0f / FRAME_RATE_SCALER;
+	o->oTimer	   = Randomf() * 100.0f / FRAME_RATE_SCALER;
 }
 
 void bhv_small_bomp_loop(void)
@@ -70,7 +70,7 @@ void bhv_small_bomp_loop(void)
 void bhv_large_bomp_init(void)
 {
 	o->oMoveAngleYaw += 0x4000;
-	o->oTimer = RandomFloat() * 100.0f;
+	o->oTimer = Randomf() * 100.0f;
 }
 
 void bhv_large_bomp_loop(void)

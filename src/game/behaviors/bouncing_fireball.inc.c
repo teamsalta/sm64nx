@@ -7,13 +7,13 @@ void bhv_bouncing_fireball_flame_init(void)
 void bhv_bouncing_fireball_flame_loop(void)
 {
 	o->activeFlags |= 0x400;
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	switch(o->oAction)
 	{
 		case 0:
 			if(o->oTimer == 0)
 			{
-				o->oAnimState = RandomFloat() * 10.0f;
+				o->oAnimState = Randomf() * 10.0f;
 				o->oVelY      = 30.0f;
 			}
 			if(o->oMoveFlags & 1)
@@ -29,11 +29,11 @@ void bhv_bouncing_fireball_flame_loop(void)
 			if(o->oBouncingFireBallFlameDuration)
 			{
 				auto aMario = angle_to_object(gCurrentObject, gMarioObject);
-				s16 dist    = abs_angle_diff(aMario, o->oMoveAngleYaw);
+				s16 dist    = s_calc_dangle(aMario, o->oMoveAngleYaw);
 
 				if(dist < DEGREES(45.0f))
 				{
-					obj_rotate_yaw_toward(aMario, 0x100 / FRAME_RATE_SCALER_INV);
+					s_chase_angleY(aMario, 0x100 / FRAME_RATE_SCALER_INV);
 				}
 			}
 
@@ -50,7 +50,7 @@ void bhv_bouncing_fireball_flame_loop(void)
 		s_remove_obj(o);
 	}
 
-	obj_move_standard(78);
+	s_enemymove(78);
 	o->oInteractStatus = 0;
 }
 
@@ -84,7 +84,7 @@ void bhv_bouncing_fireball_loop(void)
 		case 2:
 			if(o->oTimer == 0)
 			{
-				o->oBouncingFireBallUnkF4 = RandomFloat() * 100.0f * FRAME_RATE_SCALER_INV;
+				o->oBouncingFireBallUnkF4 = Randomf() * 100.0f * FRAME_RATE_SCALER_INV;
 			}
 
 			if(o->oBouncingFireBallUnkF4 + 100 * FRAME_RATE_SCALER_INV < o->oTimer)

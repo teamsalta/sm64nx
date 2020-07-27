@@ -6,7 +6,7 @@ void bikkuri_init(void)
 	o->oAnimState = o->oBehParams2ndByte;
 	s_set_scale(0.5f);
 	o->oPosY += 71.0f * FRAME_RATE_SCALER;
-	spawn_object_relative_with_scale(0, 0, -71, 0, 0.5f, o, MODEL_CAP_SWITCH_BASE, sm64::bhv::bhvCapSwitchBase());
+	s_makeobj_chain_scale(0, 0, -71, 0, 0.5f, o, MODEL_CAP_SWITCH_BASE, sm64::bhv::bhvCapSwitchBase());
 	if(activeStageNo != LEVEL_UNKNOWN_32)
 	{
 		if(BuGetItemFlag() & D_8032F0C0[o->oBehParams2ndByte])

@@ -75,7 +75,7 @@ void bhv_jrb_sliding_box_loop(void)
 	sp20[0] = o->oPosX;
 	sp20[1] = o->oPosY;
 	sp20[2] = o->oPosZ;
-	find_floor(sp20[0], sp20[1], sp20[2], &sp38);
+	mcBGGroundCheck(sp20[0], sp20[1], sp20[2], &sp38);
 	if(sp38 != NULL)
 	{
 		sp2C[0]		   = sp38->normal.x;

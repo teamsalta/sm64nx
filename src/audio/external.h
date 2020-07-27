@@ -22,7 +22,7 @@ void AudStartSound(s32 soundBits, f32* pos);
 void audio_signal_game_loop_tick(void);
 void Na_BossBgmStop(u8 player, u16 fadeTimer);
 void Na_AllSeqSubVolumeTrans(u8 player, u8 targetScale, u16 fadeTimer);
-void func_8031FFB4(u8 player, u16 fadeTimer, u8 arg2);
+void Na_SeqVolMute(u8 player, u16 fadeTimer, u8 arg2);
 void Na_SeqVolRecover(u8 player, u16 fadeTimer);
 void set_sound_disabled(u8 disabled);
 void sound_init(void);

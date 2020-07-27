@@ -65,7 +65,7 @@ void bhv_grand_star_loop(void)
 			o->oPosY = o->oHomeY + 200.0f;
 			func_802B29B0();
 			gObjCutsceneDone = 1;
-			set_mario_npc_dialog(0);
+			CtrlPlayerDialog(0);
 			o->oAction++;
 			o->oInteractStatus = 0;
 			objsound(SOUND_GENERAL_GRAND_STAR_JUMP);

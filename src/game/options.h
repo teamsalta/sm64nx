@@ -188,13 +188,19 @@ namespace sm64
 			const bool mirror() const;
 			bool& setMirror();
 
+			bool noStarExit() const;
+			bool& setNoStarExit();
+			bool& paceFrames();
+
 			protected:
 			u8 m_overclock;
 			u8 m_framerate;
 			bool m_disableSound;
 			bool m_fullscreen;
 			bool m_mirror;
-			u8 m_padding[0x40 - 5];
+			bool m_noStarExit;
+			bool m_paceFrames;
+			u8 m_padding[0x40 - 7];
 		};
 
 		static_assert(sizeof(Game) == 0x40, "Game Incorrect Size");

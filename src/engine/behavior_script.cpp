@@ -59,7 +59,7 @@ u16 RandomU16(void)
 	return gRandomSeed16;
 }
 
-f32 RandomFloat(void)
+f32 Randomf(void)
 {
 	f32 rnd = RandomU16();
 	return rnd / (double)0x10000;
@@ -146,7 +146,7 @@ static s32 beh_cmd_spawn_child(void)
 
 	struct Object* child = spawn_object_at_origin(gCurrentObject, 0, model, behavior);
 
-	copy_object_pos_and_angle(child, gCurrentObject);
+	s_copy_worldXYZ_angleXYZ(child, gCurrentObject);
 
 	gBehCommand += 3;
 	return BEH_CONTINUE;
@@ -159,7 +159,7 @@ static s32 beh_cmd_spawn_obj(void)
 
 	struct Object* object = spawn_object_at_origin(gCurrentObject, 0, model, behavior);
 
-	copy_object_pos_and_angle(object, gCurrentObject);
+	s_copy_worldXYZ_angleXYZ(object, gCurrentObject);
 
 	gCurrentObject->prevObj = object;
 
@@ -175,7 +175,7 @@ static s32 beh_cmd_spawn_child_with_param(void)
 
 	struct Object* child = spawn_object_at_origin(gCurrentObject, 0, model, behavior);
 
-	copy_object_pos_and_angle(child, gCurrentObject);
+	s_copy_worldXYZ_angleXYZ(child, gCurrentObject);
 
 	child->oBehParams2ndByte = behParam;
 
@@ -394,7 +394,7 @@ static s32 beh_cmd_set_random_float(void)
 	f32 min		= (s16)(gBehCommand[0] & 0xFFFF);
 	f32 max		= (s16)(gBehCommand[1] >> 16);
 
-	cur_object_set_float(objectOffset, (max * RandomFloat()) + min);
+	cur_object_set_float(objectOffset, (max * Randomf()) + min);
 
 	gBehCommand += 2;
 	return BEH_CONTINUE;
@@ -406,7 +406,7 @@ static s32 beh_cmd_set_random_int(void)
 	s32 min		= (s16)(gBehCommand[0] & 0xFFFF);
 	s32 max		= (s16)(gBehCommand[1] >> 16);
 
-	cur_object_set_int(objectOffset, (s32)(max * RandomFloat()) + min);
+	cur_object_set_int(objectOffset, (s32)(max * Randomf()) + min);
 
 	gBehCommand += 2;
 	return BEH_CONTINUE;
@@ -430,7 +430,7 @@ static s32 beh_cmd_add_random_float(void)
 	f32 min		= (s16)(gBehCommand[0] & 0xFFFF);
 	f32 max		= (s16)(gBehCommand[1] >> 16);
 
-	cur_object_set_float(objectOffset, (cur_object_get_float(objectOffset) + min) + (max * RandomFloat()));
+	cur_object_set_float(objectOffset, (cur_object_get_float(objectOffset) + min) + (max * Randomf()));
 
 	gBehCommand += 2;
 	return BEH_CONTINUE;
@@ -666,7 +666,7 @@ static void Unknown8038556C(s32 lastIndex)
 		table[i + 1] = (s16)(gBehCommand[i + 1] & 0xFFFF);
 	}
 
-	cur_object_set_int(objectOffset, table[(s32)(lastIndex * RandomFloat())]);
+	cur_object_set_int(objectOffset, table[(s32)(lastIndex * Randomf())]);
 }
 
 static s32 beh_cmd_load_collision_data(void)

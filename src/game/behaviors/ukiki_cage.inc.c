@@ -82,8 +82,8 @@ void ukiki_cage_act_spin(void)
 void ukiki_cage_act_fall(void)
 {
 	//! (PARTIAL_UPDATE)
-	obj_update_floor_and_walls();
-	obj_move_standard(78);
+	s_enemybgcheck();
+	s_enemymove(78);
 	if(o->oMoveFlags & (OBJ_MOVE_LANDED | OBJ_MOVE_ENTERED_WATER))
 	{
 		o->oAction = UKIKI_CAGE_ACT_HIDE;

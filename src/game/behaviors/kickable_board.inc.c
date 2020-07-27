@@ -4,7 +4,7 @@ s32 func_802A9A0C(UNUSED s32 sp18)
 {
 	if(s_hitcheck(o, gMarioObject))
 	{
-		if(abs_angle_diff(o->oMoveAngleYaw, gMarioObject->oMoveAngleYaw) > 0x6000)
+		if(s_calc_dangle(o->oMoveAngleYaw, gMarioObject->oMoveAngleYaw) > 0x6000)
 		{
 			if(playerWorks->status == ACT_SLIDE_KICK)
 				return 1;

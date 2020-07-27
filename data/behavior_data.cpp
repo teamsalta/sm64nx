@@ -5755,7 +5755,7 @@ const BehaviorScript bhvHorizontalGrindel[] = {
     SCALE(90),
     CALL_NATIVE(bhv_horizontal_grindel_init),
     BEGIN_LOOP(),
-        CALL_NATIVE(obj_update_floor_and_walls),
+        CALL_NATIVE(s_enemybgcheck),
         CALL_NATIVE(bhv_horizontal_grindel_update),
         CALL_NATIVE(stMainMoveBG),
     END_LOOP(),
@@ -7108,7 +7108,7 @@ namespace sm64::hook::bhv
 	obj_compute_vel_xz,
 	s_optionmove_F,
 	obj_rotate_face_angle_using_vel,
-	obj_update_floor_and_walls,
+	s_enemybgcheck,
 	nullptr,
 	nullptr,
 	};

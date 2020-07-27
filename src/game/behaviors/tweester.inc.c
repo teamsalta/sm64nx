@@ -53,7 +53,7 @@ void ActionTweester1(void)
 	if(obj_lateral_dist_from_mario_to_home() < sp1C && o->oSubAction == 0)
 	{
 		o->oForwardVel = 20.0f;
-		obj_rotate_yaw_toward(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
 
 		if(playerWorks->status == ACT_TWIRLING)
 			o->oSubAction++;
@@ -61,16 +61,16 @@ void ActionTweester1(void)
 	else
 	{
 		o->oForwardVel = 20.0f;
-		obj_rotate_yaw_toward(o->oUnk1BC, 0x200 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oUnk1BC, 0x200 / FRAME_RATE_SCALER_INV);
 		if(obj_lateral_dist_to_home() < 200.0f)
 			o->oAction = 2;
 	}
 	if(o->oDistanceToMario > 3000.0f)
 		o->oAction = 2;
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	if(o->oMoveFlags & 0x200)
 		o->oMoveAngleYaw = o->oWallAngle;
-	obj_move_standard(60);
+	s_enemymove(60);
 	func_802C231C(1.0f);
 	s_makeobj_nowpos(o, MODEL_SAND_DUST, sm64::bhv::bhvTornadoSandParticle());
 }
@@ -104,7 +104,7 @@ void bhv_tweester_sand_particle_loop(void)
 	o->oMoveAngleYaw += 0x3700 / FRAME_RATE_SCALER_INV;
 	o->oForwardVel += 15.0f * FRAME_RATE_SCALER;
 	o->oPosY += 22.0f * FRAME_RATE_SCALER;
-	s_set_scale(RandomFloat() + 1.0);
+	s_set_scale(Randomf() + 1.0);
 	if(o->oTimer == 0)
 	{
 		translate_object_xz_random(o, 100.0f);

@@ -2,9 +2,9 @@
 
 void bhv_object_bubble_init(void)
 {
-	o->oPosX += RandomFloat() * 30.0f;
-	o->oPosY += RandomFloat() * 30.0f;
-	o->oPosZ += RandomFloat() * 30.0f;
+	o->oPosX += Randomf() * 30.0f;
+	o->oPosY += Randomf() * 30.0f;
+	o->oPosZ += Randomf() * 30.0f;
 }
 
 void bhv_object_bubble_loop(void)

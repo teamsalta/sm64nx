@@ -20,7 +20,7 @@ void func_802BCA8C(void)
 	if(playerWorks->forwardVel > 10.0f)
 	{
 		drop	    = spawn_object_with_scale(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvWaterDrops(), 1.5f);
-		drop->oVelY = RandomFloat() * 30.0f;
+		drop->oVelY = Randomf() * 30.0f;
 		translate_object_xz_random(drop, 110.0f);
 	}
 }
@@ -30,9 +30,9 @@ void bhv_koopa_shell_flame_loop(void)
 	if(o->oTimer == 0)
 	{
 		o->oMoveAngleYaw = RandomU16();
-		o->oVelY	 = RandomFloat() * 30.0f;
+		o->oVelY	 = Randomf() * 30.0f;
 		o->oGravity	 = -4.0f;
-		o->oAnimState	 = RandomFloat() * 10.0f;
+		o->oAnimState	 = Randomf() * 10.0f;
 		translate_object_xz_random(o, 110.0f);
 		o->oKoopaShellFlameUnkF8 = 4.0f;
 	}
@@ -65,12 +65,12 @@ void bhv_koopa_shell_loop(void)
 	switch(o->oAction)
 	{
 		case 0:
-			obj_update_floor_and_walls();
+			s_enemybgcheck();
 			obj_if_hit_wall_bounce_away();
 			if(o->oInteractStatus & INT_STATUS_INTERACTED)
 				o->oAction++;
 			o->oFaceAngleYaw += 0x1000 / FRAME_RATE_SCALER_INV;
-			obj_move_standard(-20);
+			s_enemymove(-20);
 			func_802BCCD4(10.0f);
 			break;
 		case 1:

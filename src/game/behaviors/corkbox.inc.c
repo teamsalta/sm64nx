@@ -12,10 +12,10 @@ void bhv_bobomb_explosion_bubble_init(void)
 {
 	scale_object_xyz(o, 2.0f, 2.0f, 1.0f);
 
-	o->oBobombExpBubGfxExpRateX = (s32)(RandomFloat() * 2048.0f) + 0x800;
-	o->oBobombExpBubGfxExpRateY = (s32)(RandomFloat() * 2048.0f) + 0x800;
-	o->oTimer		    = RandomFloat() * 10.0f / FRAME_RATE_SCALER;
-	o->oVelY		    = (s32)(RandomFloat() * 4.0f) + 4;
+	o->oBobombExpBubGfxExpRateX = (s32)(Randomf() * 2048.0f) + 0x800;
+	o->oBobombExpBubGfxExpRateY = (s32)(Randomf() * 2048.0f) + 0x800;
+	o->oTimer		    = Randomf() * 10.0f / FRAME_RATE_SCALER;
+	o->oVelY		    = (s32)(Randomf() * 4.0f) + 4;
 }
 
 void bhv_bobomb_explosion_bubble_loop(void)

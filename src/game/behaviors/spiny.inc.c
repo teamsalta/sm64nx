@@ -65,10 +65,10 @@ static void spiny_act_walk(void)
 {
 	if(spiny_check_active())
 	{
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		o->oGraphYOffset = -17.0f;
-		set_obj_animation_and_sound_state(0);
+		s_set_skelanimeNo(0);
 
 		if(o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND)
 		{
@@ -107,7 +107,7 @@ static void spiny_act_walk(void)
 					}
 				}
 
-				obj_rotate_yaw_toward(o->oSpinyTargetYaw, 0x80 / FRAME_RATE_SCALER_INV);
+				s_chase_angleY(o->oSpinyTargetYaw, 0x80 / FRAME_RATE_SCALER_INV);
 			}
 		}
 		else if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
@@ -116,7 +116,7 @@ static void spiny_act_walk(void)
 			o->oMoveAngleYaw = obj_reflect_move_angle_off_wall();
 		}
 
-		obj_move_standard(-78);
+		s_enemymove(-78);
 
 		if(obj_handle_attacks(&sSpinyHitbox, SPINY_ACT_ATTACKED_MARIO, sSpinyWalkAttackHandlers))
 		{
@@ -144,7 +144,7 @@ static void spiny_act_walk(void)
 static void spiny_act_held_by_lakitu(void)
 {
 	o->oGraphYOffset = 15.0f;
-	set_obj_animation_and_sound_state(0);
+	s_set_skelanimeNo(0);
 
 	o->oParentRelativePosX = -50.0f;
 	o->oParentRelativePosY = 35.0f;
@@ -170,12 +170,12 @@ static void spiny_act_thrown_by_lakitu(void)
 {
 	if(spiny_check_active())
 	{
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		o->oGraphYOffset = 15.0f;
 		o->oFaceAnglePitch -= 0x2000;
 
-		set_obj_animation_and_sound_state(0);
+		s_set_skelanimeNo(0);
 
 		if(o->oMoveFlags & OBJ_MOVE_LANDED)
 		{
@@ -192,7 +192,7 @@ static void spiny_act_thrown_by_lakitu(void)
 			o->oMoveAngleYaw = obj_reflect_move_angle_off_wall();
 		}
 
-		obj_move_standard(-78);
+		s_enemymove(-78);
 
 		if(obj_check_attacks(&sSpinyHitbox, o->oAction))
 		{

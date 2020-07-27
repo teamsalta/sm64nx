@@ -31,7 +31,7 @@ void bhv_scuttlebug_loop(void)
 {
 	UNUSED s32 unused;
 	f32 sp18;
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	if(o->oSubAction != 0 && obj_set_hitbox_and_die_if_attacked(&sScuttlebugHitbox, SOUND_OBJ_DYING_ENEMY1, o->oScuttlebugUnkF4))
 		o->oSubAction = 3;
 	if(o->oSubAction != 1)
@@ -59,7 +59,7 @@ void bhv_scuttlebug_loop(void)
 				{
 					o->oScuttlebugUnkFC = 0;
 					o->oAngleToMario    = angle_to_object(o, gMarioObject);
-					if(abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x800)
+					if(s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw) < 0x800)
 					{
 						o->oScuttlebugUnkF8 = 1;
 						o->oVelY	    = 20.0f;
@@ -76,7 +76,7 @@ void bhv_scuttlebug_loop(void)
 			}
 			if(func_802C5A64(&o->oAngleToMario))
 				o->oSubAction = 2;
-			obj_rotate_yaw_toward(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
 			break;
 		case 2:
 			o->oForwardVel = 5.0f;
@@ -84,7 +84,7 @@ void bhv_scuttlebug_loop(void)
 				o->oSubAction = 1;
 			if(o->oPosY - o->oHomeY < -200.0f)
 				s_remove_obj(o);
-			obj_rotate_yaw_toward(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 			break;
 		case 3:
 			o->oFlags &= ~8;
@@ -125,7 +125,7 @@ void bhv_scuttlebug_loop(void)
 		if(o->activeFlags == 0)
 			o->parentObj->oScuttlebugSpawnerUnk88 = 1;
 	}
-	obj_move_standard(-50);
+	s_enemymove(-50);
 }
 
 void bhv_scuttlebug_spawn_loop(void)

@@ -734,7 +734,7 @@ void push_mario_out_of_object(struct PlayerRecord* m, struct Object* o, f32 padd
 
 		f32_find_wall_collision(&newMarioX, &m->pos[1], &newMarioZ, 60.0f, 50.0f);
 
-		find_floor(newMarioX, m->pos[1], newMarioZ, &floor);
+		mcBGGroundCheck(newMarioX, m->pos[1], newMarioZ, &floor);
 		if(floor != NULL)
 		{
 			//! Doesn't update mario's referenced floor (allows oob death when
@@ -886,7 +886,7 @@ u32 interact_star_or_key(struct PlayerRecord* m, u32 interactType, struct Object
 {
 	u32 starIndex;
 	u32 starGrabAction = ACT_STAR_DANCE_EXIT;
-	u32 noExit	   = (o->oInteractionSubtype & INT_SUBTYPE_NO_EXIT) != 0;
+	u32 noExit	   = ((o->oInteractionSubtype & INT_SUBTYPE_NO_EXIT) != 0) || sm64::config().game().noStarExit();
 	u32 grandStar	   = (o->oInteractionSubtype & INT_SUBTYPE_GRAND_STAR) != 0;
 
 	if(m->health >= 0x100)
@@ -950,7 +950,12 @@ u32 interact_star_or_key(struct PlayerRecord* m, u32 interactType, struct Object
 			return m->ChangePlayerStatus(ACT_JUMBO_STAR_CUTSCENE, 0);
 		}
 
-		return m->ChangePlayerStatus(starGrabAction, noExit + 2 * grandStar);
+		if (!sm64::config().game().noStarExit())
+		{
+			return m->ChangePlayerStatus(starGrabAction, noExit + 2 * grandStar);
+		}
+		
+		BuWriteStorage(activePlayerNo - 1);
 	}
 
 	return FALSE;

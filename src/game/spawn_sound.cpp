@@ -14,7 +14,7 @@
  * of sound states. Used for the stepping sounds of various
  * objects. (King Bobomb, Bowser, King Whomp)
  */
-void exec_anim_sound_state(struct SoundState* soundStates)
+void s_enemysound(struct SoundState* soundStates)
 {
 	s32 stateIdx = gCurrentObject->oSoundStateID;
 
@@ -33,7 +33,7 @@ void exec_anim_sound_state(struct SoundState* soundStates)
 			// animFrame entries. These checks skips them.
 			if((animFrame = soundStates[stateIdx].animFrame1) >= 0)
 			{
-				if(obj_check_anim_frame(animFrame))
+				if(s_check_animenumber(animFrame))
 				{
 					objsound(soundStates[stateIdx].soundMagic);
 				}
@@ -41,7 +41,7 @@ void exec_anim_sound_state(struct SoundState* soundStates)
 
 			if((animFrame = soundStates[stateIdx].animFrame2) >= 0)
 			{
-				if(obj_check_anim_frame(animFrame))
+				if(s_check_animenumber(animFrame))
 				{
 					objsound(soundStates[stateIdx].soundMagic);
 				}
@@ -84,7 +84,7 @@ void objsound(s32 soundMagic)
 
 		switch(soundMagic)
 		{
-			case SOUND_OBJ_BOWSER_WALK:
+			case NA_SE3_KUPAWALK:
 				SendMotorEvent(3, 60);
 				break;
 			case SOUND_OBJ_POUNDING_LOUD:

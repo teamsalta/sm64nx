@@ -155,7 +155,7 @@ static s32 obj_update_race_proposition_dialog(s16 dialogID)
 
 	if(dialogResponse == 2)
 	{
-		set_mario_npc_dialog(0);
+		CtrlPlayerDialog(0);
 		disable_time_stop_including_mario();
 	}
 
@@ -170,7 +170,7 @@ static void obj_set_dist_from_home(f32 distFromHome)
 
 static s32 obj_is_near_to_and_facing_mario(f32 maxDist, s16 maxAngleDiff)
 {
-	if(o->oDistanceToMario < maxDist && abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) < maxAngleDiff)
+	if(o->oDistanceToMario < maxDist && s_calc_dangle(o->oMoveAngleYaw, o->oAngleToMario) < maxAngleDiff)
 	{
 		return TRUE;
 	}
@@ -384,7 +384,7 @@ static void obj_rotate_yaw_and_bounce_off_walls(s16 targetYaw, s16 turnAmount)
 	{
 		targetYaw = obj_reflect_move_angle_off_wall();
 	}
-	obj_rotate_yaw_toward(targetYaw, turnAmount);
+	s_chase_angleY(targetYaw, turnAmount);
 }
 
 static s16 obj_get_pitch_to_home(f32 latDistToHome)
@@ -436,27 +436,27 @@ static s32 clamp_f32(f32* value, f32 minimum, f32 maximum)
 
 static void func_802F927C(s32 arg0)
 {
-	set_obj_animation_and_sound_state(arg0);
-	func_8029F728();
+	s_set_skelanimeNo(arg0);
+	s_stop_animeend();
 }
 
 static s32 func_802F92B0(s32 arg0)
 {
-	set_obj_animation_and_sound_state(arg0);
-	return func_8029F788();
+	s_set_skelanimeNo(arg0);
+	return s_check_animeend();
 }
 
 static s32 func_802F92EC(s32 arg0, s32 arg1)
 {
-	set_obj_animation_and_sound_state(arg0);
-	return obj_check_anim_frame(arg1);
+	s_set_skelanimeNo(arg0);
+	return s_check_animenumber(arg1);
 }
 
 static s32 func_802F932C(s32 arg0)
 {
 	if(func_8029F828())
 	{
-		set_obj_animation_and_sound_state(arg0);
+		s_set_skelanimeNo(arg0);
 		return TRUE;
 	}
 	return FALSE;
@@ -589,7 +589,7 @@ static void obj_roll_to_match_yaw_turn(s16 targetYaw, s16 maxRoll, s16 rollSpeed
 
 static s16 random_linear_offset(s16 base, s16 range)
 {
-	return base + (s16)(range * RandomFloat());
+	return base + (s16)(range * Randomf());
 }
 
 static s16 random_mod_offset(s16 base, s16 step, s16 mod)
@@ -722,7 +722,7 @@ static s32 obj_resolve_object_collisions(s32* targetYaw)
 			otherObject->oPosX = newCenterX + otherRadius * coss(angle);
 			otherObject->oPosZ = newCenterZ + otherRadius * sins(angle);
 
-			if(targetYaw != NULL && abs_angle_diff(o->oMoveAngleYaw, angle) < 0x4000)
+			if(targetYaw != NULL && s_calc_dangle(o->oMoveAngleYaw, angle) < 0x4000)
 			{
 				// Bounce off object (or it would, if the above atan2s bug
 				// were fixed)
@@ -757,7 +757,7 @@ static s32 obj_resolve_collisions_and_turn(s16 targetYaw, s16 turnSpeed)
 {
 	obj_resolve_object_collisions(NULL);
 
-	if(obj_rotate_yaw_toward(targetYaw, turnSpeed))
+	if(s_chase_angleY(targetYaw, turnSpeed))
 	{
 		return FALSE;
 	}
@@ -945,11 +945,11 @@ static s32 obj_handle_attacks(struct ObjectHitbox* hitbox, s32 attackedMarioActi
 
 static void obj_act_knockback(UNUSED f32 baseScale)
 {
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	if(o->header.gfx.unk38.curAnim != NULL)
 	{
-		func_8029F728();
+		s_stop_animeend();
 	}
 
 	//! Dies immediately if above lava
@@ -958,18 +958,18 @@ static void obj_act_knockback(UNUSED f32 baseScale)
 		obj_die_if_health_non_positive();
 	}
 
-	obj_move_standard(-78);
+	s_enemymove(-78);
 }
 
 static void obj_act_squished(f32 baseScale)
 {
 	f32 targetScaleY = baseScale * 0.3f;
 
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	if(o->header.gfx.unk38.curAnim != NULL)
 	{
-		func_8029F728();
+		s_stop_animeend();
 	}
 
 	if(approach_f32_ptr(&o->header.gfx.scale[1], targetScaleY, baseScale * 0.14f))
@@ -983,7 +983,7 @@ static void obj_act_squished(f32 baseScale)
 	}
 
 	o->oForwardVel = 0.0f;
-	obj_move_standard(-78);
+	s_enemymove(-78);
 }
 
 static s32 obj_update_standard_actions(f32 scale)
@@ -1048,8 +1048,8 @@ static s32 obj_check_attacks(struct ObjectHitbox* hitbox, s32 attackedMarioActio
 
 static s32 obj_move_for_one_second(s32 endAction)
 {
-	obj_update_floor_and_walls();
-	func_8029F728();
+	s_enemybgcheck();
+	s_stop_animeend();
 
 	if(o->oTimer > 30 * FRAME_RATE_SCALER_INV)
 	{
@@ -1057,7 +1057,7 @@ static s32 obj_move_for_one_second(s32 endAction)
 		return TRUE;
 	}
 
-	obj_move_standard(-78);
+	s_enemymove(-78);
 	return FALSE;
 }
 
@@ -1147,9 +1147,9 @@ static void treat_far_home_as_mario(f32 threshold)
 /**
  * Used by fly guy, piranha plant, and fire spitters.
  */
-void obj_spit_fire(s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 scale, s32 model, f32 startSpeed, f32 endSpeed, s16 movePitch)
+void i_set_fireball(s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 scale, s32 model, f32 startSpeed, f32 endSpeed, s16 movePitch)
 {
-	Object* obj = spawn_object_relative_with_scale(1, relativePosX, relativePosY, relativePosZ, scale, o, model, sm64::bhv::bhvSmallPiranhaFlame());
+	Object* obj = s_makeobj_chain_scale(1, relativePosX, relativePosY, relativePosZ, scale, o, model, sm64::bhv::bhvSmallPiranhaFlame());
 
 	if(obj != NULL)
 	{
@@ -1162,7 +1162,7 @@ void obj_spit_fire(s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 sca
 
 void obj_spit_bouncing_fire(s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 scale, s32 model, f32 startSpeed, f32 endSpeed, s16 movePitch)
 {
-	Object* obj = spawn_object_relative_with_scale(1, relativePosX, relativePosY, relativePosZ, scale, o, model, sm64::bhv::bhvBouncingFireballFlame2());
+	Object* obj = s_makeobj_chain_scale(1, relativePosX, relativePosY, relativePosZ, scale, o, model, sm64::bhv::bhvBouncingFireballFlame2());
 
 	if(obj != NULL)
 	{

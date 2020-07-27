@@ -13,9 +13,9 @@ f32 WaterRingCalcMarioDistInFront(void)
 void WaterRingInit(void)
 {
 	SetObjAnimation(0);
-	o->oWaterRingScalePhaseX = (s32)(RandomFloat() * 4096.0f) + 0x1000;
-	o->oWaterRingScalePhaseY = (s32)(RandomFloat() * 4096.0f) + 0x1000;
-	o->oWaterRingScalePhaseZ = (s32)(RandomFloat() * 4096.0f) + 0x1000;
+	o->oWaterRingScalePhaseX = (s32)(Randomf() * 4096.0f) + 0x1000;
+	o->oWaterRingScalePhaseY = (s32)(Randomf() * 4096.0f) + 0x1000;
+	o->oWaterRingScalePhaseZ = (s32)(Randomf() * 4096.0f) + 0x1000;
 
 	//! This normal calculation assumes a facing yaw of 0, which is not the case
 	//  for the manta ray rings. It also errs by multiplying the normal X by -1.

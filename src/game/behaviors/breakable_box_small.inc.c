@@ -26,8 +26,8 @@ void bhv_breakable_box_small_init(void)
 void func_802F4CE8(void)
 {
 	struct Object* sp24 = s_makeobj_nowpos(o, MODEL_SMOKE, sm64::bhv::bhvSmoke());
-	sp24->oPosX += (s32)(RandomFloat() * 80.0f) - 40;
-	sp24->oPosZ += (s32)(RandomFloat() * 80.0f) - 40;
+	sp24->oPosX += (s32)(Randomf() * 80.0f) - 40;
+	sp24->oPosZ += (s32)(Randomf() * 80.0f) - 40;
 }
 
 void func_802F4DB4(void)

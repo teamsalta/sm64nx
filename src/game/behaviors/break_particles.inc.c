@@ -21,7 +21,7 @@ void s_boxeffect(s16 numTris, s16 triModel, f32 triSize, s16 triAnimState)
 		}
 		else
 		{
-			triangle->oAngleVelPitch = 0x80 * (s32)(RandomFloat() + 50.0f);
+			triangle->oAngleVelPitch = 0x80 * (s32)(Randomf() + 50.0f);
 			triangle->oForwardVel	 = 30.0f;
 		}
 		scale_object(triangle, triSize);

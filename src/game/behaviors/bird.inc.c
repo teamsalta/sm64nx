@@ -41,7 +41,7 @@ static void bird_act_inactive(void)
 
 		// Start with a random yaw, and a random pitch from 1000 to 5000.
 		// Positive pitch is downwards.
-		o->oMoveAnglePitch = 5000 - (s32)(4000.0f * RandomFloat());
+		o->oMoveAnglePitch = 5000 - (s32)(4000.0f * Randomf());
 		o->oMoveAngleYaw   = RandomU16();
 
 		o->oBirdSpeed = 40.0f;
@@ -101,7 +101,7 @@ static void bird_act_fly(void)
 
 		// Approach to match the bird's target yaw and pitch.
 		obj_move_pitch_approach(o->oBirdTargetPitch, 140 / FRAME_RATE_SCALER_INV);
-		obj_rotate_yaw_toward(o->oBirdTargetYaw, 800 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oBirdTargetYaw, 800 / FRAME_RATE_SCALER_INV);
 		obj_roll_to_match_yaw_turn(o->oBirdTargetYaw, 0x3000, 600 / FRAME_RATE_SCALER_INV);
 	}
 

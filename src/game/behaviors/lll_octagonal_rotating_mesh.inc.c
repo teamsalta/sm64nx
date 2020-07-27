@@ -31,7 +31,7 @@ s32 func_802BB414(s16* a0, s32 a1)
 			}
 			break;
 		case 1:
-			approach_f32_signed(&o->oForwardVel, a0[a1 + 2] / 100.0f, (a0[a1 + 3] / 100.0f) * FRAME_RATE_SCALER);
+			s_chase_speed(&o->oForwardVel, a0[a1 + 2] / 100.0f, (a0[a1 + 3] / 100.0f) * FRAME_RATE_SCALER);
 
 			if(o->oTimer > a0[a1 + 1] * FRAME_RATE_SCALER_INV)
 			{

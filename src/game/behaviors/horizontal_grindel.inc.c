@@ -19,7 +19,7 @@ void bhv_horizontal_grindel_update(void)
 			o->oTimer			= 0;
 		}
 
-		if(obj_rotate_yaw_toward(o->oHorizontalGrindelTargetYaw, 0x400 / FRAME_RATE_SCALER_INV))
+		if(s_chase_angleY(o->oHorizontalGrindelTargetYaw, 0x400 / FRAME_RATE_SCALER_INV))
 		{
 			if(o->oTimer > 60 * FRAME_RATE_SCALER_INV)
 			{
@@ -54,5 +54,5 @@ void bhv_horizontal_grindel_update(void)
 
 	o->oFaceAngleYaw = o->oMoveAngleYaw + 0x4000;
 
-	obj_move_standard(78);
+	s_enemymove(78);
 }

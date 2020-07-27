@@ -71,8 +71,8 @@ void bhv_donut_platform_update(void)
 		}
 		else
 		{
-			obj_update_floor_and_walls();
-			obj_move_standard(78);
+			s_enemybgcheck();
+			s_enemymove(78);
 		}
 
 		stMainMoveBG();

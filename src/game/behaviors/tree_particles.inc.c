@@ -5,10 +5,10 @@ void bhv_tree_snow_or_leaf_loop(void)
 	obj_update_floor_height();
 	if(o->oTimer == 0)
 	{
-		o->oAngleVelPitch	= (RandomFloat() - 0.5) * 0x1000;
-		o->oAngleVelRoll	= (RandomFloat() - 0.5) * 0x1000;
+		o->oAngleVelPitch	= (Randomf() - 0.5) * 0x1000;
+		o->oAngleVelRoll	= (Randomf() - 0.5) * 0x1000;
 		o->oTreeSnowOrLeafUnkF8 = 4;
-		o->oTreeSnowOrLeafUnkFC = RandomFloat() * 0x400 + 0x600;
+		o->oTreeSnowOrLeafUnkFC = Randomf() * 0x400 + 0x600;
 	}
 	if(o->oPosY < o->oFloorHeight)
 		s_remove_obj(o);
@@ -51,26 +51,26 @@ void bhv_snow_leaf_particle_spawn_init(void)
 		isSnow = 0;
 	if(isSnow)
 	{
-		if(RandomFloat() < 0.5)
+		if(Randomf() < 0.5)
 		{
 			obj   = s_makeobj_nowpos(o, MODEL_WHITE_PARTICLE_DL, sm64::bhv::bhvTreeSnow());
-			scale = RandomFloat();
+			scale = Randomf();
 			scale_object_xyz(obj, scale, scale, scale);
 			obj->oMoveAngleYaw = RandomU16();
-			obj->oForwardVel   = RandomFloat() * 5.0f;
-			obj->oVelY	   = RandomFloat() * 15.0f;
+			obj->oForwardVel   = Randomf() * 5.0f;
+			obj->oVelY	   = Randomf() * 15.0f;
 		}
 	}
 	else
 	{
-		if(RandomFloat() < 0.3)
+		if(Randomf() < 0.3)
 		{
 			obj   = s_makeobj_nowpos(o, MODEL_LEAVES, sm64::bhv::bhvTreeLeaf());
-			scale = RandomFloat() * 3.0f;
+			scale = Randomf() * 3.0f;
 			scale_object_xyz(obj, scale, scale, scale);
 			obj->oMoveAngleYaw   = RandomU16();
-			obj->oForwardVel     = RandomFloat() * 5.0f + 5.0f;
-			obj->oVelY	     = RandomFloat() * 15.0f;
+			obj->oForwardVel     = Randomf() * 5.0f + 5.0f;
+			obj->oVelY	     = Randomf() * 15.0f;
 			obj->oFaceAnglePitch = RandomU16();
 			obj->oFaceAngleRoll  = RandomU16();
 			obj->oFaceAngleYaw   = RandomU16();

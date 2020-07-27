@@ -30,8 +30,8 @@ void bhv_bowser_key_loop(void)
 
 		spawn_sparkle_particles(3, 200, 80, -60);
 		s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
-		obj_update_floor_and_walls();
-		obj_move_standard(78);
+		s_enemybgcheck();
+		s_enemymove(78);
 
 		if(o->oMoveFlags & OBJ_MOVE_ON_GROUND)
 			o->oAction++;

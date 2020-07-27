@@ -961,7 +961,7 @@ Gfx* create_shadow_below_xyz(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 s
 {
 	Gfx* displayList = NULL;
 	struct Surface* pfloor;
-	find_floor(xPos, yPos, zPos, &pfloor);
+	mcBGGroundCheck(xPos, yPos, zPos, &pfloor);
 
 	gShadowAboveWaterOrLava = FALSE;
 	gMarioOnIceOrCarpet	= 0;

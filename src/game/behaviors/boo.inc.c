@@ -167,8 +167,8 @@ static void boo_oscillate(s32 ignoreOpacity)
 
 static s32 boo_vanish_or_appear(void)
 {
-	s16 relativeAngleToMario   = abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw);
-	s16 relativeMarioFaceAngle = abs_angle_diff(o->oMoveAngleYaw, gMarioObject->oFaceAngleYaw);
+	s16 relativeAngleToMario   = s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw);
+	s16 relativeMarioFaceAngle = s_calc_dangle(o->oMoveAngleYaw, gMarioObject->oFaceAngleYaw);
 	// magic?
 	s16 relativeAngleToMarioThreshhold   = 0x1568;
 	s16 relativeMarioFaceAngleThreshhold = 0x6b58;
@@ -414,7 +414,7 @@ static void boo_chase_mario(f32 a0, s16 a1, f32 a2)
 			sp1A = o->oAngleToMario;
 		}
 
-		obj_rotate_yaw_toward(sp1A, a1 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(sp1A, a1 / FRAME_RATE_SCALER_INV);
 		o->oVelY = 0.0f;
 
 		if(mario_is_in_air_action() == 0)
@@ -497,8 +497,8 @@ static void ActionBoo1(void)
 
 	if(o->oTimer == 0)
 	{
-		o->oBooNegatedAggressiveness = -RandomFloat() * 5.0f;
-		o->oBooTurningSpeed	     = (s32)(RandomFloat() * 128.0f);
+		o->oBooNegatedAggressiveness = -Randomf() * 5.0f;
+		o->oBooTurningSpeed	     = (s32)(Randomf() * 128.0f);
 	}
 
 	boo_chase_mario(-100.0f, o->oBooTurningSpeed + 0x180, 0.5f);
@@ -564,7 +564,7 @@ static void ActionBoo4(void)
 		dialogID = DIALOG_107;
 	}
 
-	if(obj_update_dialog(2, 2, dialogID, 0))
+	if(s_call_enemydemo(2, 2, dialogID, 0))
 	{
 		obj_remove_sound(SOUND_OBJ_DYING_ENEMY1);
 		s_remove_obj(o);
@@ -582,9 +582,9 @@ void bhv_boo_loop(void)
 {
 	// PARTIAL_UPDATE
 
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	s_modejmp(sBooActions);
-	obj_move_standard(78);
+	s_enemymove(78);
 	boo_approach_target_opacity_and_update_scale();
 
 	if(object_has_behavior(o->parentObj, sm64::bhv::bhvMerryGoRoundBooManager()))
@@ -802,9 +802,9 @@ void bhv_big_boo_loop(void)
 
 	o->oGraphYOffset = o->oBooBaseScale * 60.0f;
 
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	s_modejmp(sBooGivingStarActions);
-	obj_move_standard(78);
+	s_enemymove(78);
 
 	boo_approach_target_opacity_and_update_scale();
 	o->oInteractStatus = 0;
@@ -886,9 +886,9 @@ void bhv_boo_with_cage_loop(void)
 {
 	// PARTIAL_UPDATE
 
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	s_modejmp(sBooWithCageActions);
-	obj_move_standard(78);
+	s_enemymove(78);
 
 	boo_approach_target_opacity_and_update_scale();
 	o->oInteractStatus = 0;
@@ -1020,7 +1020,7 @@ void bhv_boo_in_castle_loop(void)
 
 	targetAngle = obj_angle_to_home();
 
-	obj_rotate_yaw_toward(targetAngle, 0x5A8 / FRAME_RATE_SCALER_INV);
+	s_chase_angleY(targetAngle, 0x5A8 / FRAME_RATE_SCALER_INV);
 	boo_oscillate(TRUE);
 	s_optionmove_F();
 }

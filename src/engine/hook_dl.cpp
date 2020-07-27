@@ -65,7 +65,7 @@ static GraphNodeFunc g_graphCallbacks[] = {
     (GraphNodeFunc)Geo18_802764B0,
     (GraphNodeFunc)Geo18_802A45E4,
     (GraphNodeFunc)Geo18_802A719C,
-    (GraphNodeFunc)Geo18_802B798C,
+    (GraphNodeFunc)KopaProc1,
     (GraphNodeFunc)Geo18_802B7D44,
     (GraphNodeFunc)Geo18_802BA2B0,
     (GraphNodeFunc)Geo18_802D5B98,

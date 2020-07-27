@@ -56,8 +56,8 @@ void func_802C0240(s32 a0)
 
 void ActionCheepCheep0(void)
 {
-	o->oCheepCheepUnkFC  = RandomFloat() * 100.0f;
-	o->oCheepCheepUnk104 = RandomFloat() * 300.0f;
+	o->oCheepCheepUnkFC  = Randomf() * 100.0f;
+	o->oCheepCheepUnk104 = Randomf() * 300.0f;
 	o->oAction	     = 1;
 }
 
@@ -66,8 +66,8 @@ void ActionCheepCheep1(void)
 	f32 dy;
 	if(o->oTimer == 0)
 	{
-		o->oForwardVel	     = RandomFloat() * 2 + 2;
-		o->oCheepCheepUnk108 = RandomFloat();
+		o->oForwardVel	     = Randomf() * 2 + 2;
+		o->oCheepCheepUnk108 = Randomf();
 	}
 	dy = o->oPosY - gMarioObject->oPosY;
 	if(o->oPosY < o->oCheepCheepUnkF4 - 50.0f)
@@ -87,7 +87,7 @@ void ActionCheepCheep1(void)
 	}
 	if(800.0f < obj_lateral_dist_from_mario_to_home())
 		o->oAngleToMario = obj_angle_to_home();
-	obj_rotate_yaw_toward(o->oAngleToMario, 0x100 / FRAME_RATE_SCALER_INV);
+	s_chase_angleY(o->oAngleToMario, 0x100 / FRAME_RATE_SCALER_INV);
 	if(o->oDistanceToMario < 200.0f)
 		if(o->oCheepCheepUnk108 < 0.5)
 			o->oAction = 2;
@@ -127,7 +127,7 @@ void ActionCheepCheep2(void)
 	}
 	if(obj_lateral_dist_from_mario_to_home() > 800.0f)
 		o->oAngleToMario = obj_angle_to_home();
-	obj_rotate_yaw_toward(o->oAngleToMario + 0x8000, 0x400 / FRAME_RATE_SCALER_INV);
+	s_chase_angleY(o->oAngleToMario + 0x8000, 0x400 / FRAME_RATE_SCALER_INV);
 	if(o->oTimer > 200 * FRAME_RATE_SCALER_INV && o->oDistanceToMario > 600.0f)
 		o->oAction = 1;
 }
@@ -139,7 +139,7 @@ void bhv_cheep_cheep_loop(void)
 	o->oCheepCheepUnkF4  = find_water_level(o->oPosX, o->oPosZ);
 	o->oCheepCheepUnkF8  = gMarioObject->oPosY + o->oCheepCheepUnkFC;
 	o->oWallHitboxRadius = 30.0f;
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	s_modejmp(sCheepCheepActions);
 	s_optionmove_F();
 	if(o->parentObj->oAction == 2)

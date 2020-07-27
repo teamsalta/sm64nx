@@ -233,7 +233,7 @@ static void shyguy_act_walk(void)
 				o->oGoombaRelativeSpeed = 4.0f / 3.0f;
 
 				auto aMario = angle_to_object(gCurrentObject, gMarioObject);
-				s16 dist    = abs_angle_diff(aMario, o->oMoveAngleYaw);
+				s16 dist    = s_calc_dangle(aMario, o->oMoveAngleYaw);
 
 				if(dist < DEGREES(1.0f) && o->oTimer > 3 * 30 * FRAME_RATE_SCALER_INV)
 				{
@@ -276,7 +276,7 @@ static void shyguy_act_walk(void)
 		}
 #endif
 
-		obj_rotate_yaw_toward(o->oGoombaTargetYaw, 0x200 * 2 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oGoombaTargetYaw, 0x200 * 2 / FRAME_RATE_SCALER_INV);
 	}
 }
 
@@ -322,7 +322,7 @@ static void shyguy_act_jump(void)
 	}
 	else
 	{
-		obj_rotate_yaw_toward(o->oGoombaTargetYaw, 0x800 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oGoombaTargetYaw, 0x800 / FRAME_RATE_SCALER_INV);
 	}
 }
 
@@ -360,7 +360,7 @@ void bhv_shyguy_update(void)
 
 		s_set_scale(o->oGoombaScale);
 		obj_update_blinking(&o->oGoombaBlinkTimer, 30, 50, 5);
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		if((animSpeed = o->oForwardVel / o->oGoombaScale * 0.4f) < 1.0f)
 		{
@@ -395,7 +395,7 @@ void bhv_shyguy_update(void)
 			mark_shyguy_as_dead();
 		}
 
-		obj_move_standard(-78);
+		s_enemymove(-78);
 	}
 	else
 	{

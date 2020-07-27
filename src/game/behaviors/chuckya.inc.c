@@ -108,9 +108,9 @@ void ActionChuckya0(void)
 			o->oForwardVel = 0;
 			if(obj_lateral_dist_from_mario_to_home() < 2000.0f)
 			{
-				obj_rotate_yaw_toward(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
+				s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 
-				if(o->oChuckyaUnkFC > 40 || abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) < 0x1000)
+				if(o->oChuckyaUnkFC > 40 || s_calc_dangle(o->oMoveAngleYaw, o->oAngleToMario) < 0x1000)
 					o->oSubAction = 1;
 			}
 			else
@@ -119,7 +119,7 @@ void ActionChuckya0(void)
 		case 1:
 			lerp(&o->oForwardVel, 30.0f, 4.0f * FRAME_RATE_SCALER);
 
-			if(abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) > 0x4000)
+			if(s_calc_dangle(o->oMoveAngleYaw, o->oAngleToMario) > 0x4000)
 				o->oSubAction = 2;
 
 			if(obj_lateral_dist_from_mario_to_home() > 2000.0f)
@@ -139,7 +139,7 @@ void ActionChuckya0(void)
 			{
 				lerp(&o->oForwardVel, 10.0f, 4.0f * FRAME_RATE_SCALER);
 				o->oAngleToMario = obj_angle_to_home();
-				obj_rotate_yaw_toward(o->oAngleToMario, 0x800 / FRAME_RATE_SCALER_INV);
+				s_chase_angleY(o->oAngleToMario, 0x800 / FRAME_RATE_SCALER_INV);
 			}
 			if(obj_lateral_dist_from_mario_to_home() < 1900.0f)
 				o->oSubAction = 0;
@@ -149,7 +149,7 @@ void ActionChuckya0(void)
 		o->oChuckyaUnkFC = 0;
 	else
 		o->oChuckyaUnkFC++;
-	set_obj_animation_and_sound_state(4);
+	s_set_skelanimeNo(4);
 	if(o->oForwardVel > 1.0f)
 		objsound_level(SOUND_AIR_CHUCKYA_MOVE);
 }
@@ -158,9 +158,9 @@ void ActionChuckya1(void)
 {
 	if(o->oSubAction == 0)
 	{
-		if(func_802A4AB0(0))
+		if(s_setanime_endcheck(0))
 			o->oSubAction++;
-		o->oChuckyaUnkFC  = RandomFloat() * 30.0f + 10.0f;
+		o->oChuckyaUnkFC  = Randomf() * 30.0f + 10.0f;
 		o->oChuckyaUnk100 = 0;
 		o->oForwardVel	  = 0.0f;
 	}
@@ -178,7 +178,7 @@ void ActionChuckya1(void)
 			}
 			else
 			{
-				set_obj_animation_and_sound_state(1);
+				s_set_skelanimeNo(1);
 				o->oMoveAngleYaw += INT_STATUS_GRABBED_MARIO;
 
 				if(o->oChuckyaUnkFC-- < 0)
@@ -191,8 +191,8 @@ void ActionChuckya1(void)
 		}
 		else
 		{
-			set_obj_animation_and_sound_state(3);
-			if(obj_check_anim_frame(18))
+			s_set_skelanimeNo(3);
+			if(s_check_animenumber(18))
 			{
 				objsound(SOUND_OBJ_UNKNOWN4);
 				o->oChuckyaUnk88 = 2;
@@ -207,7 +207,7 @@ void ActionChuckya3(void)
 {
 	o->oForwardVel = 0;
 	o->oVelY       = 0;
-	set_obj_animation_and_sound_state(4);
+	s_set_skelanimeNo(4);
 	if(o->oTimer > 100 * FRAME_RATE_SCALER_INV)
 		o->oAction = 0;
 }
@@ -226,9 +226,9 @@ void (*sChuckyaActions[])(void) = {ActionChuckya0, ActionChuckya1, ActionChuckya
 
 void func_802A97B8(void)
 {
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	s_modejmp(sChuckyaActions);
-	obj_move_standard(-30);
+	s_enemymove(-30);
 	if(o->oInteractStatus & INT_STATUS_GRABBED_MARIO)
 	{
 		o->oAction	 = 1;
@@ -249,11 +249,11 @@ void bhv_chuckya_loop(void)
 			func_802A97B8();
 			break;
 		case HELD_HELD:
-			func_8029FA5C(2, 0);
+			s_mode_catch(2, 0);
 			break;
 		case HELD_THROWN:
 		case HELD_DROPPED:
-			obj_get_thrown_or_placed(sp2C, sp28, 2);
+			s_mode_throw(sp2C, sp28, 2);
 			break;
 	}
 	o->oInteractStatus = 0;

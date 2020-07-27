@@ -22,7 +22,7 @@ void bhv_camera_lakitu_init(void)
 	}
 	else
 	{
-		spawn_object_relative_with_scale(CLOUD_BP_LAKITU_CLOUD, 0, 0, 0, 2.0f, o, MODEL_MIST, sm64::bhv::bhvCloud());
+		s_makeobj_chain_scale(CLOUD_BP_LAKITU_CLOUD, 0, 0, 0, 2.0f, o, MODEL_MIST, sm64::bhv::bhvCloud());
 	}
 }
 
@@ -36,7 +36,7 @@ static void camera_lakitu_intro_act_trigger_cutscene(void)
 	//  the RTA speedrunning method of lakitu skip
 	if(gMarioObject->oPosX > -544.0f && gMarioObject->oPosX < 545.0f && gMarioObject->oPosY > 800.0f && gMarioObject->oPosZ > -2000.0f && gMarioObject->oPosZ < -177.0f && gMarioObject->oPosZ < -177.0f) // always double check your conditions
 	{
-		if(set_mario_npc_dialog(2) == 1)
+		if(CtrlPlayerDialog(2) == 1)
 		{
 			o->oAction = CAMERA_LAKITU_INTRO_ACT_SPAWN_CLOUD;
 		}
@@ -48,7 +48,7 @@ static void camera_lakitu_intro_act_trigger_cutscene(void)
  */
 static void camera_lakitu_intro_act_spawn_cloud(void)
 {
-	if(set_mario_npc_dialog(2) == 2)
+	if(CtrlPlayerDialog(2) == 2)
 	{
 		o->oAction = CAMERA_LAKITU_INTRO_ACT_UNK2;
 
@@ -60,7 +60,7 @@ static void camera_lakitu_intro_act_spawn_cloud(void)
 		o->oCameraLakituSpeed	     = 60.0f;
 		o->oCameraLakituCircleRadius = 1000.0f;
 
-		spawn_object_relative_with_scale(CLOUD_BP_LAKITU_CLOUD, 0, 0, 0, 2.0f, o, MODEL_MIST, sm64::bhv::bhvCloud());
+		s_makeobj_chain_scale(CLOUD_BP_LAKITU_CLOUD, 0, 0, 0, 2.0f, o, MODEL_MIST, sm64::bhv::bhvCloud());
 	}
 }
 
@@ -122,7 +122,7 @@ static void camera_lakitu_intro_act_show_dialog(void)
 
 					// Once within 1000 units, slow down
 					approach_f32_ptr(&o->oCameraLakituSpeed, 20.0f, 1.0f * FRAME_RATE_SCALER);
-					if(o->oDistanceToMario < 500.0f && abs_angle_diff(gMarioObject->oFaceAngleYaw, o->oFaceAngleYaw) > 0x7000)
+					if(o->oDistanceToMario < 500.0f && s_calc_dangle(gMarioObject->oFaceAngleYaw, o->oFaceAngleYaw) > 0x7000)
 					{
 						// Once within 500 units and facing toward mario, come
 						// to a stop
@@ -141,7 +141,7 @@ static void camera_lakitu_intro_act_show_dialog(void)
 	obj_move_pitch_approach(targetMovePitch, o->oCameraLakituPitchVel / FRAME_RATE_SCALER_INV);
 
 	o->oCameraLakituYawVel = approach_s16_symmetric(o->oCameraLakituYawVel, 0x7D0, 0x64 / FRAME_RATE_SCALER_INV);
-	obj_rotate_yaw_toward(targetMoveYaw, o->oCameraLakituYawVel * FRAME_RATE_SCALER);
+	s_chase_angleY(targetMoveYaw, o->oCameraLakituYawVel * FRAME_RATE_SCALER);
 
 	// vel y is explicitly computed, so gravity doesn't apply
 	obj_compute_vel_from_move_pitch(o->oCameraLakituSpeed);

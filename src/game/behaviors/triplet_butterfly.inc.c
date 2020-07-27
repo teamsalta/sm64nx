@@ -100,7 +100,7 @@ static void triplet_butterfly_act_wander(void)
 		}
 
 		obj_move_pitch_approach(o->oTripletButterflyTargetPitch, 400 / FRAME_RATE_SCALER_INV);
-		obj_rotate_yaw_toward(o->oTripletButterflyTargetYaw, random_linear_offset(400 / FRAME_RATE_SCALER_INV, 800 / FRAME_RATE_SCALER_INV));
+		s_chase_angleY(o->oTripletButterflyTargetYaw, random_linear_offset(400 / FRAME_RATE_SCALER_INV, 800 / FRAME_RATE_SCALER_INV));
 	}
 }
 
@@ -110,7 +110,7 @@ static void triplet_butterfly_act_activate(void)
 	{
 		if(o->oTripletButterflyModel == 0)
 		{
-			spawn_object_relative_with_scale(0, 0, -40, 0, 1.5f, o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke2());
+			s_makeobj_chain_scale(0, 0, -40, 0, 1.5f, o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke2());
 			o->oTripletButterflyModel = sTripletButterflyActivationData[o->oTripletButterflyType].model;
 			s_change_shape(o->oTripletButterflyModel);
 			obj_set_billboard(o);
@@ -172,14 +172,14 @@ static void triplet_butterfly_act_explode(void)
 		}
 
 		approach_f32_ptr(&o->oTripletButterflySpeed, 20.0f, 1.0f * FRAME_RATE_SCALER);
-		obj_rotate_yaw_toward(o->oAngleToMario, 800 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oAngleToMario, 800 / FRAME_RATE_SCALER_INV);
 		obj_turn_pitch_toward_mario(-100.0f, 800 / FRAME_RATE_SCALER_INV);
 	}
 }
 
 void bhv_triplet_butterfly_update(void)
 {
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	switch(o->oAction)
 	{
@@ -199,5 +199,5 @@ void bhv_triplet_butterfly_update(void)
 
 	s_set_scale(o->oTripletButterflyScale);
 	obj_compute_vel_from_move_pitch(o->oTripletButterflySpeed);
-	obj_move_standard(78);
+	s_enemymove(78);
 }

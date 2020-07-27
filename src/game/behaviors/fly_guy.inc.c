@@ -38,7 +38,7 @@ static void fly_guy_act_idle(void)
 			// Turn toward home or Mario
 			obj_face_yaw_approach(o->oAngleToMario, 0x300 / FRAME_RATE_SCALER_INV);
 
-			if(obj_rotate_yaw_toward(o->oAngleToMario, 0x300 / FRAME_RATE_SCALER_INV))
+			if(s_chase_angleY(o->oAngleToMario, 0x300 / FRAME_RATE_SCALER_INV))
 			{
 				o->oAction = FLY_GUY_ACT_APPROACH_MARIO;
 			}
@@ -74,11 +74,11 @@ static void fly_guy_act_approach_mario(void)
 
 		// Turn toward home or Mario
 		obj_face_yaw_approach(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
-		obj_rotate_yaw_toward(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
 
 		// If facing toward mario and we are either near mario laterally or
 		// far above him
-		if(abs_angle_diff(o->oAngleToMario, o->oFaceAngleYaw) < 0x2000)
+		if(s_calc_dangle(o->oAngleToMario, o->oFaceAngleYaw) < 0x2000)
 		{
 			if(o->oPosY - gMarioObject->oPosY > 400.0f || o->oDistanceToMario < 400.0f)
 			{
@@ -118,11 +118,11 @@ static void fly_guy_act_lunge(void)
 
 		o->oVelY += o->oFlyGuyLungeYDecel * FRAME_RATE_SCALER;
 
-		obj_rotate_yaw_toward(o->oFaceAngleYaw, 0x800 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oFaceAngleYaw, 0x800 / FRAME_RATE_SCALER_INV);
 		obj_face_pitch_approach(o->oFlyGuyLungeTargetPitch, 0x400 / FRAME_RATE_SCALER_INV);
 
 		// Range [-0x1000, 0x2000]
-		o->oFlyGuyTargetRoll = 0x1000 * (s16)(RandomFloat() * 3.0f) - 0x1000;
+		o->oFlyGuyTargetRoll = 0x1000 * (s16)(Randomf() * 3.0f) - 0x1000;
 		o->oTimer	     = 0;
 	}
 	else
@@ -185,7 +185,7 @@ static void fly_guy_act_shoot_fire(void)
 				objsound(SOUND_OBJ_FLAME_BLOWN);
 				clamp_s16(&fireMovePitch, 0x800, 0x3000);
 
-				obj_spit_fire(
+				i_set_fireball(
 				    /*relativePos*/ 0, 38, 20,
 				    /*scale      */ 2.5f,
 				    /*model      */ MODEL_RED_FLAME_SHADOW,
@@ -218,7 +218,7 @@ void bhv_fly_guy_update(void)
 
 		s_set_scale(o->header.gfx.scale[0]);
 		treat_far_home_as_mario(2000.0f);
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
 		{
@@ -249,7 +249,7 @@ void bhv_fly_guy_update(void)
 				break;
 		}
 
-		obj_move_standard(78);
+		s_enemymove(78);
 		obj_check_attacks(&sFlyGuyHitbox, o->oAction);
 	}
 }

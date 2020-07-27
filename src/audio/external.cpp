@@ -1418,7 +1418,7 @@ void unused_8031FED0(u8 player, u32 bits, s8 arg2)
 	}
 }
 
-void func_8031FFB4(u8 player, u16 fadeTimer, u8 arg2)
+void Na_SeqVolMute(u8 player, u16 fadeTimer, u8 arg2)
 {
 	if(player == 0)
 	{

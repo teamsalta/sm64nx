@@ -13,7 +13,7 @@ static struct ObjectHitbox sMadPianoHitbox = {
 
 static void mad_piano_act_wait(void)
 {
-	set_obj_animation_and_sound_state(0);
+	s_set_skelanimeNo(0);
 
 	if(o->oDistanceToMario < 500.0f)
 	{
@@ -36,8 +36,8 @@ static void mad_piano_act_wait(void)
 
 static void mad_piano_act_attack(void)
 {
-	obj_update_floor_and_walls();
-	set_obj_animation_and_sound_state(1);
+	s_enemybgcheck();
+	s_set_skelanimeNo(1);
 	func_802F9378(0, 0, SOUND_OBJ_MAD_PIANO_CHOMPING);
 
 	if(o->oDistanceToMario < 500.0f)
@@ -45,7 +45,7 @@ static void mad_piano_act_attack(void)
 		o->oTimer = 0;
 	}
 
-	if(o->oTimer > 80 * FRAME_RATE_SCALER_INV && func_8029F788())
+	if(o->oTimer > 80 * FRAME_RATE_SCALER_INV && s_check_animeend())
 	{
 		o->oAction     = MAD_PIANO_ACT_WAIT;
 		o->oForwardVel = 0.0f;
@@ -64,12 +64,12 @@ static void mad_piano_act_attack(void)
 			o->oPosZ   = o->oHomeZ + dz * distToHome;
 		}
 
-		obj_rotate_yaw_toward(o->oAngleToMario, 400 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oAngleToMario, 400 / FRAME_RATE_SCALER_INV);
 		o->oForwardVel = 5.0f;
 	}
 
 	obj_check_attacks(&sMadPianoHitbox, o->oAction);
-	obj_move_standard(78);
+	s_enemymove(78);
 }
 
 void bhv_mad_piano_update(void)

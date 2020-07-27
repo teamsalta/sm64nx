@@ -26,7 +26,7 @@ void bubba_act_0(void)
 
 	if(o->oBubbaUnkFC != 0)
 	{
-		if(abs_angle_diff(o->oMoveAngleYaw, o->oBubbaUnk1AE) < 800)
+		if(s_calc_dangle(o->oMoveAngleYaw, o->oBubbaUnk1AE) < 800)
 		{
 			o->oBubbaUnkFC = 0;
 		}
@@ -95,13 +95,13 @@ void bubba_act_1(void)
 			o->oBubbaUnk1AE = o->oAngleToMario;
 			o->oBubbaUnk1AC = o->oBubbaUnk104;
 
-			obj_rotate_yaw_toward(o->oBubbaUnk1AE, 400 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(o->oBubbaUnk1AE, 400 / FRAME_RATE_SCALER_INV);
 			obj_move_pitch_approach(o->oBubbaUnk1AC, 400 / FRAME_RATE_SCALER_INV);
 		}
 	}
 	else
 	{
-		if(abs_angle_diff(gMarioObject->oFaceAngleYaw, o->oAngleToMario) < 0x3000)
+		if(s_calc_dangle(gMarioObject->oFaceAngleYaw, o->oAngleToMario) < 0x3000)
 		{
 			val04 = 0x4000 - atan2s(800.0f, o->oDistanceToMario - 800.0f);
 			if((s16)(o->oMoveAngleYaw - o->oAngleToMario) < 0)
@@ -119,7 +119,7 @@ void bubba_act_1(void)
 
 		o->oBubbaUnk1AC = o->oBubbaUnk104;
 
-		if(obj_is_near_to_and_facing_mario(500.0f, 3000) && abs_angle_diff(o->oBubbaUnk1AC, o->oMoveAnglePitch) < 3000)
+		if(obj_is_near_to_and_facing_mario(500.0f, 3000) && s_calc_dangle(o->oBubbaUnk1AC, o->oMoveAnglePitch) < 3000)
 		{
 			o->oBubbaUnk100 = 30;
 			o->oBubbaUnkF4	= 0;
@@ -141,7 +141,7 @@ void bhv_bubba_loop(void)
 	o->oInteractionSubtype &= ~INT_SUBTYPE_EATS_MARIO;
 	o->oBubbaUnk104 = obj_turn_pitch_toward_mario(120.0f, 0);
 
-	if(abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x1000 && abs_angle_diff(o->oBubbaUnk104 + 0x800, o->oMoveAnglePitch) < 0x2000)
+	if(s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw) < 0x1000 && s_calc_dangle(o->oBubbaUnk104 + 0x800, o->oMoveAnglePitch) < 0x2000)
 	{
 		if(o->oAnimState != 0 && o->oDistanceToMario < 250.0f)
 		{
@@ -155,7 +155,7 @@ void bhv_bubba_loop(void)
 		o->hurtboxRadius = 150.0f;
 	}
 
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	switch(o->oAction)
 	{
@@ -208,7 +208,7 @@ void bhv_bubba_loop(void)
 	obj_face_pitch_approach(o->oMoveAnglePitch, 400 / FRAME_RATE_SCALER_INV);
 	obj_check_attacks(&sBubbaHitbox, o->oAction);
 
-	obj_move_standard(78);
+	s_enemymove(78);
 
 	o->oFloorHeight += 150.0f * FRAME_RATE_SCALER;
 

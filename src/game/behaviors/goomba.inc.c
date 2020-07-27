@@ -232,7 +232,7 @@ static void goomba_act_walk(void)
 			}
 		}
 
-		obj_rotate_yaw_toward(o->oGoombaTargetYaw, 0x200 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oGoombaTargetYaw, 0x200 / FRAME_RATE_SCALER_INV);
 	}
 }
 
@@ -278,7 +278,7 @@ static void goomba_act_jump(void)
 	}
 	else
 	{
-		obj_rotate_yaw_toward(o->oGoombaTargetYaw, 0x800 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oGoombaTargetYaw, 0x800 / FRAME_RATE_SCALER_INV);
 	}
 }
 
@@ -316,7 +316,7 @@ void bhv_goomba_update(void)
 
 		s_set_scale(o->oGoombaScale);
 		obj_update_blinking(&o->oGoombaBlinkTimer, 30, 50, 5);
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		if((animSpeed = o->oForwardVel / o->oGoombaScale * 0.4f) < 1.0f)
 		{
@@ -348,7 +348,7 @@ void bhv_goomba_update(void)
 			mark_goomba_as_dead();
 		}
 
-		obj_move_standard(-78);
+		s_enemymove(-78);
 	}
 	else
 	{

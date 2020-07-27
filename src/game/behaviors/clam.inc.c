@@ -55,7 +55,7 @@ void clam_act_1(void)
 			s_makeobj_chain(0, val04, 30, val02, o, MODEL_BUBBLE, sm64::bhv::bhvBubbleMaybe());
 		}
 	}
-	else if(obj_check_anim_frame(30))
+	else if(s_check_animenumber(30))
 	{
 		s_hitOFF();
 	}

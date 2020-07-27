@@ -140,12 +140,12 @@ void bhv_mips_act_follow_path(void)
 	}
 
 	// Play sounds during walk animation.
-	if(func_8029F788() == 1 && (collisionFlags & OBJ_COL_FLAG_UNDERWATER))
+	if(s_check_animeend() == 1 && (collisionFlags & OBJ_COL_FLAG_UNDERWATER))
 	{
 		objsound(SOUND_OBJ_MIPS_RABBIT_WATER);
 		s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSurfaceWaveShrinking());
 	}
-	else if(func_8029F788() == 1)
+	else if(s_check_animeend() == 1)
 	{
 		objsound(SOUND_OBJ_MIPS_RABBIT);
 	}
@@ -156,7 +156,7 @@ void bhv_mips_act_follow_path(void)
  */
 void bhv_mips_act_wait_for_animation_done(void)
 {
-	if(func_8029F788() == 1)
+	if(s_check_animeend() == 1)
 	{
 		SetObjAnimation(0);
 		o->oAction = MIPS_ACT_IDLE;
@@ -253,7 +253,7 @@ void bhv_mips_held(void)
 		else
 			dialogID = DIALOG_162;
 
-		if(set_mario_npc_dialog(1) == 2)
+		if(CtrlPlayerDialog(1) == 2)
 		{
 			o->activeFlags |= ACTIVE_FLAG_INITIATED_TIME_STOP;
 			if(cutscene_object_with_dialog(CUTSCENE_DIALOG, o, dialogID))
@@ -261,7 +261,7 @@ void bhv_mips_held(void)
 				o->oInteractionSubtype |= INT_SUBTYPE_DROP_IMMEDIATELY;
 				o->activeFlags &= ~ACTIVE_FLAG_INITIATED_TIME_STOP;
 				o->oMipsStarStatus = MIPS_STAR_STATUS_SHOULD_SPAWN_STAR;
-				set_mario_npc_dialog(0);
+				CtrlPlayerDialog(0);
 			}
 		}
 	}

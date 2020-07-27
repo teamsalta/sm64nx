@@ -26,7 +26,7 @@
 struct ObjectNode gObjectListArray[16];
 
 /**
- * The number of times per frame find_floor found no floor beneath an
+ * The number of times per frame mcBGGroundCheck found no floor beneath an
  * object, and therefore either returned a dynamic floor or NULL.
  */
 s32 gNumFindFloorMisses;
@@ -45,7 +45,7 @@ s32 gUnknownWallCount;
 u32 gObjectCounter;
 
 /**
- * The number of times find_floor, find_ceil, and find_wall_collisions have been called respectively.
+ * The number of times mcBGGroundCheck, find_ceil, and find_wall_collisions have been called respectively.
  */
 struct NumTimesCalled gNumCalls;
 
@@ -228,7 +228,7 @@ void spawn_particle(u32 activeParticleFlag, s16 model, const BehaviorScript* beh
 		struct Object* particle;
 		gCurrentObject->oActiveParticleFlags |= activeParticleFlag;
 		particle = spawn_object_at_origin(gCurrentObject, 0, model, behavior);
-		copy_object_pos_and_angle(particle, gCurrentObject);
+		s_copy_worldXYZ_angleXYZ(particle, gCurrentObject);
 	}
 }
 

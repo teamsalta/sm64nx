@@ -19,6 +19,6 @@ struct SoundState
 extern void objsound_level(s32);
 extern void objsound(s32);
 extern void obj_remove_sound(s32);
-extern void exec_anim_sound_state(struct SoundState* soundStates);
+extern void s_enemysound(struct SoundState* soundStates);
 
 #endif

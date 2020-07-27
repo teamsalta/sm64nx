@@ -56,7 +56,7 @@ void bhv_surface_waves_loop(void)
 
 void bhv_water_surface_white_wave_init(void)
 {
-	s_set_scale(RandomFloat() + 1.5);
+	s_set_scale(Randomf() + 1.5);
 }
 
 void bhv_object_bubble_ripples_init(void)

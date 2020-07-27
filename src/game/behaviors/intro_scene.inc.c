@@ -4,7 +4,7 @@ void func_8029B964(struct Object* parent, s16 xOffset, s16 yOffset, s16 zOffset,
 {
 	struct Object* sp1C = s_makeobj_nowpos(parent, model, behavior);
 
-	sp1C->header.gfx.unk38.setFrameRaw(RandomFloat() * 6.f);
+	sp1C->header.gfx.unk38.setFrameRaw(Randomf() * 6.f);
 	sp1C->oEndBirdUnk104 = sCutsceneVars[9].point[0];
 	sCutsceneVars[9].point[0] += 1.f;
 	sp1C->oPosX += xOffset / FRAME_RATE_SCALER_INV;

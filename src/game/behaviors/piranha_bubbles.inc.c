@@ -14,8 +14,8 @@ void bhv_piranha_plant_waking_bubbles_loop(void)
 {
 	if(o->oTimer == 0)
 	{
-		o->oVelY	 = RandomFloat() * 10.0f + 5.0f;
-		o->oForwardVel	 = RandomFloat() * 10.0f + 5.0f;
+		o->oVelY	 = Randomf() * 10.0f + 5.0f;
+		o->oForwardVel	 = Randomf() * 10.0f + 5.0f;
 		o->oMoveAngleYaw = RandomU16();
 	}
 	s_optionmove_F();

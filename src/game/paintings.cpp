@@ -1046,7 +1046,7 @@ Gfx* Geo18_802D5D0C(s32 run, UNUSED struct GraphNode* node, UNUSED f32 c[4][4])
 	{
 		gLastPaintingUpdateCounter = gPaintingUpdateCounter;
 		gPaintingUpdateCounter	   = animationCounter;
-		find_floor(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &surface);
+		mcBGGroundCheck(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &surface);
 
 		if(surface)
 		{

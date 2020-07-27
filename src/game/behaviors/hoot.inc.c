@@ -285,9 +285,9 @@ void bhv_hoot_loop(void)
 		case HOOT_AVAIL_WANTS_TO_TALK:
 			HootAwakeLoop();
 
-			if(set_mario_npc_dialog(2) == 2 && cutscene_object_with_dialog(CUTSCENE_DIALOG, o, DIALOG_044))
+			if(CtrlPlayerDialog(2) == 2 && cutscene_object_with_dialog(CUTSCENE_DIALOG, o, DIALOG_044))
 			{
-				set_mario_npc_dialog(0);
+				CtrlPlayerDialog(0);
 
 				s_hitON();
 

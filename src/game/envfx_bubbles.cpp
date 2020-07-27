@@ -61,7 +61,7 @@ s32 particle_is_laterally_close(s32 index, s32 x, s32 z, s32 distance)
  */
 s32 random_flower_offset()
 {
-	s32 result = RandomFloat() * 2000.0f - 1000.0f;
+	s32 result = Randomf() * 2000.0f - 1000.0f;
 	if(result < 0)
 	{
 		result -= 1000;
@@ -97,7 +97,7 @@ void envfx_update_flower(Vec3s centerPos)
 			(gEnvFxBuffer + i)->zPos      = random_flower_offset() + centerZ;
 			(gEnvFxBuffer + i)->yPos      = find_floor_height_and_data((gEnvFxBuffer + i)->xPos, 10000.0f, (gEnvFxBuffer + i)->zPos, &floorGeo);
 			(gEnvFxBuffer + i)->isAlive   = 1;
-			(gEnvFxBuffer + i)->animFrame = RandomFloat() * 5.0f;
+			(gEnvFxBuffer + i)->animFrame = Randomf() * 5.0f;
 		}
 		else if((timer & 0x03) == 0)
 		{
@@ -112,7 +112,7 @@ void envfx_update_flower(Vec3s centerPos)
 
 /**
  * Update the position of a lava bubble to be somewhere around centerPos
- * Uses find_floor to find the height of lava, if no floor or a non-lava
+ * Uses mcBGGroundCheck to find the height of lava, if no floor or a non-lava
  * floor is found the bubble y is set to -10000, which is why you can see
  * occasional lava bubbles far below the course in Lethal Lava Land.
  * In the second Bowser fight arena, the visual lava is above the lava
@@ -129,8 +129,8 @@ void envfx_set_lava_bubble_position(s32 index, Vec3s centerPos)
 	centerY = centerPos[1];
 	centerZ = centerPos[2];
 
-	(gEnvFxBuffer + index)->xPos = RandomFloat() * 6000.0f - 3000.0f + centerX;
-	(gEnvFxBuffer + index)->zPos = RandomFloat() * 6000.0f - 3000.0f + centerZ;
+	(gEnvFxBuffer + index)->xPos = Randomf() * 6000.0f - 3000.0f + centerX;
+	(gEnvFxBuffer + index)->zPos = Randomf() * 6000.0f - 3000.0f + centerZ;
 
 	if((gEnvFxBuffer + index)->xPos > 8000)
 	{
@@ -150,7 +150,7 @@ void envfx_set_lava_bubble_position(s32 index, Vec3s centerPos)
 		(gEnvFxBuffer + index)->zPos = -16000 - (gEnvFxBuffer + index)->zPos;
 	}
 
-	floorY = find_floor((gEnvFxBuffer + index)->xPos, centerY + 500, (gEnvFxBuffer + index)->zPos, &surface);
+	floorY = mcBGGroundCheck((gEnvFxBuffer + index)->xPos, centerY + 500, (gEnvFxBuffer + index)->zPos, &surface);
 	if(surface == NULL)
 	{
 		(gEnvFxBuffer + index)->yPos = -10000;
@@ -200,7 +200,7 @@ void envfx_update_lava(Vec3s centerPos)
 		}
 	}
 
-	if((chance = (s32)(RandomFloat() * 16.0f)) == 8)
+	if((chance = (s32)(Randomf() * 16.0f)) == 8)
 	{
 		AudStartSound(SOUND_GENERAL_QUIET_BUBBLE2, gDefaultSoundArgs);
 	}
@@ -263,11 +263,11 @@ void envfx_update_whirlpool(void)
 		(gEnvFxBuffer + i)->isAlive = envfx_is_whirlpool_bubble_alive(i);
 		if((gEnvFxBuffer + i)->isAlive == 0)
 		{
-			(gEnvFxBuffer + i)->angleAndDist[1] = RandomFloat() * 1000.0f;
-			(gEnvFxBuffer + i)->angleAndDist[0] = RandomFloat() * 65536.0f;
+			(gEnvFxBuffer + i)->angleAndDist[1] = Randomf() * 1000.0f;
+			(gEnvFxBuffer + i)->angleAndDist[0] = Randomf() * 65536.0f;
 			(gEnvFxBuffer + i)->xPos	    = gEnvFxBubbleConfig[ENVFX_STATE_SRC_X] + sins((gEnvFxBuffer + i)->angleAndDist[0]) * (gEnvFxBuffer + i)->angleAndDist[1];
 			(gEnvFxBuffer + i)->zPos	    = gEnvFxBubbleConfig[ENVFX_STATE_SRC_Z] + coss((gEnvFxBuffer + i)->angleAndDist[0]) * (gEnvFxBuffer + i)->angleAndDist[1];
-			(gEnvFxBuffer + i)->bubbleY	    = gEnvFxBubbleConfig[ENVFX_STATE_SRC_Y] + (RandomFloat() * 100.0f - 50.0f);
+			(gEnvFxBuffer + i)->bubbleY	    = gEnvFxBubbleConfig[ENVFX_STATE_SRC_Y] + (Randomf() * 100.0f - 50.0f);
 			(gEnvFxBuffer + i)->yPos	    = (i + gEnvFxBuffer)->bubbleY;
 			(gEnvFxBuffer + i)->unusedBubbleVar = 0;
 			(gEnvFxBuffer + i)->isAlive	    = 1;
@@ -317,11 +317,11 @@ void envfx_update_jetstream(void)
 		(gEnvFxBuffer + i)->isAlive = envfx_is_jestream_bubble_alive(i);
 		if((gEnvFxBuffer + i)->isAlive == 0)
 		{
-			(gEnvFxBuffer + i)->angleAndDist[1] = RandomFloat() * 300.0f;
+			(gEnvFxBuffer + i)->angleAndDist[1] = Randomf() * 300.0f;
 			(gEnvFxBuffer + i)->angleAndDist[0] = RandomU16();
 			(gEnvFxBuffer + i)->xPos	    = gEnvFxBubbleConfig[ENVFX_STATE_SRC_X] + sins((gEnvFxBuffer + i)->angleAndDist[0]) * (gEnvFxBuffer + i)->angleAndDist[1];
 			(gEnvFxBuffer + i)->zPos	    = gEnvFxBubbleConfig[ENVFX_STATE_SRC_Z] + coss((gEnvFxBuffer + i)->angleAndDist[0]) * (gEnvFxBuffer + i)->angleAndDist[1];
-			(gEnvFxBuffer + i)->yPos	    = gEnvFxBubbleConfig[ENVFX_STATE_SRC_Y] + (RandomFloat() * 400.0f - 200.0f);
+			(gEnvFxBuffer + i)->yPos	    = gEnvFxBubbleConfig[ENVFX_STATE_SRC_Y] + (Randomf() * 400.0f - 200.0f);
 		}
 		else
 		{
@@ -384,7 +384,7 @@ s32 envfx_init_bubble(s32 mode)
 
 		for(i = 0; i < sBubbleParticleCount; i++)
 		{
-			(gEnvFxBuffer + i)->animFrame = RandomFloat() * 7.0f;
+			(gEnvFxBuffer + i)->animFrame = Randomf() * 7.0f;
 		}
 
 		if(0)

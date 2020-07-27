@@ -93,15 +93,15 @@ void ActionFishGroup1(void)
 		func_8029ED98(0, 1.0f);
 	if(o->oTimer == 0)
 	{
-		o->oForwardVel = RandomFloat() * 2 + 3.0f;
+		o->oForwardVel = Randomf() * 2 + 3.0f;
 		if(activeStageNo == LEVEL_SA)
-			o->oFishGroupUnkFC = RandomFloat() * 700.0f;
+			o->oFishGroupUnkFC = Randomf() * 700.0f;
 		else
-			o->oFishGroupUnkFC = RandomFloat() * 100.0f;
-		o->oFishGroupUnk104 = RandomFloat() * 500 + 200.0f;
+			o->oFishGroupUnkFC = Randomf() * 100.0f;
+		o->oFishGroupUnk104 = Randomf() * 500 + 200.0f;
 	}
 	o->oFishGroupUnkF8 = gMarioObject->oPosY + o->oFishGroupUnkFC;
-	obj_rotate_yaw_toward(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
+	s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 	if(o->oPosY < o->oFishGroupUnkF4 - 50.0f)
 	{
 		if(sp1C < 0.0f)
@@ -128,9 +128,9 @@ void ActionFishGroup2(void)
 	o->oFishGroupUnkF8 = gMarioObject->oPosY + o->oFishGroupUnkFC;
 	if(o->oTimer == 0)
 	{
-		o->oFishGroupUnk110 = RandomFloat() * 300.0f;
-		o->oFishGroupUnk100 = RandomFloat() * 1024.0f + 1024.0f;
-		o->oFishGroupUnk108 = RandomFloat() * 4.0f + 8.0f + 5.0f;
+		o->oFishGroupUnk110 = Randomf() * 300.0f;
+		o->oFishGroupUnk100 = Randomf() * 1024.0f + 1024.0f;
+		o->oFishGroupUnk108 = Randomf() * 4.0f + 8.0f + 5.0f;
 		if(o->oDistanceToMario < 600.0f)
 			sp18 = 1;
 		else
@@ -145,7 +145,7 @@ void ActionFishGroup2(void)
 	if(o->oForwardVel < o->oFishGroupUnk108)
 		o->oForwardVel = o->oForwardVel + 0.5;
 	o->oFishGroupUnkF8 = gMarioObject->oPosY + o->oFishGroupUnkFC;
-	obj_rotate_yaw_toward(o->oAngleToMario + 0x8000, o->oFishGroupUnk100 / FRAME_RATE_SCALER_INV);
+	s_chase_angleY(o->oAngleToMario + 0x8000, o->oFishGroupUnk100 / FRAME_RATE_SCALER_INV);
 	if(o->oPosY < o->oFishGroupUnkF4 - 50.0f)
 	{
 		if(sp1C < 0.0f)
@@ -168,9 +168,9 @@ void ActionFishGroup2(void)
 void ActionFishGroup0(void)
 {
 	func_8029ED98(0, 1.0f);
-	o->header.gfx.unk38.setFrame(RandomFloat() * 28.0f);
-	o->oFishGroupUnk10C = RandomFloat() * 300.0f;
-	s_set_scale(RandomFloat() * 0.4 + 0.8);
+	o->header.gfx.unk38.setFrame(Randomf() * 28.0f);
+	o->oFishGroupUnk10C = Randomf() * 300.0f;
+	s_set_scale(Randomf() * 0.4 + 0.8);
 	o->oAction = 1;
 }
 

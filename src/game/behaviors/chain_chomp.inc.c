@@ -47,8 +47,8 @@ void bhv_chain_chomp_chain_part_update(void)
 	}
 	else if(o->parentObj->oChainChompReleaseStatus != CHAIN_CHOMP_NOT_RELEASED)
 	{
-		obj_update_floor_and_walls();
-		obj_move_standard(78);
+		s_enemybgcheck();
+		s_enemymove(78);
 	}
 }
 
@@ -195,8 +195,8 @@ static void chain_chomp_sub_act_turn(void)
 
 	if(o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND)
 	{
-		obj_rotate_yaw_toward(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
-		if(abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x800)
+		s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
+		if(s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw) < 0x800)
 		{
 			if(o->oTimer > 30 * FRAME_RATE_SCALER_INV)
 			{
@@ -244,7 +244,7 @@ static void chain_chomp_sub_act_turn(void)
 	}
 	else
 	{
-		obj_rotate_yaw_toward(o->oAngleToMario, 0x190 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(o->oAngleToMario, 0x190 / FRAME_RATE_SCALER_INV);
 		o->oTimer = 0;
 	}
 }
@@ -276,7 +276,7 @@ static void chain_chomp_sub_act_lunge(void)
 	else
 	{
 		// Turn toward pivot
-		obj_rotate_yaw_toward(atan2s(o->oChainChompSegments[0].posZ, o->oChainChompSegments[0].posX), 0x1000 / FRAME_RATE_SCALER_INV);
+		s_chase_angleY(atan2s(o->oChainChompSegments[0].posZ, o->oChainChompSegments[0].posX), 0x1000 / FRAME_RATE_SCALER_INV);
 
 		if(o->oChainChompUnk104 != 0.0f)
 		{
@@ -310,7 +310,7 @@ static void chain_chomp_released_trigger_cutscene(void)
 
 	//! Can delay this if we get into a cutscene-unfriendly action after the
 	//  last post ground pound and before this
-	if(set_mario_npc_dialog(2) == 2 && (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) && cutscene_object(CUTSCENE_STAR_SPAWN, o) == 1)
+	if(CtrlPlayerDialog(2) == 2 && (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) && cutscene_object(CUTSCENE_STAR_SPAWN, o) == 1)
 	{
 		o->oChainChompReleaseStatus = CHAIN_CHOMP_RELEASED_LUNGE_AROUND;
 		o->oTimer		    = 0;
@@ -331,7 +331,7 @@ static void chain_chomp_released_lunge_around(void)
 		// Before first bounce, turn toward mario and wait 2 seconds
 		if(o->oChainChompNumLunges == 0)
 		{
-			if(obj_rotate_yaw_toward(o->oAngleToMario, 0x320 / FRAME_RATE_SCALER_INV))
+			if(s_chase_angleY(o->oAngleToMario, 0x320 / FRAME_RATE_SCALER_INV))
 			{
 				if(o->oTimer > 60 * FRAME_RATE_SCALER_INV)
 				{
@@ -420,7 +420,7 @@ static void chain_chomp_released_end_cutscene(void)
 {
 	if(cutscene_object(CUTSCENE_STAR_SPAWN, o) == -1)
 	{
-		set_mario_npc_dialog(0);
+		CtrlPlayerDialog(0);
 		o->oAction = CHAIN_CHOMP_ACT_UNLOAD_CHAIN;
 	}
 }
@@ -441,7 +441,7 @@ static void chain_chomp_act_move(void)
 	}
 	else
 	{
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		switch(o->oChainChompReleaseStatus)
 		{
@@ -473,7 +473,7 @@ static void chain_chomp_act_move(void)
 				break;
 		}
 
-		obj_move_standard(78);
+		s_enemymove(78);
 
 		// Segment 0 connects the pivot to the chain chomp itself
 		o->oChainChompSegments[0].posX = o->oPosX - o->parentObj->oPosX;

@@ -30,22 +30,22 @@ void ActionTuxiesMother2(void)
 {
 	f32 sp24;
 	UNUSED s32 unused;
-	struct Object* sp1C = obj_find_nearest_object_with_behavior(sm64::bhv::bhvSmallPenguin(), &sp24);
+	struct Object* sp1C = s_search_nearobject(sm64::bhv::bhvSmallPenguin(), &sp24);
 	UNUSED s32 unused2;
 	if(obj_find_nearby_held_actor(sm64::bhv::bhvUnused20E0(), 1000.0f) != NULL)
 	{
 		if(o->oSubAction == 0)
 		{
-			set_obj_animation_and_sound_state(0);
+			s_set_skelanimeNo(0);
 			o->oForwardVel = 10.0f;
 			if(800.0f < obj_lateral_dist_from_mario_to_home())
 				o->oSubAction = 1;
-			obj_rotate_yaw_toward(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 		}
 		else
 		{
 			o->oForwardVel = 0.0f;
-			set_obj_animation_and_sound_state(3);
+			s_set_skelanimeNo(3);
 			if(obj_lateral_dist_from_mario_to_home() < 700.0f)
 				o->oSubAction = 0;
 		}
@@ -53,7 +53,7 @@ void ActionTuxiesMother2(void)
 	else
 	{
 		o->oForwardVel = 0.0f;
-		set_obj_animation_and_sound_state(3);
+		s_set_skelanimeNo(3);
 	}
 	if(sp1C != NULL && sp24 < 300.0f && sp1C->oHeldState != HELD_FREE)
 	{
@@ -71,7 +71,7 @@ void ActionTuxiesMother1(void)
 	switch(o->oSubAction)
 	{
 		case 0:
-			set_obj_animation_and_sound_state(3);
+			s_set_skelanimeNo(3);
 			if(!s_rideon_player())
 			{
 				sp2C = (o->oBehParams >> 0x10) & 0xFF;
@@ -90,7 +90,7 @@ void ActionTuxiesMother1(void)
 				}
 			}
 			else
-				set_obj_animation_and_sound_state(0);
+				s_set_skelanimeNo(0);
 			break;
 		case 1:
 			if(o->prevObj->oHeldState == HELD_FREE)
@@ -127,9 +127,9 @@ void ActionTuxiesMother0(void)
 	f32 sp28;
 	struct Object* sp24;
 	sp2C = 0;
-	sp24 = obj_find_nearest_object_with_behavior(sm64::bhv::bhvSmallPenguin(), &sp28);
+	sp24 = s_search_nearobject(sm64::bhv::bhvSmallPenguin(), &sp28);
 	s_set_scale(4.0f);
-	set_obj_animation_and_sound_state(3);
+	s_set_skelanimeNo(3);
 	if(sp28 < 500.0f)
 		sp2C = 1;
 	if(sp24 != NULL && sp28 < 300.0f && sp24->oHeldState != HELD_FREE)
@@ -157,7 +157,7 @@ void ActionTuxiesMother0(void)
 				break;
 		}
 	}
-	if(obj_check_anim_frame(1))
+	if(s_check_animenumber(1))
 		objsound(SOUND_OBJ_BIG_PENGUIN_YELL);
 }
 
@@ -166,9 +166,9 @@ void (*sTuxiesMotherActions[])(void) = {ActionTuxiesMother0, ActionTuxiesMother1
 void bhv_tuxies_mother_loop(void)
 {
 	o->activeFlags |= 0x400;
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	s_modejmp(sTuxiesMotherActions);
-	obj_move_standard(-78);
+	s_enemymove(-78);
 	play_penguin_walking_sound(PENGUIN_WALK_BIG);
 	o->oInteractStatus = 0;
 }
@@ -188,9 +188,9 @@ void ActionSmallPenguin2(void)
 	if(o->oTimer == 0)
 		if(obj_dist_to_nearest_object_with_behavior(sm64::bhv::bhvTuxiesMother()) < 1000.0f)
 			sp1C = 1;
-	set_obj_animation_and_sound_state(0);
+	s_set_skelanimeNo(0);
 	o->oForwardVel = o->oSmallPenguinUnk104 + 3.0f;
-	obj_rotate_yaw_toward(o->oAngleToMario + 0x8000, (o->oSmallPenguinUnk110 + 0x600) / FRAME_RATE_SCALER_INV);
+	s_chase_angleY(o->oAngleToMario + 0x8000, (o->oSmallPenguinUnk110 + 0x600) / FRAME_RATE_SCALER_INV);
 	if(o->oDistanceToMario > o->oSmallPenguinUnk108 + 500.0f)
 		o->oAction = 0;
 	func_802BEA58();
@@ -200,9 +200,9 @@ void ActionSmallPenguin2(void)
 
 void ActionSmallPenguin1(void)
 {
-	set_obj_animation_and_sound_state(0);
+	s_set_skelanimeNo(0);
 	o->oForwardVel = o->oSmallPenguinUnk104 + 3.0f;
-	obj_rotate_yaw_toward(o->oAngleToMario, (o->oSmallPenguinUnk110 + 0x600) / FRAME_RATE_SCALER_INV);
+	s_chase_angleY(o->oAngleToMario, (o->oSmallPenguinUnk110 + 0x600) / FRAME_RATE_SCALER_INV);
 	if(o->oDistanceToMario < o->oSmallPenguinUnk108 + 300.0f)
 		o->oAction = 0;
 	if(o->oDistanceToMario > 1100.0f)
@@ -216,7 +216,7 @@ void ActionSmallPenguin3(void)
 	{
 		if(o->oTimer == 6 * FRAME_RATE_SCALER_INV)
 			objsound(SOUND_OBJ_BABY_PENGUIN_DIVE);
-		set_obj_animation_and_sound_state(1);
+		s_set_skelanimeNo(1);
 		if(o->oTimer > 25 * FRAME_RATE_SCALER_INV)
 			if(!mario_is_dive_sliding())
 				o->oAction = 4;
@@ -228,7 +228,7 @@ void ActionSmallPenguin4(void)
 	if(o->oTimer > 20 * FRAME_RATE_SCALER_INV)
 	{
 		o->oForwardVel = 0.0f;
-		set_obj_animation_and_sound_state(2);
+		s_set_skelanimeNo(2);
 		if(o->oTimer > 40 * FRAME_RATE_SCALER_INV)
 			o->oAction = o->oSmallPenguinUnk100;
 	}
@@ -239,12 +239,12 @@ void ActionSmallPenguin0(void)
 	s32 sp1C;
 
 	sp1C = 0;
-	set_obj_animation_and_sound_state(3);
+	s_set_skelanimeNo(3);
 	if(o->oTimer == 0)
 	{
-		o->oSmallPenguinUnk110 = (s32)(RandomFloat() * 0x400);
-		o->oSmallPenguinUnk108 = RandomFloat() * 100.0f;
-		o->oSmallPenguinUnk104 = RandomFloat();
+		o->oSmallPenguinUnk110 = (s32)(Randomf() * 0x400);
+		o->oSmallPenguinUnk108 = Randomf() * 100.0f;
+		o->oSmallPenguinUnk104 = Randomf();
 		o->oForwardVel	       = 0.0f;
 		if(obj_dist_to_nearest_object_with_behavior(sm64::bhv::bhvTuxiesMother()) < 1000.0f)
 			sp1C = 1;
@@ -273,10 +273,10 @@ void ActionSmallPenguin5(void)
 		sp24 = dist_between_objects(o, sp1C);
 		sp22 = angle_to_object(o, sp1C);
 		if(sp24 > 200.0f)
-			obj_rotate_yaw_toward(sp22, 0x400 / FRAME_RATE_SCALER_INV);
+			s_chase_angleY(sp22, 0x400 / FRAME_RATE_SCALER_INV);
 		else
-			obj_rotate_yaw_toward(sp22 + 0x8000, 0x400 / FRAME_RATE_SCALER_INV);
-		set_obj_animation_and_sound_state(0);
+			s_chase_angleY(sp22 + 0x8000, 0x400 / FRAME_RATE_SCALER_INV);
+		s_set_skelanimeNo(0);
 	}
 	func_802BEA58();
 }
@@ -290,9 +290,9 @@ void func_802BF048(void)
 		o->oAction	      = 5;
 		o->oSmallPenguinUnk88 = 0;
 	}
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 	s_modejmp(sSmallPenguinActions);
-	obj_move_standard(-78);
+	s_enemymove(-78);
 	play_penguin_walking_sound(PENGUIN_WALK_BABY);
 }
 
@@ -304,7 +304,7 @@ void bhv_small_penguin_loop(void)
 			func_802BF048();
 			break;
 		case HELD_HELD:
-			func_8029FA5C(0, 0);
+			s_mode_catch(0, 0);
 			if(obj_has_behavior(sm64::bhv::bhvPenguinBaby()))
 				set_object_behavior(o, sm64::bhv::bhvSmallPenguin());
 			copy_object_pos(o, gMarioObject);
@@ -312,7 +312,7 @@ void bhv_small_penguin_loop(void)
 				AudStartSound(SOUND_OBJ2_BABY_PENGUIN_YELL, gMarioObject->header.gfx.cameraToObject);
 			break;
 		case HELD_THROWN:
-			obj_get_thrown_or_placed(0, 0, 0);
+			s_mode_throw(0, 0, 0);
 			break;
 		case HELD_DROPPED:
 			obj_get_dropped();

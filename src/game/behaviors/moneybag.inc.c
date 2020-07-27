@@ -70,7 +70,7 @@ void MoneybagJump(s8 collisionFlags)
 				o->oVelY       = 40.0f;
 			}
 
-			if(func_8029F788() == 1)
+			if(s_check_animeend() == 1)
 			{
 				o->oMoneybagJumpState = MONEYBAG_JUMP_JUMP;
 				objsound(SOUND_GENERAL_BOING2_LOWPRIO);
@@ -91,7 +91,7 @@ void MoneybagJump(s8 collisionFlags)
 		case MONEYBAG_JUMP_JUMP_AND_BOUNCE:
 			SetObjAnimation(3);
 
-			if(func_8029F788() == 1)
+			if(s_check_animeend() == 1)
 				o->oMoneybagJumpState = MONEYBAG_JUMP_LANDING;
 			break;
 
@@ -124,7 +124,7 @@ void MoneybagMoveAroundLoop(void)
 
 	if(((collisionFlags & OBJ_COL_FLAGS_LANDED) == OBJ_COL_FLAGS_LANDED) && (o->oMoneybagJumpState == MONEYBAG_JUMP_LANDING))
 	{
-		if((s32)(RandomFloat() * 6.0f) == 1)
+		if((s32)(Randomf() * 6.0f) == 1)
 		{
 			o->oMoneybagJumpState = MONEYBAG_JUMP_WALK_AROUND;
 			o->oTimer	      = 0;

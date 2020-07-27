@@ -191,7 +191,7 @@ static void water_bomb_act_drop(void)
 	}
 	o->header.gfx.scale[0] = o->header.gfx.scale[2] = 1.0f - stretch;
 
-	obj_move_standard(78);
+	s_enemymove(78);
 }
 
 /**
@@ -247,7 +247,7 @@ void bhv_water_bomb_update(void)
 	else
 	{
 		o->oGraphYOffset = 40.0f * o->header.gfx.scale[1];
-		obj_update_floor_and_walls();
+		s_enemybgcheck();
 
 		switch(o->oAction)
 		{

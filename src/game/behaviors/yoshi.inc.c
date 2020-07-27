@@ -49,7 +49,7 @@ void yoshi_idle_loop(void)
 
 	if(o->oTimer > 90 * FRAME_RATE_SCALER_INV)
 	{
-		chosenHome = RandomFloat() * 3.99;
+		chosenHome = Randomf() * 3.99;
 
 		if(o->oYoshiChosenHome == chosenHome)
 		{
@@ -85,7 +85,7 @@ void yoshi_talk_loop(void)
 	if((s16)o->oMoveAngleYaw == (s16)o->oAngleToMario)
 	{
 		SetObjAnimation(0);
-		if(set_mario_npc_dialog(1) == 2)
+		if(CtrlPlayerDialog(1) == 2)
 		{
 			o->activeFlags |= 0x20;
 			if(cutscene_object_with_dialog(CUTSCENE_DIALOG, o, DIALOG_161))
@@ -136,12 +136,12 @@ void yoshi_walk_and_jump_off_roof_loop(void)
 
 void yoshi_finish_jumping_and_despawn_loop(void)
 {
-	func_8029F728();
+	s_stop_animeend();
 	obj_move_xyz_using_fvel_and_yaw(o);
 	o->oVelY -= 2.0;
 	if(o->oPosY < 2100.0f)
 	{
-		set_mario_npc_dialog(0);
+		CtrlPlayerDialog(0);
 		gObjCutsceneDone = TRUE;
 		sYoshiDead	 = 1;
 		o->activeFlags	 = 0;

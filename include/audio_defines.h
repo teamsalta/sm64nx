@@ -350,9 +350,9 @@
 #define SOUND_OBJ_SUSHI_SHARK_WATER_SOUND                   SOUND_ARG_LOAD(5, 0, 0x00, 0x80, 8)
 #define SOUND_OBJ_MRI_SHOOT                                 SOUND_ARG_LOAD(5, 0, 0x01, 0x00, 8)
 #define SOUND_OBJ_BABY_PENGUIN_WALK                         SOUND_ARG_LOAD(5, 0, 0x02, 0x00, 8)
-#define SOUND_OBJ_BOWSER_WALK                               SOUND_ARG_LOAD(5, 0, 0x03, 0x00, 8)
-#define SOUND_OBJ_BOWSER_TAIL_PICKUP                        SOUND_ARG_LOAD(5, 0, 0x05, 0x00, 8)
-#define SOUND_OBJ_BOWSER_DEFEATED                           SOUND_ARG_LOAD(5, 0, 0x06, 0x00, 8)
+#define NA_SE3_KUPAWALK									    SOUND_ARG_LOAD(5, 0, 0x03, 0x00, 8)
+#define NA_SE3_KUPADAMAGE                        SOUND_ARG_LOAD(5, 0, 0x05, 0x00, 8)
+#define NA_SE3_KUPADOWN                           SOUND_ARG_LOAD(5, 0, 0x06, 0x00, 8)
 #define SOUND_OBJ_BOWSER_SPINNING                           SOUND_ARG_LOAD(5, 0, 0x07, 0x00, 8)
 #define SOUND_OBJ_BOWSER_INHALING                           SOUND_ARG_LOAD(5, 0, 0x08, 0x00, 8)
 #define SOUND_OBJ_BIG_PENGUIN_WALK                          SOUND_ARG_LOAD(5, 0, 0x09, 0x80, 8)
@@ -532,7 +532,7 @@
 #define SOUND_GENERAL2_RIGHT_ANSWER             SOUND_ARG_LOAD(8, 0, 0x6A, 0xA0, 8)
 
 // Channel 9 loads sounds from the same place as channel 5.
-#define SOUND_OBJ2_BOWSER_ROAR                  SOUND_ARG_LOAD(9, 0, 0x04, 0x00, 8)
+#define NA_SE3_KUPAGAO                  SOUND_ARG_LOAD(9, 0, 0x04, 0x00, 8)
 #define SOUND_OBJ2_PIRANHA_PLANT_BITE           SOUND_ARG_LOAD(9, 0, 0x10, 0x50, 8)
 #define SOUND_OBJ2_PIRANHA_PLANT_DYING          SOUND_ARG_LOAD(9, 0, 0x11, 0x60, 8)
 #define SOUND_OBJ2_BOWSER_PUZZLE_PIECE_MOVE     SOUND_ARG_LOAD(9, 0, 0x19, 0x20, 8)

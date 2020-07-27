@@ -90,7 +90,7 @@ u32 PlayerRecord::perform_water_full_step(Vec3f nextPos)
 	f32 floorHeight;
 
 	wall	    = resolve_and_return_wall_collisions(nextPos, 10.0f, 110.0f);
-	floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+	floorHeight = mcBGGroundCheck(nextPos[0], nextPos[1], nextPos[2], &floor);
 	ceilHeight  = vec3f_find_ceil(nextPos, floorHeight, &ceil);
 
 	if(floor == NULL)

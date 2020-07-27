@@ -36,7 +36,7 @@ void update_mario_platform(void)
 		return;
 	}
 
-	//! If mario moves onto a rotating platform in a PU, the find_floor call
+	//! If mario moves onto a rotating platform in a PU, the mcBGGroundCheck call
 	//  will detect the platform and he will end up receiving a large amount
 	//  of displacement since he is considered to be far from the platform's
 	//  axis of rotation.
@@ -44,7 +44,7 @@ void update_mario_platform(void)
 	marioX	    = gMarioObject->oPosX;
 	marioY	    = gMarioObject->oPosY;
 	marioZ	    = gMarioObject->oPosZ;
-	floorHeight = find_floor(marioX, marioY, marioZ, &floor);
+	floorHeight = mcBGGroundCheck(marioX, marioY, marioZ, &floor);
 
 	if(absf(marioY - floorHeight) < 4.0f)
 	{
@@ -101,7 +101,7 @@ void set_mario_pos(f32 x, f32 y, f32 z)
  * Apply one frame of platform rotation to mario or an object using the given
  * platform. If isMario is 0, use gCurrentObject.
  */
-void apply_platform_displacement(u32 isMario, struct Object* platform)
+void matrix_offset(u32 isMario, struct Object* platform)
 {
 	f32 x;
 	f32 y;
@@ -190,7 +190,7 @@ void apply_mario_platform_displacement(void)
 	platform = gMarioPlatform;
 	if(!(gTimeStopState & TIME_STOP_ACTIVE) && gMarioObject != NULL && platform != NULL)
 	{
-		apply_platform_displacement(1, platform);
+		matrix_offset(1, platform);
 	}
 }
 

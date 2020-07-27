@@ -132,7 +132,7 @@ void PlayerRecord::check_ledge_climb_down()
 
 		if(find_wall_collisions(&wallCols) != 0)
 		{
-			floorHeight = find_floor(wallCols.x, wallCols.y, wallCols.z, &floor);
+			floorHeight = mcBGGroundCheck(wallCols.x, wallCols.y, wallCols.z, &floor);
 			if(floor != NULL)
 			{
 				if(wallCols.y - floorHeight > 160.0f)

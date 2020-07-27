@@ -51,7 +51,7 @@ void bhv_boo_cage_loop(void)
 			}
 			else
 			{
-				copy_object_pos_and_angle(o, o->parentObj);
+				s_copy_worldXYZ_angleXYZ(o, o->parentObj);
 			}
 
 			break;
@@ -62,8 +62,8 @@ void bhv_boo_cage_loop(void)
 			o->oFaceAngleRoll  = 0;
 
 			// Apply standard physics to the cage.
-			obj_update_floor_and_walls();
-			obj_move_standard(-78);
+			s_enemybgcheck();
+			s_enemymove(-78);
 
 			// Spawn sparkles while the cage falls.
 			s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());

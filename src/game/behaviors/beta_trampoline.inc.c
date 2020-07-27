@@ -21,7 +21,7 @@ void bhv_beta_trampoline_spring_loop(void)
 	f32 yDisplacement;
 
 	// Update to be 75 units under the trampoline top
-	copy_object_pos_and_angle(o, o->parentObj);
+	s_copy_worldXYZ_angleXYZ(o, o->parentObj);
 	copy_object_graph_y_offset(o, o->parentObj);
 	o->oPosY -= 75.0f;
 

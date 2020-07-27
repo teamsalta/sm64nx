@@ -86,7 +86,7 @@ void AudStartMute(s32 a) // Soften volume
 			set_sound_disabled(TRUE);
 			break;
 		case 2:
-			func_8031FFB4(0, 60, 40); // soften music
+			Na_SeqVolMute(0, 60, 40); // soften music
 			break;
 	}
 	D_8032C6C0 |= a;

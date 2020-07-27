@@ -42,7 +42,7 @@ static s32 func_8030F158(void)
 	}
 	else
 	{
-		if(obj_check_anim_frame(9))
+		if(s_check_animenumber(9))
 		{
 			objsound(SOUND_GENERAL_SWISH_WATER);
 		}
@@ -64,10 +64,10 @@ static void func_8030F218(void)
 		{
 			if(o->oSoundStateID == 0)
 			{
-				if(obj_check_anim_frame(9))
+				if(s_check_animenumber(9))
 				{
 					objsound(SOUND_GENERAL_SWISH_WATER);
-					set_obj_animation_and_sound_state(6);
+					s_set_skelanimeNo(6);
 				}
 			}
 			else if(--o->oKleptoUnkTimer == 0)
@@ -194,7 +194,7 @@ static void klepto_circle_target(f32 radius, f32 targetSpeed)
 
 		//! The multiplied value is sometimes out of range for an s16 during the s32 -> s16 cast,
 		//  which might invert sign.
-		turnAmount = (s16)(s32)(abs_angle_diff(o->oKleptoYawToTarget, o->oMoveAngleYaw) * (0.03f * o->oKleptoSpeed));
+		turnAmount = (s16)(s32)(s_calc_dangle(o->oKleptoYawToTarget, o->oMoveAngleYaw) * (0.03f * o->oKleptoSpeed));
 		clamp_s16(&turnAmount, 400, 700);
 		obj_rotate_yaw_and_bounce_off_walls(o->oKleptoYawToTarget, turnAmount / FRAME_RATE_SCALER_INV);
 
@@ -248,14 +248,14 @@ static void klepto_act_turn_toward_mario(void)
 {
 	klepto_target_mario();
 
-	if(func_8030F158() && func_8029F828() && o->oKleptoDistanceToTarget > 800.0f && abs_angle_diff(o->oAngleToMario, o->oFaceAngleYaw) < 0x800 && o->oKleptoPitch < 0x400)
+	if(func_8030F158() && func_8029F828() && o->oKleptoDistanceToTarget > 800.0f && s_calc_dangle(o->oAngleToMario, o->oFaceAngleYaw) < 0x800 && o->oKleptoPitch < 0x400)
 	{
 		objsound(SOUND_OBJ_KLEPTO1);
 		o->oAction	 = KLEPTO_ACT_DIVE_AT_MARIO;
 		o->oMoveAngleYaw = o->oFaceAngleYaw;
 		o->oFlags |= 0x00000008;
 
-		set_obj_animation_and_sound_state(3);
+		s_set_skelanimeNo(3);
 	}
 
 	klepto_circle_target(1000.0f, 40.0f);
@@ -267,7 +267,7 @@ static void klepto_act_dive_at_mario(void)
 	approach_f32_ptr(&o->oKleptoSpeed, 60.0f, 10.0f * FRAME_RATE_SCALER);
 	if(o->oSoundStateID == 2)
 	{
-		if(obj_check_anim_frame(11))
+		if(s_check_animenumber(11))
 		{
 			objsound(SOUND_GENERAL_SWISH_WATER);
 		}
@@ -294,7 +294,7 @@ static void klepto_act_dive_at_mario(void)
 		}
 		else if(o->oVelY > 0.0f && dy > 200.0f)
 		{
-			set_obj_animation_and_sound_state(2);
+			s_set_skelanimeNo(2);
 		}
 
 		o->oKleptoPitch = -0x3000;
@@ -328,13 +328,13 @@ static void klepto_act_dive_at_mario(void)
 
 static void klepto_act_struck_by_mario(void)
 {
-	set_obj_animation_and_sound_state(1);
+	s_set_skelanimeNo(1);
 
 	obj_face_pitch_approach(0, 800 / FRAME_RATE_SCALER_INV);
 	obj_face_yaw_approach(o->oMoveAngleYaw + 0x8000, 800 / FRAME_RATE_SCALER_INV);
 	obj_face_roll_approach(0, 800 / FRAME_RATE_SCALER_INV);
 
-	if(func_8029F788())
+	if(s_check_animeend())
 	{
 		o->oAction  = KLEPTO_ACT_RETREAT;
 		o->oGravity = 0.0f;
@@ -350,7 +350,7 @@ static void klepto_act_struck_by_mario(void)
 
 static void klepto_act_retreat(void)
 {
-	set_obj_animation_and_sound_state(0);
+	s_set_skelanimeNo(0);
 	approach_f32_ptr(&o->oKleptoSpeed, 40.0f, 10.0f * FRAME_RATE_SCALER);
 
 	obj_move_pitch_approach(o->oKleptoPitch, 1000 / FRAME_RATE_SCALER_INV);
@@ -360,7 +360,7 @@ static void klepto_act_retreat(void)
 
 	if(obj_face_yaw_approach(o->oMoveAngleYaw, 1000 / FRAME_RATE_SCALER_INV))
 	{
-		if(abs_angle_diff(o->oFaceAnglePitch, o->oMoveAnglePitch) == 0)
+		if(s_calc_dangle(o->oFaceAnglePitch, o->oMoveAnglePitch) == 0)
 		{
 			o->oAction	   = KLEPTO_ACT_RESET_POSITION;
 			o->oHomeY	   = 1500.0f;
@@ -410,7 +410,7 @@ void bhv_klepto_update(void)
 {
 	UNUSED s32 unused;
 
-	obj_update_floor_and_walls();
+	s_enemybgcheck();
 
 	o->oKleptoDistanceToTarget = obj_lateral_dist_to_home();
 	o->oKleptoPitch		   = obj_get_pitch_to_home(o->oKleptoDistanceToTarget);
@@ -487,5 +487,5 @@ void bhv_klepto_update(void)
 	}
 
 	obj_roll_to_match_yaw_turn(o->oKleptoYawToTarget, 0x3000, 600);
-	obj_move_standard(78);
+	s_enemymove(78);
 }

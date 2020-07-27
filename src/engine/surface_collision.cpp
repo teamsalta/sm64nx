@@ -422,7 +422,7 @@ f32 find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface** pceil)
 static f32 unused_obj_find_floor_height(struct Object* obj)
 {
 	struct Surface* floor;
-	f32 floorHeight = find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
+	f32 floorHeight = mcBGGroundCheck(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
 	return floorHeight;
 }
 
@@ -441,7 +441,7 @@ static u8 unused8038BE50[0x40];
 f32 find_floor_height_and_data(f32 xPos, f32 yPos, f32 zPos, struct FloorGeometry** floorGeo)
 {
 	struct Surface* floor;
-	f32 floorHeight = find_floor(xPos, yPos, zPos, &floor);
+	f32 floorHeight = mcBGGroundCheck(xPos, yPos, zPos, &floor);
 
 	*floorGeo = NULL;
 
@@ -549,7 +549,7 @@ f32 find_floor_height(f32 x, f32 y, f32 z)
 {
 	struct Surface* floor;
 
-	f32 floorHeight = find_floor(x, y, z, &floor);
+	f32 floorHeight = mcBGGroundCheck(x, y, z, &floor);
 
 	return floorHeight;
 }
@@ -584,7 +584,7 @@ static f32 unused_find_dynamic_floor(f32 xPos, f32 yPos, f32 zPos, struct Surfac
 /**
  * Find the highest floor under a given position and return the height.
  */
-f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface** pfloor)
+f32 mcBGGroundCheck(f32 xPos, f32 yPos, f32 zPos, struct Surface** pfloor)
 {
 	s16 cellZ, cellX;
 
@@ -790,7 +790,7 @@ static s32 unused_resolve_floor_or_ceil_collisions(s32 checkCeil, f32* px, f32* 
 	}
 	else
 	{
-		*surfaceHeight = find_floor(x, y, z, psurface);
+		*surfaceHeight = mcBGGroundCheck(x, y, z, psurface);
 	}
 
 	if(*psurface == NULL)
