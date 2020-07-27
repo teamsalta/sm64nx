@@ -8,7 +8,7 @@ namespace sm64::hook::level
 {
 	class Level
 	{
-	public:
+		public:
 		Level(const LevelCommand* level, XXHash64* s);
 		u64 fingerprint();
 		void hashOp();
@@ -54,7 +54,7 @@ namespace sm64::hook::level
 		void create_warp_node();
 		void create_painting_warp_node();
 		void create_instant_warp();
-		void load_area();
+		void SnOpenScene();
 		void cmd_2A();
 		void set_mario_start_pos();
 		void cmd_2C();
@@ -77,9 +77,8 @@ namespace sm64::hook::level
 		void advdemo();
 		void cleardemoptr();
 
-
-	protected:
-		template<class T> T add(const T& n)
+		protected:
+		template <class T> T add(const T& n)
 		{
 			state->add(&n, sizeof(n));
 			return n;
@@ -95,4 +94,4 @@ namespace sm64::hook::level
 	u64 fingerprint(const LevelCommand* layout);
 	LevelCommand* apply(LevelCommand* func);
 	LevelCommand* mount(LevelCommand* func, u64 size);
-}
+} // namespace sm64::hook::level

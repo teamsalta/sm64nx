@@ -13,14 +13,13 @@
 #define STICK_X_DOWN 0x80000
 #define STICK_X_UP 0x40000
 
-
 namespace sm64::hid
 {
 	namespace controller
 	{
 		class Keyboard : public Controller
 		{
-		public:
+			public:
 			Keyboard() : Controller()
 			{
 				int i = 0;
@@ -93,10 +92,9 @@ namespace sm64::hid
 				this->state().has_mouse = true;
 			}
 
-
 			void update()
 			{
-				int count = 0;
+				int count  = 0;
 				auto state = SDL_GetKeyboardState(&count);
 				for(size_t i = 0; i < sizeof(keyboard_mapping) / sizeof(keyboard_mapping[0]); i++)
 				{
@@ -154,7 +152,7 @@ namespace sm64::hid
 #endif
 			}
 		};
-	}
+	} // namespace controller
 
 	Keyboard::Keyboard() : Driver()
 	{
@@ -173,7 +171,7 @@ namespace sm64::hid
 #endif
 			auto controller = std::make_shared<controller::Keyboard>();
 #ifdef ENABLE_MOUSE
-			
+
 			controller->enableMouse();
 #endif
 			m_controllers.push_back(controller);
@@ -188,5 +186,4 @@ namespace sm64::hid
 			((controller::Keyboard*)keyboard.get())->update();
 		}
 	}
-}
-
+} // namespace sm64::hid

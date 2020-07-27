@@ -4,12 +4,12 @@ void bhv_lll_drawbridge_spawner_loop(void)
 {
 	struct Object *drawbridge1, *drawbridge2;
 
-	drawbridge1		   = spawn_object(o, MODEL_LLL_DRAWBRIDGE_PART, sm64::bhv::bhvLllDrawbridge());
+	drawbridge1		   = s_makeobj_nowpos(o, MODEL_LLL_DRAWBRIDGE_PART, sm64::bhv::bhvLllDrawbridge());
 	drawbridge1->oMoveAngleYaw = o->oMoveAngleYaw;
 	drawbridge1->oPosX += coss(o->oMoveAngleYaw) * 640.0f;
 	drawbridge1->oPosZ += sins(o->oMoveAngleYaw) * 640.0f;
 
-	drawbridge2		   = spawn_object(o, MODEL_LLL_DRAWBRIDGE_PART, sm64::bhv::bhvLllDrawbridge());
+	drawbridge2		   = s_makeobj_nowpos(o, MODEL_LLL_DRAWBRIDGE_PART, sm64::bhv::bhvLllDrawbridge());
 	drawbridge2->oMoveAngleYaw = o->oMoveAngleYaw + 0x8000;
 	drawbridge2->oPosX += coss(o->oMoveAngleYaw) * -640.0f;
 	drawbridge2->oPosZ += sins(o->oMoveAngleYaw) * -640.0f;
@@ -19,7 +19,7 @@ void bhv_lll_drawbridge_spawner_loop(void)
 
 void bhv_lll_drawbridge_loop(void)
 {
-	s32 globalTimer = gGlobalTimer;
+	s32 globalTimer = frameCounter;
 
 	switch(o->oAction)
 	{
@@ -41,7 +41,7 @@ void bhv_lll_drawbridge_loop(void)
 		if(o->oTimer >= 51 * FRAME_RATE_SCALER_INV && (globalTimer % (8 * FRAME_RATE_SCALER_INV)) == 0)
 		{
 			o->oAction = LLL_DRAWBRIDGE_ACT_LOWER;
-			PlaySound2(SOUND_GENERAL_BOAT_TILT1);
+			objsound(SOUND_GENERAL_BOAT_TILT1);
 		}
 	}
 
@@ -54,7 +54,7 @@ void bhv_lll_drawbridge_loop(void)
 		if(o->oTimer >= 51 * FRAME_RATE_SCALER_INV && (globalTimer % (8 * FRAME_RATE_SCALER_INV)) == 0)
 		{
 			o->oAction = LLL_DRAWBRIDGE_ACT_RAISE;
-			PlaySound2(SOUND_GENERAL_BOAT_TILT2);
+			objsound(SOUND_GENERAL_BOAT_TILT2);
 		}
 	}
 }

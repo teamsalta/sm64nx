@@ -2,7 +2,7 @@
 
 void bhv_blue_fish_loop(void)
 {
-	if(gGlobalTimer % FRAME_RATE_SCALER_INV == 0)
+	if(frameCounter % FRAME_RATE_SCALER_INV == 0)
 	{
 		// return;
 	}
@@ -79,9 +79,9 @@ void bhv_blue_fish_loop(void)
 			break;
 	}
 	o->oVelY = -sins(o->oFaceAnglePitch) * o->oForwardVel;
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 	if(o->parentObj->oAction == 2)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }
 
 void bhv_tank_fish_group_loop(void)
@@ -95,7 +95,7 @@ void bhv_tank_fish_group_loop(void)
 			{
 				for(i = 0; i < 15; i++)
 				{
-					fish = spawn_object_relative(0, 300, 0, -200, o, MODEL_FISH, sm64::bhv::bhvBlueFish());
+					fish = s_makeobj_chain(0, 300, 0, -200, o, MODEL_FISH, sm64::bhv::bhvBlueFish());
 					translate_object_xyz_random(fish, 200.0f);
 				}
 				o->oAction++;

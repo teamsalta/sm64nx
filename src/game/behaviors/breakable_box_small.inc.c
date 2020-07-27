@@ -17,42 +17,42 @@ void bhv_breakable_box_small_init(void)
 	o->oGravity  = 2.5f;
 	o->oFriction = 0.99f;
 	o->oBuoyancy = 1.4f;
-	obj_scale(0.4f);
-	set_object_hitbox(o, &sBreakableBoxSmallHitbox);
+	s_set_scale(0.4f);
+	s_set_hitparam(o, &sBreakableBoxSmallHitbox);
 	o->oAnimState = 1;
 	o->activeFlags |= 0x200;
 }
 
 void func_802F4CE8(void)
 {
-	struct Object* sp24 = spawn_object(o, MODEL_SMOKE, sm64::bhv::bhvSmoke());
+	struct Object* sp24 = s_makeobj_nowpos(o, MODEL_SMOKE, sm64::bhv::bhvSmoke());
 	sp24->oPosX += (s32)(RandomFloat() * 80.0f) - 40;
 	sp24->oPosZ += (s32)(RandomFloat() * 80.0f) - 40;
 }
 
 void func_802F4DB4(void)
 {
-	s16 sp1E = object_step();
+	s16 sp1E = ObjMoveEvent();
 
 	attack_collided_non_mario_object(o);
 	if(sp1E == 1)
-		PlaySound2(SOUND_GENERAL_BOX_LANDING_2);
+		objsound(SOUND_GENERAL_BOX_LANDING_2);
 
 	if(sp1E & 1)
 	{
 		if(o->oForwardVel > 20.0f)
 		{
-			PlaySound2(SOUND_ENV_SLIDING);
+			objsound(SOUND_ENV_SLIDING);
 			func_802F4CE8();
 		}
 	}
 
 	if(sp1E & 2)
 	{
-		func_802A3004();
-		spawn_triangle_break_particles(20, 138, 0.7f, 3);
+		s_kemuri();
+		s_boxeffect(20, 138, 0.7f, 3);
 		obj_spawn_yellow_coins(o, 3);
-		create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
+		obj_remove_sound(SOUND_GENERAL_BREAK_BOX);
 		o->activeFlags = 0;
 	}
 
@@ -104,7 +104,7 @@ void breakable_box_small_idle_loop(void)
 
 void breakable_box_small_get_dropped(void)
 {
-	obj_become_tangible();
+	s_hitON();
 	obj_enable_rendering();
 	obj_get_dropped();
 	o->header.gfx.node.flags &= ~0x10;
@@ -115,7 +115,7 @@ void breakable_box_small_get_dropped(void)
 
 void breakable_box_small_get_thrown(void)
 {
-	obj_become_tangible();
+	s_hitON();
 	obj_enable_rendering_2();
 	obj_enable_rendering();
 	o->header.gfx.node.flags &= ~0x10;
@@ -138,7 +138,7 @@ void bhv_breakable_box_small_loop(void)
 
 		case 1:
 			obj_disable_rendering();
-			obj_become_intangible();
+			s_hitOFF();
 			break;
 
 		case 2:

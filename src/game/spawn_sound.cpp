@@ -7,6 +7,7 @@
 #include "spawn_sound.h"
 #include "object_list_processor.h"
 #include "behavior_data.h"
+#include "game/motor.h"
 
 /*
  * execute an object's current sound state with a provided array
@@ -21,7 +22,7 @@ void exec_anim_sound_state(struct SoundState* soundStates)
 	{
 		// since we have an array of sound states cooresponding to
 		// various behaviors, not all entries intend to play sounds. the
-		// boolean being 0 for unused entries skips these states.
+		// boolean being 0 for size entries skips these states.
 		case FALSE:
 			break;
 		case TRUE:
@@ -34,7 +35,7 @@ void exec_anim_sound_state(struct SoundState* soundStates)
 			{
 				if(obj_check_anim_frame(animFrame))
 				{
-					PlaySound2(soundStates[stateIdx].soundMagic);
+					objsound(soundStates[stateIdx].soundMagic);
 				}
 			}
 
@@ -42,7 +43,7 @@ void exec_anim_sound_state(struct SoundState* soundStates)
 			{
 				if(obj_check_anim_frame(animFrame))
 				{
-					PlaySound2(soundStates[stateIdx].soundMagic);
+					objsound(soundStates[stateIdx].soundMagic);
 				}
 			}
 		}
@@ -54,32 +55,45 @@ void exec_anim_sound_state(struct SoundState* soundStates)
  * Create a sound spawner for objects that need a sound play once.
  * (Breakable walls, King Bobomb exploding, etc)
  */
-void create_sound_spawner(s32 soundMagic)
+void obj_remove_sound(s32 soundMagic)
 {
-	struct Object* obj = spawn_object(gCurrentObject, 0, sm64::bhv::bhvSoundSpawner());
+	struct Object* obj = s_makeobj_nowpos(gCurrentObject, 0, sm64::bhv::bhvSoundSpawner());
 
 	obj->oSoundEffectUnkF4 = soundMagic;
 }
 
 /*
  * The following 2 functions are relevent to the sound state function
- * above. While only PlaySound2 is used, they may have been intended as
- * seperate left/right leg functions that went unused.
+ * above. While only objsound is used, they may have been intended as
+ * seperate left/right leg functions that went size.
  */
-void PlaySound(s32 soundMagic)
+void objsound_level(s32 soundMagic)
 {
 	if(gCurrentObject->header.gfx.node.flags & 0x0001)
 	{
-		play_sound(soundMagic, gCurrentObject->header.gfx.cameraToObject);
+		AudStartSound(soundMagic, gCurrentObject->header.gfx.cameraToObject);
 	}
 }
 
 // duplicate function, but its the used one
-void PlaySound2(s32 soundMagic)
+void objsound(s32 soundMagic)
 {
 	if(gCurrentObject->header.gfx.node.flags & 0x0001)
 	{
-		play_sound(soundMagic, gCurrentObject->header.gfx.cameraToObject);
+		AudStartSound(soundMagic, gCurrentObject->header.gfx.cameraToObject);
+
+		switch(soundMagic)
+		{
+			case SOUND_OBJ_BOWSER_WALK:
+				SendMotorEvent(3, 60);
+				break;
+			case SOUND_OBJ_POUNDING_LOUD:
+				SendMotorEvent(3, 60);
+				break;
+			case SOUND_OBJ_WHOMP_LOWPRIO:
+				SendMotorEvent(5, 80);
+				break;
+		}
 	}
 }
 

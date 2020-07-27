@@ -2,21 +2,21 @@
 
 s32 func_802A9A0C(UNUSED s32 sp18)
 {
-	if(are_objects_collided(o, gMarioObject))
+	if(s_hitcheck(o, gMarioObject))
 	{
 		if(abs_angle_diff(o->oMoveAngleYaw, gMarioObject->oMoveAngleYaw) > 0x6000)
 		{
-			if(gMarioStates->action == ACT_SLIDE_KICK)
+			if(playerWorks->status == ACT_SLIDE_KICK)
 				return 1;
-			if(gMarioStates->action == ACT_PUNCHING)
+			if(playerWorks->status == ACT_PUNCHING)
 				return 1;
-			if(gMarioStates->action == ACT_MOVE_PUNCHING)
+			if(playerWorks->status == ACT_MOVE_PUNCHING)
 				return 1;
-			if(gMarioStates->action == ACT_SLIDE_KICK_SLIDE)
+			if(playerWorks->status == ACT_SLIDE_KICK_SLIDE)
 				return 1;
-			if(gMarioStates->action == ACT_JUMP_KICK)
+			if(playerWorks->status == ACT_JUMP_KICK)
 				return 2;
-			if(gMarioStates->action == ACT_WALL_KICK_AIR)
+			if(playerWorks->status == ACT_WALL_KICK_AIR)
 				return 2;
 		}
 	}
@@ -41,18 +41,18 @@ void bhv_kickable_board_loop(void)
 				func_802A9B54();
 				o->oAction++;
 			}
-			load_object_collision_model();
+			stMainMoveBG();
 			break;
 		case 1:
 			o->oFaceAnglePitch = 0;
-			load_object_collision_model();
+			stMainMoveBG();
 			o->oFaceAnglePitch = -sins(o->oKickableBoardF4) * o->oKickableBoardF8;
 			if(o->oTimer > 30 * FRAME_RATE_SCALER_INV && (sp24 = func_802A9A0C(0)))
 			{
 				if(gMarioObject->oPosY > o->oPosY + 160.0f && sp24 == 2)
 				{
 					o->oAction++;
-					PlaySound2(SOUND_GENERAL_BUTTON_PRESS_2);
+					objsound(SOUND_GENERAL_BUTTON_PRESS_2);
 				}
 				else
 					o->oTimer = 0;
@@ -66,12 +66,12 @@ void bhv_kickable_board_loop(void)
 			else
 				func_802A9B54();
 			if(!(o->oKickableBoardF4 & 0x7FFF))
-				PlaySound2(SOUND_GENERAL_BUTTON_PRESS_2);
+				objsound(SOUND_GENERAL_BUTTON_PRESS_2);
 			o->oKickableBoardF4 += 0x400 / FRAME_RATE_SCALER_INV;
 			break;
 		case 2:
-			obj_become_intangible();
-			obj_set_model(MODEL_WF_KICKABLE_BOARD_FELLED);
+			s_hitOFF();
+			s_change_shape(MODEL_WF_KICKABLE_BOARD_FELLED);
 			o->oAngleVelPitch -= 0x80 / FRAME_RATE_SCALER_INV;
 			o->oFaceAnglePitch += o->oAngleVelPitch * FRAME_RATE_SCALER;
 			if(o->oFaceAnglePitch < -0x4000)
@@ -79,13 +79,13 @@ void bhv_kickable_board_loop(void)
 				o->oFaceAnglePitch = -0x4000;
 				o->oAngleVelPitch  = 0;
 				o->oAction++;
-				ShakeScreen(SHAKE_POS_SMALL);
-				PlaySound2(SOUND_GENERAL_UNKNOWN4);
+				s_call_Viewshake(SHAKE_POS_SMALL);
+				objsound(SOUND_GENERAL_UNKNOWN4);
 			}
-			load_object_collision_model();
+			stMainMoveBG();
 			break;
 		case 3:
-			load_object_collision_model();
+			stMainMoveBG();
 			break;
 	}
 	o->header.gfx.throwMatrix = NULL;

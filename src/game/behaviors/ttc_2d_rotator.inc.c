@@ -93,6 +93,6 @@ void bhv_ttc_2d_rotator_update(void)
 
 	if(o->oBehParams2ndByte == TTC_2D_ROTATOR_BP_HAND)
 	{
-		load_object_collision_model();
+		stMainMoveBG();
 	}
 }

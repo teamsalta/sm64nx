@@ -8,9 +8,7 @@
 #include "seqplayer.h"
 #include "external.h"
 
-#ifndef TARGET_N64
 #include "../pc/mixer.h"
-#endif
 
 #define DMEM_ADDR_TEMP 0x0
 #define DMEM_ADDR_UNCOMPRESSED_NOTE 0x180
@@ -629,7 +627,6 @@ u64* synthesis_process_notes(u16* aiBuf, s32 bufLen, u64* cmd)
 	return cmd;
 }
 
-
 u64* load_wave_samples(u64* cmd, struct Note* note, s32 nSamplesToLoad)
 {
 	s32 a3;
@@ -894,11 +891,7 @@ void note_set_vel_pan_reverb(struct Note* note, f32 velocity, f32 pan, u8 reverb
 	s32 panIndex;
 	f32 volLeft;
 	f32 volRight;
-#ifdef VERSION_JP
-	panIndex = MIN((s32)(pan * 127.5), 127);
-#else
-	panIndex	     = (s32)(pan * 127.5f) & 127;
-#endif
+	panIndex = (s32)(pan * 127.5f) & 127;
 	if(note->stereoHeadsetEffects && gSoundMode == SOUND_MODE_HEADSET)
 	{
 		s8 smallPanIndex;
@@ -942,14 +935,9 @@ void note_set_vel_pan_reverb(struct Note* note, f32 velocity, f32 pan, u8 reverb
 		volRight = gDefaultPanVolume[127 - panIndex];
 	}
 
-	velocity = MAX(velocity, 0);
-#ifdef VERSION_JP
-	note->targetVolLeft  = (u16)(velocity * volLeft) & ~0x80FF; // 0x7F00, but that doesn't match
-	note->targetVolRight = (u16)(velocity * volRight) & ~0x80FF;
-#else
+	velocity	     = MAX(velocity, 0);
 	note->targetVolLeft  = (u16)(s32)(velocity * volLeft) & ~0x80FF;
 	note->targetVolRight = (u16)(s32)(velocity * volRight) & ~0x80FF;
-#endif
 	if(note->targetVolLeft == 0)
 	{
 		note->targetVolLeft++;

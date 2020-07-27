@@ -2,8 +2,8 @@
 
 void bhv_moat_grills_loop(void)
 {
-	if(save_file_get_flags() & SAVE_FLAG_MOAT_DRAINED)
-		obj_set_model(MODEL_NONE);
+	if(BuGetItemFlag() & SAVE_FLAG_MOAT_DRAINED)
+		s_change_shape(MODEL_NONE);
 	else
-		load_object_collision_model();
+		stMainMoveBG();
 }

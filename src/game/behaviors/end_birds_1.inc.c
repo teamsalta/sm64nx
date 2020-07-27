@@ -8,7 +8,7 @@ void bhv_end_birds_1_loop(void)
 	switch(gCurrentObject->oAction)
 	{
 		case 0:
-			obj_scale(0.7f);
+			s_set_scale(0.7f);
 			gCurrentObject->oIntroLakituUnk110 = -554.f;
 			gCurrentObject->oIntroLakituUnk10C = 3044.f;
 			gCurrentObject->oIntroLakituUnk108 = -1314.f;
@@ -20,9 +20,9 @@ void bhv_end_birds_1_loop(void)
 			if(gCurrentObject->oTimer < 100 * FRAME_RATE_SCALER_INV)
 				obj_rotate_towards_point(gCurrentObject, sp34, 0, 0, 0x20, 0x20 / FRAME_RATE_SCALER_INV);
 			if((gCurrentObject->oEndBirdUnk104 == 0.f) && (gCurrentObject->oTimer == 0))
-				PlaySound2(SOUND_GENERAL_BIRDS_FLY_AWAY);
+				objsound(SOUND_GENERAL_BIRDS_FLY_AWAY);
 			if(gCutsceneTimer == 0)
-				mark_object_for_deletion(gCurrentObject);
+				s_remove_obj(gCurrentObject);
 			break;
 	}
 

@@ -12,9 +12,9 @@ static struct RacingPenguinData sRacingPenguinData[] = {
 
 void bhv_racing_penguin_init(void)
 {
-	if(gMarioState->numStars == 120)
+	if(marioWorks->numStars == 120)
 	{
-		obj_scale(8.0f);
+		s_set_scale(8.0f);
 		o->header.gfx.scale[1] = 5.0f;
 		o->oBehParams2ndByte   = 1;
 	}
@@ -36,10 +36,10 @@ static void racing_penguin_act_show_init_text(void)
 	response = obj_update_race_proposition_dialog(sRacingPenguinData[o->oBehParams2ndByte].text);
 	if(response == 1)
 	{
-		child		 = obj_nearest_object_with_behavior(sm64::bhv::bhvPenguinRaceFinishLine());
+		child		 = s_find_obj(sm64::bhv::bhvPenguinRaceFinishLine());
 		child->parentObj = o;
 
-		child		 = obj_nearest_object_with_behavior(sm64::bhv::bhvPenguinRaceShortcutCheck());
+		child		 = s_find_obj(sm64::bhv::bhvPenguinRaceShortcutCheck());
 		child->parentObj = o;
 
 		o->oPathedStartWaypoint = o->oPathedPrevWaypoint = (Waypoint*)segmented_to_virtual(ccm_seg7_trajectory_penguin_race);
@@ -82,7 +82,7 @@ static void racing_penguin_act_race(void)
 		targetSpeed = o->oPosY - gMarioObject->oPosY;
 		minSpeed    = 70.0f;
 
-		PlaySound(SOUND_AIR_ROUGH_SLIDE);
+		objsound_level(SOUND_AIR_ROUGH_SLIDE);
 
 		if(targetSpeed < 100.0f || (o->oPathedPrevWaypointFlags & WAYPOINT_MASK_00FF) >= 35)
 		{
@@ -130,7 +130,7 @@ static void racing_penguin_act_finish_race(void)
 	{
 		if(o->oTimer > 5 * FRAME_RATE_SCALER_INV && (o->oMoveFlags & 0x00000200))
 		{
-			PlaySound2(SOUND_OBJ_POUNDING_LOUD);
+			objsound(SOUND_OBJ_POUNDING_LOUD);
 			set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 			o->oForwardVel = 0.0f;
 		}
@@ -176,9 +176,7 @@ static void racing_penguin_act_show_final_text(void)
 		{
 			set_obj_animation_and_sound_state(0);
 
-#ifndef VERSION_JP
 			play_penguin_walking_sound(1);
-#endif
 
 			o->oForwardVel = 4.0f;
 		}
@@ -193,11 +191,7 @@ static void racing_penguin_act_show_final_text(void)
 	}
 	else if(o->oRacingPenguinMarioWon)
 	{
-#ifdef VERSION_JP
-		create_star(-7339.0f, -5700.0f, -6774.0f);
-#else
 		obj_spawn_star_at_y_offset(-7339.0f, -5700.0f, -6774.0f, 200.0f);
-#endif
 		o->oRacingPenguinMarioWon = FALSE;
 	}
 }
@@ -230,7 +224,7 @@ void bhv_racing_penguin_update(void)
 
 	obj_move_standard(78);
 	obj_align_gfx_with_floor();
-	obj_push_mario_away_from_cylinder(sRacingPenguinData[o->oBehParams2ndByte].radius, sRacingPenguinData[o->oBehParams2ndByte].height);
+	s_player_slideout_RH(sRacingPenguinData[o->oBehParams2ndByte].radius, sRacingPenguinData[o->oBehParams2ndByte].height);
 }
 
 void bhv_penguin_race_finish_line_update(void)

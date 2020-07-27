@@ -1,15 +1,16 @@
 // water_pillar.c.inc
+#include "game/motor.h"
 
-void func_802B95A4(void)
+static void sel1b_erase_water_1(void)
 {
 	struct Object* sp1C;
 	switch(o->oAction)
 	{
 		case 0:
-			if(obj_is_mario_ground_pounding_platform())
+			if(s_checkplayer_hipaatack())
 			{
 				o->oAction++;
-				func_802A3004();
+				s_kemuri();
 			}
 			break;
 		case 1:
@@ -19,7 +20,7 @@ void func_802B95A4(void)
 				o->oAction++;
 			break;
 		case 2:
-			sp1C = obj_nearest_object_with_behavior(sm64::bhv::bhvWaterLevelPillar());
+			sp1C = s_find_obj(sm64::bhv::bhvWaterLevelPillar());
 			if(sp1C != NULL)
 			{
 				if(sp1C->oAction < 2)
@@ -27,24 +28,25 @@ void func_802B95A4(void)
 			}
 			break;
 		case 3:
-			sp1C = obj_nearest_object_with_behavior(sm64::bhv::bhvWaterLevelPillar());
+			sp1C = s_find_obj(sm64::bhv::bhvWaterLevelPillar());
 			if(sp1C != NULL)
 			{
 				if(sp1C->oAction > 1)
 				{
 					o->oAction++;
 
-					save_file_set_flags(SAVE_FLAG_MOAT_DRAINED);
-					play_puzzle_jingle();
+					BuSetItemFlag(SAVE_FLAG_MOAT_DRAINED);
+					Na_NazoClearBgm();
 				}
 			}
 			break;
 		case 4:
-			PlaySound(SOUND_ENV_WATER_DRAIN);
+			objsound_level(SOUND_ENV_WATER_DRAIN);
 			if(o->oTimer < 300 * FRAME_RATE_SCALER_INV)
 			{
 				gEnvironmentLevels[2] = (s32)approach_f32_symmetric(gEnvironmentLevels[2], -2450.0f, 5.0f * FRAME_RATE_SCALER);
 				gEnvironmentLevels[0] = (s32)approach_f32_symmetric(gEnvironmentLevels[0], -2450.0f, 5.0f * FRAME_RATE_SCALER);
+				SendMotorVib(2);
 			}
 			else
 				o->oAction++;
@@ -54,7 +56,7 @@ void func_802B95A4(void)
 	}
 }
 
-void func_802B97E4(void)
+void sel1b_erase_water_2(void)
 {
 	if(o->oTimer == 0)
 	{
@@ -66,16 +68,16 @@ void func_802B97E4(void)
 
 void bhv_water_level_pillar_init(void)
 {
-	if(save_file_get_flags() & SAVE_FLAG_MOAT_DRAINED)
+	if(BuGetItemFlag() & SAVE_FLAG_MOAT_DRAINED)
 		o->oWaterLevelPillarUnkF8 = 1;
 }
 
 void bhv_water_level_pillar_loop(void)
 {
 	if(o->oWaterLevelPillarUnkF8)
-		func_802B97E4();
+		sel1b_erase_water_2();
 	else
-		func_802B95A4();
+		sel1b_erase_water_1();
 	gEnvironmentRegions[18] = gEnvironmentLevels[2];
 	gEnvironmentRegions[6]	= gEnvironmentLevels[0];
 }

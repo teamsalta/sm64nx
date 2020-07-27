@@ -243,11 +243,7 @@
 /* not verified */ #define SOUND_GENERAL_UNKNOWN1_2         SOUND_ARG_LOAD(3, 2, 0x25, 0x00, 8)
 /* not verified */ #define SOUND_GENERAL_CLAM_SHELL2        SOUND_ARG_LOAD(3, 0, 0x26, 0x40, 8)
 /* not verified */ #define SOUND_GENERAL_CLAM_SHELL3        SOUND_ARG_LOAD(3, 0, 0x27, 0x40, 8)
-#ifdef VERSION_JP
-#define SOUND_GENERAL_PAINTING_EJECT                        SOUND_ARG_LOAD(3, 8, 0x28, 0x00, 8)
-#else
 #define SOUND_GENERAL_PAINTING_EJECT                        SOUND_ARG_LOAD(3, 9, 0x28, 0x00, 8)
-#endif
 #define SOUND_GENERAL_LEVEL_SELECT_CHANGE                   SOUND_ARG_LOAD(3, 0, 0x2B, 0x00, 8)
 /* not verified */ #define SOUND_GENERAL_PLATFORM           SOUND_ARG_LOAD(3, 0, 0x2D, 0x80, 8)
 #define SOUND_GENERAL_DONUT_PLATFORM_EXPLOSION              SOUND_ARG_LOAD(3, 0, 0x2E, 0x20, 8)

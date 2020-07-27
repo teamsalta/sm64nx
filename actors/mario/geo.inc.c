@@ -13,10 +13,10 @@
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_front),
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_half_closed),
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_closed),
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_right), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_left), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_up), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_down), // unused
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_right), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_left), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_up), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_down), // size
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_on_eyes_dead),
 			 GEO_CLOSE_NODE(),
 			 GEO_SWITCH_CASE(0, geo_switch_mario_eyes),
@@ -24,10 +24,10 @@
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_front),
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_half_closed),
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_closed),
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_right), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_left), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_up), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_down), // unused
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_right), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_left), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_up), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_down), // size
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_cap_off_eyes_dead),
 			 GEO_CLOSE_NODE(),
 		  GEO_CLOSE_NODE(),
@@ -299,10 +299,10 @@
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_front),
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_half_closed),
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_closed),
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_right), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_left), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_up), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_down), // unused
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_right), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_left), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_up), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_down), // size
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_on_eyes_dead),
 			 GEO_CLOSE_NODE(),
 			 GEO_SWITCH_CASE(0, geo_switch_mario_eyes),
@@ -310,10 +310,10 @@
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_front),
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_half_closed),
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_closed),
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_right), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_left), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_up), // unused
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_down), // unused
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_right), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_left), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_up), // size
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_down), // size
 				GEO_DISPLAY_LIST(LAYER_OPAQUE, mario_low_poly_cap_off_eyes_dead),
 			 GEO_CLOSE_NODE(),
 		  GEO_CLOSE_NODE(),
@@ -468,10 +468,10 @@
 				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_front),
 				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_half_closed),
 				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_closed),
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_right), // unused
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_left), // unused
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_up), // unused
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_down), // unused
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_right), // size
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_left), // size
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_up), // size
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_down), // size
 				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_on_eyes_dead),
 			 GEO_CLOSE_NODE(),
 			 GEO_SWITCH_CASE(0, geo_switch_mario_eyes),
@@ -479,10 +479,10 @@
 				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_front),
 				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_half_closed),
 				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_closed),
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_right), // unused
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_left), // unused
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_up), // unused
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_down), // unused
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_right), // size
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_left), // size
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_up), // size
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_down), // size
 				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, mario_cap_off_eyes_dead),
 			 GEO_CLOSE_NODE(),
 		  GEO_CLOSE_NODE(),

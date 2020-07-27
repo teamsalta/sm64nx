@@ -28,17 +28,17 @@ void bhv_boo_cage_loop(void)
 {
 	UNUSED s32 unused;
 
-	set_object_hitbox(o, &sBooCageHitbox);
+	s_set_hitparam(o, &sBooCageHitbox);
 
 	switch(o->oAction)
 	{
 		case BOO_CAGE_ACT_IN_BOO:
 			// Don't let Mario enter BBH until the boo is killed
-			obj_become_intangible();
+			s_hitOFF();
 
 			// Useless scale. This is also found in the code for BOO_CAGE_ACT_ON_GROUND.
 			// Was the boo cage originally meant to have been shrunk and grow while falling?
-			obj_scale(1.0f);
+			s_set_scale(1.0f);
 
 			// If the cage's parent boo is killed, set the action to BOO_CAGE_ACT_FALLING,
 			// give the cage an initial Y velocity of 60 units/frame, and play the puzzle jingle.
@@ -47,7 +47,7 @@ void bhv_boo_cage_loop(void)
 			{
 				o->oAction++;
 				o->oVelY = 60.0f;
-				play_puzzle_jingle();
+				Na_NazoClearBgm();
 			}
 			else
 			{
@@ -66,12 +66,12 @@ void bhv_boo_cage_loop(void)
 			obj_move_standard(-78);
 
 			// Spawn sparkles while the cage falls.
-			spawn_object(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
+			s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
 
 			// When the cage lands/bounces, play a landing/bouncing sound.
 			if(o->oMoveFlags & OBJ_MOVE_LANDED)
 			{
-				PlaySound2(SOUND_GENERAL_SOFT_LANDING);
+				objsound(SOUND_GENERAL_SOFT_LANDING);
 			}
 
 			// Once the cage stops bouncing and settles on the ground,
@@ -86,13 +86,13 @@ void bhv_boo_cage_loop(void)
 			break;
 		case BOO_CAGE_ACT_ON_GROUND:
 			// Allow Mario to enter the cage once it's still on the ground.
-			obj_become_tangible();
+			s_hitON();
 
 			// The other useless scale
-			obj_scale(1.0f);
+			s_set_scale(1.0f);
 
 			// Set the action to BOO_CAGE_ACT_MARIO_JUMPING_IN when Mario jumps in.
-			if(are_objects_collided(o, gMarioObject))
+			if(s_hitcheck(o, gMarioObject))
 			{
 				o->oAction++;
 			}

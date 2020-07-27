@@ -9,7 +9,7 @@ void bhv_hoot_init(void)
 	o->oHomeZ = o->oPosZ + 300.0f;
 	o->header.gfx.node.flags |= 0x10; /* bit 4 */
 
-	obj_become_intangible();
+	s_hitOFF();
 }
 
 // sp28 = arg0
@@ -79,13 +79,13 @@ void HootFreeStep(s16 fastOscY, s32 speed)
 	}
 
 	if(sp26 == 0)
-		PlaySound2(SOUND_GENERAL_SWISH_WATER);
+		objsound(SOUND_GENERAL_SWISH_WATER);
 }
 
 void PlayerSetHootYaw(void)
 {
-	s16 stickX	 = sm64::player(0).controller().rawStickX;
-	s16 stickY	 = sm64::player(0).controller().rawStickY;
+	s16 stickX = sm64::player(0).controller().rawStickX;
+	s16 stickY = sm64::player(0).controller().rawStickY;
 
 	if(stickX < 10 && stickX >= -9)
 	{
@@ -121,7 +121,7 @@ void HootCarryStep(s32 speed, UNUSED f32 xPrev, UNUSED f32 zPrev)
 	o->oPosZ += o->oVelZ * FRAME_RATE_SCALER;
 
 	if(sp22 == 0)
-		PlaySound2(SOUND_GENERAL_SWISH_WATER);
+		objsound(SOUND_GENERAL_SWISH_WATER);
 }
 
 // sp48 = xPrev
@@ -178,7 +178,7 @@ void HootAscentLoop(f32 xPrev, f32 zPrev)
 
 	if(o->oTimer >= 29 * FRAME_RATE_SCALER_INV)
 	{
-		PlaySound(SOUND_ENV_WIND2);
+		objsound_level(SOUND_ENV_WIND2);
 		o->header.gfx.unk38.setFrameRaw(1);
 	}
 
@@ -267,7 +267,7 @@ void HootAwakeLoop(void)
 		o->oTimer  = 0;
 	}
 
-	set_object_visibility(o, 2000);
+	PlayerApproachOnOff(o, 2000);
 }
 
 void bhv_hoot_loop(void)
@@ -275,7 +275,7 @@ void bhv_hoot_loop(void)
 	switch(o->oHootAvailability)
 	{
 		case HOOT_AVAIL_ASLEEP_IN_TREE:
-			if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 50))
+			if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 50))
 			{
 				o->header.gfx.node.flags &= ~0x10; /* bit 4 */
 				o->oHootAvailability = HOOT_AVAIL_WANTS_TO_TALK;
@@ -289,7 +289,7 @@ void bhv_hoot_loop(void)
 			{
 				set_mario_npc_dialog(0);
 
-				obj_become_tangible();
+				s_hitON();
 
 				o->oHootAvailability = HOOT_AVAIL_READY_TO_FLY;
 			}

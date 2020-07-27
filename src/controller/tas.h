@@ -5,10 +5,11 @@ namespace sm64::hid
 {
 	class Tas : public Driver
 	{
-	public:
+		public:
 		Tas();
 		virtual ~Tas();
 		void scan(class Controllers* controllers) override;
-	protected:
+
+		protected:
 	};
-}
+} // namespace sm64::hid

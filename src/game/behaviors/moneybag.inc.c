@@ -35,7 +35,7 @@ void bhv_moneybag_init(void)
 
 void MoneybagCheckMarioCollision(void)
 {
-	set_object_hitbox(o, &sMoneybagHitbox);
+	s_set_hitparam(o, &sMoneybagHitbox);
 
 	if(o->oInteractStatus & INT_STATUS_INTERACTED) /* bit 15 */
 	{
@@ -73,7 +73,7 @@ void MoneybagJump(s8 collisionFlags)
 			if(func_8029F788() == 1)
 			{
 				o->oMoneybagJumpState = MONEYBAG_JUMP_JUMP;
-				PlaySound2(SOUND_GENERAL_BOING2_LOWPRIO);
+				objsound(SOUND_GENERAL_BOING2_LOWPRIO);
 			}
 			break;
 
@@ -120,7 +120,7 @@ void MoneybagMoveAroundLoop(void)
 
 	obj_return_and_displace_home(o, o->oHomeX, o->oHomeY, o->oHomeZ, 200);
 
-	collisionFlags = object_step();
+	collisionFlags = ObjMoveEvent();
 
 	if(((collisionFlags & OBJ_COL_FLAGS_LANDED) == OBJ_COL_FLAGS_LANDED) && (o->oMoneybagJumpState == MONEYBAG_JUMP_LANDING))
 	{
@@ -136,7 +136,7 @@ void MoneybagMoveAroundLoop(void)
 	MoneybagJump(collisionFlags);
 	MoneybagCheckMarioCollision();
 
-	if(!is_point_within_radius_of_mario(o->oHomeX, o->oHomeY, o->oHomeZ, 800) && ((collisionFlags & 0x9) == 9))
+	if(!PlayerApproach(o->oHomeX, o->oHomeY, o->oHomeZ, 800) && ((collisionFlags & 0x9) == 9))
 		o->oAction = MONEYBAG_ACT_RETURN_HOME;
 }
 
@@ -148,7 +148,7 @@ void MoneybagReturnHomeLoop(void)
 	s16 sp22	 = atan2s(sp24, sp28);
 	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, sp22, 0x800 / FRAME_RATE_SCALER_INV);
 
-	collisionFlags = object_step();
+	collisionFlags = ObjMoveEvent();
 	if(((collisionFlags & OBJ_COL_FLAGS_LANDED) == OBJ_COL_FLAGS_LANDED) && (o->oMoneybagJumpState == MONEYBAG_JUMP_LANDING))
 		o->oMoneybagJumpState = MONEYBAG_JUMP_WALK_HOME;
 
@@ -157,16 +157,14 @@ void MoneybagReturnHomeLoop(void)
 
 	if(is_point_close_to_object(o, o->oHomeX, o->oHomeY, o->oHomeZ, 100))
 	{
-		spawn_object(o, MODEL_YELLOW_COIN, sm64::bhv::bhvMoneybagHidden());
-#ifndef VERSION_JP
-		PlaySound2(SOUND_GENERAL_VANISH_SFX);
-#endif
+		s_makeobj_nowpos(o, MODEL_YELLOW_COIN, sm64::bhv::bhvMoneybagHidden());
+		objsound(SOUND_GENERAL_VANISH_SFX);
 		SetObjAnimation(0);
 		o->oAction	      = MONEYBAG_ACT_DISAPPEAR;
 		o->oMoneybagJumpState = MONEYBAG_JUMP_LANDING;
 	}
 
-	if(is_point_within_radius_of_mario(o->oHomeX, o->oHomeY, o->oHomeZ, 800) == 1)
+	if(PlayerApproach(o->oHomeX, o->oHomeY, o->oHomeZ, 800) == 1)
 	{
 		o->oAction	      = MONEYBAG_ACT_MOVE_AROUND;
 		o->oMoneybagJumpState = MONEYBAG_JUMP_LANDING;
@@ -188,8 +186,8 @@ void MoneybagDeathLoop(void)
 	if(o->oTimer == 1 * FRAME_RATE_SCALER_INV)
 	{
 		obj_spawn_yellow_coins(o, 5);
-		create_sound_spawner(SOUND_GENERAL_SPLATTERING);
-		func_802A3004();
+		obj_remove_sound(SOUND_GENERAL_SPLATTERING);
+		s_kemuri();
 		o->activeFlags = 0;
 	}
 }
@@ -212,7 +210,7 @@ void bhv_moneybag_loop(void)
 		case MONEYBAG_ACT_MOVE_AROUND:
 			MoneybagMoveAroundLoop();
 			if(o->oTimer >= 31 * FRAME_RATE_SCALER_INV)
-				obj_become_tangible();
+				s_hitON();
 			break;
 
 		case MONEYBAG_ACT_RETURN_HOME:
@@ -231,17 +229,15 @@ void bhv_moneybag_loop(void)
 
 void bhv_moneybag_hidden_loop(void)
 {
-	set_object_hitbox(o, &sMoneybagHiddenHitbox);
+	s_set_hitparam(o, &sMoneybagHiddenHitbox);
 
 	switch(o->oAction)
 	{
 		case FAKE_MONEYBAG_COIN_ACT_IDLE:
-			if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 400))
+			if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 400))
 			{
-				spawn_object(o, MODEL_MONEYBAG, sm64::bhv::bhvMoneybag());
-#ifndef VERSION_JP
-				PlaySound2(SOUND_GENERAL_VANISH_SFX);
-#endif
+				s_makeobj_nowpos(o, MODEL_MONEYBAG, sm64::bhv::bhvMoneybag());
+				objsound(SOUND_GENERAL_VANISH_SFX);
 				o->oAction = FAKE_MONEYBAG_COIN_ACT_TRANSFORM;
 			}
 			break;

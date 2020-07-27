@@ -38,13 +38,8 @@ s8 gFlyingCarpetState;
  *
  * Texture coordinates are s10.5 fixed-point, which means you should left-shift the actual coordinates by 5.
  */
-#ifdef TARGET_N64
-void make_vertex(Vtx* vtx, s32 n, s16 x, s16 y, s16 z, s16 tx, s16 ty, u8 r, u8 g, u8 b, u8 a)
-{
-#else
 void make_vertex(Vtx* vtx, s32 n, f32 x, f32 y, f32 z, s16 tx, s16 ty, u8 r, u8 g, u8 b, u8 a)
 {
-#endif
 	vtx[n].v.ob[0] = x;
 	vtx[n].v.ob[1] = y;
 	vtx[n].v.ob[2] = z;
@@ -89,10 +84,10 @@ Gfx* geo_exec_inside_castle_light(s32 callContext, struct GraphNode* node, UNUSE
 
 	if(callContext == GEO_CONTEXT_RENDER)
 	{
-		flags = save_file_get_flags();
-		if(gHudDisplay.stars >= 10 && (flags & SAVE_FLAG_HAVE_WING_CAP) == 0)
+		flags = BuGetItemFlag();
+		if(playerMeter.stars >= 10 && (flags & SAVE_FLAG_HAVE_WING_CAP) == 0)
 		{
-			displayList = (Gfx*)alloc_display_list(2 * sizeof(*displayList));
+			displayList = (Gfx*)AllocDynamic(2 * sizeof(*displayList));
 
 			if(displayList == NULL)
 			{
@@ -122,14 +117,14 @@ Gfx* geo_exec_flying_carpet_timer_update(s32 callContext, UNUSED struct GraphNod
 	if(callContext != GEO_CONTEXT_RENDER)
 	{
 		sFlyingCarpetRippleTimer = 0;
-		sPrevAreaTimer		 = gAreaUpdateCounter - 1;
-		sCurAreaTimer		 = gAreaUpdateCounter;
+		sPrevAreaTimer		 = animationCounter - 1;
+		sCurAreaTimer		 = animationCounter;
 		gFlyingCarpetState	 = FLYING_CARPET_IDLE;
 	}
 	else
 	{
 		sPrevAreaTimer = sCurAreaTimer;
-		sCurAreaTimer  = gAreaUpdateCounter;
+		sCurAreaTimer  = animationCounter;
 		if(sPrevAreaTimer != sCurAreaTimer)
 		{
 			sFlyingCarpetRippleTimer += 0x400 / FRAME_RATE_SCALER_INV;
@@ -155,8 +150,8 @@ Gfx* geo_exec_flying_carpet_create(s32 callContext, struct GraphNode* node, UNUS
 
 	if(callContext == GEO_CONTEXT_RENDER)
 	{
-		verts		= (Vtx*)alloc_display_list(NUM_FLYING_CARPET_VERTICES * sizeof(*verts));
-		displayList	= (Gfx*)alloc_display_list(7 * sizeof(*displayList));
+		verts		= (Vtx*)AllocDynamic(NUM_FLYING_CARPET_VERTICES * sizeof(*verts));
+		displayList	= (Gfx*)AllocDynamic(7 * sizeof(*displayList));
 		displayListHead = displayList;
 
 		if(verts == NULL || displayList == NULL)
@@ -211,13 +206,6 @@ Gfx* geo_exec_flying_carpet_create(s32 callContext, struct GraphNode* node, UNUS
 	return displayList;
 }
 
-#ifdef VERSION_EU
-// TODO: Symbolize these
-extern Gfx dl_cake_end_screen_eu_070296F8[];
-extern Gfx dl_cake_end_screen_eu_07029768[];
-extern Gfx dl_cake_end_screen_eu_070297D8[];
-#endif
-
 /**
  * Create a display list for the end screen with Peach's delicious cake.
  */
@@ -229,28 +217,13 @@ Gfx* geo_exec_cake_end_screen(s32 callContext, struct GraphNode* node, UNUSED f3
 
 	if(callContext == GEO_CONTEXT_RENDER)
 	{
-		displayList	= (Gfx*)alloc_display_list(3 * sizeof(*displayList));
+		displayList	= (Gfx*)AllocDynamic(3 * sizeof(*displayList));
 		displayListHead = displayList;
 
 		generatedNode->fnNode.node.flags = (generatedNode->fnNode.node.flags & 0xFF) | 0x100;
 
 		gSPDisplayList(displayListHead++, dl_proj_mtx_fullscreen);
-#ifdef VERSION_EU
-		switch(eu_get_language())
-		{
-			case LANGUAGE_ENGLISH:
-				gSPDisplayList(displayListHead++, dl_cake_end_screen_eu_070296F8);
-				break;
-			case LANGUAGE_FRENCH:
-				gSPDisplayList(displayListHead++, dl_cake_end_screen_eu_07029768);
-				break;
-			case LANGUAGE_GERMAN:
-				gSPDisplayList(displayListHead++, dl_cake_end_screen_eu_070297D8);
-				break;
-		}
-#else
 		gSPDisplayList(displayListHead++, dl_cake_end_screen);
-#endif
 		gSPEndDisplayList(displayListHead);
 	}
 

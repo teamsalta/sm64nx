@@ -18,17 +18,17 @@ void bhv_collect_star_init(void)
 	u8 sp1E;
 
 	sp1F = (o->oBehParams >> 24) & 0xFF;
-	sp1E = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1);
+	sp1E = BuGetStarFlag(activePlayerNo - 1, activeCourseNo - 1);
 	if(sp1E & (1 << sp1F))
 	{
-		o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];
+		o->header.gfx.sharedChild = stageShapes[MODEL_TRANSPARENT_STAR];
 	}
 	else
 	{
-		o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_STAR];
+		o->header.gfx.sharedChild = stageShapes[MODEL_STAR];
 	}
 
-	set_object_hitbox(o, &sCollectStarHitbox);
+	s_set_hitparam(o, &sCollectStarHitbox);
 }
 
 void bhv_collect_star_loop(void)
@@ -37,7 +37,7 @@ void bhv_collect_star_loop(void)
 
 	if(o->oInteractStatus & INT_STATUS_INTERACTED)
 	{
-		mark_obj_for_deletion(o);
+		RemoveShape(o);
 		o->oInteractStatus = 0;
 	}
 }
@@ -48,15 +48,15 @@ void bhv_star_spawn_init(void)
 	o->oStarSpawnDisFromHome = sqrtf(sqr(o->oHomeX - o->oPosX) + sqr(o->oHomeZ - o->oPosZ));
 	o->oVelY		 = (o->oHomeY - o->oPosY) / 30.0f;
 	o->oForwardVel		 = o->oStarSpawnDisFromHome / 30.0f;
-	o->oStarSpawnY	 = o->oPosY;
-	if(o->oBehParams2ndByte == 0 || gCurrCourseNum == COURSE_BBH)
+	o->oStarSpawnY		 = o->oPosY;
+	if(o->oBehParams2ndByte == 0 || activeCourseNo == COURSE_BBH)
 		cutscene_object(CUTSCENE_STAR_SPAWN, o);
 	else
 		cutscene_object(CUTSCENE_RED_COIN_STAR_SPAWN, o);
 
 	set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 	o->activeFlags |= 0x20;
-	obj_become_intangible();
+	s_hitOFF();
 }
 
 void bhv_star_spawn_loop(void)
@@ -73,10 +73,10 @@ void bhv_star_spawn_loop(void)
 		case 1:
 			obj_move_xyz_using_fvel_and_yaw(o);
 			o->oStarSpawnY += o->oVelY * FRAME_RATE_SCALER;
-			o->oPosY = o->oStarSpawnY + sins((o->oTimer  * 0x8000 / FRAME_RATE_SCALER_INV) / 30) * 400.0f;
+			o->oPosY = o->oStarSpawnY + sins((o->oTimer * 0x8000 / FRAME_RATE_SCALER_INV) / 30) * 400.0f;
 			o->oFaceAngleYaw += 0x1000 / FRAME_RATE_SCALER_INV;
-			spawn_object(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
-			PlaySound(SOUND_ENV_STAR);
+			s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
+			objsound_level(SOUND_ENV_STAR);
 			if(o->oTimer == 30 * FRAME_RATE_SCALER_INV)
 			{
 				o->oAction     = 2;
@@ -91,15 +91,15 @@ void bhv_star_spawn_loop(void)
 			else
 				o->oVelY = -10.0f;
 
-			spawn_object(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
+			s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
 			obj_move_xyz_using_fvel_and_yaw(o);
 			o->oFaceAngleYaw = o->oFaceAngleYaw - (o->oTimer * 0x10 / FRAME_RATE_SCALER_INV) + 0x1000;
-			PlaySound(SOUND_ENV_STAR);
+			objsound_level(SOUND_ENV_STAR);
 
 			if(o->oPosY < o->oHomeY)
 			{
-				PlaySound2(SOUND_GENERAL_STAR_APPEARS);
-				obj_become_tangible();
+				objsound(SOUND_GENERAL_STAR_APPEARS);
+				s_hitON();
 				o->oPosY   = o->oHomeY;
 				o->oAction = 3;
 			}
@@ -116,7 +116,7 @@ void bhv_star_spawn_loop(void)
 
 			if(o->oInteractStatus & INT_STATUS_INTERACTED)
 			{
-				mark_obj_for_deletion(o);
+				RemoveShape(o);
 				o->oInteractStatus = 0;
 			}
 			break;
@@ -125,7 +125,7 @@ void bhv_star_spawn_loop(void)
 
 struct Object* func_802F1A50(struct Object* sp30, f32 sp34, f32 sp38, f32 sp3C)
 {
-	sp30		      = spawn_object_abs_with_rot(o, 0, MODEL_STAR, sm64::bhv::bhvStarSpawnCoordinates(), o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
+	sp30		      = s_makeobj_absolute(o, 0, MODEL_STAR, sm64::bhv::bhvStarSpawnCoordinates(), o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
 	sp30->oBehParams      = o->oBehParams;
 	sp30->oHomeX	      = sp34;
 	sp30->oHomeY	      = sp38;
@@ -135,7 +135,7 @@ struct Object* func_802F1A50(struct Object* sp30, f32 sp34, f32 sp38, f32 sp3C)
 	return sp30;
 }
 
-void create_star(f32 sp20, f32 sp24, f32 sp28)
+void s_enemyset_star(f32 sp20, f32 sp24, f32 sp28)
 {
 	struct Object* sp1C	= nullptr;
 	sp1C			= func_802F1A50(sp1C, sp20, sp24, sp28);
@@ -162,13 +162,13 @@ void bhv_hidden_red_coin_star_init(void)
 	s16 sp36;
 	struct Object* sp30;
 
-	if(gCurrCourseNum != 3)
-		spawn_object(o, MODEL_TRANSPARENT_STAR, sm64::bhv::bhvRedCoinStarMarker());
+	if(activeCourseNo != 3)
+		s_makeobj_nowpos(o, MODEL_TRANSPARENT_STAR, sm64::bhv::bhvRedCoinStarMarker());
 
 	sp36 = count_objects_with_behavior(sm64::bhv::bhvRedCoin());
 	if(sp36 == 0)
 	{
-		sp30		 = spawn_object_abs_with_rot(o, 0, MODEL_STAR, sm64::bhv::bhvStar(), o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
+		sp30		 = s_makeobj_absolute(o, 0, MODEL_STAR, sm64::bhv::bhvStar(), o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
 		sp30->oBehParams = o->oBehParams;
 		o->activeFlags	 = 0;
 	}
@@ -190,7 +190,7 @@ void bhv_hidden_red_coin_star_loop(void)
 			if(o->oTimer > 2 * FRAME_RATE_SCALER_INV)
 			{
 				func_802F1B84(o->oPosX, o->oPosY, o->oPosZ);
-				func_802A3004();
+				s_kemuri();
 				o->activeFlags = 0;
 			}
 			break;

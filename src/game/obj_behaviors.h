@@ -9,7 +9,7 @@
 
 void set_yoshi_as_not_dead(void);
 
-s32 CoinStep(s16 *collisionFlagsPtr);
+s32 CoinStep(s16* collisionFlagsPtr);
 void MovingCoinFlickerLoop(void);
 void CoinCollected(void);
 void bhv_moving_yellow_coin_init(void);
@@ -17,10 +17,10 @@ void bhv_moving_yellow_coin_loop(void);
 void bhv_moving_blue_coin_init(void);
 void bhv_moving_blue_coin_loop(void);
 void bhv_blue_coin_sliding_jumping_init(void);
-void func_802E540C(void); /* likely unused */
-void func_802E54DC(void); /* likely unused */
-void bhv_blue_coin_sliding_loop(void); /* likely unused */
-void bhv_blue_coin_jumping_loop(void); /* likely unused */
+void func_802E540C(void);	       /* likely size */
+void func_802E54DC(void);	       /* likely size */
+void bhv_blue_coin_sliding_loop(void); /* likely size */
+void bhv_blue_coin_jumping_loop(void); /* likely size */
 void bhv_seaweed_init(void);
 void bhv_seaweed_bundle_init(void);
 void bhv_bobomb_init(void);
@@ -36,7 +36,7 @@ void BobombFreeLoop(void);
 void BobombHeldLoop(void);
 void BobombDroppedLoop(void);
 void BobombThrownLoop(void);
-void ObjRandomBlink(s32 *blinkTimer);
+void ObjRandomBlink(s32* blinkTimer);
 void bhv_bobomb_loop(void);
 void bhv_bobomb_fuse_smoke_init(void);
 void bhv_bobomb_buddy_init(void);
@@ -66,7 +66,7 @@ void ButterflyFollowMarioLoop(void);
 void ButterflyReturnHomeLoop(void);
 void bhv_butterfly_loop(void);
 void bhv_hoot_init(void);
-f32 HootFindNextFloor(struct FloorGeometry **arg0, f32 arg1);
+f32 HootFindNextFloor(struct FloorGeometry** arg0, f32 arg1);
 void HootFloorBounce(void);
 void HootFreeStep(s16 arg0, s32 arg1);
 void PlayerSetHootYaw(void);
@@ -77,8 +77,8 @@ void HootActionLoop(void);
 void HootTurnToHome(void);
 void HootAwakeLoop(void);
 void bhv_hoot_loop(void);
-void bhv_beta_holdable_object_init(void); /* unused */
-void bhv_beta_holdable_object_loop(void); /* unused */
+void bhv_beta_holdable_object_init(void); /* size */
+void bhv_beta_holdable_object_loop(void); /* size */
 void bhv_object_bubble_init(void);
 void bhv_object_bubble_loop(void);
 void bhv_object_water_wave_init(void);
@@ -89,7 +89,7 @@ void bhv_bobomb_bully_death_smoke_init(void);
 void bhv_bobomb_explosion_bubble_init(void);
 void bhv_bobomb_explosion_bubble_loop(void);
 void bhv_respawner_loop(void);
-void create_respawner(s32 arg0, const BehaviorScript *behToSpawn, s32 minSpawnDist);
+void create_respawner(s32 arg0, const BehaviorScript* behToSpawn, s32 minSpawnDist);
 void bhv_small_bully_init(void);
 void bhv_big_bully_init(void);
 void BullyCheckMarioCollision(void);
@@ -114,7 +114,7 @@ void SetWaterRingScale(f32 avgScale);
 void WaterRingCollectedLoop(void);
 void JetStreamWaterRingNotCollectedLoop(void);
 void bhv_jet_stream_water_ring_loop(void);
-void Unknown802EB8A4(void); /* unused */
+void Unknown802EB8A4(void); /* size */
 void JetStreamRingSpawnerActiveLoop(void);
 void bhv_jet_stream_ring_spawner_loop(void);
 void bhv_manta_ray_water_ring_init(void);
@@ -157,11 +157,11 @@ void bhv_generic_bowling_ball_spawner_loop(void);
 void bhv_thi_bowling_ball_spawner_loop(void);
 void bhv_bob_pit_bowling_ball_init(void);
 void bhv_bob_pit_bowling_ball_loop(void);
-void bhv_free_bowling_ball_init(void); /* likely unused */
-void bhv_free_bowling_ball_roll_loop(void); /* likely unused */
-void bhv_free_bowling_ball_loop(void); /* likely unused */
+void bhv_free_bowling_ball_init(void);	    /* likely size */
+void bhv_free_bowling_ball_roll_loop(void); /* likely size */
+void bhv_free_bowling_ball_loop(void);	    /* likely size */
 void bhv_rr_cruiser_wing_init(void);
 void bhv_rr_cruiser_wing_loop(void);
-extern void create_star(f32, f32, f32);
+extern void s_enemyset_star(f32, f32, f32);
 
 #endif /* _OBJ_BEHAVIORS_H */

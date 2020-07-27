@@ -639,7 +639,7 @@ s8 correct_shadow_solidity_for_animations(s32 isLuigi, u8 initialSolidity, struc
  */
 void correct_lava_shadow_height(struct Shadow* s)
 {
-	if(gCurrLevelNum == LEVEL_BITFS && sSurfaceTypeBelowShadow == SURFACE_BURNING)
+	if(activeStageNo == LEVEL_BITFS && sSurfaceTypeBelowShadow == SURFACE_BURNING)
 	{
 		if(s->floorHeight < -3000.0)
 		{
@@ -652,7 +652,7 @@ void correct_lava_shadow_height(struct Shadow* s)
 			gShadowAboveWaterOrLava = TRUE;
 		}
 	}
-	else if(gCurrLevelNum == LEVEL_LLL && gCurrAreaIndex == 1 && sSurfaceTypeBelowShadow == SURFACE_BURNING)
+	else if(activeStageNo == LEVEL_LLL && activeSceneNo == 1 && sSurfaceTypeBelowShadow == SURFACE_BURNING)
 	{
 		s->floorHeight		= 5.0;
 		gShadowAboveWaterOrLava = TRUE;
@@ -672,7 +672,7 @@ Gfx* create_shadow_player(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 soli
 	s32 i;
 
 	// Update global variables about whether Mario is on a flying carpet.
-	if(gCurrLevelNum == LEVEL_RR && sSurfaceTypeBelowShadow != SURFACE_DEATH_PLANE)
+	if(activeStageNo == LEVEL_RR && sSurfaceTypeBelowShadow != SURFACE_DEATH_PLANE)
 	{
 		switch(gFlyingCarpetState)
 		{
@@ -703,8 +703,8 @@ Gfx* create_shadow_player(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 soli
 		return NULL;
 	}
 
-	verts	    = (Vtx*)alloc_display_list(9 * sizeof(Vtx));
-	displayList = (Gfx*)alloc_display_list(5 * sizeof(Gfx));
+	verts	    = (Vtx*)AllocDynamic(9 * sizeof(Vtx));
+	displayList = (Gfx*)AllocDynamic(5 * sizeof(Gfx));
 	if(verts == NULL || displayList == NULL)
 	{
 		return NULL;
@@ -735,8 +735,8 @@ Gfx* create_shadow_circle_9_verts(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale,
 		return NULL;
 	}
 
-	verts	    = (Vtx*)alloc_display_list(9 * sizeof(Vtx));
-	displayList = (Gfx*)alloc_display_list(5 * sizeof(Gfx));
+	verts	    = (Vtx*)AllocDynamic(9 * sizeof(Vtx));
+	displayList = (Gfx*)AllocDynamic(5 * sizeof(Gfx));
 
 	if(verts == NULL || displayList == NULL)
 	{
@@ -765,8 +765,8 @@ Gfx* create_shadow_circle_4_verts(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale,
 		return NULL;
 	}
 
-	verts	    = (Vtx*)alloc_display_list(4 * sizeof(Vtx));
-	displayList = (Gfx*)alloc_display_list(5 * sizeof(Gfx));
+	verts	    = (Vtx*)AllocDynamic(4 * sizeof(Vtx));
+	displayList = (Gfx*)AllocDynamic(5 * sizeof(Gfx));
 
 	if(verts == NULL || displayList == NULL)
 	{
@@ -803,8 +803,8 @@ Gfx* create_shadow_circle_assuming_flat_ground(f32 xPos, f32 yPos, f32 zPos, s16
 		distBelowFloor = floorHeight - yPos;
 	}
 
-	verts	    = (Vtx*)alloc_display_list(4 * sizeof(Vtx));
-	displayList = (Gfx*)alloc_display_list(5 * sizeof(Gfx));
+	verts	    = (Vtx*)AllocDynamic(4 * sizeof(Vtx));
+	displayList = (Gfx*)AllocDynamic(5 * sizeof(Gfx));
 
 	if(verts == NULL || displayList == NULL)
 	{
@@ -826,8 +826,8 @@ Gfx* create_shadow_circle_assuming_flat_ground(f32 xPos, f32 yPos, f32 zPos, s16
  */
 Gfx* create_shadow_rectangle(f32 halfWidth, f32 halfLength, f32 relY, u8 solidity)
 {
-	Vtx* verts	 = (Vtx*)alloc_display_list(4 * sizeof(Vtx));
-	Gfx* displayList = (Gfx*)alloc_display_list(5 * sizeof(Gfx));
+	Vtx* verts	 = (Vtx*)AllocDynamic(4 * sizeof(Vtx));
+	Gfx* displayList = (Gfx*)AllocDynamic(5 * sizeof(Gfx));
 	f32 frontLeftX, frontLeftZ, frontRightX, frontRightZ, backLeftX, backLeftZ, backRightX, backRightZ;
 
 	if(verts == NULL || displayList == NULL)
@@ -982,7 +982,7 @@ Gfx* create_shadow_below_xyz(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 s
 		case SHADOW_CIRCLE_4_VERTS:
 			displayList = create_shadow_circle_4_verts(xPos, yPos, zPos, shadowScale, shadowSolidity);
 			break;
-		case SHADOW_CIRCLE_4_VERTS_FLAT_UNUSED: // unused shadow type
+		case SHADOW_CIRCLE_4_VERTS_FLAT_UNUSED: // size shadow type
 			displayList = create_shadow_circle_assuming_flat_ground(xPos, yPos, zPos, shadowScale, shadowSolidity);
 			break;
 		case SHADOW_SQUARE_PERMANENT:

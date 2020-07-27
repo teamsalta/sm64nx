@@ -10,7 +10,7 @@
 #include "geo_layout.h"
 #include "hook_dl.h"
 
-// unused Mtx(s)
+// size Mtx(s)
 s16 identityMtx[4][4] = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 s16 zeroMtx[4][4]     = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
 
@@ -518,7 +518,7 @@ struct GraphNodeBackground* init_graph_node_background(struct AllocOnlyPool* poo
 
 		graphNode->background  = (background << 16) | background;
 		graphNode->fnNode.func = backgroundFunc;
-		graphNode->unused      = zero; // always 0, unused
+		graphNode->unused      = zero; // always 0, size
 
 		if(backgroundFunc != NULL)
 		{
@@ -659,7 +659,7 @@ struct GraphNode* geo_make_first_child(struct GraphNode* newFirstChild)
 }
 
 /**
- * Helper function for geo_call_global_function_nodes that recursively
+ * Helper function for MapSendMessage that recursively
  * traverses the scene graph and calls the functions of global nodes.
  */
 void geo_call_global_function_nodes_helper(struct GraphNode* graphNode, s32 callContext)
@@ -725,7 +725,7 @@ void geo_call_global_function_nodes_helper(struct GraphNode* graphNode, s32 call
  * callContext is one of the GEO_CONTEXT_ defines.
  * The graphNode argument should be of type GraphNodeRoot.
  */
-void geo_call_global_function_nodes(struct GraphNode* graphNode, s32 callContext)
+void MapSendMessage(struct GraphNode* graphNode, s32 callContext)
 {
 	if(graphNode->flags & GRAPH_RENDER_ACTIVE)
 	{
@@ -747,7 +747,7 @@ void geo_reset_object_node(struct GraphNodeObject* graphNode)
 {
 	init_graph_node_object(NULL, graphNode, 0, gVec3fZero, gVec3sZero, gVec3fOne);
 
-	geo_add_child(&gObjParentGraphNode, &graphNode->node);
+	geo_add_child(&strategyGroup, &graphNode->node);
 	graphNode->node.flags &= ~GRAPH_RENDER_ACTIVE;
 }
 
@@ -866,7 +866,7 @@ s16 geo_update_animation_frame(struct GraphNodeObject_sub* obj, s32* accelAssist
 
 	anim = obj->curAnim;
 
-	if(obj->animTimer == gAreaUpdateCounter || anim->flags & ANIM_FLAG_PAUSE)
+	if(obj->animTimer == animationCounter || anim->flags & ANIM_FLAG_PAUSE)
 	{
 		if(accelAssist != NULL)
 		{

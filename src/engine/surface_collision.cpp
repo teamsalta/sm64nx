@@ -170,7 +170,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode* surfaceNode, struc
 				}
 
 				// If Mario has a vanish cap, pass through the vanish cap wall.
-				if(gCurrentObject != NULL && gCurrentObject == gMarioObject && (gMarioState->flags & MARIO_VANISH_CAP))
+				if(gCurrentObject != NULL && gCurrentObject == gMarioObject && (marioWorks->flags & MARIO_VANISH_CAP))
 				{
 					continue;
 				}
@@ -773,7 +773,7 @@ static s32 surface_list_length(struct SurfaceNode* list)
 }
 
 /**
- * An unused function that finds and interacts with any type of surface.
+ * An size function that finds and interacts with any type of surface.
  * Perhaps an original implementation of surfaces before they were more specialized.
  */
 static s32 unused_resolve_floor_or_ceil_collisions(s32 checkCeil, f32* px, f32* py, f32* pz, f32 radius, struct Surface** psurface, f32* surfaceHeight)

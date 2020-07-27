@@ -60,7 +60,7 @@ void bhv_mr_blizzard_init(void)
 	{
 		if(o->oBehParams2ndByte != 0)
 		{
-			if(save_file_get_flags() & SAVE_FLAG_CAP_ON_MR_BLIZZARD)
+			if(BuGetItemFlag() & SAVE_FLAG_CAP_ON_MR_BLIZZARD)
 			{
 				o->oAnimState = 1;
 			}
@@ -75,7 +75,7 @@ static void func_8030702C(void)
 {
 	if(o->oMrBlizzardUnkF8 == NULL && func_802F92EC(0, 5))
 	{
-		o->oMrBlizzardUnkF8 = spawn_object_relative(0, -70, (s32)(o->oMrBlizzardUnk10C + 153.0f), 0, o, MODEL_WHITE_PARTICLE, sm64::bhv::bhvMrBlizzardSnowball());
+		o->oMrBlizzardUnkF8 = s_makeobj_chain(0, -70, (s32)(o->oMrBlizzardUnk10C + 153.0f), 0, o, MODEL_WHITE_PARTICLE, sm64::bhv::bhvMrBlizzardSnowball());
 	}
 	else if(obj_check_anim_frame(10))
 	{
@@ -98,18 +98,18 @@ static void func_80307144(void)
 {
 	if(o->oDistanceToMario < 1000.0f)
 	{
-		PlaySound2(SOUND_OBJ_SNOW_SAND2);
+		objsound(SOUND_OBJ_SNOW_SAND2);
 		o->oAction	    = 2;
 		o->oMoveAngleYaw    = o->oAngleToMario;
 		o->oMrBlizzardUnkFC = 42.0f;
 
 		func_80306ED4(8, -10, 15, 20, 10);
-		obj_unhide();
-		obj_become_tangible();
+		s_shape_disp();
+		s_hitON();
 	}
 	else
 	{
-		obj_hide();
+		s_shape_hide();
 	}
 }
 
@@ -184,7 +184,7 @@ static void func_80307370(void)
 			{
 				o->oAction = 6;
 				o->prevObj = o->oMrBlizzardUnkF8 = NULL;
-				obj_become_intangible();
+				s_hitOFF();
 			}
 		}
 		else if(o->oDistanceToMario > 1500.0f)
@@ -208,12 +208,12 @@ static void func_80307650(void)
 	{
 		if(o->oMrBlizzardUnk108 != 0.0f)
 		{
-			PlaySound2(SOUND_OBJ_SNOW_SAND1);
+			objsound(SOUND_OBJ_SNOW_SAND1);
 			if(o->oAnimState)
 			{
-				save_file_clear_flags(SAVE_FLAG_CAP_ON_MR_BLIZZARD);
+				BuClrItemFlag(SAVE_FLAG_CAP_ON_MR_BLIZZARD);
 
-				val04 = spawn_object_relative(0, 5, 105, 0, o, MODEL_MARIOS_CAP, sm64::bhv::bhvNormalCap());
+				val04 = s_makeobj_chain(0, 5, 105, 0, o, MODEL_MARIOS_CAP, sm64::bhv::bhvNormalCap());
 				if(val04 != NULL)
 				{
 					val04->oMoveAngleYaw = o->oFaceAngleYaw + (o->oFaceAngleRoll < 0 ? 0x4000 : -0x4000);
@@ -244,7 +244,7 @@ static void func_80307650(void)
 	{
 		if(o->oTimer == 30 * FRAME_RATE_SCALER_INV)
 		{
-			PlaySound2(SOUND_OBJ_ENEMY_DEFEAT_SHRINK);
+			objsound(SOUND_OBJ_ENEMY_DEFEAT_SHRINK);
 		}
 
 		if(o->oMrBlizzardUnkF4 != 0.0f)
@@ -276,7 +276,7 @@ static void func_80307990(void)
 {
 	if(func_802F92EC(1, 7))
 	{
-		PlaySound2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
+		objsound(SOUND_OBJ2_SCUTTLEBUG_ALERT);
 		o->prevObj = o->oMrBlizzardUnkF8 = NULL;
 	}
 	else if(func_8029F788())
@@ -313,7 +313,7 @@ static void func_80307AD4(void)
 
 		if(--o->oMrBlizzardUnk100 == 0)
 		{
-			PlaySound2(SOUND_OBJ_MR_BLIZZARD_ALERT);
+			objsound(SOUND_OBJ_MR_BLIZZARD_ALERT);
 
 			if(o->oMrBlizzardUnkTimer > 700 * FRAME_RATE_SCALER_INV)
 			{
@@ -332,7 +332,7 @@ static void func_80307AD4(void)
 	}
 	else if(o->oMoveFlags & 0x00000003)
 	{
-		PlaySound2(SOUND_OBJ_SNOW_SAND1);
+		objsound(SOUND_OBJ_SNOW_SAND1);
 		if(o->oMrBlizzardUnkTimer != 0)
 		{
 			o->oMrBlizzardUnkTimer = (s32)obj_lateral_dist_to_home() * FRAME_RATE_SCALER_INV;
@@ -382,14 +382,14 @@ void bhv_mr_blizzard_update(void)
 	o->oFaceAngleRoll = o->oMrBlizzardUnk104;
 	o->oGraphYOffset  = o->oMrBlizzardUnk10C + absf(20.0f * sins(o->oFaceAngleRoll)) - 40.0f * (1.0f - o->oMrBlizzardUnkF4);
 
-	obj_scale(o->oMrBlizzardUnkF4);
+	s_set_scale(o->oMrBlizzardUnkF4);
 	obj_move_standard(78);
 	obj_check_attacks(&sMrBlizzardHitbox, o->oAction);
 }
 
 static void func_80307E24(void)
 {
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 	if(o->parentObj->prevObj == o)
 	{
 		o->oAction	       = 1;
@@ -430,8 +430,8 @@ static void func_80307FD4(void)
 	if(o->oAction == -1 || o->oMoveFlags & 0x0000000B)
 	{
 		func_80306ED4(6, 0, 5, 10, 3);
-		create_sound_spawner(SOUND_GENERAL_MOVING_IN_SAND);
-		mark_object_for_deletion(o);
+		obj_remove_sound(SOUND_GENERAL_MOVING_IN_SAND);
+		s_remove_obj(o);
 	}
 
 	obj_move_standard(78);

@@ -29,13 +29,13 @@ void bhv_flamethrower_flame_loop(void)
 	}
 	else
 		sp18 = o->parentObj->oFlameThowerFlameUnk110;
-	obj_scale(size);
+	s_set_scale(size);
 	if(o->oBehParams2ndByte == 4)
 		o->oPosY += o->oForwardVel * FRAME_RATE_SCALER; // weird?
 	else
-		obj_move_using_fvel_and_gravity();
+		s_optionmove_F();
 	if(o->oTimer > sp18 * FRAME_RATE_SCALER_INV)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	o->oInteractStatus = 0;
 }
 
@@ -48,7 +48,7 @@ void bhv_flamethrower_loop(void)
 	UNUSED u8 pad[8];
 	if(o->oAction == 0)
 	{
-		if(gCurrLevelNum != LEVEL_BBH || gMarioOnMerryGoRound == 1)
+		if(activeStageNo != LEVEL_BBH || gMarioOnMerryGoRound == 1)
 			if(o->oDistanceToMario < 2000.0f)
 			{
 				o->oAction++;
@@ -87,9 +87,9 @@ void bhv_flamethrower_loop(void)
 
 			o->oFlameThowerUnk110 = sp34;
 
-			flame		   = spawn_object_relative(o->oBehParams2ndByte, 0, 0, 0, o, model, sm64::bhv::bhvFlamethrowerFlame());
+			flame		   = s_makeobj_chain(o->oBehParams2ndByte, 0, 0, 0, o, model, sm64::bhv::bhvFlamethrowerFlame());
 			flame->oForwardVel = flameVel;
-			PlaySound(SOUND_AIR_BLOW_FIRE);
+			objsound_level(SOUND_AIR_BLOW_FIRE);
 		}
 	}
 	else if(o->oTimer > 60 * FRAME_RATE_SCALER_INV)

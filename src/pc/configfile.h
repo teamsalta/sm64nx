@@ -1,7 +1,7 @@
 #ifndef CONFIGFILE_H
 #define CONFIGFILE_H
 
-extern bool         configFullscreen;
+extern bool configFullscreen;
 extern unsigned int configWidth;
 extern unsigned int configHeight;
 extern unsigned int configKeyA;

@@ -1,4 +1,4 @@
-// Small Key (unused)
+// Small Key (size)
 
 // ???
 UNUSED static const u64 small_key_unused_1 = 0;

@@ -251,7 +251,7 @@ static void restore_save_file_data(s32 fileIndex, s32 srcSlot)
 	write_eeprom_data(&gSaveBuffer.files[fileIndex][destSlot], sizeof(gSaveBuffer.files[fileIndex][destSlot]));
 }
 
-void save_file_do_save(s32 fileIndex)
+void BuWriteStorage(s32 fileIndex)
 {
 	if(gSaveFileModified)
 	{
@@ -270,16 +270,16 @@ void save_file_do_save(s32 fileIndex)
 	save_main_menu_data();
 }
 
-void save_file_erase(s32 fileIndex)
+void BuClearStorage(s32 fileIndex)
 {
 	touch_high_score_ages(fileIndex);
 	bzero(&gSaveBuffer.files[fileIndex][0], sizeof(gSaveBuffer.files[fileIndex][0]));
 
 	gSaveFileModified = TRUE;
-	save_file_do_save(fileIndex);
+	BuWriteStorage(fileIndex);
 }
 
-void save_file_copy(s32 srcFileIndex, s32 destFileIndex)
+void BuCopyStorage(s32 srcFileIndex, s32 destFileIndex)
 {
 	UNUSED s32 pad;
 
@@ -287,10 +287,10 @@ void save_file_copy(s32 srcFileIndex, s32 destFileIndex)
 	bcopy(&gSaveBuffer.files[srcFileIndex][0], &gSaveBuffer.files[destFileIndex][0], sizeof(gSaveBuffer.files[destFileIndex][0]));
 
 	gSaveFileModified = TRUE;
-	save_file_do_save(destFileIndex);
+	BuWriteStorage(destFileIndex);
 }
 
-void save_file_load_all(void)
+void BuInitBackUp(void)
 {
 	s32 file;
 	s32 validSlots;
@@ -325,7 +325,7 @@ void save_file_load_all(void)
 		switch(validSlots)
 		{
 			case 0: // Neither copy is correct
-				save_file_erase(file);
+				BuClearStorage(file);
 				break;
 			case 1: // Slot 0 is correct and slot 1 is incorrect
 				restore_save_file_data(file, 0);
@@ -344,10 +344,10 @@ void save_file_load_all(void)
  * a cached copy of what has been written to EEPROM.
  * This is used after getting a game over.
  */
-void save_file_reload(void)
+void BuRestoreBackUp(void)
 {
 	// Copy save file data from backup
-	bcopy(&gSaveBuffer.files[gCurrSaveFileNum - 1][1], &gSaveBuffer.files[gCurrSaveFileNum - 1][0], sizeof(gSaveBuffer.files[gCurrSaveFileNum - 1][0]));
+	bcopy(&gSaveBuffer.files[activePlayerNo - 1][1], &gSaveBuffer.files[activePlayerNo - 1][0], sizeof(gSaveBuffer.files[activePlayerNo - 1][0]));
 
 	// Copy main menu data from backup
 	bcopy(&gSaveBuffer.menuData[1], &gSaveBuffer.menuData[0], sizeof(gSaveBuffer.menuData[0]));
@@ -360,13 +360,13 @@ void save_file_reload(void)
  * Update the current save file after collecting a star or a key.
  * If coin score is greater than the current high score, update it.
  */
-void save_file_collect_star_or_key(s16 coinScore, s16 starIndex)
+void BuStoreBackUp(s16 coinScore, s16 starIndex)
 {
-	s32 fileIndex	= gCurrSaveFileNum - 1;
-	s32 courseIndex = gCurrCourseNum - 1;
+	s32 fileIndex	= activePlayerNo - 1;
+	s32 courseIndex = activeCourseNo - 1;
 
 	s32 starFlag	 = 1 << starIndex;
-	UNUSED s32 flags = save_file_get_flags();
+	UNUSED s32 flags = BuGetItemFlag();
 
 	gLastCompletedCourseNum	    = courseIndex + 1;
 	gLastCompletedStarNum	    = starIndex + 1;
@@ -378,12 +378,12 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex)
 		//! Compares the coin score as a 16 bit value, but only writes the 8 bit
 		// truncation. This can allow a high score to decrease.
 
-		if(coinScore > ((u16)save_file_get_max_coin_score(courseIndex) & 0xFFFF))
+		if(coinScore > ((u16)BuGetWinScore(courseIndex) & 0xFFFF))
 		{
 			sUnusedGotGlobalCoinHiScore = 1;
 		}
 
-		if(coinScore > save_file_get_course_coin_score(fileIndex, courseIndex))
+		if(coinScore > BuGetNumCoins(fileIndex, courseIndex))
 		{
 			gSaveBuffer.files[fileIndex][0].courseCoinScores[courseIndex] = coinScore;
 			touch_coin_score_age(fileIndex, courseIndex);
@@ -393,19 +393,19 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex)
 		}
 	}
 
-	switch(gCurrLevelNum)
+	switch(activeStageNo)
 	{
 		case LEVEL_BOWSER_1:
-			if(!(save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_1 | SAVE_FLAG_UNLOCKED_BASEMENT_DOOR)))
+			if(!(BuGetItemFlag() & (SAVE_FLAG_HAVE_KEY_1 | SAVE_FLAG_UNLOCKED_BASEMENT_DOOR)))
 			{
-				save_file_set_flags(SAVE_FLAG_HAVE_KEY_1);
+				BuSetItemFlag(SAVE_FLAG_HAVE_KEY_1);
 			}
 			break;
 
 		case LEVEL_BOWSER_2:
-			if(!(save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)))
+			if(!(BuGetItemFlag() & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)))
 			{
-				save_file_set_flags(SAVE_FLAG_HAVE_KEY_2);
+				BuSetItemFlag(SAVE_FLAG_HAVE_KEY_2);
 			}
 			break;
 
@@ -413,15 +413,15 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex)
 			break;
 
 		default:
-			if(!(save_file_get_star_flags(fileIndex, courseIndex) & starFlag))
+			if(!(BuGetStarFlag(fileIndex, courseIndex) & starFlag))
 			{
-				save_file_set_star_flags(fileIndex, courseIndex, starFlag);
+				BuSetStarFlag(fileIndex, courseIndex, starFlag);
 			}
 			break;
 	}
 }
 
-s32 save_file_exists(s32 fileIndex)
+s32 BuIsActive(s32 fileIndex)
 {
 	return (gSaveBuffer.files[fileIndex][0].flags & SAVE_FLAG_FILE_EXISTS) != 0;
 }
@@ -431,7 +431,7 @@ s32 save_file_exists(s32 fileIndex)
  * of the returned value are the score, and the upper 16 bits are the file number
  * of the save file with this score.
  */
-u32 save_file_get_max_coin_score(s32 courseIndex)
+u32 BuGetWinScore(s32 courseIndex)
 {
 	s32 fileIndex;
 	s32 maxCoinScore    = -1;
@@ -440,9 +440,9 @@ u32 save_file_get_max_coin_score(s32 courseIndex)
 
 	for(fileIndex = 0; fileIndex < NUM_SAVE_FILES; fileIndex++)
 	{
-		if(save_file_get_star_flags(fileIndex, courseIndex) != 0)
+		if(BuGetStarFlag(fileIndex, courseIndex) != 0)
 		{
-			s32 coinScore = save_file_get_course_coin_score(fileIndex, courseIndex);
+			s32 coinScore = BuGetNumCoins(fileIndex, courseIndex);
 			s32 scoreAge  = get_coin_score_age(fileIndex, courseIndex);
 
 			if(coinScore > maxCoinScore || (coinScore == maxCoinScore && scoreAge > maxScoreAge))
@@ -456,12 +456,12 @@ u32 save_file_get_max_coin_score(s32 courseIndex)
 	return (maxScoreFileNum << 16) + MAX(maxCoinScore, 0);
 }
 
-s32 save_file_get_course_star_count(s32 fileIndex, s32 courseIndex)
+s32 BuGetNumStars(s32 fileIndex, s32 courseIndex)
 {
 	s32 i;
 	s32 count    = 0;
 	u8 flag	     = 1;
-	u8 starFlags = save_file_get_star_flags(fileIndex, courseIndex);
+	u8 starFlags = BuGetStarFlag(fileIndex, courseIndex);
 
 	for(i = 0; i < 7; i++, flag <<= 1)
 	{
@@ -473,47 +473,47 @@ s32 save_file_get_course_star_count(s32 fileIndex, s32 courseIndex)
 	return count;
 }
 
-s32 save_file_get_total_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse)
+s32 BuGetSumStars(s32 fileIndex, s32 minCourse, s32 maxCourse)
 {
 	s32 count = 0;
 
 	// Get standard course star count.
 	for(; minCourse <= maxCourse; minCourse++)
 	{
-		count += save_file_get_course_star_count(fileIndex, minCourse);
+		count += BuGetNumStars(fileIndex, minCourse);
 	}
 
 	// Add castle secret star count.
-	return save_file_get_course_star_count(fileIndex, -1) + count;
+	return BuGetNumStars(fileIndex, -1) + count;
 }
 
-void save_file_set_flags(s32 flags)
+void BuSetItemFlag(s32 flags)
 {
-	gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= (flags | SAVE_FLAG_FILE_EXISTS);
+	gSaveBuffer.files[activePlayerNo - 1][0].flags |= (flags | SAVE_FLAG_FILE_EXISTS);
 	gSaveFileModified = TRUE;
 }
 
-void save_file_clear_flags(s32 flags)
+void BuClrItemFlag(s32 flags)
 {
-	gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags &= ~flags;
-	gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= SAVE_FLAG_FILE_EXISTS;
+	gSaveBuffer.files[activePlayerNo - 1][0].flags &= ~flags;
+	gSaveBuffer.files[activePlayerNo - 1][0].flags |= SAVE_FLAG_FILE_EXISTS;
 	gSaveFileModified = TRUE;
 }
 
-s32 save_file_get_flags(void)
+s32 BuGetItemFlag(void)
 {
-	if(gCurrCreditsEntry != 0 || gCurrDemoInput != NULL)
+	if(snEndingScene != 0 || autoDemoPtr != NULL)
 	{
 		return 0;
 	}
-	return gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags;
+	return gSaveBuffer.files[activePlayerNo - 1][0].flags;
 }
 
 /**
  * Return the bitset of obtained stars in the specified course.
  * If course is -1, return the bitset of obtained castle secret stars.
  */
-s32 save_file_get_star_flags(s32 fileIndex, s32 courseIndex)
+s32 BuGetStarFlag(s32 fileIndex, s32 courseIndex)
 {
 	s32 starFlags;
 
@@ -533,7 +533,7 @@ s32 save_file_get_star_flags(s32 fileIndex, s32 courseIndex)
  * Add to the bitset of obtained stars in the specified course.
  * If course is -1, add ot the bitset of obtained castle secret stars.
  */
-void save_file_set_star_flags(s32 fileIndex, s32 courseIndex, s32 starFlags)
+void BuSetStarFlag(s32 fileIndex, s32 courseIndex, s32 starFlags)
 {
 	if(courseIndex == -1)
 	{
@@ -548,7 +548,7 @@ void save_file_set_star_flags(s32 fileIndex, s32 courseIndex, s32 starFlags)
 	gSaveFileModified = TRUE;
 }
 
-s32 save_file_get_course_coin_score(s32 fileIndex, s32 courseIndex)
+s32 BuGetNumCoins(s32 fileIndex, s32 courseIndex)
 {
 	return gSaveBuffer.files[fileIndex][0].courseCoinScores[courseIndex];
 }
@@ -556,37 +556,37 @@ s32 save_file_get_course_coin_score(s32 fileIndex, s32 courseIndex)
 /**
  * Return TRUE if the cannon is unlocked in the current course.
  */
-s32 save_file_is_cannon_unlocked(void)
+s32 BuGetCannonFlag(void)
 {
-	return (gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] & 0x80) != 0;
+	return (gSaveBuffer.files[activePlayerNo - 1][0].courseStars[activeCourseNo] & 0x80) != 0;
 }
 
 /**
  * Sets the cannon status to unlocked in the current course.
  */
-void save_file_set_cannon_unlocked(void)
+void BuSetCannonFlag(void)
 {
-	gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] |= 0x80;
-	gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= SAVE_FLAG_FILE_EXISTS;
+	gSaveBuffer.files[activePlayerNo - 1][0].courseStars[activeCourseNo] |= 0x80;
+	gSaveBuffer.files[activePlayerNo - 1][0].flags |= SAVE_FLAG_FILE_EXISTS;
 	gSaveFileModified = TRUE;
 }
 
-void save_file_set_cap_pos(s16 x, s16 y, s16 z)
+void BuSetHatPosition(s16 x, s16 y, s16 z)
 {
-	struct SaveFile* saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
+	struct SaveFile* saveFile = &gSaveBuffer.files[activePlayerNo - 1][0];
 
-	saveFile->capLevel = gCurrLevelNum;
-	saveFile->capArea  = gCurrAreaIndex;
+	saveFile->capLevel = activeStageNo;
+	saveFile->capArea  = activeSceneNo;
 	vec3s_set(saveFile->capPos, x, y, z);
-	save_file_set_flags(SAVE_FLAG_CAP_ON_GROUND);
+	BuSetItemFlag(SAVE_FLAG_CAP_ON_GROUND);
 }
 
-s32 save_file_get_cap_pos(Vec3s& capPos)
+s32 BuGetHatPosition(Vec3s& capPos)
 {
-	struct SaveFile* saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
-	s32 flags		  = save_file_get_flags();
+	struct SaveFile* saveFile = &gSaveBuffer.files[activePlayerNo - 1][0];
+	s32 flags		  = BuGetItemFlag();
 
-	if(saveFile->capLevel == gCurrLevelNum && saveFile->capArea == gCurrAreaIndex && (flags & SAVE_FLAG_CAP_ON_GROUND))
+	if(saveFile->capLevel == activeStageNo && saveFile->capArea == activeSceneNo && (flags & SAVE_FLAG_CAP_ON_GROUND))
 	{
 		vec3s_copy(capPos, saveFile->capPos);
 		return TRUE;
@@ -594,7 +594,7 @@ s32 save_file_get_cap_pos(Vec3s& capPos)
 	return FALSE;
 }
 
-void save_file_set_sound_mode(u16 mode)
+void BuSetSoundMode(u16 mode)
 {
 	set_sound_mode(mode);
 	gSaveBuffer.menuData[0].soundMode = mode;
@@ -603,48 +603,34 @@ void save_file_set_sound_mode(u16 mode)
 	save_main_menu_data();
 }
 
-u16 save_file_get_sound_mode(void)
+u16 BuGetSoundMode(void)
 {
 	return gSaveBuffer.menuData[0].soundMode;
 }
 
-void save_file_move_cap_to_default_location(void)
+void BuRestoreHat(void)
 {
-	if(save_file_get_flags() & SAVE_FLAG_CAP_ON_GROUND)
+	if(BuGetItemFlag() & SAVE_FLAG_CAP_ON_GROUND)
 	{
-		switch(gSaveBuffer.files[gCurrSaveFileNum - 1][0].capLevel)
+		switch(gSaveBuffer.files[activePlayerNo - 1][0].capLevel)
 		{
 			case LEVEL_SSL:
-				save_file_set_flags(SAVE_FLAG_CAP_ON_KLEPTO);
+				BuSetItemFlag(SAVE_FLAG_CAP_ON_KLEPTO);
 				break;
 			case LEVEL_SL:
-				save_file_set_flags(SAVE_FLAG_CAP_ON_MR_BLIZZARD);
+				BuSetItemFlag(SAVE_FLAG_CAP_ON_MR_BLIZZARD);
 				break;
 			case LEVEL_TTM:
-				save_file_set_flags(SAVE_FLAG_CAP_ON_UKIKI);
+				BuSetItemFlag(SAVE_FLAG_CAP_ON_UKIKI);
 				break;
 		}
-		save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
+		BuClrItemFlag(SAVE_FLAG_CAP_ON_GROUND);
 	}
 }
 
-#ifdef VERSION_EU
-void eu_set_language(u16 language)
-{
-	gSaveBuffer.menuData[0].language = language;
-	gMainMenuDataModified		 = TRUE;
-	save_main_menu_data();
-}
-
-u16 eu_get_language(void)
-{
-	return gSaveBuffer.menuData[0].language;
-}
-#endif
-
 void disable_warp_checkpoint(void)
 {
-	// check_warp_checkpoint() checks to see if gWarpCheckpoint.courseNum != 0
+	// BuGetMidPoint() checks to see if gWarpCheckpoint.courseNum != 0
 	gWarpCheckpoint.courseNum = 0;
 }
 
@@ -652,13 +638,13 @@ void disable_warp_checkpoint(void)
  * Checks the upper bit of the WarpNode->destLevel byte to see if the
  * game should set a warp checkpoint.
  */
-void check_if_should_set_warp_checkpoint(struct WarpNode* warpNode)
+void BuSetMidPoint(struct WarpNode* warpNode)
 {
 	if(warpNode->destLevel & 0x80)
 	{
 		// Overwrite the warp checkpoint variables.
-		gWarpCheckpoint.actNum	  = gCurrActNum;
-		gWarpCheckpoint.courseNum = gCurrCourseNum;
+		gWarpCheckpoint.actNum	  = activeLevelNo;
+		gWarpCheckpoint.courseNum = activeCourseNo;
 		gWarpCheckpoint.levelID	  = warpNode->destLevel & 0x7F;
 		gWarpCheckpoint.areaNum	  = warpNode->destArea;
 		gWarpCheckpoint.warpNode  = warpNode->destNode;
@@ -670,13 +656,13 @@ void check_if_should_set_warp_checkpoint(struct WarpNode* warpNode)
  * also update the level, area, and destination node of the input WarpNode.
  * returns TRUE if input WarpNode was updated, and FALSE if not.
  */
-s32 check_warp_checkpoint(struct WarpNode* warpNode)
+s32 BuGetMidPoint(struct WarpNode* warpNode)
 {
 	s16 isWarpCheckpointActive = FALSE;
 	s16 currCourseNum	   = gLevelToCourseNumTable[(warpNode->destLevel & 0x7F) - 1];
 
-	// gSavedCourseNum is only used in this function.
-	if(gWarpCheckpoint.courseNum != 0 && gSavedCourseNum == currCourseNum && gWarpCheckpoint.actNum == gCurrActNum)
+	// ramSaveCourse is only used in this function.
+	if(gWarpCheckpoint.courseNum != 0 && ramSaveCourse == currCourseNum && gWarpCheckpoint.actNum == activeLevelNo)
 	{
 		warpNode->destLevel    = gWarpCheckpoint.levelID;
 		warpNode->destArea     = gWarpCheckpoint.areaNum;

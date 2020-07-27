@@ -6,10 +6,11 @@ namespace sm64::hid
 {
 	class SDL : public Driver
 	{
-	public:
+		public:
 		SDL();
 		virtual ~SDL();
 		void scan(class Controllers* controllers) override;
-	protected:
+
+		protected:
 	};
-}
+} // namespace sm64::hid

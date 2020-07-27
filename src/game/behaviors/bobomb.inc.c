@@ -36,11 +36,11 @@ void BobombExplodeLoop(void)
 	struct Object* explosion;
 	if(o->oTimer < 5 * FRAME_RATE_SCALER_INV)
 	{
-		obj_scale(1.0 + powf((f32)o->oTimer / (5.0 * FRAME_RATE_SCALER), FRAME_RATE_SCALER));
+		s_set_scale(1.0 + powf((f32)o->oTimer / (5.0 * FRAME_RATE_SCALER), FRAME_RATE_SCALER));
 	}
 	else
 	{
-		explosion = spawn_object(o, MODEL_EXPLOSION, sm64::bhv::bhvExplosion());
+		explosion = s_makeobj_nowpos(o, MODEL_EXPLOSION, sm64::bhv::bhvExplosion());
 		explosion->oGraphYOffset += 100.0f * FRAME_RATE_SCALER;
 
 		func_802E5B7C();
@@ -51,7 +51,7 @@ void BobombExplodeLoop(void)
 
 void CheckBobombInteractions(void)
 {
-	set_object_hitbox(o, &sBobombHitbox);
+	s_set_hitparam(o, &sBobombHitbox);
 	if((o->oInteractStatus & INT_STATUS_INTERACTED) != 0) /* bit 15 */
 	{
 		if((o->oInteractStatus & INTERACT_GRABBABLE) != 0) /* bit 1 */
@@ -81,8 +81,8 @@ void BobombPatrolLoop(void)
 	sp22	       = o->header.gfx.unk38.frame();
 	o->oForwardVel = 5.0;
 
-	collisionFlags = object_step();
-	if((obj_return_home_if_safe(o, o->oHomeX, o->oHomeY, o->oHomeZ, 400) == 1) && (obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000) == 1))
+	collisionFlags = ObjMoveEvent();
+	if((obj_return_home_if_safe(o, o->oHomeX, o->oHomeY, o->oHomeZ, 400) == 1) && (ShapeSameAngle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000) == 1))
 	{
 		o->oBobombFuseLit = 1;
 		o->oAction	  = BOBOMB_ACT_CHASE_MARIO;
@@ -98,19 +98,19 @@ void BobombChaseMarioLoop(void)
 	sp1a	       = o->header.gfx.unk38.incrementFrame();
 	o->oForwardVel = 20.0;
 
-	collisionFlags = object_step();
+	collisionFlags = ObjMoveEvent();
 
 	if(sp1a == 5 || sp1a == 16)
-		PlaySound2(SOUND_OBJ_BOBOMB_WALK);
+		objsound(SOUND_OBJ_BOBOMB_WALK);
 
-	obj_turn_toward_object(o, gMarioObject, 16, 0x800);
+	s_chase_obj_angle(o, gMarioObject, 16, 0x800);
 	obj_check_floor_death(collisionFlags, sObjFloor);
 }
 
 void BobombLaunchedLoop(void)
 {
 	s16 collisionFlags = 0;
-	collisionFlags	   = object_step();
+	collisionFlags	   = ObjMoveEvent();
 	if((collisionFlags & 0x1) == 1)
 		o->oAction = BOBOMB_ACT_EXPLODE; /* bit 0 */
 }
@@ -268,7 +268,7 @@ void ObjRandomBlink(s32* blinkTimer)
 void bhv_bobomb_loop(void)
 {
 	s8 dustPeriodMinus1;
-	if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 4000) != 0)
+	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 4000) != 0)
 	{
 		switch(o->oHeldState)
 		{
@@ -299,9 +299,9 @@ void bhv_bobomb_loop(void)
 				dustPeriodMinus1 = 7;
 
 			if((dustPeriodMinus1 & o->oBobombFuseTimer) == 0) /* oBobombFuseTimer % 2 or oBobombFuseTimer % 8 */
-				spawn_object(o, MODEL_SMOKE, sm64::bhv::bhvBobombFuseSmoke());
+				s_makeobj_nowpos(o, MODEL_SMOKE, sm64::bhv::bhvBobombFuseSmoke());
 
-			PlaySound(SOUND_AIR_BOBOMB_LIT_FUSE);
+			objsound_level(SOUND_AIR_BOBOMB_LIT_FUSE);
 
 			o->oBobombFuseTimer++;
 		}
@@ -313,7 +313,7 @@ void bhv_bobomb_fuse_smoke_init(void)
 	o->oPosX += (s32)(RandomFloat() * 80.0f) - 40;
 	o->oPosY += (s32)(RandomFloat() * 80.0f) + 60;
 	o->oPosZ += (s32)(RandomFloat() * 80.0f) - 40;
-	obj_scale(1.2f);
+	s_set_scale(1.2f);
 }
 
 void bhv_bobomb_buddy_init(void)
@@ -334,10 +334,10 @@ void BobombBuddyIdleLoop(void)
 	o->oBobombBuddyPosYCopy = o->oPosY;
 	o->oBobombBuddyPosZCopy = o->oPosZ;
 
-	collisionFlags = object_step();
+	collisionFlags = ObjMoveEvent();
 
 	if((sp1a == 5) || (sp1a == 16))
-		PlaySound2(SOUND_OBJ_BOBOMB_WALK);
+		objsound(SOUND_OBJ_BOBOMB_WALK);
 
 	if(o->oDistanceToMario < 1000.0f)
 		o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x140 / FRAME_RATE_SCALER_INV);
@@ -365,8 +365,8 @@ void BobombBuddyCannonLoop(s16 dialogFirstText, s16 dialogSecondText)
 			buddyText = cutscene_object_with_dialog(CUTSCENE_DIALOG, o, dialogFirstText);
 			if(buddyText != 0)
 			{
-				save_file_set_cannon_unlocked();
-				cannonClosed = obj_nearest_object_with_behavior(sm64::bhv::bhvCannonClosed());
+				BuSetCannonFlag();
+				cannonClosed = s_find_obj(sm64::bhv::bhvCannonClosed());
 				if(cannonClosed != 0)
 					o->oBobombBuddyCannonStatus = BOBOMB_BUDDY_CANNON_OPENING;
 				else
@@ -375,7 +375,7 @@ void BobombBuddyCannonLoop(s16 dialogFirstText, s16 dialogSecondText)
 			break;
 
 		case BOBOMB_BUDDY_CANNON_OPENING:
-			cannonClosed = obj_nearest_object_with_behavior(sm64::bhv::bhvCannonClosed());
+			cannonClosed = s_find_obj(sm64::bhv::bhvCannonClosed());
 			cutscene     = cutscene_object(CUTSCENE_PREPARE_CANNON, cannonClosed);
 			if(cutscene == -1)
 				o->oBobombBuddyCannonStatus = BOBOMB_BUDDY_CANNON_OPENED;
@@ -420,7 +420,7 @@ void BobombBuddyTalkLoop(void)
 				break;
 
 			case BOBOMB_BUDDY_ROLE_CANNON:
-				if(gCurrCourseNum == COURSE_BOB)
+				if(activeCourseNo == COURSE_BOB)
 					BobombBuddyCannonLoop(DIALOG_004, DIALOG_105);
 				else
 					BobombBuddyCannonLoop(DIALOG_047, DIALOG_106);
@@ -433,13 +433,13 @@ void BobombBuddyTurnToTalkLoop(void)
 {
 	s16 sp1e = o->header.gfx.unk38.frame();
 	if((sp1e == 5) || (sp1e == 16))
-		PlaySound2(SOUND_OBJ_BOBOMB_WALK);
+		objsound(SOUND_OBJ_BOBOMB_WALK);
 
 	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x1000 / FRAME_RATE_SCALER_INV);
 	if((s16)o->oMoveAngleYaw == (s16)o->oAngleToMario)
 		o->oAction = BOBOMB_BUDDY_ACT_TALK;
 
-	PlaySound2(SOUND_ACTION_READ_SIGN);
+	objsound(SOUND_ACTION_READ_SIGN);
 }
 
 void BobombBuddyActionLoop(void)
@@ -459,7 +459,7 @@ void BobombBuddyActionLoop(void)
 			break;
 	}
 
-	set_object_visibility(o, 3000);
+	PlayerApproachOnOff(o, 3000);
 }
 
 void bhv_bobomb_buddy_loop(void)

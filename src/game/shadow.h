@@ -10,18 +10,18 @@
  */
 enum ShadowType
 {
-    SHADOW_CIRCLE_9_VERTS = 0,
-    SHADOW_CIRCLE_4_VERTS = 1,
-    SHADOW_CIRCLE_4_VERTS_FLAT_UNUSED = 2,
-    SHADOW_SQUARE_PERMANENT = 10,
-    SHADOW_SQUARE_SCALABLE = 11,
-    SHADOW_SQUARE_TOGGLABLE = 12,
-    /**
-     * This defines an offset after which rectangular shadows with custom
-     * widths and heights can be defined.
-     */
-    SHADOW_RECTANGLE_HARDCODED_OFFSET = 50,
-    SHADOW_CIRCLE_PLAYER = 99
+	SHADOW_CIRCLE_9_VERTS		  = 0,
+	SHADOW_CIRCLE_4_VERTS		  = 1,
+	SHADOW_CIRCLE_4_VERTS_FLAT_UNUSED = 2,
+	SHADOW_SQUARE_PERMANENT		  = 10,
+	SHADOW_SQUARE_SCALABLE		  = 11,
+	SHADOW_SQUARE_TOGGLABLE		  = 12,
+	/**
+	 * This defines an offset after which rectangular shadows with custom
+	 * widths and heights can be defined.
+	 */
+	SHADOW_RECTANGLE_HARDCODED_OFFSET = 50,
+	SHADOW_CIRCLE_PLAYER		  = 99
 };
 
 /**
@@ -48,7 +48,6 @@ extern s8 gMarioOnIceOrCarpet;
  * Given the (x, y, z) location of an object, create a shadow below that object
  * with the given initial solidity and "shadowType" (described above).
  */
-extern Gfx *create_shadow_below_xyz(
-    f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 shadowSolidity, s8 shadowType);
+extern Gfx* create_shadow_below_xyz(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 shadowSolidity, s8 shadowType);
 
 #endif /* _SHADOW_H */

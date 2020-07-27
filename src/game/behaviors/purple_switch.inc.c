@@ -6,6 +6,8 @@
  * the environment.
  */
 
+#include "game/motor.h"
+
 void bhv_purple_switch_loop(void)
 {
 	UNUSED s32 unused;
@@ -16,11 +18,11 @@ void bhv_purple_switch_loop(void)
 		 * switch's middle section, transition to the pressed state.
 		 */
 		case PURPLE_SWITCH_IDLE:
-			obj_set_model(MODEL_PURPLE_SWITCH);
-			obj_scale(1.5f);
-			if(gMarioObject->platform == o && !(gMarioStates->action & MARIO_UNKNOWN_13))
+			s_change_shape(MODEL_PURPLE_SWITCH);
+			s_set_scale(1.5f);
+			if(gMarioObject->platform == o && !(playerWorks->status & MARIO_UNKNOWN_13))
 			{
-				if(lateral_dist_between_objects(o, gMarioObject) < 127.5)
+				if(s_distanceXZ_obj2obj(o, gMarioObject) < 127.5)
 				{
 					o->oAction = PURPLE_SWITCH_PRESSED;
 				}
@@ -31,13 +33,14 @@ void bhv_purple_switch_loop(void)
 			 * Immediately transition to the ticking state.
 			 */
 		case PURPLE_SWITCH_PRESSED:
-			func_802A3398(2, 3 * FRAME_RATE_SCALER_INV, 1.5f, 0.2f);
+			s_scale_timezoom(2, 3 * FRAME_RATE_SCALER_INV, 1.5f, 0.2f);
 
 			if(o->oTimer == 3 * FRAME_RATE_SCALER_INV)
 			{
-				PlaySound2(SOUND_GENERAL2_PURPLE_SWITCH);
+				objsound(SOUND_GENERAL2_PURPLE_SWITCH);
 				o->oAction = PURPLE_SWITCH_TICKING;
-				ShakeScreen(SHAKE_POS_SMALL);
+				s_call_Viewshake(SHAKE_POS_SMALL);
+				SendMotorEvent(5, 80);
 			}
 			break;
 			/**
@@ -55,11 +58,11 @@ void bhv_purple_switch_loop(void)
 				{
 					if(o->oTimer < 360 * FRAME_RATE_SCALER_INV)
 					{
-						play_sound(SOUND_GENERAL2_SWITCH_TICK_FAST, gDefaultSoundArgs);
+						AudStartSound(SOUND_GENERAL2_SWITCH_TICK_FAST, gDefaultSoundArgs);
 					}
 					else
 					{
-						play_sound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gDefaultSoundArgs);
+						AudStartSound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gDefaultSoundArgs);
 					}
 
 					if(o->oTimer > 400 * FRAME_RATE_SCALER_INV)
@@ -74,7 +77,7 @@ void bhv_purple_switch_loop(void)
 			 * idle state.
 			 */
 		case PURPLE_SWITCH_UNPRESSED:
-			func_802A3398(2, 3 * FRAME_RATE_SCALER_INV, 0.2f, 1.5f);
+			s_scale_timezoom(2, 3 * FRAME_RATE_SCALER_INV, 0.2f, 1.5f);
 
 			if(o->oTimer == 3 * FRAME_RATE_SCALER_INV)
 			{
@@ -87,7 +90,7 @@ void bhv_purple_switch_loop(void)
 			 * unpressed state.
 			 */
 		case PURPLE_SWITCH_WAIT_FOR_MARIO_TO_GET_OFF:
-			if(!obj_is_mario_on_platform())
+			if(!s_rideon_player())
 			{
 				o->oAction = PURPLE_SWITCH_UNPRESSED;
 			}

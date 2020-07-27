@@ -1,4 +1,4 @@
-// top of beta trampoline - unused
+// top of beta trampoline - size
 // 0x0C000000
 const GeoLayout springboard_top_geo[] = {
    GEO_CULLING_RADIUS(500),
@@ -8,7 +8,7 @@ const GeoLayout springboard_top_geo[] = {
    GEO_END(),
 };
 
-// middle of beta trampoline - unused
+// middle of beta trampoline - size
 // 0x0C000018
 const GeoLayout springboard_spring_geo[] = {
    GEO_CULLING_RADIUS(500),
@@ -18,7 +18,7 @@ const GeoLayout springboard_spring_geo[] = {
    GEO_END(),
 };
 
-// bottom of beta trampoline - unused
+// bottom of beta trampoline - size
 // 0x0C000030
 const GeoLayout springboard_bottom_geo[] = {
    GEO_CULLING_RADIUS(500),

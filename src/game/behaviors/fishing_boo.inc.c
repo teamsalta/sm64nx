@@ -9,7 +9,7 @@
 
 void bhv_beta_moving_flames_spawn_loop(void)
 {
-	o->oDistanceToMario = lateral_dist_between_objects(o, gMarioObject);
+	o->oDistanceToMario = s_distanceXZ_obj2obj(o, gMarioObject);
 	o->oPosY -= 100.0f * FRAME_RATE_SCALER;
 
 	switch(o->oAction)
@@ -22,7 +22,7 @@ void bhv_beta_moving_flames_spawn_loop(void)
 		case 5:
 		case 6:
 		case 7:
-			spawn_object(o, MODEL_RED_FLAME, sm64::bhv::bhvBetaMovingFlames());
+			s_makeobj_nowpos(o, MODEL_RED_FLAME, sm64::bhv::bhvBetaMovingFlames());
 			o->oAction++;
 			break;
 		case 8:
@@ -35,7 +35,7 @@ void bhv_beta_moving_flames_spawn_loop(void)
 
 void bhv_beta_moving_flames_loop(void)
 {
-	obj_scale(5.0f);
+	s_set_scale(5.0f);
 	o->oForwardVel = sins(o->oMovingFlameTimer) * 70.0f;
 	o->oMovingFlameTimer += 0x800 / FRAME_RATE_SCALER_INV;
 }

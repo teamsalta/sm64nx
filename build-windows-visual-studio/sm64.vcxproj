@@ -499,7 +499,6 @@
     <ClCompile Include="..\src\engine\surface_collision.cpp" />
     <ClCompile Include="..\src\engine\surface_load.cpp" />
     <ClCompile Include="..\src\engine\time.cpp" />
-    <ClCompile Include="..\src\game\area.cpp" />
     <ClCompile Include="..\src\game\behavior_actions.cpp" />
     <ClCompile Include="..\src\game\camera.cpp" />
     <ClCompile Include="..\src\game\debug.cpp" />
@@ -508,8 +507,8 @@
     <ClCompile Include="..\src\game\envfx_bubbles.cpp" />
     <ClCompile Include="..\src\game\envfx_snow.cpp" />
     <ClCompile Include="..\src\game\game.cpp" />
+    <ClCompile Include="..\src\game\gauge.cpp" />
     <ClCompile Include="..\src\game\geo_misc.cpp" />
-    <ClCompile Include="..\src\game\hud.cpp" />
     <ClCompile Include="..\src\game\ingame_menu.cpp" />
     <ClCompile Include="..\src\game\interaction.cpp" />
     <ClCompile Include="..\src\game\level_geo.cpp" />
@@ -527,6 +526,7 @@
     <ClCompile Include="..\src\game\mario_state.cpp" />
     <ClCompile Include="..\src\game\mario_step.cpp" />
     <ClCompile Include="..\src\game\memory.cpp" />
+    <ClCompile Include="..\src\game\motor.cpp" />
     <ClCompile Include="..\src\game\moving_texture.cpp" />
     <ClCompile Include="..\src\game\object_collision.cpp" />
     <ClCompile Include="..\src\game\object_helpers.cpp" />
@@ -540,6 +540,7 @@
     <ClCompile Include="..\src\game\rendering_graph_node.cpp" />
     <ClCompile Include="..\src\game\room.cpp" />
     <ClCompile Include="..\src\game\save_file.cpp" />
+    <ClCompile Include="..\src\game\scene.cpp" />
     <ClCompile Include="..\src\game\screen_transition.cpp" />
     <ClCompile Include="..\src\game\shadow.cpp" />
     <ClCompile Include="..\src\game\skybox.cpp" />

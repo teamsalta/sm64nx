@@ -1,8 +1,9 @@
 // controllable_platform.c.inc
+#include "game/motor.h"
 
-static s8 D_80331694 = 0;
+static s8 NEWSliftButton_flag = 0;
 
-void func_802F3BD8(void)
+void NEWSbutton_ON(void)
 {
 	o->oParentRelativePosY -= 4.0f * FRAME_RATE_SCALER;
 	if(o->oParentRelativePosY < 41.0f)
@@ -12,9 +13,9 @@ void func_802F3BD8(void)
 	}
 }
 
-void func_802F3C50(void)
+void NEWSbutton_OFF(void)
 {
-	if(o->oBehParams2ndByte == D_80331694)
+	if(o->oBehParams2ndByte == NEWSliftButton_flag)
 		return;
 
 	o->oParentRelativePosY += 4.0f * FRAME_RATE_SCALER;
@@ -36,18 +37,18 @@ void bhv_controllable_platform_sub_loop(void)
 
 			if(gMarioObject->platform == o)
 			{
-				D_80331694 = o->oBehParams2ndByte;
-				o->oAction = 1;
-				PlaySound2(SOUND_GENERAL_MOVING_PLATFORM_SWITCH);
+				NEWSliftButton_flag = o->oBehParams2ndByte;
+				o->oAction	    = 1;
+				objsound(SOUND_GENERAL_MOVING_PLATFORM_SWITCH);
 			}
 			break;
 
 		case 1:
-			func_802F3BD8();
+			NEWSbutton_ON();
 			break;
 
 		case 2:
-			func_802F3C50();
+			NEWSbutton_OFF();
 			break;
 	}
 
@@ -61,71 +62,72 @@ void bhv_controllable_platform_sub_loop(void)
 void bhv_controllable_platform_init(void)
 {
 	struct Object* sp34;
-	sp34			= spawn_object_rel_with_rot(o, MODEL_HMC_METAL_ARROW_PLATFORM, sm64::bhv::bhvControllablePlatformSub(), 0, 51, 204, 0, 0, 0);
+	sp34			= s_makeobj_relative(o, MODEL_HMC_METAL_ARROW_PLATFORM, sm64::bhv::bhvControllablePlatformSub(), 0, 51, 204, 0, 0, 0);
 	sp34->oBehParams2ndByte = 1;
-	sp34			= spawn_object_rel_with_rot(o, MODEL_HMC_METAL_ARROW_PLATFORM, sm64::bhv::bhvControllablePlatformSub(), 0, 51, -204, 0, -0x8000, 0);
+	sp34			= s_makeobj_relative(o, MODEL_HMC_METAL_ARROW_PLATFORM, sm64::bhv::bhvControllablePlatformSub(), 0, 51, -204, 0, -0x8000, 0);
 	sp34->oBehParams2ndByte = 2;
-	sp34			= spawn_object_rel_with_rot(o, MODEL_HMC_METAL_ARROW_PLATFORM, sm64::bhv::bhvControllablePlatformSub(), 204, 51, 0, 0, 0x4000, 0);
+	sp34			= s_makeobj_relative(o, MODEL_HMC_METAL_ARROW_PLATFORM, sm64::bhv::bhvControllablePlatformSub(), 204, 51, 0, 0, 0x4000, 0);
 	sp34->oBehParams2ndByte = 3;
-	sp34			= spawn_object_rel_with_rot(o, MODEL_HMC_METAL_ARROW_PLATFORM, sm64::bhv::bhvControllablePlatformSub(), -204, 51, 0, 0, -0x4000, 0);
+	sp34			= s_makeobj_relative(o, MODEL_HMC_METAL_ARROW_PLATFORM, sm64::bhv::bhvControllablePlatformSub(), -204, 51, 0, 0, -0x4000, 0);
 	sp34->oBehParams2ndByte = 4;
 
-	D_80331694 = 0;
+	NEWSliftButton_flag = 0;
 
 	o->oControllablePlatformUnkFC = o->oPosY;
 }
 
-void func_802F3F80(s8 sp1B)
+void NEWSliftReflect(s8 sp1B)
 {
 	o->oControllablePlatformUnkF8 = sp1B;
 	o->oTimer		      = 0;
-	D_80331694		      = 5;
+	NEWSliftButton_flag	      = 5;
 
-	PlaySound2(SOUND_GENERAL_QUIET_POUND1);
+	objsound(SOUND_GENERAL_QUIET_POUND1);
+	SendMotorEvent(50, 80);
 }
 
-void func_802F3FD8(s8 sp1B, s8 sp1C[3], Vec3f sp20, UNUSED Vec3f sp24, Vec3f sp28)
+void NEWSliftWallCheck(s8 code, s8 codeNo[3], Vec3f check1, UNUSED Vec3f check2, Vec3f check3)
 {
-	if(sp1C[1] == 1 || (sp1C[0] == 1 && sp1C[2] == 1))
-		func_802F3F80(sp1B);
+	if(codeNo[1] == 1 || (codeNo[0] == 1 && codeNo[2] == 1))
+		NEWSliftReflect(code);
 	else
 	{
-		if(sp1C[0] == 1)
+		if(codeNo[0] == 1)
 		{
-			if(((sp1B == 1 || sp1B == 2) && (s32)sp20[2] != 0) || ((sp1B == 3 || sp1B == 4) && (s32)sp20[0] != 0))
+			if(((code == 1 || code == 2) && (s32)check1[2] != 0) || ((code == 3 || code == 4) && (s32)check1[0] != 0))
 			{
-				func_802F3F80(sp1B);
+				NEWSliftReflect(code);
 			}
 			else
 			{
-				o->oPosX += sp20[0] * FRAME_RATE_SCALER;
-				o->oPosZ += sp20[2] * FRAME_RATE_SCALER;
+				o->oPosX += check1[0] * FRAME_RATE_SCALER;
+				o->oPosZ += check1[2] * FRAME_RATE_SCALER;
 			}
 		}
 
-		if(sp1C[2] == 1)
+		if(codeNo[2] == 1)
 		{
-			if(((sp1B == 1 || sp1B == 2) && (s32)sp28[2] != 0) || ((sp1B == 3 || sp1B == 4) && (s32)sp28[0] != 0))
+			if(((code == 1 || code == 2) && (s32)check3[2] != 0) || ((code == 3 || code == 4) && (s32)check3[0] != 0))
 			{
-				func_802F3F80(sp1B);
+				NEWSliftReflect(code);
 			}
 			else
 			{
-				o->oPosX += sp28[0] * FRAME_RATE_SCALER;
-				o->oPosZ += sp28[2] * FRAME_RATE_SCALER;
+				o->oPosX += check3[0] * FRAME_RATE_SCALER;
+				o->oPosZ += check3[2] * FRAME_RATE_SCALER;
 			}
 		}
 	}
 
-	if(!is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 400))
+	if(!PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 400))
 	{
-		D_80331694		       = 6;
+		NEWSliftButton_flag	       = 6;
 		o->oControllablePlatformUnk100 = 1;
 		o->oTimer		       = 0;
 	}
 }
 
-void func_802F4230(void)
+void NEWSlift_Shock(void)
 {
 	if(o->oControllablePlatformUnkF8 == 1 || o->oControllablePlatformUnkF8 == 2)
 	{
@@ -140,26 +142,26 @@ void func_802F4230(void)
 
 	if(o->oTimer == 32 * FRAME_RATE_SCALER_INV)
 	{
-		D_80331694	   = o->oControllablePlatformUnkF8;
-		o->oFaceAnglePitch = 0;
-		o->oFaceAngleRoll  = 0;
-		o->oPosY	   = o->oControllablePlatformUnkFC;
+		NEWSliftButton_flag = o->oControllablePlatformUnkF8;
+		o->oFaceAnglePitch  = 0;
+		o->oFaceAngleRoll   = 0;
+		o->oPosY	    = o->oControllablePlatformUnkFC;
 	}
 }
 
-void func_802F43EC(void)
+void NEWSlift_PlayerRideCheck(void)
 {
 	s16 sp1E = gMarioObject->header.gfx.pos[0] - o->oPosX;
 	s16 sp1C = gMarioObject->header.gfx.pos[2] - o->oPosZ;
 
-	if(gMarioObject->platform == o || gMarioObject->platform == obj_nearest_object_with_behavior(sm64::bhv::bhvControllablePlatformSub()))
+	if(gMarioObject->platform == o || gMarioObject->platform == s_find_obj(sm64::bhv::bhvControllablePlatformSub()))
 	{
 		o->oFaceAnglePitch = sp1C * 4;
 		o->oFaceAngleRoll  = -sp1E * 4;
-		if(D_80331694 == 6)
+		if(NEWSliftButton_flag == 6)
 		{
-			D_80331694 = 0;
-			o->oTimer  = 0;
+			NEWSliftButton_flag = 0;
+			o->oTimer	    = 0;
 			o->header.gfx.node.flags &= ~0x10;
 		}
 	}
@@ -170,74 +172,74 @@ void func_802F43EC(void)
 
 void bhv_controllable_platform_loop(void)
 {
-	s8 sp54[3];
-	Vec3f sp48;
-	Vec3f sp3C;
-	Vec3f sp30;
+	s8 ch[3];
+	Vec3f check1;
+	Vec3f check2;
+	Vec3f check3;
 
 	o->oAngleVelRoll  = 0;
 	o->oAngleVelPitch = 0;
 	o->oVelX	  = 0;
 	o->oVelZ	  = 0;
 
-	switch(D_80331694)
+	switch(NEWSliftButton_flag)
 	{
 		case 0:
 			o->oFaceAnglePitch /= 2;
 			o->oFaceAngleRoll /= 2;
 			if(o->oControllablePlatformUnk100 == 1 && o->oTimer > 30 * FRAME_RATE_SCALER_INV)
 			{
-				D_80331694 = 6;
-				o->oTimer  = 0;
+				NEWSliftButton_flag = 6;
+				o->oTimer	    = 0;
 			}
 			break;
 
 		case 1:
 			o->oVelZ = 10.0f;
-			sp54[0]	 = obj_find_wall_displacement(sp48, o->oPosX + 250.0, o->oPosY, o->oPosZ + 300.0, 50.0f);
-			sp54[1]	 = obj_find_wall_displacement(sp3C, o->oPosX, o->oPosY, o->oPosZ + 300.0, 50.0f);
-			sp54[2]	 = obj_find_wall_displacement(sp30, o->oPosX - 250.0, o->oPosY, o->oPosZ + 300.0, 50.0f);
-			func_802F3FD8(2, sp54, sp48, sp3C, sp30);
+			ch[0]	 = PositionWallCheck(check1, o->oPosX + 250.0, o->oPosY, o->oPosZ + 300.0, 50.0f);
+			ch[1]	 = PositionWallCheck(check2, o->oPosX, o->oPosY, o->oPosZ + 300.0, 50.0f);
+			ch[2]	 = PositionWallCheck(check3, o->oPosX - 250.0, o->oPosY, o->oPosZ + 300.0, 50.0f);
+			NEWSliftWallCheck(2, ch, check1, check2, check3);
 			break;
 
 		case 2:
 			o->oVelZ = -10.0f;
-			sp54[0]	 = obj_find_wall_displacement(sp48, o->oPosX + 250.0, o->oPosY, o->oPosZ - 300.0, 50.0f);
-			sp54[1]	 = obj_find_wall_displacement(sp3C, o->oPosX, o->oPosY, o->oPosZ - 300.0, 50.0f);
-			sp54[2]	 = obj_find_wall_displacement(sp30, o->oPosX - 250.0, o->oPosY, o->oPosZ - 300.0, 50.0f);
-			func_802F3FD8(1, sp54, sp48, sp3C, sp30);
+			ch[0]	 = PositionWallCheck(check1, o->oPosX + 250.0, o->oPosY, o->oPosZ - 300.0, 50.0f);
+			ch[1]	 = PositionWallCheck(check2, o->oPosX, o->oPosY, o->oPosZ - 300.0, 50.0f);
+			ch[2]	 = PositionWallCheck(check3, o->oPosX - 250.0, o->oPosY, o->oPosZ - 300.0, 50.0f);
+			NEWSliftWallCheck(1, ch, check1, check2, check3);
 			break;
 
 		case 3:
 			o->oVelX = 10.0f;
-			sp54[0]	 = obj_find_wall_displacement(sp48, o->oPosX + 300.0, o->oPosY, o->oPosZ + 250.0, 50.0f);
-			sp54[1]	 = obj_find_wall_displacement(sp3C, o->oPosX + 300.0, o->oPosY, o->oPosZ, 50.0f);
-			sp54[2]	 = obj_find_wall_displacement(sp30, o->oPosX + 300.0, o->oPosY, o->oPosZ - 250.0, 50.0f);
-			func_802F3FD8(4, sp54, sp48, sp3C, sp30);
+			ch[0]	 = PositionWallCheck(check1, o->oPosX + 300.0, o->oPosY, o->oPosZ + 250.0, 50.0f);
+			ch[1]	 = PositionWallCheck(check2, o->oPosX + 300.0, o->oPosY, o->oPosZ, 50.0f);
+			ch[2]	 = PositionWallCheck(check3, o->oPosX + 300.0, o->oPosY, o->oPosZ - 250.0, 50.0f);
+			NEWSliftWallCheck(4, ch, check1, check2, check3);
 			break;
 
 		case 4:
 			o->oVelX = -10.0f;
-			sp54[0]	 = obj_find_wall_displacement(sp48, o->oPosX - 300.0, o->oPosY, o->oPosZ + 250.0, 50.0f);
-			sp54[1]	 = obj_find_wall_displacement(sp3C, o->oPosX - 300.0, o->oPosY, o->oPosZ, 50.0f);
-			sp54[2]	 = obj_find_wall_displacement(sp30, o->oPosX - 300.0, o->oPosY, o->oPosZ - 250.0, 50.0f);
-			func_802F3FD8(3, sp54, sp48, sp3C, sp30);
+			ch[0]	 = PositionWallCheck(check1, o->oPosX - 300.0, o->oPosY, o->oPosZ + 250.0, 50.0f);
+			ch[1]	 = PositionWallCheck(check2, o->oPosX - 300.0, o->oPosY, o->oPosZ, 50.0f);
+			ch[2]	 = PositionWallCheck(check3, o->oPosX - 300.0, o->oPosY, o->oPosZ - 250.0, 50.0f);
+			NEWSliftWallCheck(3, ch, check1, check2, check3);
 			break;
 
 		case 5:
-			func_802F4230();
+			NEWSlift_Shock();
 			return;
 			break;
 
 		case 6:
-			if(obj_flicker_and_disappear(o, 150))
-				spawn_object_abs_with_rot(o, 0, MODEL_HMC_METAL_PLATFORM, sm64::bhv::bhvControllablePlatform(), o->oHomeX, o->oHomeY, o->oHomeZ, 0, 0, 0);
+			if(iwa_TimerRemove(o, 150))
+				s_makeobj_absolute(o, 0, MODEL_HMC_METAL_PLATFORM, sm64::bhv::bhvControllablePlatform(), o->oHomeX, o->oHomeY, o->oHomeZ, 0, 0, 0);
 			break;
 	}
 
-	func_802F43EC();
+	NEWSlift_PlayerRideCheck();
 	o->oPosX += o->oVelX * FRAME_RATE_SCALER;
 	o->oPosZ += o->oVelZ * FRAME_RATE_SCALER;
-	if(D_80331694 != 0 && D_80331694 != 6)
-		PlaySound(SOUND_ENV_ELEVATOR2);
+	if(NEWSliftButton_flag != 0 && NEWSliftButton_flag != 6)
+		objsound_level(SOUND_ENV_ELEVATOR2);
 }

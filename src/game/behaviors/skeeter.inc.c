@@ -60,7 +60,7 @@ static void skeeter_act_idle(void)
 				}
 				else if(func_8029F788())
 				{
-					PlaySound2(SOUND_OBJ_WALKING_WATER);
+					objsound(SOUND_OBJ_WALKING_WATER);
 					o->oAction	  = SKEETER_ACT_LUNGE;
 					o->oForwardVel	  = 80.0f;
 					o->oSkeeterUnk1AC = 0;
@@ -199,9 +199,9 @@ void bhv_skeeter_wave_update(void)
 {
 	if(approach_f32_ptr(&o->header.gfx.scale[0], 0.0f, 0.3f * FRAME_RATE_SCALER))
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 
-	obj_scale(o->header.gfx.scale[0]);
-	o->oAnimState = gGlobalTimer / (6 * FRAME_RATE_SCALER_INV);
+	s_set_scale(o->header.gfx.scale[0]);
+	o->oAnimState = frameCounter / (6 * FRAME_RATE_SCALER_INV);
 }

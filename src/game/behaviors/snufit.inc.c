@@ -93,8 +93,8 @@ void snufit_act_1(void)
 	else if(o->oSnufitUnk10C < 3 && o->oTimer >= 3 * FRAME_RATE_SCALER_INV)
 	{
 		o->oSnufitUnk10C += 1;
-		PlaySound2(SOUND_OBJ_SNUFIT_SHOOT);
-		spawn_object_relative(0, 0, -20, 40, o, MODEL_BOWLING_BALL, sm64::bhv::bhvSnufitBalls());
+		objsound(SOUND_OBJ_SNUFIT_SHOOT);
+		s_makeobj_chain(0, 0, -20, 40, o, MODEL_BOWLING_BALL, sm64::bhv::bhvSnufitBalls());
 		o->oSnufitUnkF4 = -30;
 		o->oTimer	= 0;
 	}
@@ -139,7 +139,7 @@ void bhv_snufit_loop(void)
 		}
 
 		o->oPosX = o->oHomeX + 100.0f * coss(o->oSnufitUnk100);
-		o->oPosY = o->oHomeY + 8.0f * coss(4000 * gGlobalTimer / FRAME_RATE_SCALER_INV);
+		o->oPosY = o->oHomeY + 8.0f * coss(4000 * frameCounter / FRAME_RATE_SCALER_INV);
 		o->oPosZ = o->oHomeZ + 100.0f * sins(o->oSnufitUnk100);
 
 		o->oSnufitUnk1AE = -0x20;
@@ -156,7 +156,7 @@ void bhv_snufit_loop(void)
 			o->oSnufitUnkF8 = 1.0f;
 		}
 
-		obj_scale(o->oSnufitUnkF8);
+		s_set_scale(o->oSnufitUnkF8);
 		obj_check_attacks(&sSnufitHitbox, o->oAction);
 	}
 }
@@ -165,7 +165,7 @@ void bhv_snufit_balls_loop(void)
 {
 	if((o->activeFlags & 0x0008) || (o->oTimer != 0 && o->oDistanceToMario > 1500.0f))
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 
 	if(o->oGravity == 0.0f)
@@ -180,7 +180,7 @@ void bhv_snufit_balls_loop(void)
 			o->oVelY    = 30.0f;
 			o->oGravity = -4.0f;
 
-			obj_become_intangible();
+			s_hitOFF();
 		}
 		else if(o->oAction == 1 || (o->oMoveFlags & 0x00000203))
 		{
@@ -192,6 +192,6 @@ void bhv_snufit_balls_loop(void)
 	}
 	else
 	{
-		obj_move_using_fvel_and_gravity();
+		s_optionmove_F();
 	}
 }

@@ -10,7 +10,7 @@ void bhv_horizontal_grindel_update(void)
 	{
 		if(!o->oHorizontalGrindelOnGround)
 		{
-			PlaySound2(SOUND_OBJ_THWOMP);
+			objsound(SOUND_OBJ_THWOMP);
 			o->oHorizontalGrindelOnGround = TRUE;
 			set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 
@@ -30,7 +30,7 @@ void bhv_horizontal_grindel_update(void)
 				}
 				else
 				{
-					PlaySound2(SOUND_OBJ_KING_BOBOMB_JUMP);
+					objsound(SOUND_OBJ_KING_BOBOMB_JUMP);
 					o->oForwardVel = 11.0f;
 					o->oVelY       = 70.0f;
 					o->oGravity    = -4.0f;

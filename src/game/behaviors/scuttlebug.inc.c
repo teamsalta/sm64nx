@@ -40,7 +40,7 @@ void bhv_scuttlebug_loop(void)
 	{
 		case 0:
 			if(o->oMoveFlags & 1)
-				PlaySound2(SOUND_OBJ_GOOMBA_ALERT);
+				objsound(SOUND_OBJ_GOOMBA_ALERT);
 			if(o->oMoveFlags & 3)
 			{
 				o->oHomeX = o->oPosX;
@@ -63,7 +63,7 @@ void bhv_scuttlebug_loop(void)
 					{
 						o->oScuttlebugUnkF8 = 1;
 						o->oVelY	    = 20.0f;
-						PlaySound2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
+						objsound(SOUND_OBJ2_SCUTTLEBUG_ALERT);
 					}
 				}
 				else if(o->oScuttlebugUnkF8 == 1)
@@ -83,14 +83,14 @@ void bhv_scuttlebug_loop(void)
 			if((s16)o->oMoveAngleYaw == (s16)o->oAngleToMario)
 				o->oSubAction = 1;
 			if(o->oPosY - o->oHomeY < -200.0f)
-				mark_object_for_deletion(o);
+				s_remove_obj(o);
 			obj_rotate_yaw_toward(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 			break;
 		case 3:
 			o->oFlags &= ~8;
 			o->oForwardVel = -10.0f;
 			o->oVelY       = 30.0f;
-			PlaySound2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
+			objsound(SOUND_OBJ2_SCUTTLEBUG_ALERT);
 			o->oSubAction++;
 			break;
 		case 4:
@@ -121,7 +121,7 @@ void bhv_scuttlebug_loop(void)
 	if(o->parentObj != o)
 	{
 		if(obj_is_hidden(o))
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 		if(o->activeFlags == 0)
 			o->parentObj->oScuttlebugSpawnerUnk88 = 1;
 	}
@@ -135,8 +135,8 @@ void bhv_scuttlebug_spawn_loop(void)
 	{
 		if(o->oTimer > 30 * FRAME_RATE_SCALER_INV && 500.0f < o->oDistanceToMario && o->oDistanceToMario < 1500.0f)
 		{
-			PlaySound2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
-			scuttlebug		     = spawn_object(o, MODEL_SCUTTLEBUG, sm64::bhv::bhvScuttlebug());
+			objsound(SOUND_OBJ2_SCUTTLEBUG_ALERT);
+			scuttlebug		     = s_makeobj_nowpos(o, MODEL_SCUTTLEBUG, sm64::bhv::bhvScuttlebug());
 			scuttlebug->oScuttlebugUnkF4 = o->oScuttlebugSpawnerUnkF4;
 			scuttlebug->oForwardVel	     = 30.0f;
 			scuttlebug->oVelY	     = 80.0f;

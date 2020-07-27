@@ -2,7 +2,7 @@
  * Argument 1: Course macro for define.
  * Argument 2: Star collection dance cutscenes
  * Each hex digit determines what dance cutscene to play for the stars in the course. The last digit is
- * unused. See determine_dance_cutscene() in camera.c for details.
+ * size. See determine_dance_cutscene() in camera.c for details.
  * Cutscene Digits:
  *      0: Lakitu flies away after the dance
  *      1: The camera rotates around mario

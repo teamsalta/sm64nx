@@ -19,10 +19,10 @@ static void mad_piano_act_wait(void)
 	{
 		if(o->oTimer > 20 * FRAME_RATE_SCALER_INV)
 		{
-			if(gMarioStates[0].forwardVel > 10.0f)
+			if(playerWorks[0].forwardVel > 10.0f)
 			{
 				o->oAction = MAD_PIANO_ACT_ATTACK;
-				obj_become_tangible();
+				s_hitON();
 			}
 		}
 	}
@@ -31,7 +31,7 @@ static void mad_piano_act_wait(void)
 		o->oTimer = 0;
 	}
 
-	obj_push_mario_away_from_cylinder(280.0f, 150.0f);
+	s_player_slideout_RH(280.0f, 150.0f);
 }
 
 static void mad_piano_act_attack(void)
@@ -49,7 +49,7 @@ static void mad_piano_act_attack(void)
 	{
 		o->oAction     = MAD_PIANO_ACT_WAIT;
 		o->oForwardVel = 0.0f;
-		obj_become_intangible();
+		s_hitOFF();
 	}
 	else
 	{

@@ -28,7 +28,7 @@ void func_802B0E74(void)
 			o->oNumLootCoins = 5;
 			break;
 		case 3:
-			obj_scale(1.5f);
+			s_set_scale(1.5f);
 			break;
 	}
 }
@@ -36,13 +36,13 @@ void func_802B0E74(void)
 void func_802B0F54(void)
 {
 	struct Object* purpleSwitch;
-	set_object_hitbox(o, &sBreakableBoxHitbox);
-	obj_set_model(MODEL_BREAKABLE_BOX_SMALL);
+	s_set_hitparam(o, &sBreakableBoxHitbox);
+	s_change_shape(MODEL_BREAKABLE_BOX_SMALL);
 
 	if(o->oAction == 0)
 	{
 		obj_disable_rendering();
-		obj_become_intangible();
+		s_hitOFF();
 
 		if(o->oTimer == 0)
 		{
@@ -51,7 +51,7 @@ void func_802B0F54(void)
 
 		if(o->oPurpleSwitch == NULL)
 		{
-			o->oPurpleSwitch = obj_nearest_object_with_behavior(sm64::bhv::bhvFloorSwitchHiddenObjects());
+			o->oPurpleSwitch = s_find_obj(sm64::bhv::bhvFloorSwitchHiddenObjects());
 		}
 
 		if((purpleSwitch = o->oPurpleSwitch) != NULL)
@@ -60,31 +60,31 @@ void func_802B0F54(void)
 			{
 				o->oAction++;
 				obj_enable_rendering();
-				obj_unhide();
+				s_shape_disp();
 			}
 		}
 	}
 	else if(o->oAction == 1)
 	{
-		obj_become_tangible();
+		s_hitON();
 
 		if(obj_wait_then_blink(360 * FRAME_RATE_SCALER_INV, 20))
 		{
 			o->oAction = 0;
 		}
 
-		if(obj_was_attacked_or_ground_pounded())
+		if(s_block_hitcheck())
 		{
-			func_802A3004();
-			spawn_triangle_break_particles(30, 138, 3.0f, 4);
+			s_kemuri();
+			s_boxeffect(30, 138, 3.0f, 4);
 			o->oAction++;
-			PlaySound2(SOUND_GENERAL_BREAK_BOX);
+			objsound(SOUND_GENERAL_BREAK_BOX);
 		}
-		load_object_collision_model();
+		stMainMoveBG();
 	}
 	else
 	{
-		obj_become_intangible();
+		s_hitOFF();
 		obj_disable_rendering();
 		o->oInteractStatus = 0;
 		if((purpleSwitch = o->oPurpleSwitch) != NULL)
@@ -104,11 +104,11 @@ void func_802B1138(void)
 	if(o->oAction == 0)
 	{
 		obj_disable_rendering();
-		obj_become_intangible();
+		s_hitOFF();
 
 		if(o->oPurpleSwitch == NULL)
 		{
-			o->oPurpleSwitch = obj_nearest_object_with_behavior(sm64::bhv::bhvFloorSwitchHiddenObjects());
+			o->oPurpleSwitch = s_find_obj(sm64::bhv::bhvFloorSwitchHiddenObjects());
 		}
 
 		if((purpleSwitch = o->oPurpleSwitch) != NULL)
@@ -117,20 +117,20 @@ void func_802B1138(void)
 			{
 				o->oAction++;
 				obj_enable_rendering();
-				obj_unhide();
+				s_shape_disp();
 			}
 		}
 	}
 	else
 	{
-		obj_become_tangible();
+		s_hitON();
 
 		if(obj_wait_then_blink(360 * FRAME_RATE_SCALER_INV, 20))
 		{
 			o->oAction = 0;
 		}
 
-		load_object_collision_model();
+		stMainMoveBG();
 	}
 }
 

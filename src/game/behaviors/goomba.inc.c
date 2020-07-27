@@ -96,7 +96,7 @@ void bhv_goomba_triplet_spawner_update(void)
 					dx = 500.0f * coss(angle);
 					dz = 500.0f * sins(angle);
 
-					spawn_object_relative((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_SIZE_MASK) | (goombaFlag >> 6), dx, 0, dz, o, MODEL_GOOMBA, sm64::bhv::bhvGoomba());
+					s_makeobj_chain((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_SIZE_MASK) | (goombaFlag >> 6), dx, 0, dz, o, MODEL_GOOMBA, sm64::bhv::bhvGoomba());
 				}
 			}
 
@@ -121,7 +121,7 @@ void bhv_goomba_init(void)
 	o->oGoombaScale = sGoombaProperties[o->oGoombaSize].scale;
 	o->oDeathSound	= sGoombaProperties[o->oGoombaSize].deathSound;
 
-	set_object_hitbox(o, &sGoombaHitbox);
+	s_set_hitparam(o, &sGoombaHitbox);
 
 	o->oDrawingDistance   = sGoombaProperties[o->oGoombaSize].drawDistance;
 	o->oDamageOrCoinValue = sGoombaProperties[o->oGoombaSize].damage;
@@ -134,7 +134,7 @@ void bhv_goomba_init(void)
  */
 static void goomba_begin_jump(void)
 {
-	PlaySound2(SOUND_OBJ_GOOMBA_ALERT);
+	objsound(SOUND_OBJ_GOOMBA_ALERT);
 	o->oAction     = GOOMBA_ACT_JUMP;
 	o->oForwardVel = 0.0f;
 	o->oVelY       = 50.0f / 3.0f * o->oGoombaScale;
@@ -310,11 +310,11 @@ void bhv_goomba_update(void)
 		{
 			if(o->parentObj->oAction == GOOMBA_TRIPLET_SPAWNER_ACT_UNLOADED)
 			{
-				mark_object_for_deletion(o);
+				s_remove_obj(o);
 			}
 		}
 
-		obj_scale(o->oGoombaScale);
+		s_set_scale(o->oGoombaScale);
 		obj_update_blinking(&o->oGoombaBlinkTimer, 30, 50, 5);
 		obj_update_floor_and_walls();
 

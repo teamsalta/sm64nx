@@ -81,7 +81,7 @@ void bhv_spindel_loop(void)
 
 		if(absf_2(o->oMoveAnglePitch & 0x1fff) < 800.0f && o->oAngleVelPitch != 0)
 		{
-			PlaySound2(SOUND_GENERAL2_SPINDEL_ROLL);
+			objsound(SOUND_GENERAL2_SPINDEL_ROLL);
 		}
 
 		sp1C = sins(o->oMoveAnglePitch * 4) * 23.0;

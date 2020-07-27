@@ -145,11 +145,11 @@ static void platform_on_track_act_move_along_track(void)
 
 	if(!o->oPlatformOnTrackIsNotSkiLift)
 	{
-		PlaySound(SOUND_ENV_ELEVATOR3);
+		objsound_level(SOUND_ENV_ELEVATOR3);
 	}
 	else if(!o->oPlatformOnTrackIsNotHMC)
 	{
-		PlaySound(SOUND_ENV_ELEVATOR1);
+		objsound_level(SOUND_ENV_ELEVATOR1);
 	}
 
 	// Fall after reaching the last waypoint if desired
@@ -164,7 +164,7 @@ static void platform_on_track_act_move_along_track(void)
 		{
 			if(o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_END || o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_PLATFORM_ON_TRACK_PAUSE)
 			{
-				PlaySound2(SOUND_GENERAL_UNKNOWN4_LOWPRIO);
+				objsound(SOUND_GENERAL_UNKNOWN4_LOWPRIO);
 
 				o->oForwardVel = 0.0f;
 
@@ -356,6 +356,6 @@ void bhv_track_ball_update(void)
 	s16 relativeIndex = (s16)o->oBehParams2ndByte - (s16)o->parentObj->oPlatformOnTrackBaseBallIndex - 1;
 	if(relativeIndex < 1 || relativeIndex > 5)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }

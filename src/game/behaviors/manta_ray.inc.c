@@ -19,10 +19,10 @@ static struct ObjectHitbox sMantaRayHitbox = {
 void bhv_manta_ray_init(void)
 {
 	struct Object* sp1C;
-	sp1C	     = spawn_object(o, MODEL_NONE, sm64::bhv::bhvMantaRayRingManager());
+	sp1C	     = s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvMantaRayRingManager());
 	o->parentObj = sp1C;
-	set_object_hitbox(o, &sMantaRayHitbox);
-	obj_scale(2.5f);
+	s_set_hitparam(o, &sMantaRayHitbox);
+	s_set_scale(2.5f);
 }
 
 void func_802F5E20(void)
@@ -55,7 +55,7 @@ void func_802F5E20(void)
 
 	func_802A2A38();
 	if(sp1E == 0)
-		PlaySound2(SOUND_GENERAL_MOVING_WATER);
+		objsound(SOUND_GENERAL_MOVING_WATER);
 }
 
 void func_802F5FD8(void)
@@ -68,7 +68,7 @@ void func_802F5FD8(void)
 
 	if(o->oTimer == 0 || o->oTimer == 50 * FRAME_RATE_SCALER_INV || o->oTimer == 150 * FRAME_RATE_SCALER_INV || o->oTimer == 200 * FRAME_RATE_SCALER_INV || o->oTimer == 250 * FRAME_RATE_SCALER_INV)
 	{
-		sp18		      = spawn_object(o, MODEL_WATER_RING, sm64::bhv::bhvMantaRayWaterRing());
+		sp18		      = s_makeobj_nowpos(o, MODEL_WATER_RING, sm64::bhv::bhvMantaRayWaterRing());
 		sp18->oFaceAngleYaw   = o->oMoveAngleYaw;
 		sp18->oFaceAnglePitch = o->oMoveAnglePitch + 0x4000;
 		sp18->oPosX	      = o->oPosX + 200.0f * sins(o->oMoveAngleYaw + 0x8000);
@@ -91,8 +91,8 @@ void bhv_manta_ray_loop(void)
 			func_802F5FD8();
 			if(o->oMantaUnk1AC == 5)
 			{
-				func_802A3004();
-				create_star(-3180.0f, -3600.0f, 120.0f);
+				s_kemuri();
+				s_enemyset_star(-3180.0f, -3600.0f, 120.0f);
 				o->oAction = 1;
 			}
 			break;

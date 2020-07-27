@@ -9,16 +9,16 @@ void bhv_bowser_shock_wave_loop(void)
 
 	o->oBowserShockWaveUnkF4 = (o->oTimer / FRAME_RATE_SCALER_INV) * 10;
 
-	obj_scale(o->oBowserShockWaveUnkF4);
+	s_set_scale(o->oBowserShockWaveUnkF4);
 
-	if((gGlobalTimer / FRAME_RATE_SCALER_INV) % 3)
+	if((frameCounter / FRAME_RATE_SCALER_INV) % 3)
 		o->oOpacity -= 1;
 
 	if(o->oTimer > expires * FRAME_RATE_SCALER_INV)
 		o->oOpacity -= 5;
 
 	if(o->oOpacity <= 0)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 
 	if(o->oTimer < expires * FRAME_RATE_SCALER_INV && mario_is_in_air_action() == 0)
 	{

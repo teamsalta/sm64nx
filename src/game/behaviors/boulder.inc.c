@@ -18,8 +18,8 @@ void func_802F05DC(void)
 	sp1E = object_step_without_floor_orient();
 	if((sp1E & 0x09) == 0x01 && o->oVelY > 10.0f)
 	{
-		PlaySound2(SOUND_GENERAL_GRINDEL_ROLL);
-		func_802A3004();
+		objsound(SOUND_GENERAL_GRINDEL_ROLL);
+		s_kemuri();
 	}
 
 	if(o->oForwardVel > 70.0)
@@ -31,7 +31,7 @@ void func_802F05DC(void)
 
 void bhv_big_boulder_loop(void)
 {
-	obj_scale(1.5f);
+	s_set_scale(1.5f);
 	o->oGraphYOffset = 270.0f;
 	switch(o->oAction)
 	{
@@ -43,7 +43,7 @@ void bhv_big_boulder_loop(void)
 		case 1:
 			func_802F05DC();
 			func_802EFB84(1.5f);
-			PlaySound(SOUND_ENV_UNKNOWN2);
+			objsound_level(SOUND_ENV_UNKNOWN2);
 			break;
 	}
 
@@ -58,14 +58,14 @@ void bhv_big_boulder_generator_loop(void)
 		o->oTimer = 0;
 	}
 
-	if(!current_mario_room_check(4) || is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 1500))
+	if(!current_mario_room_check(4) || PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 1500))
 		return;
 
-	if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 6000))
+	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 6000))
 	{
 		if((o->oTimer % (64 * FRAME_RATE_SCALER_INV)) == 0)
 		{
-			sp1C		    = spawn_object(o, MODEL_HMC_ROLLING_ROCK, sm64::bhv::bhvBigBoulder());
+			sp1C		    = s_makeobj_nowpos(o, MODEL_HMC_ROLLING_ROCK, sm64::bhv::bhvBigBoulder());
 			sp1C->oMoveAngleYaw = RandomFloat() * 4096.0f;
 		}
 	}
@@ -73,7 +73,7 @@ void bhv_big_boulder_generator_loop(void)
 	{
 		if((o->oTimer % (128 * FRAME_RATE_SCALER_INV)) == 0)
 		{
-			sp1C		    = spawn_object(o, MODEL_HMC_ROLLING_ROCK, sm64::bhv::bhvBigBoulder());
+			sp1C		    = s_makeobj_nowpos(o, MODEL_HMC_ROLLING_ROCK, sm64::bhv::bhvBigBoulder());
 			sp1C->oMoveAngleYaw = RandomFloat() * 4096.0f;
 		}
 	}

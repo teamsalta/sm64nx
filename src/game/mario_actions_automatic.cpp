@@ -15,6 +15,7 @@
 #include "interaction.h"
 #include "camera.h"
 #include "level_table.h"
+#include "game/motor.h"
 
 #define POLE_NONE 0
 #define POLE_TOUCHED_FLOOR 1
@@ -24,14 +25,14 @@
 #define HANG_HIT_CEIL_OR_OOB 1
 #define HANG_LEFT_CEIL 2
 
-void MarioState::add_tree_leaf_particles()
+void PlayerRecord::add_tree_leaf_particles()
 {
 	f32 leafHeight;
 
 	if(this->usedObj->behavior == segmented_to_virtual(sm64::bhv::bhvTree()))
 	{
 		// make leaf effect spawn higher on the Shifting Sand Land palm tree
-		if(gCurrLevelNum == LEVEL_SSL)
+		if(activeStageNo == LEVEL_SSL)
 		{
 			leafHeight = 250.0f;
 		}
@@ -46,7 +47,7 @@ void MarioState::add_tree_leaf_particles()
 	}
 }
 
-void MarioState::play_climbing_sounds(s32 b)
+void PlayerRecord::play_climbing_sounds(s32 b)
 {
 	s32 isOnTree = (this->usedObj->behavior == segmented_to_virtual(sm64::bhv::bhvTree()));
 
@@ -54,16 +55,16 @@ void MarioState::play_climbing_sounds(s32 b)
 	{
 		if(this->is_anim_past_frame(1))
 		{
-			play_sound(isOnTree ? SOUND_ACTION_CLIMB_UP_TREE : SOUND_ACTION_CLIMB_UP_POLE, this->marioObj->header.gfx.cameraToObject);
+			AudStartSound(isOnTree ? SOUND_ACTION_CLIMB_UP_TREE : SOUND_ACTION_CLIMB_UP_POLE, this->marioObj->header.gfx.cameraToObject);
 		}
 	}
 	else
 	{
-		play_sound(isOnTree ? SOUND_MOVING_SLIDE_DOWN_TREE : SOUND_MOVING_SLIDE_DOWN_POLE, this->marioObj->header.gfx.cameraToObject);
+		AudStartSound(isOnTree ? SOUND_MOVING_SLIDE_DOWN_TREE : SOUND_MOVING_SLIDE_DOWN_POLE, this->marioObj->header.gfx.cameraToObject);
 	}
 }
 
-s32 MarioState::set_pole_position(f32 offsetY)
+s32 PlayerRecord::set_pole_position(f32 offsetY)
 {
 	UNUSED s32 unused1;
 	UNUSED s32 unused2;
@@ -100,13 +101,13 @@ s32 MarioState::set_pole_position(f32 offsetY)
 	if(this->pos[1] < floorHeight)
 	{
 		this->pos[1] = floorHeight;
-		this->set_mario_action(ACT_IDLE, 0);
+		this->ChangePlayerStatus(ACT_IDLE, 0);
 		result = POLE_TOUCHED_FLOOR;
 	}
 	else if(marioObj->oMarioPolePos < -this->usedObj->hitboxDownOffset)
 	{
 		this->pos[1] = this->usedObj->oPosY - this->usedObj->hitboxDownOffset;
-		this->set_mario_action(ACT_FREEFALL, 0);
+		this->ChangePlayerStatus(ACT_FREEFALL, 0);
 		result = POLE_FELL_OFF;
 	}
 	else if(collided)
@@ -114,12 +115,12 @@ s32 MarioState::set_pole_position(f32 offsetY)
 		if(this->pos[1] > floorHeight + 20.0f)
 		{
 			this->forwardVel = -2.0f;
-			this->set_mario_action(ACT_SOFT_BONK, 0);
+			this->ChangePlayerStatus(ACT_SOFT_BONK, 0);
 			result = POLE_FELL_OFF;
 		}
 		else
 		{
-			this->set_mario_action(ACT_IDLE, 0);
+			this->ChangePlayerStatus(ACT_IDLE, 0);
 			result = POLE_TOUCHED_FLOOR;
 		}
 	}
@@ -130,20 +131,20 @@ s32 MarioState::set_pole_position(f32 offsetY)
 	return result;
 }
 
-s32 MarioState::act_holding_pole()
+s32 PlayerRecord::act_holding_pole()
 {
 	if((this->input & INPUT_Z_PRESSED) || this->health < 0x100)
 	{
 		add_tree_leaf_particles();
 		this->forwardVel = -2.0f;
-		return this->set_mario_action(ACT_SOFT_BONK, 0);
+		return this->ChangePlayerStatus(ACT_SOFT_BONK, 0);
 	}
 
 	if(this->input & INPUT_A_PRESSED)
 	{
 		add_tree_leaf_particles();
 		this->faceAngle[1] += 0x8000;
-		return this->set_mario_action(ACT_WALL_KICK_AIR, 0);
+		return this->ChangePlayerStatus(ACT_WALL_KICK_AIR, 0);
 	}
 
 	if(this->controller->stickY > 16.0f)
@@ -153,12 +154,12 @@ s32 MarioState::act_holding_pole()
 
 		if(marioObj->oMarioPolePos < poleTop - 0.4f)
 		{
-			return this->set_mario_action(ACT_CLIMBING_POLE, 0);
+			return this->ChangePlayerStatus(ACT_CLIMBING_POLE, 0);
 		}
 
 		if(poleBehavior != sm64::bhv::bhvGiantPole() && this->controller->stickY > 50.0f)
 		{
-			return this->set_mario_action(ACT_TOP_OF_POLE_TRANSITION, 0);
+			return this->ChangePlayerStatus(ACT_TOP_OF_POLE_TRANSITION, 0);
 		}
 	}
 
@@ -200,31 +201,29 @@ s32 MarioState::act_holding_pole()
 	return FALSE;
 }
 
-s32 MarioState::act_climbing_pole()
+s32 PlayerRecord::act_climbing_pole()
 {
 	s32 sp24;
 	struct Object* marioObj = this->marioObj;
 	s16 cameraAngle		= this->area->camera->yaw;
 
-#ifndef VERSION_JP
 	if(this->health < 0x100)
 	{
 		add_tree_leaf_particles();
 		this->forwardVel = -2.0f;
-		return this->set_mario_action(ACT_SOFT_BONK, 0);
+		return this->ChangePlayerStatus(ACT_SOFT_BONK, 0);
 	}
-#endif
 
 	if(this->input & INPUT_A_PRESSED)
 	{
 		add_tree_leaf_particles();
 		this->faceAngle[1] += 0x8000;
-		return this->set_mario_action(ACT_WALL_KICK_AIR, 0);
+		return this->ChangePlayerStatus(ACT_WALL_KICK_AIR, 0);
 	}
 
 	if(this->controller->stickY < 8.0f)
 	{
-		return this->set_mario_action(ACT_HOLDING_POLE, 0);
+		return this->ChangePlayerStatus(ACT_HOLDING_POLE, 0);
 	}
 
 	marioObj->oMarioPolePos += this->controller->stickY / 8.0f * FRAME_RATE_SCALER;
@@ -242,7 +241,7 @@ s32 MarioState::act_climbing_pole()
 	return FALSE;
 }
 
-s32 MarioState::act_grab_pole_slow()
+s32 PlayerRecord::act_grab_pole_slow()
 {
 	this->play_sound_if_no_flag(SOUND_MARIO_WHOA, MARIO_MARIO_SOUND_PLAYED);
 
@@ -251,7 +250,7 @@ s32 MarioState::act_grab_pole_slow()
 		this->set_mario_animation(MARIO_ANIM_GRAB_POLE_SHORT);
 		if(this->is_anim_at_end())
 		{
-			this->set_mario_action(ACT_HOLDING_POLE, 0);
+			this->ChangePlayerStatus(ACT_HOLDING_POLE, 0);
 		}
 		add_tree_leaf_particles();
 	}
@@ -259,7 +258,7 @@ s32 MarioState::act_grab_pole_slow()
 	return FALSE;
 }
 
-s32 MarioState::act_grab_pole_fast()
+s32 PlayerRecord::act_grab_pole_fast()
 {
 	struct Object* marioObj = this->marioObj;
 
@@ -279,7 +278,7 @@ s32 MarioState::act_grab_pole_fast()
 			if(this->is_anim_at_end() != 0)
 			{
 				marioObj->oMarioPoleYawVel = 0;
-				this->set_mario_action(ACT_HOLDING_POLE, 0);
+				this->ChangePlayerStatus(ACT_HOLDING_POLE, 0);
 			}
 		}
 		add_tree_leaf_particles();
@@ -288,7 +287,7 @@ s32 MarioState::act_grab_pole_fast()
 	return FALSE;
 }
 
-s32 MarioState::act_top_of_pole_transition()
+s32 PlayerRecord::act_top_of_pole_transition()
 {
 	struct Object* marioObj = this->marioObj;
 
@@ -298,7 +297,7 @@ s32 MarioState::act_top_of_pole_transition()
 		this->set_mario_animation(MARIO_ANIM_START_HANDSTAND);
 		if(this->is_anim_at_end())
 		{
-			return this->set_mario_action(ACT_TOP_OF_POLE, 0);
+			return this->ChangePlayerStatus(ACT_TOP_OF_POLE, 0);
 		}
 	}
 	else
@@ -306,7 +305,7 @@ s32 MarioState::act_top_of_pole_transition()
 		this->set_mario_animation(MARIO_ANIM_RETURN_FROM_HANDSTAND);
 		if(this->marioObj->header.gfx.unk38.frame() == 0)
 		{
-			return this->set_mario_action(ACT_HOLDING_POLE, 0);
+			return this->ChangePlayerStatus(ACT_HOLDING_POLE, 0);
 		}
 	}
 
@@ -314,17 +313,17 @@ s32 MarioState::act_top_of_pole_transition()
 	return FALSE;
 }
 
-s32 MarioState::act_top_of_pole()
+s32 PlayerRecord::act_top_of_pole()
 {
 	UNUSED struct Object* marioObj = this->marioObj;
 
 	if(this->input & INPUT_A_PRESSED)
 	{
-		return this->set_mario_action(ACT_TOP_OF_POLE_JUMP, 0);
+		return this->ChangePlayerStatus(ACT_TOP_OF_POLE_JUMP, 0);
 	}
 	if(this->controller->stickY < -16.0f)
 	{
-		return this->set_mario_action(ACT_TOP_OF_POLE_TRANSITION, 1);
+		return this->ChangePlayerStatus(ACT_TOP_OF_POLE_TRANSITION, 1);
 	}
 
 	this->faceAngle[1] -= this->controller->stickX * 16.0f * FRAME_RATE_SCALER;
@@ -334,7 +333,7 @@ s32 MarioState::act_top_of_pole()
 	return FALSE;
 }
 
-s32 MarioState::perform_hanging_step(Vec3f nextPos)
+s32 PlayerRecord::perform_hanging_step(Vec3f nextPos)
 {
 	UNUSED s32 unused;
 	struct Surface* ceil;
@@ -385,7 +384,7 @@ s32 MarioState::perform_hanging_step(Vec3f nextPos)
 	return HANG_NONE;
 }
 
-s32 MarioState::update_hang_moving()
+s32 PlayerRecord::update_hang_moving()
 {
 	s32 stepResult;
 	Vec3f nextPos;
@@ -419,7 +418,7 @@ s32 MarioState::update_hang_moving()
 	return stepResult;
 }
 
-void MarioState::update_hang_stationary()
+void PlayerRecord::update_hang_stationary()
 {
 	this->forwardVel = 0.0f;
 	this->slideVelX	 = 0.0f;
@@ -430,29 +429,32 @@ void MarioState::update_hang_stationary()
 	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
 }
 
-s32 MarioState::act_start_hanging()
+s32 PlayerRecord::act_start_hanging()
 {
-	this->actionTimer++;
+	if(this->actionTimer++ == 0)
+	{
+		SendMotorEvent(5, 80);
+	}
 
 	if((this->input & INPUT_NONZERO_ANALOG) && this->actionTimer >= 31)
 	{
-		return this->set_mario_action(ACT_HANGING, 0);
+		return this->ChangePlayerStatus(ACT_HANGING, 0);
 	}
 
 	if(!(this->input & INPUT_A_DOWN))
 	{
-		return this->set_mario_action(ACT_FREEFALL, 0);
+		return this->ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_Z_PRESSED)
 	{
-		return this->set_mario_action(ACT_GROUND_POUND, 0);
+		return this->ChangePlayerStatus(ACT_GROUND_POUND, 0);
 	}
 
 	//! Crash if mario's referenced ceiling is NULL (same for other hanging actions)
 	if(this->ceil->type != SURFACE_HANGABLE)
 	{
-		return this->set_mario_action(ACT_FREEFALL, 0);
+		return this->ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	this->set_mario_animation(MARIO_ANIM_HANG_ON_CEILING);
@@ -461,32 +463,32 @@ s32 MarioState::act_start_hanging()
 
 	if(this->is_anim_at_end())
 	{
-		this->set_mario_action(ACT_HANGING, 0);
+		this->ChangePlayerStatus(ACT_HANGING, 0);
 	}
 
 	return FALSE;
 }
 
-s32 MarioState::act_hanging()
+s32 PlayerRecord::act_hanging()
 {
 	if(this->input & INPUT_NONZERO_ANALOG)
 	{
-		return this->set_mario_action(ACT_HANG_MOVING, this->actionArg);
+		return this->ChangePlayerStatus(ACT_HANG_MOVING, this->actionArg);
 	}
 
 	if(!(this->input & INPUT_A_DOWN))
 	{
-		return this->set_mario_action(ACT_FREEFALL, 0);
+		return this->ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_Z_PRESSED)
 	{
-		return this->set_mario_action(ACT_GROUND_POUND, 0);
+		return this->ChangePlayerStatus(ACT_GROUND_POUND, 0);
 	}
 
 	if(this->ceil->type != SURFACE_HANGABLE)
 	{
-		return this->set_mario_action(ACT_FREEFALL, 0);
+		return this->ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->actionArg & 1)
@@ -503,21 +505,21 @@ s32 MarioState::act_hanging()
 	return FALSE;
 }
 
-s32 MarioState::act_hang_moving()
+s32 PlayerRecord::act_hang_moving()
 {
 	if(!(this->input & INPUT_A_DOWN))
 	{
-		return this->set_mario_action(ACT_FREEFALL, 0);
+		return this->ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_Z_PRESSED)
 	{
-		return this->set_mario_action(ACT_GROUND_POUND, 0);
+		return this->ChangePlayerStatus(ACT_GROUND_POUND, 0);
 	}
 
 	if(this->ceil->type != SURFACE_HANGABLE)
 	{
-		return this->set_mario_action(ACT_FREEFALL, 0);
+		return this->ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->actionArg & 1)
@@ -531,7 +533,8 @@ s32 MarioState::act_hang_moving()
 
 	if(this->marioObj->header.gfx.unk38.frame() == 12)
 	{
-		play_sound(SOUND_ACTION_HANGING_STEP, this->marioObj->header.gfx.cameraToObject);
+		AudStartSound(SOUND_ACTION_HANGING_STEP, this->marioObj->header.gfx.cameraToObject);
+		SendMotorEvent(5, 80);
 	}
 
 	if(this->is_anim_past_end())
@@ -539,19 +542,19 @@ s32 MarioState::act_hang_moving()
 		this->actionArg ^= 1;
 		if(this->input & INPUT_UNKNOWN_5)
 		{
-			return this->set_mario_action(ACT_HANGING, this->actionArg);
+			return this->ChangePlayerStatus(ACT_HANGING, this->actionArg);
 		}
 	}
 
 	if(update_hang_moving() == HANG_LEFT_CEIL)
 	{
-		this->set_mario_action(ACT_FREEFALL, 0);
+		this->ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	return FALSE;
 }
 
-s32 MarioState::let_go_of_ledge()
+s32 PlayerRecord::let_go_of_ledge()
 {
 	f32 floorHeight;
 	struct Surface* floor;
@@ -571,10 +574,10 @@ s32 MarioState::let_go_of_ledge()
 		this->pos[1] = floorHeight;
 	}
 
-	return this->set_mario_action(ACT_SOFT_BONK, 0);
+	return this->ChangePlayerStatus(ACT_SOFT_BONK, 0);
 }
 
-void MarioState::func_8025F0DC()
+void PlayerRecord::func_8025F0DC()
 {
 	this->set_mario_animation(MARIO_ANIM_IDLE_HEAD_LEFT);
 	this->pos[0] += 14.0f * FRAME_RATE_SCALER * sins(this->faceAngle[1]);
@@ -582,7 +585,7 @@ void MarioState::func_8025F0DC()
 	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
 }
 
-void MarioState::func_8025F188()
+void PlayerRecord::func_8025F188()
 {
 	f32 sp4;
 
@@ -601,14 +604,14 @@ void MarioState::func_8025F188()
 	this->flags |= MARIO_UNKNOWN_25;
 }
 
-void MarioState::update_ledge_climb(s32 animation, u32 endAction)
+void PlayerRecord::update_ledge_climb(s32 animation, u32 endAction)
 {
 	stop_and_set_height_to_floor();
 
 	this->set_mario_animation(animation);
 	if(this->is_anim_at_end())
 	{
-		this->set_mario_action(endAction, 0);
+		this->ChangePlayerStatus(endAction, 0);
 		if(endAction == ACT_IDLE)
 		{
 			func_8025F0DC();
@@ -616,7 +619,7 @@ void MarioState::update_ledge_climb(s32 animation, u32 endAction)
 	}
 }
 
-s32 MarioState::act_ledge_grab()
+s32 PlayerRecord::act_ledge_grab()
 {
 	f32 heightAboveFloor;
 	s16 intendedDYaw     = this->intendedYaw - this->faceAngle[1];
@@ -639,7 +642,7 @@ s32 MarioState::act_ledge_grab()
 
 	if((this->input & INPUT_A_PRESSED) && hasSpaceForMario)
 	{
-		return this->set_mario_action(ACT_LEDGE_CLIMB_FAST, 0);
+		return this->ChangePlayerStatus(ACT_LEDGE_CLIMB_FAST, 0);
 	}
 
 	if(this->input & INPUT_UNKNOWN_10)
@@ -650,18 +653,13 @@ s32 MarioState::act_ledge_grab()
 		}
 		return let_go_of_ledge();
 	}
-#ifdef VERSION_EU
-	// On PAL, you can't slow climb up ledges while holding A.
-	if(this->actionTimer == 10 && (this->input & INPUT_NONZERO_ANALOG) && !(this->input & INPUT_A_DOWN))
-#else
 	if(this->actionTimer == 10 && (this->input & INPUT_NONZERO_ANALOG))
-#endif
 	{
 		if(intendedDYaw >= -0x4000 && intendedDYaw <= 0x4000)
 		{
 			if(hasSpaceForMario)
 			{
-				return this->set_mario_action(ACT_LEDGE_CLIMB_SLOW_1, 0);
+				return this->ChangePlayerStatus(ACT_LEDGE_CLIMB_SLOW_1, 0);
 			}
 		}
 		else
@@ -673,7 +671,7 @@ s32 MarioState::act_ledge_grab()
 	heightAboveFloor = this->pos[1] - this->find_floor_height_relative_polar(-0x8000, 30.0f);
 	if(hasSpaceForMario && heightAboveFloor < 100.0f)
 	{
-		return this->set_mario_action(ACT_LEDGE_CLIMB_FAST, 0);
+		return this->ChangePlayerStatus(ACT_LEDGE_CLIMB_FAST, 0);
 	}
 
 	if(this->actionArg == 0)
@@ -687,7 +685,7 @@ s32 MarioState::act_ledge_grab()
 	return FALSE;
 }
 
-s32 MarioState::act_ledge_climb_slow()
+s32 PlayerRecord::act_ledge_climb_slow()
 {
 	if(this->input & INPUT_OFF_FLOOR)
 	{
@@ -710,13 +708,13 @@ s32 MarioState::act_ledge_climb_slow()
 	func_8025F188();
 	if(this->marioObj->header.gfx.unk38.frame() == 17)
 	{
-		this->action = ACT_LEDGE_CLIMB_SLOW_2;
+		this->status = ACT_LEDGE_CLIMB_SLOW_2;
 	}
 
 	return FALSE;
 }
 
-s32 MarioState::act_ledge_climb_down()
+s32 PlayerRecord::act_ledge_climb_down()
 {
 	if(this->input & INPUT_OFF_FLOOR)
 	{
@@ -731,7 +729,7 @@ s32 MarioState::act_ledge_climb_down()
 	return FALSE;
 }
 
-s32 MarioState::act_ledge_climb_fast()
+s32 PlayerRecord::act_ledge_climb_fast()
 {
 	if(this->input & INPUT_OFF_FLOOR)
 	{
@@ -751,7 +749,7 @@ s32 MarioState::act_ledge_climb_fast()
 	return FALSE;
 }
 
-s32 MarioState::act_grabbed()
+s32 PlayerRecord::act_grabbed()
 {
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_UNK2)
 	{
@@ -759,15 +757,16 @@ s32 MarioState::act_grabbed()
 
 		this->faceAngle[1] = this->usedObj->oMoveAngleYaw;
 		vec3f_copy(this->pos, this->marioObj->header.gfx.pos);
+		SendMotorEvent(5, 60);
 
-		return this->set_mario_action((this->forwardVel >= 0.0f) ? ACT_THROWN_FORWARD : ACT_THROWN_BACKWARD, thrown);
+		return this->ChangePlayerStatus((this->forwardVel >= 0.0f) ? ACT_THROWN_FORWARD : ACT_THROWN_BACKWARD, thrown);
 	}
 
 	this->set_mario_animation(MARIO_ANIM_BEING_GRABBED);
 	return FALSE;
 }
 
-s32 MarioState::act_in_cannon()
+s32 PlayerRecord::act_in_cannon()
 {
 	struct Object* marioObj = this->marioObj;
 	s16 startFacePitch	= this->faceAngle[0];
@@ -839,12 +838,13 @@ s32 MarioState::act_in_cannon()
 				this->pos[1] += 120.0f * FRAME_RATE_SCALER * sins(this->faceAngle[0]);
 				this->pos[2] += 120.0f * FRAME_RATE_SCALER * coss(this->faceAngle[0]) * coss(this->faceAngle[1]);
 
-				play_sound(SOUND_ACTION_FLYING_FAST, this->marioObj->header.gfx.cameraToObject);
-				play_sound(SOUND_OBJ_POUNDING_CANNON, this->marioObj->header.gfx.cameraToObject);
+				AudStartSound(SOUND_ACTION_FLYING_FAST, this->marioObj->header.gfx.cameraToObject);
+				AudStartSound(SOUND_OBJ_POUNDING_CANNON, this->marioObj->header.gfx.cameraToObject);
 
 				this->marioObj->header.gfx.node.flags |= 0x0001;
 
-				this->set_mario_action(ACT_SHOT_FROM_CANNON, 0);
+				this->ChangePlayerStatus(ACT_SHOT_FROM_CANNON, 0);
+				SendMotorEvent(60, 70);
 				this->usedObj->oAction = 2;
 				return FALSE;
 			}
@@ -852,7 +852,7 @@ s32 MarioState::act_in_cannon()
 			{
 				if(this->faceAngle[0] != startFacePitch || this->faceAngle[1] != startFaceYaw)
 				{
-					play_sound(SOUND_MOVING_AIM_CANNON, this->marioObj->header.gfx.cameraToObject);
+					AudStartSound(SOUND_MOVING_AIM_CANNON, this->marioObj->header.gfx.cameraToObject);
 				}
 			}
 	}
@@ -864,7 +864,7 @@ s32 MarioState::act_in_cannon()
 	return FALSE;
 }
 
-s32 MarioState::act_tornado_twirling()
+s32 PlayerRecord::act_tornado_twirling()
 {
 	struct Surface* floor;
 	Vec3f nextPos;
@@ -893,7 +893,7 @@ s32 MarioState::act_tornado_twirling()
 		{
 			this->vel[1] = 20.0f;
 		}
-		return this->set_mario_action(ACT_TWIRLING, 1);
+		return this->ChangePlayerStatus(ACT_TWIRLING, 1);
 	}
 
 	if(this->angleVel[1] < 0x3000)
@@ -948,7 +948,7 @@ s32 MarioState::act_tornado_twirling()
 	// Play sound on angle overflow
 	if(prevTwirlYaw > this->twirlYaw)
 	{
-		play_sound(SOUND_ACTION_TWIRL, this->marioObj->header.gfx.cameraToObject);
+		AudStartSound(SOUND_ACTION_TWIRL, this->marioObj->header.gfx.cameraToObject);
 	}
 
 	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
@@ -957,7 +957,7 @@ s32 MarioState::act_tornado_twirling()
 	return FALSE;
 }
 
-s32 MarioState::check_common_automatic_cancels()
+s32 PlayerRecord::check_common_automatic_cancels()
 {
 	if(this->pos[1] < this->waterLevel - 100)
 	{
@@ -967,7 +967,7 @@ s32 MarioState::check_common_automatic_cancels()
 	return FALSE;
 }
 
-s32 MarioState::mario_execute_automatic_action()
+s32 PlayerRecord::mario_execute_automatic_action()
 {
 	s32 cancel;
 
@@ -976,10 +976,10 @@ s32 MarioState::mario_execute_automatic_action()
 		return TRUE;
 	}
 
-	this->quicksandDepth = 0.0f;
+	this->sinking = 0.0f;
 
 	/* clang-format off */
-	switch(this->action)
+	switch(this->status)
 	{
 		case ACT_HOLDING_POLE:           cancel = act_holding_pole();           break;
 		case ACT_GRAB_POLE_SLOW:         cancel = act_grab_pole_slow();         break;

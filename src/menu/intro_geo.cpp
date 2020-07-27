@@ -101,8 +101,8 @@ Gfx* geo18_title_screen(u32 sp50, struct GraphNode* sp54, UNUSED void* context)
 	else if(sp50 == 1)
 	{
 		graphNode->flags = (graphNode->flags & 0xFF) | 0x100;
-		scaleMat	 = (Mtx*)alloc_display_list(sizeof(*scaleMat));
-		displayList	 = (Gfx*)alloc_display_list(4 * sizeof(*displayList));
+		scaleMat	 = (Mtx*)AllocDynamic(sizeof(*scaleMat));
+		displayList	 = (Gfx*)AllocDynamic(4 * sizeof(*displayList));
 		displayListIter	 = displayList;
 		if(gTitleZoomCounter >= 0 && gTitleZoomCounter < INTRO_STEPS_ZOOM_IN)
 		{
@@ -149,7 +149,7 @@ Gfx* geo18_fade_transition(u32 sp40, struct GraphNode* sp44, UNUSED void* contex
 	}
 	else if(sp40 == 1)
 	{
-		displayList	= (Gfx*)alloc_display_list(5 * sizeof(*displayList));
+		displayList	= (Gfx*)AllocDynamic(5 * sizeof(*displayList));
 		displayListIter = displayList;
 		gSPDisplayList(displayListIter++, dl_proj_mtx_fullscreen);
 		gDPSetEnvColor(displayListIter++, 255, 255, 255, gTitleFadeCounter / FRAME_RATE_SCALER_INV);
@@ -191,8 +191,8 @@ Gfx* intro_backdrop_one_image(u32 index, s8* backgroundTable)
 	int num_tiles_h = (((aspect * SCREEN_HEIGHT) + 79) / 80);
 	float x_ofs	= (SCREEN_WIDTH / 2) - (aspect * SCREEN_HEIGHT / 2);
 
-	mtx		= (Mtx*)alloc_display_list(sizeof(*mtx));
-	displayList	= (Gfx*)alloc_display_list(36 * sizeof(*displayList));
+	mtx		= (Mtx*)AllocDynamic(sizeof(*mtx));
+	displayList	= (Gfx*)AllocDynamic(36 * sizeof(*displayList));
 	displayListIter = displayList;
 	vIntroBgTable	= (const u8* const*)segmented_to_virtual(introBackgroundTextureType[backgroundTable[0]]);
 	guTranslate(mtx, ((index % num_tiles_h) * 80) + x_ofs, (index / num_tiles_h) * 80, 0.0f);
@@ -225,7 +225,7 @@ Gfx* geo18_intro_backdrop(u32 sp48, struct GraphNode* sp4c, UNUSED void* context
 
 	if(sp48 == 1)
 	{
-		displayList	      = (Gfx*)alloc_display_list(((num_tiles_h * 3) + 4) * sizeof(*displayList));
+		displayList	      = (Gfx*)AllocDynamic(((num_tiles_h * 3) + 4) * sizeof(*displayList));
 		displayListIter	      = displayList;
 		graphNode->node.flags = (graphNode->node.flags & 0xFF) | 0x100;
 		gSPDisplayList(displayListIter++, &dl_proj_mtx_fullscreen);
@@ -264,7 +264,7 @@ Gfx* geo18_game_over_tile(u32 sp40, struct GraphNode* sp44, UNUSED void* context
 	}
 	else
 	{
-		displayList	= (Gfx*)alloc_display_list(((num_tiles_h * 3) + 4) * sizeof(*displayList));
+		displayList	= (Gfx*)AllocDynamic(((num_tiles_h * 3) + 4) * sizeof(*displayList));
 		displayListIter = displayList;
 		if(gGameOverTableIndex == -2)
 		{

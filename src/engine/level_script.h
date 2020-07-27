@@ -1,8 +1,5 @@
-#ifndef _LEVEL_SCRIPT_H
-#define _LEVEL_SCRIPT_H
+#pragma once
 
-struct LevelCommand *level_script_execute(struct LevelCommand *cmd);
+struct LevelCommand* level_script_execute(struct LevelCommand* cmd);
 
 extern const LevelScript level_script_entry[];
-
-#endif /* _LEVEL_SCRIPT_H */

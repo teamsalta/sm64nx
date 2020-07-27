@@ -15,7 +15,7 @@
 #include "level_table.h"
 
 /**
- * An unused linked list struct that seems to have been replaced by ObjectNode.
+ * An size linked list struct that seems to have been replaced by ObjectNode.
  */
 struct LinkedList
 {
@@ -101,7 +101,7 @@ static struct Object* try_allocate_object(struct ObjectNode* destList, struct Ob
 	}
 
 	geo_remove_child(&nextObj->gfx.node);
-	geo_add_child(&gObjParentGraphNode, &nextObj->gfx.node);
+	geo_add_child(&strategyGroup, &nextObj->gfx.node);
 
 	return (struct Object*)nextObj;
 }
@@ -191,7 +191,7 @@ static void unused_delete_leaf_nodes(struct Object* obj)
 	else
 	{
 		// No children
-		mark_obj_for_deletion(obj);
+		RemoveShape(obj);
 	}
 
 	// Probably meant to be !=
@@ -213,7 +213,7 @@ void unload_object(struct Object* obj)
 	obj->header.gfx.throwMatrix = NULL;
 	func_803206F8(obj->header.gfx.cameraToObject);
 	geo_remove_child(&obj->header.gfx.node);
-	geo_add_child(&gObjParentGraphNode, &obj->header.gfx.node);
+	geo_add_child(&strategyGroup, &obj->header.gfx.node);
 
 	obj->header.gfx.node.flags &= ~GRAPH_RENDER_BILLBOARD;
 	obj->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
@@ -296,7 +296,7 @@ static struct Object* allocate_object(struct ObjectNode* objList)
 	obj->oHealth		= 2048;
 
 	obj->oCollisionDistance = 1000.0f;
-	if(gCurrLevelNum == LEVEL_TTC)
+	if(activeStageNo == LEVEL_TTC)
 	{
 		obj->oDrawingDistance = 2000.0f;
 	}
@@ -394,8 +394,8 @@ struct Object* create_object(const BehaviorScript* behScript)
 /**
  * Mark an object to be unloaded at the end of the frame.
  */
-void mark_obj_for_deletion(struct Object* obj)
+void RemoveShape(struct Object* obj)
 {
-	//! Same issue as mark_object_for_deletion
+	//! Same issue as s_remove_obj
 	obj->activeFlags = ACTIVE_FLAGS_DEACTIVATED;
 }

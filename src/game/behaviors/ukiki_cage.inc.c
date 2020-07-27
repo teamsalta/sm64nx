@@ -22,9 +22,9 @@ void bhv_ukiki_cage_star_loop(void)
 			// Initialization to see if the star is collected (blue) or not (yellow).
 			if(o->oTimer == 0)
 			{
-				if(func_802A377C(1) & save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1))
+				if(func_802A377C(1) & BuGetStarFlag(activePlayerNo - 1, activeCourseNo - 1))
 				{
-					obj_set_model(MODEL_TRANSPARENT_STAR);
+					s_change_shape(MODEL_TRANSPARENT_STAR);
 				}
 			}
 
@@ -38,10 +38,10 @@ void bhv_ukiki_cage_star_loop(void)
 			}
 			break;
 		case UKIKI_CAGE_STAR_ACT_SPAWN_STAR:
-			mark_object_for_deletion(o);
-			func_802A3004();
-			spawn_triangle_break_particles(20, 138, 0.7, 3);
-			create_star(2500.0f, -1200.0f, 1300.0f);
+			s_remove_obj(o);
+			s_kemuri();
+			s_boxeffect(20, 138, 0.7, 3);
+			s_enemyset_star(2500.0f, -1200.0f, 1300.0f);
 			break;
 	}
 
@@ -59,7 +59,7 @@ void ukiki_cage_act_wait_for_ukiki(void)
 		o->oAction = UKIKI_CAGE_ACT_SPIN;
 	}
 
-	load_object_collision_model();
+	stMainMoveBG();
 }
 
 /**
@@ -73,7 +73,7 @@ void ukiki_cage_act_spin(void)
 	}
 
 	o->oMoveAngleYaw += 0x800;
-	load_object_collision_model();
+	stMainMoveBG();
 }
 
 /**
@@ -98,7 +98,7 @@ void ukiki_cage_act_fall(void)
  */
 void ukiki_cage_act_hide(void)
 {
-	obj_hide();
+	s_shape_hide();
 }
 
 /**
@@ -116,5 +116,5 @@ void (*sUkikiCageActions[])(void) = {
  */
 void bhv_ukiki_cage_loop(void)
 {
-	obj_call_action_function(sUkikiCageActions);
+	s_modejmp(sUkikiCageActions);
 }

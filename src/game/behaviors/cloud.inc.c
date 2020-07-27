@@ -25,7 +25,7 @@ static void cloud_act_spawn_parts(void)
 	// Spawn the pieces of the cloud itself
 	for(i = 0; i < 5; i++)
 	{
-		cloudPart = spawn_object_relative(i, 0, 0, 0, o, MODEL_MIST, sm64::bhv::bhvCloudPart());
+		cloudPart = s_makeobj_chain(i, 0, 0, 0, o, MODEL_MIST, sm64::bhv::bhvCloudPart());
 
 		if(cloudPart != NULL)
 		{
@@ -36,9 +36,9 @@ static void cloud_act_spawn_parts(void)
 	if(o->oBehParams2ndByte == CLOUD_BP_FWOOSH)
 	{
 		// Spawn fwoosh's face
-		spawn_object_relative(5, 0, 0, 0, o, MODEL_FWOOSH, sm64::bhv::bhvCloudPart());
+		s_makeobj_chain(5, 0, 0, 0, o, MODEL_FWOOSH, sm64::bhv::bhvCloudPart());
 
-		obj_scale(3.0f);
+		s_set_scale(3.0f);
 
 		o->oCloudCenterX = o->oPosX;
 		o->oCloudCenterY = o->oPosY;
@@ -54,7 +54,7 @@ static void cloud_act_fwoosh_hidden(void)
 {
 	if(o->oDistanceToMario < 2000.0f && !sm64::config().camera().disableDistanceClip())
 	{
-		obj_unhide();
+		s_shape_disp();
 		o->oAction = CLOUD_ACT_SPAWN_PARTS;
 	}
 }
@@ -83,12 +83,12 @@ static void cloud_fwoosh_update(void)
 			else if(o->oCloudGrowSpeed < -0.1f)
 			{
 				// Start blowing once we start shrinking faster than -0.1
-				PlaySound(SOUND_AIR_BLOW_WIND);
+				objsound_level(SOUND_AIR_BLOW_WIND);
 				func_802C76E0(12, 3.0f, 0.0f, -50.0f, 120.0f);
 			}
 			else
 			{
-				PlaySound(SOUND_ENV_WIND1);
+				objsound_level(SOUND_ENV_WIND1);
 			}
 		}
 		else
@@ -116,7 +116,7 @@ static void cloud_fwoosh_update(void)
 			o->oCloudCenterY = o->oHomeY;
 		}
 
-		obj_scale(o->header.gfx.scale[0]);
+		s_set_scale(o->header.gfx.scale[0]);
 	}
 }
 
@@ -129,7 +129,7 @@ static void cloud_act_main(void)
 	s16 localOffsetPhase;
 	f32 localOffset;
 
-	localOffsetPhase = (0x800 / FRAME_RATE_SCALER_INV) * gGlobalTimer;
+	localOffsetPhase = (0x800 / FRAME_RATE_SCALER_INV) * frameCounter;
 
 	if(o->parentObj != o)
 	{
@@ -175,12 +175,12 @@ static void cloud_act_unload(void)
 {
 	if(o->oBehParams2ndByte != CLOUD_BP_FWOOSH)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{
 		o->oAction = CLOUD_ACT_FWOOSH_HIDDEN;
-		obj_hide();
+		s_shape_hide();
 		obj_set_pos_to_home();
 	}
 }
@@ -214,7 +214,7 @@ void bhv_cloud_part_update(void)
 {
 	if(o->parentObj->oAction == CLOUD_ACT_UNLOAD)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{
@@ -222,12 +222,12 @@ void bhv_cloud_part_update(void)
 		s16 angleFromCenter = o->parentObj->oFaceAngleYaw + 0x10000 / 5 * o->oBehParams2ndByte;
 
 		// Takes 32 frames to cycle
-		s16 localOffsetPhase = 0x800 * (gGlobalTimer / FRAME_RATE_SCALER_INV) + 0x4000 * o->oBehParams2ndByte;
+		s16 localOffsetPhase = 0x800 * (frameCounter / FRAME_RATE_SCALER_INV) + 0x4000 * o->oBehParams2ndByte;
 		f32 localOffset;
 
 		f32 cloudRadius;
 
-		obj_scale(size);
+		s_set_scale(size);
 
 		// Cap fwoosh's face size
 		if(o->oBehParams2ndByte == 5 && size > 2.0f)

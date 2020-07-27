@@ -34,6 +34,6 @@ void bhv_decorative_pendulum_loop(void)
 	 */
 	if(o->oAngleVelRoll == 0x10 || o->oAngleVelRoll == -0x10)
 	{
-		PlaySound2(SOUND_GENERAL_BIG_CLOCK);
+		objsound(SOUND_GENERAL_BIG_CLOCK);
 	}
 }

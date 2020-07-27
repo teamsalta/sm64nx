@@ -10,14 +10,14 @@ void bhv_floor_trap_in_castle_loop(void)
 void bhv_castle_floor_trap_init(void)
 {
 	struct Object* sp2C;
-	sp2C = spawn_object_relative(0, -358, 0, 0, o, MODEL_CASTLE_BOWSER_TRAP, sm64::bhv::bhvFloorTrapInCastle());
-	sp2C = spawn_object_relative(0, 358, 0, 0, o, MODEL_CASTLE_BOWSER_TRAP, sm64::bhv::bhvFloorTrapInCastle());
+	sp2C = s_makeobj_chain(0, -358, 0, 0, o, MODEL_CASTLE_BOWSER_TRAP, sm64::bhv::bhvFloorTrapInCastle());
+	sp2C = s_makeobj_chain(0, 358, 0, 0, o, MODEL_CASTLE_BOWSER_TRAP, sm64::bhv::bhvFloorTrapInCastle());
 	sp2C->oMoveAngleYaw += 0x8000;
 }
 
 void bhv_castle_floor_trap_open_detect(void)
 {
-	if(gMarioStates->action == ACT_SPECIAL_EXIT_AIRBORNE || gMarioStates->action == ACT_SPECIAL_DEATH_EXIT)
+	if(playerWorks->status == ACT_SPECIAL_EXIT_AIRBORNE || playerWorks->status == ACT_SPECIAL_DEATH_EXIT)
 		o->oAction = 4; // rotates trapdoor so it looks always open
 	else
 	{
@@ -30,7 +30,7 @@ void bhv_castle_floor_trap_open_detect(void)
 void bhv_castle_floor_trap_open(void)
 {
 	if(o->oTimer == 0)
-		create_sound_spawner(SOUND_GENERAL_CASTLE_TRAP_OPEN);
+		obj_remove_sound(SOUND_GENERAL_CASTLE_TRAP_OPEN);
 	o->oAngleVelRoll -= 0x100 / FRAME_RATE_SCALER_INV;
 	o->oFaceAngleRoll += o->oAngleVelRoll * FRAME_RATE_SCALER;
 	if(o->oFaceAngleRoll < -0x4000)

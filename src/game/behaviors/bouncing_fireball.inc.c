@@ -39,7 +39,7 @@ void bhv_bouncing_fireball_flame_loop(void)
 
 			if(o->oMoveFlags & (0x40 | 0x10 | 0x2) && o->oTimer > 100 * FRAME_RATE_SCALER_INV)
 			{
-				mark_object_for_deletion(o);
+				s_remove_obj(o);
 			}
 
 			break;
@@ -47,7 +47,7 @@ void bhv_bouncing_fireball_flame_loop(void)
 
 	if(o->oTimer > (o->oBouncingFireBallFlameDuration ? o->oBouncingFireBallFlameDuration : 300) * FRAME_RATE_SCALER_INV)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 
 	obj_move_standard(78);
@@ -67,7 +67,7 @@ void bhv_bouncing_fireball_loop(void)
 			}
 			break;
 		case 1:
-			sp2C = spawn_object(o, MODEL_RED_FLAME, sm64::bhv::bhvBouncingFireballFlame());
+			sp2C = s_makeobj_nowpos(o, MODEL_RED_FLAME, sm64::bhv::bhvBouncingFireballFlame());
 			sp28 = (10 * FRAME_RATE_SCALER_INV - o->oTimer) * 0.5 * FRAME_RATE_SCALER;
 			scale_object_xyz(sp2C, sp28, sp28, sp28);
 

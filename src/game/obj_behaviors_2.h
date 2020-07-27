@@ -19,12 +19,12 @@ extern s32 sNumKilledFirePiranhaPlants;
 extern f32 sObjSavedPosX;
 extern f32 sObjSavedPosY;
 extern f32 sObjSavedPosZ;
-extern struct Object *sMontyMoleHoleList;
+extern struct Object* sMontyMoleHoleList;
 extern s32 sMontyMoleKillStreak;
 extern f32 sMontyMoleLastKilledPosX;
 extern f32 sMontyMoleLastKilledPosY;
 extern f32 sMontyMoleLastKilledPosZ;
-extern struct Object *sMasterTreadmill;
+extern struct Object* sMasterTreadmill;
 
 void shelled_koopa_attack_handler(s32);
 void obj_spit_fire(s16, s16, s16, f32, s32, f32, f32, s16);

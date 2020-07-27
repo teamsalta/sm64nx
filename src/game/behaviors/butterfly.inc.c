@@ -47,18 +47,18 @@ void CalculateButterflyAngle(void)
 {
 	gMarioObject->oPosX += 5 * o->oButterflyYPhase / (4 * FRAME_RATE_SCALER_INV);
 	gMarioObject->oPosZ += 5 * o->oButterflyYPhase / (4 * FRAME_RATE_SCALER_INV);
-	obj_turn_toward_object(o, gMarioObject, 16, 0x300 / FRAME_RATE_SCALER_INV);
+	s_chase_obj_angle(o, gMarioObject, 16, 0x300 / FRAME_RATE_SCALER_INV);
 	gMarioObject->oPosX -= 5 * o->oButterflyYPhase / (4 * FRAME_RATE_SCALER_INV);
 	gMarioObject->oPosZ -= 5 * o->oButterflyYPhase / (4 * FRAME_RATE_SCALER_INV);
 
 	gMarioObject->oPosY += (5 * o->oButterflyYPhase + 0x100) / (4 * FRAME_RATE_SCALER_INV);
-	obj_turn_toward_object(o, gMarioObject, 15, 0x500 / FRAME_RATE_SCALER_INV);
+	s_chase_obj_angle(o, gMarioObject, 15, 0x500 / FRAME_RATE_SCALER_INV);
 	gMarioObject->oPosY -= (5 * o->oButterflyYPhase + 0x100) / (4 * FRAME_RATE_SCALER_INV);
 }
 
 void ButterflyRestingLoop(void)
 {
-	if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 1000))
+	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 1000))
 	{
 		SetObjAnimation(0);
 
@@ -73,7 +73,7 @@ void ButterflyFollowMarioLoop(void)
 
 	ButterflyStep(7);
 
-	if(!is_point_within_radius_of_mario(o->oHomeX, o->oHomeY, o->oHomeZ, 1200))
+	if(!PlayerApproach(o->oHomeX, o->oHomeY, o->oHomeZ, 1200))
 		o->oAction = BUTTERFLY_ACT_RETURN_HOME;
 }
 
@@ -118,5 +118,5 @@ void bhv_butterfly_loop(void)
 			break;
 	}
 
-	set_object_visibility(o, 3000);
+	PlayerApproachOnOff(o, 3000);
 }

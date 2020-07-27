@@ -33,7 +33,7 @@ s32 sNumKilledFirePiranhaPlants;
 void bhv_fire_piranha_plant_init(void)
 {
 	o->oFirePiranhaPlantNeutralScale = D_80331B5C[(u16)(o->oBehParams >> 16)];
-	set_object_hitbox(o, &sFirePiranhaPlantHitbox);
+	s_set_hitparam(o, &sFirePiranhaPlantHitbox);
 
 	if((u16)(o->oBehParams >> 16) != 0)
 	{
@@ -65,13 +65,13 @@ static void fire_piranha_plant_act_hide(void)
 		{
 			if(--o->oFirePiranhaPlantDeathSpinTimer == 0)
 			{
-				PlaySound2(SOUND_OBJ_ENEMY_DEFEAT_SHRINK);
+				objsound(SOUND_OBJ_ENEMY_DEFEAT_SHRINK);
 			}
 		}
 	}
 	else if(approach_f32_ptr(&o->oFirePiranhaPlantScale, 0.0f, 0.04f * FRAME_RATE_SCALER * o->oFirePiranhaPlantNeutralScale))
 	{
-		obj_become_intangible();
+		s_hitOFF();
 		if(o->oFirePiranhaPlantActive)
 		{
 			sNumActiveFirePiranhaPlants -= 1;
@@ -81,7 +81,7 @@ static void fire_piranha_plant_act_hide(void)
 			{
 				if(++sNumKilledFirePiranhaPlants == 5)
 				{
-					create_star(-6300.0f, -1850.0f, -6300.0f);
+					s_enemyset_star(-6300.0f, -1850.0f, -6300.0f);
 				}
 
 				obj_die_if_health_non_positive();
@@ -90,18 +90,18 @@ static void fire_piranha_plant_act_hide(void)
 		}
 		else if(sNumActiveFirePiranhaPlants < 2 && o->oTimer > 100 * FRAME_RATE_SCALER_INV && o->oDistanceToMario > 100.0f && o->oDistanceToMario < 800.0f)
 		{
-			PlaySound2(SOUND_OBJ_PIRANHA_PLANT_APPEAR);
+			objsound(SOUND_OBJ_PIRANHA_PLANT_APPEAR);
 
 			o->oFirePiranhaPlantActive = TRUE;
 			sNumActiveFirePiranhaPlants += 1;
 
-			obj_unhide();
+			s_shape_disp();
 			o->oAction	 = FIRE_PIRANHA_PLANT_ACT_GROW;
 			o->oMoveAngleYaw = o->oAngleToMario;
 		}
 		else
 		{
-			obj_hide();
+			s_shape_hide();
 		}
 	}
 
@@ -116,7 +116,7 @@ static void fire_piranha_plant_act_grow(void)
 	{
 		if(o->oTimer > 80 * FRAME_RATE_SCALER_INV)
 		{
-			PlaySound2(SOUND_OBJ_PIRANHA_PLANT_SHRINK);
+			objsound(SOUND_OBJ_PIRANHA_PLANT_SHRINK);
 			o->oAction = FIRE_PIRANHA_PLANT_ACT_HIDE;
 			set_obj_animation_and_sound_state(0);
 		}
@@ -130,7 +130,7 @@ static void fire_piranha_plant_act_grow(void)
 			{
 				if(obj_check_anim_frame(56))
 				{
-					PlaySound2(SOUND_OBJ_FLAME_BLOWN);
+					objsound(SOUND_OBJ_FLAME_BLOWN);
 					obj_spit_fire(0, (s32)(30.0f * o->oFirePiranhaPlantNeutralScale), (s32)(140.0f * o->oFirePiranhaPlantNeutralScale), 2.5f * o->oFirePiranhaPlantNeutralScale, MODEL_RED_FLAME_SHADOW, 20.0f, 15.0f, 0x1000);
 				}
 			}
@@ -138,13 +138,13 @@ static void fire_piranha_plant_act_grow(void)
 	}
 	else if(o->oFirePiranhaPlantScale > o->oFirePiranhaPlantNeutralScale / 2.0f)
 	{
-		obj_become_tangible();
+		s_hitON();
 	}
 }
 
 void bhv_fire_piranha_plant_update(void)
 {
-	obj_scale(o->oFirePiranhaPlantScale);
+	s_set_scale(o->oFirePiranhaPlantScale);
 
 	switch(o->oAction)
 	{
@@ -174,6 +174,6 @@ void bhv_fire_piranha_plant_update(void)
 		o->oFirePiranhaPlantDeathSpinTimer = 10 * FRAME_RATE_SCALER_INV;
 		o->oFirePiranhaPlantDeathSpinVel   = 8000.0f;
 
-		obj_become_intangible();
+		s_hitOFF();
 	}
 }

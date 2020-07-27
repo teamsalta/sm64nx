@@ -28,15 +28,15 @@ void bhv_openable_grill_loop(void)
 	{
 		case 0:
 			sp38 = o->oBehParams2ndByte;
-			sp3C = spawn_object_relative(-1, D_8032FCE8[sp38].unk0, 0, 0, o, D_8032FCE8[sp38].unk1, sm64::bhv::bhvOpenableCageDoor());
+			sp3C = s_makeobj_chain(-1, D_8032FCE8[sp38].unk0, 0, 0, o, D_8032FCE8[sp38].unk1, sm64::bhv::bhvOpenableCageDoor());
 			sp3C->oMoveAngleYaw += 0x8000;
 			set_object_collision_data(sp3C, D_8032FCE8[sp38].unk2);
-			sp3C = spawn_object_relative(1, -D_8032FCE8[sp38].unk0, 0, 0, o, D_8032FCE8[sp38].unk1, sm64::bhv::bhvOpenableCageDoor());
+			sp3C = s_makeobj_chain(1, -D_8032FCE8[sp38].unk0, 0, 0, o, D_8032FCE8[sp38].unk1, sm64::bhv::bhvOpenableCageDoor());
 			set_object_collision_data(sp3C, D_8032FCE8[sp38].unk2);
 			o->oAction++;
 			break;
 		case 1:
-			if((o->oOpenableGrillUnkF4 = obj_nearest_object_with_behavior(sm64::bhv::bhvFloorSwitchGrills())) != NULL)
+			if((o->oOpenableGrillUnkF4 = s_find_obj(sm64::bhv::bhvFloorSwitchGrills())) != NULL)
 				o->oAction++;
 			break;
 		case 2:
@@ -44,10 +44,10 @@ void bhv_openable_grill_loop(void)
 			if(sp3C->oAction == 2)
 			{
 				o->oOpenableGrillUnk88 = 2;
-				PlaySound2(SOUND_GENERAL_CAGE_OPEN);
+				objsound(SOUND_GENERAL_CAGE_OPEN);
 				o->oAction++;
 				if(o->oBehParams2ndByte != 0)
-					play_puzzle_jingle();
+					Na_NazoClearBgm();
 			}
 			break;
 		case 3:

@@ -27,26 +27,26 @@ Gfx* geo_enfvx_main(s32 callContext, struct GraphNode* node, f32 c[4][4])
 		u32* params			    = &execNode->parameter; // accessed a s32 as 2 u16s by pointing to the variable and
 									    // casting to a local struct as necessary.
 
-		if(GET_HIGH_U16_OF_32(*params) != gAreaUpdateCounter)
+		if(GET_HIGH_U16_OF_32(*params) != animationCounter)
 		{
 			UNUSED struct Camera* sp2C = gCurGraphNodeCamera->config.camera;
 			s32 snowMode		   = GET_LOW_U16_OF_32(*params);
 
 			vec3f_to_vec3s(camTo, gCurGraphNodeCamera->focus);
 			vec3f_to_vec3s(camFrom, gCurGraphNodeCamera->pos);
-			vec3f_to_vec3s(marioPos, gPlayerCameraState->pos);
+			vec3f_to_vec3s(marioPos, camPlayerInfo->pos);
 			particleList = envfx_update_particles(snowMode, marioPos, camTo, camFrom);
 			if(particleList != NULL)
 			{
-				Mtx* mtx = (Mtx*)alloc_display_list(sizeof(*mtx));
+				Mtx* mtx = (Mtx*)AllocDynamic(sizeof(*mtx));
 
-				gfx = (Gfx*)alloc_display_list(2 * sizeof(*gfx));
+				gfx = (Gfx*)AllocDynamic(2 * sizeof(*gfx));
 				mtxf_to_mtx(mtx, c);
 				gSPMatrix(&gfx[0], VIRTUAL_TO_PHYSICAL(mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
 				gSPBranchList(&gfx[1], VIRTUAL_TO_PHYSICAL(particleList));
 				execNode->fnNode.node.flags = (execNode->fnNode.node.flags & 0xFF) | 0x400;
 			}
-			SET_HIGH_U16_OF_32(*params, gAreaUpdateCounter);
+			SET_HIGH_U16_OF_32(*params, animationCounter);
 		}
 	}
 	else if(callContext == GEO_CONTEXT_AREA_INIT)

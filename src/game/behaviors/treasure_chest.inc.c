@@ -1,5 +1,7 @@
 // treasure_chest.c.inc
 
+#include "game/motor.h"
+
 /**
  * Hitbox for treasure chest bottom.
  */
@@ -15,7 +17,7 @@ static struct ObjectHitbox sTreasureChestBottomHitbox = {
     /* hurtboxHeight:     */ 310,
 };
 
-void bhv_treasure_chest_top_loop(void)
+void bhv_treasure_chest_top_loop()
 {
 	struct Object* sp34 = o->parentObj->parentObj;
 
@@ -31,12 +33,12 @@ void bhv_treasure_chest_top_loop(void)
 			{
 				if(sp34->oTreasureChestUnkFC == 0)
 				{
-					spawn_object_relative(0, 0, -80, 120, o, MODEL_BUBBLE, sm64::bhv::bhvWaterAirBubble());
-					play_sound(SOUND_GENERAL_CLAM_SHELL1, o->header.gfx.cameraToObject);
+					s_makeobj_chain(0, 0, -80, 120, o, MODEL_BUBBLE, sm64::bhv::bhvWaterAirBubble());
+					AudStartSound(SOUND_GENERAL_CLAM_SHELL1, o->header.gfx.cameraToObject);
 				}
 				else
 				{
-					play_sound(SOUND_GENERAL_OPEN_CHEST, o->header.gfx.cameraToObject);
+					AudStartSound(SOUND_GENERAL_OPEN_CHEST, o->header.gfx.cameraToObject);
 				}
 			}
 
@@ -47,7 +49,7 @@ void bhv_treasure_chest_top_loop(void)
 				o->oAction++;
 
 				if(o->parentObj->oBehParams2ndByte != 4)
-					spawn_orange_number(o->parentObj->oBehParams2ndByte, 0, -40, 0);
+					AppNumber(o->parentObj->oBehParams2ndByte, 0, -40, 0);
 			}
 			break;
 
@@ -66,26 +68,26 @@ void bhv_treasure_chest_top_loop(void)
 	}
 }
 
-void bhv_treasure_chest_bottom_init(void)
+void bhv_treasure_chest_bottom_init()
 {
-	spawn_object_relative(0, 0, 102, -77, o, MODEL_TREASURE_CHEST_LID, sm64::bhv::bhvTreasureChestTop());
-	set_object_hitbox(o, &sTreasureChestBottomHitbox);
+	s_makeobj_chain(0, 0, 102, -77, o, MODEL_TREASURE_CHEST_LID, sm64::bhv::bhvTreasureChestTop());
+	s_set_hitparam(o, &sTreasureChestBottomHitbox);
 }
 
-void bhv_treasure_chest_bottom_loop(void)
+void bhv_treasure_chest_bottom_loop()
 {
 	switch(o->oAction)
 	{
 		case 0:
-			if(obj_check_if_facing_toward_angle(o->oMoveAngleYaw, gMarioObject->header.gfx.angle[1] + 0x8000, 0x3000))
+			if(ShapeSameAngle(o->oMoveAngleYaw, gMarioObject->header.gfx.angle[1] + 0x8000, 0x3000))
 			{
-				if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 150))
+				if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 150))
 				{
 					if(!o->parentObj->oTreasureChestUnkF8)
 					{
 						if(o->parentObj->oTreasureChestUnkF4 == o->oBehParams2ndByte)
 						{
-							play_sound(SOUND_GENERAL2_RIGHT_ANSWER, gDefaultSoundArgs);
+							AudStartSound(SOUND_GENERAL2_RIGHT_ANSWER, gDefaultSoundArgs);
 							o->parentObj->oTreasureChestUnkF4++;
 							o->oAction = 1;
 						}
@@ -94,8 +96,8 @@ void bhv_treasure_chest_bottom_loop(void)
 							o->parentObj->oTreasureChestUnkF4 = 1;
 							o->parentObj->oTreasureChestUnkF8 = 1;
 							o->oAction			  = 2;
-							obj_become_tangible();
-							play_sound(SOUND_MENU_CAMERA_BUZZ, gDefaultSoundArgs);
+							s_hitON();
+							AudStartSound(SOUND_MENU_CAMERA_BUZZ, gDefaultSoundArgs);
 						}
 					}
 				}
@@ -108,44 +110,44 @@ void bhv_treasure_chest_bottom_loop(void)
 			break;
 
 		case 2:
-			obj_become_intangible();
-			if(!is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 500))
+			s_hitOFF();
+			if(!PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 500))
 			{
 				o->parentObj->oTreasureChestUnkF8 = 0;
 				o->oAction			  = 0;
 			}
 	}
 
-	obj_push_mario_away_from_cylinder(150.0f, 150.0f);
+	s_player_slideout_RH(150.0f, 150.0f);
 	o->oInteractStatus = 0;
 }
 
-void func_802F6E8C(s8 sp3B, s32 sp3C, s32 sp40, s32 sp44, s16 sp4A)
+void tBoxMake(s8 sp3B, s32 sp3C, s32 sp40, s32 sp44, s16 sp4A)
 {
 	struct Object* sp34;
-	sp34			= spawn_object_abs_with_rot(o, 0, MODEL_TREASURE_CHEST_BASE, sm64::bhv::bhvTreasureChestBottom(), sp3C, sp40, sp44, 0, sp4A, 0);
+	sp34			= s_makeobj_absolute(o, 0, MODEL_TREASURE_CHEST_BASE, sm64::bhv::bhvTreasureChestBottom(), sp3C, sp40, sp44, 0, sp4A, 0);
 	sp34->oBehParams2ndByte = sp3B;
 }
 
-void bhv_treasure_chest_ship_init(void)
+void bhv_treasure_chest_ship_init()
 {
-	func_802F6E8C(1, 400, -350, -2700, 0);
-	func_802F6E8C(2, 650, -350, -940, -0x6001);
-	func_802F6E8C(3, -550, -350, -770, 0x5FFF);
-	func_802F6E8C(4, 100, -350, -1700, 0);
+	tBoxMake(1, 400, -350, -2700, 0);
+	tBoxMake(2, 650, -350, -940, -0x6001);
+	tBoxMake(3, -550, -350, -770, 0x5FFF);
+	tBoxMake(4, 100, -350, -1700, 0);
 	o->oTreasureChestUnkF4 = 1;
 	o->oTreasureChestUnkFC = 0;
 }
 
-void bhv_treasure_chest_ship_loop(void)
+void bhv_treasure_chest_ship_loop()
 {
 	switch(o->oAction)
 	{
 		case 0:
 			if(o->oTreasureChestUnkF4 == 5)
 			{
-				play_puzzle_jingle();
-				fade_volume_scale(0, 127, 1000);
+				Na_NazoClearBgm();
+				Na_AllSeqSubVolumeTrans(0, 127, 1000);
 				o->oAction = 1;
 			}
 			break;
@@ -154,36 +156,37 @@ void bhv_treasure_chest_ship_loop(void)
 			if(gEnvironmentRegions != NULL)
 			{
 				gEnvironmentRegions[6] += -5;
-				play_sound(SOUND_ENV_WATER_DRAIN, gDefaultSoundArgs);
-				set_environmental_camera_shake(SHAKE_ENV_JRB_SHIP_DRAIN);
+				AudStartSound(SOUND_ENV_WATER_DRAIN, gDefaultSoundArgs);
+				Viewshake(SHAKE_ENV_JRB_SHIP_DRAIN);
 				if(gEnvironmentRegions[6] < -335)
 				{
 					gEnvironmentRegions[6] = -335;
 					o->activeFlags	       = 0;
 				}
+				SendMotorVib(2);
 			}
 			break;
 	}
 }
 
-void bhv_treasure_chest_jrb_init(void)
+void bhv_treasure_chest_jrb_init()
 {
-	func_802F6E8C(1, -1700, -2812, -1150, 0x7FFF);
-	func_802F6E8C(2, -1150, -2812, -1550, 0x7FFF);
-	func_802F6E8C(3, -2400, -2812, -1800, 0x7FFF);
-	func_802F6E8C(4, -1800, -2812, -2100, 0x7FFF);
+	tBoxMake(1, -1700, -2812, -1150, 0x7FFF);
+	tBoxMake(2, -1150, -2812, -1550, 0x7FFF);
+	tBoxMake(3, -2400, -2812, -1800, 0x7FFF);
+	tBoxMake(4, -1800, -2812, -2100, 0x7FFF);
 	o->oTreasureChestUnkF4 = 1;
 	o->oTreasureChestUnkFC = 1;
 }
 
-void bhv_treasure_chest_jrb_loop(void)
+void bhv_treasure_chest_jrb_loop()
 {
 	switch(o->oAction)
 	{
 		case 0:
 			if(o->oTreasureChestUnkF4 == 5)
 			{
-				play_puzzle_jingle();
+				Na_NazoClearBgm();
 				o->oAction = 1;
 			}
 			break;
@@ -191,8 +194,8 @@ void bhv_treasure_chest_jrb_loop(void)
 		case 1:
 			if(o->oTimer == 60 * FRAME_RATE_SCALER_INV)
 			{
-				func_802A3004();
-				create_star(-1800.0f, -2500.0f, -1700.0f);
+				s_kemuri();
+				s_enemyset_star(-1800.0f, -2500.0f, -1700.0f);
 				o->oAction = 2;
 			}
 			break;
@@ -202,25 +205,25 @@ void bhv_treasure_chest_jrb_loop(void)
 	}
 }
 
-void bhv_treasure_chest_init(void)
+void s_tbox_quize23_init()
 {
-	func_802F6E8C(1, -4500, -5119, 1300, -0x6001);
-	func_802F6E8C(2, -1800, -5119, 1050, 0x1FFF);
-	func_802F6E8C(3, -4500, -5119, -1100, 9102);
-	func_802F6E8C(4, -2400, -4607, 125, 16019);
+	tBoxMake(1, -4500, -5119, 1300, -0x6001);
+	tBoxMake(2, -1800, -5119, 1050, 0x1FFF);
+	tBoxMake(3, -4500, -5119, -1100, 9102);
+	tBoxMake(4, -2400, -4607, 125, 16019);
 
 	o->oTreasureChestUnkF4 = 1;
 	o->oTreasureChestUnkFC = 0;
 }
 
-void bhv_treasure_chest_loop(void)
+void s_tbox_quize23_main()
 {
 	switch(o->oAction)
 	{
 		case 0:
 			if(o->oTreasureChestUnkF4 == 5)
 			{
-				play_puzzle_jingle();
+				Na_NazoClearBgm();
 				o->oAction = 1;
 			}
 			break;
@@ -228,8 +231,8 @@ void bhv_treasure_chest_loop(void)
 		case 1:
 			if(o->oTimer == 60 * FRAME_RATE_SCALER_INV)
 			{
-				func_802A3004();
-				create_star(-1900.0f, -4000.0f, -1400.0f);
+				s_kemuri();
+				s_enemyset_star(-1900.0f, -4000.0f, -1400.0f);
 				o->oAction = 2;
 			}
 			break;

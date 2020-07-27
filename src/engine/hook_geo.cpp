@@ -150,7 +150,6 @@ namespace sm64::hook::geo
 
 		while(ip != NULL)
 		{
-
 			op = (Opcode)ip[0x00];
 
 			if((u64)op >= sizeof(jumpTable) / sizeof(jumpTable[0]))
@@ -611,6 +610,6 @@ namespace sm64::hook::geo
 	GeoLayout* mount(GeoLayout* func, u64 size)
 	{
 		return func;
-		//return (GeoLayout*)asset::mount((u8*)func, size);
+		// return (GeoLayout*)asset::mount((u8*)func, size);
 	}
 } // namespace sm64::hook::geo

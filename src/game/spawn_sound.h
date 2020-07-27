@@ -5,20 +5,20 @@
 
 struct SoundState
 {
-    s16 playSound; // if this is 1, the info below will
-                   // be used to determine the sound behavior
-                   // for the object. if 0, this is skipped.
-    s8 animFrame1; // the sound state provides 2 anim frames for
-                   // when the provided sound can be played.
-                   // these 2 variables probably coorespond to
-                   // left/right foot.
-    s8 animFrame2;
-    s32 soundMagic;
+	s16 playSound; // if this is 1, the info below will
+		       // be used to determine the sound behavior
+		       // for the object. if 0, this is skipped.
+	s8 animFrame1; // the sound state provides 2 anim frames for
+		       // when the provided sound can be played.
+		       // these 2 variables probably coorespond to
+		       // left/right foot.
+	s8 animFrame2;
+	s32 soundMagic;
 };
 
-extern void PlaySound(s32);
-extern void PlaySound2(s32);
-extern void create_sound_spawner(s32);
-extern void exec_anim_sound_state(struct SoundState *soundStates);
+extern void objsound_level(s32);
+extern void objsound(s32);
+extern void obj_remove_sound(s32);
+extern void exec_anim_sound_state(struct SoundState* soundStates);
 
 #endif

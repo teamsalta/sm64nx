@@ -114,8 +114,8 @@ const LevelScript level_ddd_entry[] = {
 
     FREE_LEVEL_POOL(),
     MARIO_POS(/*area*/ 1, /*yaw*/ 180, /*pos*/ -3071, 3000, 500),
-    CALL(/*arg*/ 0, /*func*/ lvl_init_or_update),
-    CALL_LOOP(/*arg*/ 1, /*func*/ lvl_init_or_update),
+    CALL(/*arg*/ 0, /*func*/ GameProcess),
+    CALL_LOOP(/*arg*/ 1, /*func*/ GameProcess),
     CLEAR_LEVEL(),
     SLEEP_BEFORE_EXIT(/*frames*/ 1),
     EXIT(),

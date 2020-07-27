@@ -10,23 +10,19 @@ void bhv_mips_init(void)
 {
 	// Retrieve star flags for Castle Secret Stars on current save file.
 	u8 starFlags;
-	starFlags = save_file_get_star_flags(gCurrSaveFileNum - 1, -1);
+	starFlags = BuGetStarFlag(activePlayerNo - 1, -1);
 
 	// If the player has >= 15 stars and hasn't collected first MIPS star...
-	if(save_file_get_total_star_count(gCurrSaveFileNum - 1, 0, 24) >= 15 && (starFlags & 0x08) == 0)
+	if(BuGetSumStars(activePlayerNo - 1, 0, 24) >= 15 && (starFlags & 0x08) == 0)
 	{
-		o->oBehParams2ndByte = 0;
-#ifndef VERSION_JP
+		o->oBehParams2ndByte	= 0;
 		o->oMipsForwardVelocity = 40.0f;
-#endif
 	}
 	// If the player has >= 50 stars and hasn't collected second MIPS star...
-	else if(save_file_get_total_star_count(gCurrSaveFileNum - 1, 0, 24) >= 50 && (starFlags & 0x10) == 0)
+	else if(BuGetSumStars(activePlayerNo - 1, 0, 24) >= 50 && (starFlags & 0x10) == 0)
 	{
-		o->oBehParams2ndByte = 1;
-#ifndef VERSION_JP
+		o->oBehParams2ndByte	= 1;
 		o->oMipsForwardVelocity = 45.0f;
-#endif
 	}
 	else
 	{
@@ -36,11 +32,7 @@ void bhv_mips_init(void)
 
 	o->oInteractionSubtype = INT_SUBTYPE_HOLDABLE_NPC;
 
-#ifndef VERSION_JP
-	o->oGravity = 15.0f;
-#else
-	o->oGravity	   = 2.5f;
-#endif
+	o->oGravity  = 15.0f;
 	o->oFriction = 0.89f;
 	o->oBuoyancy = 1.2f;
 
@@ -97,10 +89,10 @@ void bhv_mips_act_wait_for_nearby_mario(void)
 	UNUSED s16 collisionFlags = 0;
 
 	o->oForwardVel = 0.0f;
-	collisionFlags = object_step();
+	collisionFlags = ObjMoveEvent();
 
 	// If Mario is within 500 units...
-	if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 500))
+	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 500))
 	{
 		// If we fail to find a suitable waypoint...
 		if(bhv_mips_find_furthest_waypoint_to_mario() == -1)
@@ -136,13 +128,9 @@ void bhv_mips_act_follow_path(void)
 	followStatus		= obj_follow_path(followStatus);
 
 	// Update velocity and angle and do movement.
-#ifndef VERSION_JP
-	o->oForwardVel = o->oMipsForwardVelocity;
-#else
-	o->oForwardVel	   = 45.0f;
-#endif
+	o->oForwardVel	 = o->oMipsForwardVelocity;
 	o->oMoveAngleYaw = o->oPathedTargetYaw;
-	collisionFlags	 = object_step();
+	collisionFlags	 = ObjMoveEvent();
 
 	// If we are at the end of the path, do idle animation and wait for Mario.
 	if(followStatus == PATH_REACHED_END)
@@ -154,12 +142,12 @@ void bhv_mips_act_follow_path(void)
 	// Play sounds during walk animation.
 	if(func_8029F788() == 1 && (collisionFlags & OBJ_COL_FLAG_UNDERWATER))
 	{
-		PlaySound2(SOUND_OBJ_MIPS_RABBIT_WATER);
-		spawn_object(o, MODEL_NONE, sm64::bhv::bhvSurfaceWaveShrinking());
+		objsound(SOUND_OBJ_MIPS_RABBIT_WATER);
+		s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSurfaceWaveShrinking());
 	}
 	else if(func_8029F788() == 1)
 	{
-		PlaySound2(SOUND_OBJ_MIPS_RABBIT);
+		objsound(SOUND_OBJ_MIPS_RABBIT);
 	}
 }
 
@@ -180,13 +168,9 @@ void bhv_mips_act_wait_for_animation_done(void)
  */
 void bhv_mips_act_fall_down(void)
 {
-#ifdef VERSION_EU
-	s32 collisionFlags = 0;
-#else
 	s16 collisionFlags = 0;
-#endif
 
-	collisionFlags = object_step();
+	collisionFlags = ObjMoveEvent();
 	o->header.gfx.unk38.setFrameRaw(0);
 
 	if((collisionFlags & OBJ_COL_FLAG_GROUNDED) == 1)
@@ -197,7 +181,7 @@ void bhv_mips_act_fall_down(void)
 		o->oMoveAngleYaw = o->oFaceAngleYaw;
 
 		if(collisionFlags & OBJ_COL_FLAG_UNDERWATER)
-			spawn_object(o, MODEL_NONE, sm64::bhv::bhvSurfaceWaveShrinking());
+			s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSurfaceWaveShrinking());
 	}
 }
 
@@ -209,7 +193,7 @@ void bhv_mips_act_idle(void)
 	UNUSED s16 collisionFlags = 0;
 
 	o->oForwardVel = 0;
-	collisionFlags = object_step();
+	collisionFlags = ObjMoveEvent();
 
 	// Spawn a star if he was just picked up for the first time.
 	if(o->oMipsStarStatus == MIPS_STAR_STATUS_SHOULD_SPAWN_STAR)
@@ -258,7 +242,7 @@ void bhv_mips_held(void)
 	o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 	SetObjAnimation(4); // Held animation.
 	obj_set_pos_relative(gMarioObject, 0, 60.0f, 100.0f);
-	obj_become_intangible();
+	s_hitOFF();
 
 	// If MIPS hasn't spawned his star yet...
 	if(o->oMipsStarStatus == MIPS_STAR_STATUS_HAVENT_SPAWNED_STAR)
@@ -292,7 +276,7 @@ void bhv_mips_dropped(void)
 	o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
 	SetObjAnimation(0);
 	o->oHeldState = HELD_FREE;
-	obj_become_tangible();
+	s_hitON();
 	o->oForwardVel = 3.0f;
 	o->oAction     = MIPS_ACT_IDLE;
 }
@@ -307,7 +291,7 @@ void bhv_mips_thrown(void)
 	o->oHeldState = HELD_FREE;
 	o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
 	SetObjAnimation(2);
-	obj_become_tangible();
+	s_hitON();
 	o->oForwardVel = 25.0f;
 	o->oVelY       = 20.0f;
 	o->oAction     = MIPS_ACT_FALL_DOWN;

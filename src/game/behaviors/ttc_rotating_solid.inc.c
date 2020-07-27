@@ -48,7 +48,7 @@ void bhv_ttc_rotating_solid_update(void)
 			// 3. Play a sound after 6 frames
 			if(--o->oTTCRotatingSolidSoundTimer == 0)
 			{
-				PlaySound2(SOUND_GENERAL2_ROTATING_BLOCK_ALERT);
+				objsound(SOUND_GENERAL2_ROTATING_BLOCK_ALERT);
 			}
 		}
 		else if(o->oTTCRotatingSolidVelY > 0.0f && o->oPosY >= o->oHomeY)
@@ -63,7 +63,7 @@ void bhv_ttc_rotating_solid_update(void)
 
 			if(o->oAngleVelRoll == 0)
 			{
-				PlaySound2(SOUND_GENERAL2_ROTATING_BLOCK_CLICK);
+				objsound(SOUND_GENERAL2_ROTATING_BLOCK_CLICK);
 
 				o->oTTCRotatingSolidNumTurns = (o->oTTCRotatingSolidNumTurns + 1) % o->oTTCRotatingSolidNumSides;
 

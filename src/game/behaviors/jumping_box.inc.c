@@ -35,8 +35,8 @@ void ActionJumpingBox1(void)
 {
 	if(o->oMoveFlags & (0x200 | 0x40 | 0x20 | 0x10 | 0x8 | 0x1))
 	{
-		mark_object_for_deletion(o);
-		func_802A3004();
+		s_remove_obj(o);
+		s_kemuri();
 	}
 }
 
@@ -44,12 +44,12 @@ void (*sJumpingBoxActions[])(void) = {ActionJumpingBox0, ActionJumpingBox1};
 
 void func_802B1F84(void)
 {
-	obj_set_model(MODEL_BREAKABLE_BOX);
-	obj_scale(0.5f);
-	set_object_hitbox(o, &sJumpingBoxHitbox);
+	s_change_shape(MODEL_BREAKABLE_BOX);
+	s_set_scale(0.5f);
+	s_set_hitparam(o, &sJumpingBoxHitbox);
 	obj_update_floor_and_walls();
 	obj_move_standard(78);
-	obj_call_action_function(sJumpingBoxActions);
+	s_modejmp(sJumpingBoxActions);
 }
 
 void bhv_jumping_box_loop(void)
@@ -61,7 +61,7 @@ void bhv_jumping_box_loop(void)
 			break;
 		case HELD_HELD:
 			copy_object_pos(o, gMarioObject);
-			obj_set_model(MODEL_BREAKABLE_BOX_SMALL);
+			s_change_shape(MODEL_BREAKABLE_BOX_SMALL);
 			func_8029FA5C(-1, 0);
 			break;
 		case HELD_THROWN:
@@ -74,7 +74,7 @@ void bhv_jumping_box_loop(void)
 	}
 	if(o->oInteractStatus & INTERACT_HIT_FROM_BELOW)
 	{
-		create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
+		obj_remove_sound(SOUND_GENERAL_BREAK_BOX);
 		func_802A3C98(46.0f, 1);
 	}
 	o->oInteractStatus = 0;

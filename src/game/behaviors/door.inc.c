@@ -18,10 +18,10 @@ void func_802AC070(s32 sp18)
 void func_802AC0B8(void)
 {
 	if(segmented_to_virtual(sm64::bhv::bhvDoor()) == o->behavior)
-		gPlayerCameraState->cameraEvent = CAM_EVENT_DOOR;
+		camPlayerInfo->cameraEvent = CAM_EVENT_DOOR;
 	else
-		gPlayerCameraState->cameraEvent = CAM_EVENT_DOOR_WARP;
-	gPlayerCameraState->usedObj = o;
+		camPlayerInfo->cameraEvent = CAM_EVENT_DOOR_WARP;
+	camPlayerInfo->usedObj = o;
 }
 
 void func_802AC130(void)
@@ -29,12 +29,12 @@ void func_802AC130(void)
 	s32 sp1C = obj_has_model(MODEL_HMC_METAL_DOOR);
 	if(o->oTimer == 0)
 	{
-		PlaySound2(D_8032F328[sp1C]);
+		objsound(D_8032F328[sp1C]);
 		gTimeStopState |= TIME_STOP_MARIO_OPENED_DOOR;
 	}
 	if(o->oTimer == 70 * FRAME_RATE_SCALER_INV)
 	{
-		PlaySound2(D_8032F330[sp1C]);
+		objsound(D_8032F330[sp1C]);
 	}
 }
 
@@ -42,7 +42,7 @@ void func_802AC1CC(void)
 {
 	s32 sp1C = obj_has_model(MODEL_HMC_METAL_DOOR);
 	if(o->oTimer == 30 * FRAME_RATE_SCALER_INV)
-		PlaySound2(D_8032F330[sp1C]);
+		objsound(D_8032F330[sp1C]);
 }
 
 void bhv_door_loop(void)
@@ -80,7 +80,7 @@ void bhv_door_loop(void)
 			break;
 	}
 	if(o->oAction == 0)
-		load_object_collision_model();
+		stMainMoveBG();
 	bhv_star_door_loop_2();
 }
 

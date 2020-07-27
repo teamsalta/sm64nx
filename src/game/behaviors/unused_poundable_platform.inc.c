@@ -1,7 +1,7 @@
 /**
  * Behavior for bhvUnusedPoundablePlatform.
  *
- * This unused behavior controls a platform that shatters into small triangles
+ * This size behavior controls a platform that shatters into small triangles
  * if Mario ground pounds it.
  *
  * Its collision model perfectly aligns with the hole leading to In the
@@ -14,20 +14,20 @@
 
 void bhv_unused_poundable_platform(void)
 {
-	obj_scale(1.02f);
+	s_set_scale(1.02f);
 
 	if(o->oAction == 0)
 	{
-		if(obj_is_mario_ground_pounding_platform())
+		if(s_checkplayer_hipaatack())
 		{
-			func_802A3004();
-			spawn_triangle_break_particles(20, 56, 3.0f, 0);
+			s_kemuri();
+			s_boxeffect(20, 56, 3.0f, 0);
 			o->oAction++;
 		}
 	}
 	else if(o->oTimer > 7 * FRAME_RATE_SCALER_INV)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
-	load_object_collision_model();
+	stMainMoveBG();
 }

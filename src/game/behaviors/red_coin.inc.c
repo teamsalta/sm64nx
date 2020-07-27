@@ -24,19 +24,19 @@ static struct ObjectHitbox sRedCoinHitbox = {
  */
 void bhv_red_coin_init(void)
 {
-	// This floor and floor height are unused. Perhaps for orange number spawns originally?
+	// This floor and floor height are size. Perhaps for orange number spawns originally?
 	struct Surface* dummyFloor;
 	UNUSED f32 floorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &dummyFloor);
 
 	struct Object* hiddenRedCoinStar;
 
 	// Set the red coins to have a parent of the closest red coin star.
-	hiddenRedCoinStar = obj_nearest_object_with_behavior(sm64::bhv::bhvHiddenRedCoinStar());
+	hiddenRedCoinStar = s_find_obj(sm64::bhv::bhvHiddenRedCoinStar());
 	if(hiddenRedCoinStar != NULL)
 		o->parentObj = hiddenRedCoinStar;
 	else
 	{
-		hiddenRedCoinStar = obj_nearest_object_with_behavior(sm64::bhv::bhvBowserCourseRedCoinStar());
+		hiddenRedCoinStar = s_find_obj(sm64::bhv::bhvBowserCourseRedCoinStar());
 		if(hiddenRedCoinStar != NULL)
 		{
 			o->parentObj = hiddenRedCoinStar;
@@ -47,7 +47,7 @@ void bhv_red_coin_init(void)
 		}
 	}
 
-	set_object_hitbox(o, &sRedCoinHitbox);
+	s_set_hitparam(o, &sRedCoinHitbox);
 }
 
 /**
@@ -66,19 +66,14 @@ void bhv_red_coin_loop(void)
 			o->parentObj->oHiddenStarTriggerCounter++;
 
 			// For JP version, play an identical sound for all coins.
-#ifdef VERSION_JP
-			create_sound_spawner(SOUND_GENERAL_RED_COIN);
-#endif
 			// Spawn the orange number counter, as long as it isn't the last coin.
 			if(o->parentObj->oHiddenStarTriggerCounter != 8)
 			{
-				spawn_orange_number(o->parentObj->oHiddenStarTriggerCounter, 0, 0, 0);
+				AppNumber(o->parentObj->oHiddenStarTriggerCounter, 0, 0, 0);
 			}
 
 			// On all versions but the JP version, each coin collected plays a higher noise.
-#ifndef VERSION_JP
-			play_sound(SOUND_MENU_COLLECT_RED_COIN + (((u8)o->parentObj->oHiddenStarTriggerCounter - 1) << 16), gDefaultSoundArgs);
-#endif
+			AudStartSound(SOUND_MENU_COLLECT_RED_COIN + (((u8)o->parentObj->oHiddenStarTriggerCounter - 1) << 16), gDefaultSoundArgs);
 		}
 
 		CoinCollected();

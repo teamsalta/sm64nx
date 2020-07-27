@@ -29,14 +29,14 @@ void bhv_white_puff_exploding_loop(void)
 		o->oVelY = 100.0f;
 
 	if(o->oTimer > 20 * FRAME_RATE_SCALER_INV)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 
 	if(o->oOpacity)
 	{
 		o->oOpacity += o->oWhitePuffUnkF8 / FRAME_RATE_SCALER_INV;
 
 		if(o->oOpacity < 2)
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 
 		if(o->oWhitePuffUnkFC)
 			sp24 = o->oWhitePuffUnkF4 * ((254 - o->oOpacity) / 254.0);
@@ -44,6 +44,6 @@ void bhv_white_puff_exploding_loop(void)
 		else
 			sp24 = o->oWhitePuffUnkF4 * (o->oOpacity / 254.0);
 
-		obj_scale(sp24);
+		s_set_scale(sp24);
 	}
 }

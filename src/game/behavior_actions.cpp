@@ -147,7 +147,7 @@ s16 D_8032F0CC[] = {6047, 5664, 5292, 4934, 4587, 4254, 3933, 3624, 3329, 3046, 
 struct SpawnParticlesInfo D_8032F270 = {2, 20, MODEL_MIST, 0, 40, 5, 30, 20, 252, 30, 330.0f, 10.0f};
 
 // generate_wind_puffs/dust (something like that)
-void func_802AA618(s32 sp18, s32 sp1C, f32 sp20)
+void s_burneffect(s32 sp18, s32 sp1C, f32 sp20)
 {
 	D_8032F270.sizeBase  = sp20;
 	D_8032F270.sizeRange = sp20 / 20.0;
@@ -232,7 +232,7 @@ void spawn_sparkle_particles(s32 n, s32 a1, s32 a2, s32 r)
 	s16 separation = 0x10000 / n; // Evenly spread around a circle
 	for(i = 0; i < n; i++)
 	{
-		spawn_object_relative(0, sins(D_8035FF10 + i * separation) * a1, (i + 1) * a2, coss(D_8035FF10 + i * separation) * a1, o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
+		s_makeobj_chain(0, sins(D_8035FF10 + i * separation) * a1, (i + 1) * a2, coss(D_8035FF10 + i * separation) * a1, o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
 	}
 
 	D_8035FF10 += r * 0x100;
@@ -284,9 +284,7 @@ void spawn_sparkle_particles(s32 n, s32 a1, s32 a2, s32 r)
 #include "behaviors/bbh_merry_go_round.inc.c"
 #include "behaviors/static_checkered_platform.inc.c"
 #include "behaviors/beta_bowser_anchor.inc.c"
-#ifndef VERSION_JP
 #include "behaviors/music_touch.inc.c"
-#endif
 #include "behaviors/castle_floor_trap.inc.c"
 #include "behaviors/pole_base.inc.c"
 #include "behaviors/sparkle_spawn.inc.c"

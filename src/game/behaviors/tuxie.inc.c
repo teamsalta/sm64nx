@@ -7,7 +7,7 @@ s32 func_802BE2E8(s16 a0, s16 a1, s32 a2)
 		sp1C = 1.0f;
 	if(obj_check_anim_frame_in_range(a0, sp1C) || obj_check_anim_frame_in_range(a1, sp1C))
 	{
-		PlaySound2(a2);
+		objsound(a2);
 		return 1;
 	}
 	return 0;
@@ -72,7 +72,7 @@ void ActionTuxiesMother1(void)
 	{
 		case 0:
 			set_obj_animation_and_sound_state(3);
-			if(!obj_is_mario_on_platform())
+			if(!s_rideon_player())
 			{
 				sp2C = (o->oBehParams >> 0x10) & 0xFF;
 				sp28 = (o->prevObj->oBehParams >> 0x10) & 0xFF;
@@ -105,11 +105,7 @@ void ActionTuxiesMother1(void)
 				// or 1, which is not affected by the bitwise AND.
 				o->prevObj->OBJECT_FIELD_S32(o->oInteractionSubtype) &= ~INT_SUBTYPE_DROP_IMMEDIATELY;
 				set_object_behavior(o->prevObj, sm64::bhv::bhvUnused20E0());
-#ifndef VERSION_JP
 				obj_spawn_star_at_y_offset(3167.0f, -4300.0f, 5108.0f, 200.0f);
-#else
-				create_star(3500.0f, -4300.0f, 4650.0f);
-#endif
 				o->oAction = 2;
 			}
 			break;
@@ -132,7 +128,7 @@ void ActionTuxiesMother0(void)
 	struct Object* sp24;
 	sp2C = 0;
 	sp24 = obj_find_nearest_object_with_behavior(sm64::bhv::bhvSmallPenguin(), &sp28);
-	obj_scale(4.0f);
+	s_set_scale(4.0f);
 	set_obj_animation_and_sound_state(3);
 	if(sp28 < 500.0f)
 		sp2C = 1;
@@ -162,7 +158,7 @@ void ActionTuxiesMother0(void)
 		}
 	}
 	if(obj_check_anim_frame(1))
-		PlaySound2(SOUND_OBJ_BIG_PENGUIN_YELL);
+		objsound(SOUND_OBJ_BIG_PENGUIN_YELL);
 }
 
 void (*sTuxiesMotherActions[])(void) = {ActionTuxiesMother0, ActionTuxiesMother1, ActionTuxiesMother2};
@@ -171,7 +167,7 @@ void bhv_tuxies_mother_loop(void)
 {
 	o->activeFlags |= 0x400;
 	obj_update_floor_and_walls();
-	obj_call_action_function(sTuxiesMotherActions);
+	s_modejmp(sTuxiesMotherActions);
 	obj_move_standard(-78);
 	play_penguin_walking_sound(PENGUIN_WALK_BIG);
 	o->oInteractStatus = 0;
@@ -219,7 +215,7 @@ void ActionSmallPenguin3(void)
 	if(o->oTimer > 5 * FRAME_RATE_SCALER_INV)
 	{
 		if(o->oTimer == 6 * FRAME_RATE_SCALER_INV)
-			PlaySound2(SOUND_OBJ_BABY_PENGUIN_DIVE);
+			objsound(SOUND_OBJ_BABY_PENGUIN_DIVE);
 		set_obj_animation_and_sound_state(1);
 		if(o->oTimer > 25 * FRAME_RATE_SCALER_INV)
 			if(!mario_is_dive_sliding())
@@ -267,7 +263,7 @@ void ActionSmallPenguin5(void)
 {
 	f32 sp24;
 	s16 sp22;
-	struct Object* sp1C = obj_nearest_object_with_behavior(sm64::bhv::bhvTuxiesMother());
+	struct Object* sp1C = s_find_obj(sm64::bhv::bhvTuxiesMother());
 	if(sp1C != NULL)
 	{
 		if(o->oDistanceToMario < 1000.0f)
@@ -295,7 +291,7 @@ void func_802BF048(void)
 		o->oSmallPenguinUnk88 = 0;
 	}
 	obj_update_floor_and_walls();
-	obj_call_action_function(sSmallPenguinActions);
+	s_modejmp(sSmallPenguinActions);
 	obj_move_standard(-78);
 	play_penguin_walking_sound(PENGUIN_WALK_BABY);
 }
@@ -312,12 +308,8 @@ void bhv_small_penguin_loop(void)
 			if(obj_has_behavior(sm64::bhv::bhvPenguinBaby()))
 				set_object_behavior(o, sm64::bhv::bhvSmallPenguin());
 			copy_object_pos(o, gMarioObject);
-			if(gGlobalTimer % (30 * FRAME_RATE_SCALER_INV) == 0)
-#ifndef VERSION_JP
-				play_sound(SOUND_OBJ2_BABY_PENGUIN_YELL, gMarioObject->header.gfx.cameraToObject);
-#else
-				play_sound(SOUND_OBJ2_BABY_PENGUIN_YELL, o->header.gfx.cameraToObject);
-#endif
+			if(frameCounter % (30 * FRAME_RATE_SCALER_INV) == 0)
+				AudStartSound(SOUND_OBJ2_BABY_PENGUIN_YELL, gMarioObject->header.gfx.cameraToObject);
 			break;
 		case HELD_THROWN:
 			obj_get_thrown_or_placed(0, 0, 0);
@@ -329,7 +321,7 @@ void bhv_small_penguin_loop(void)
 }
 
 /** Geo switch logic for Tuxie's mother's eyes. Cases 0-4. Interestingly, case
- * 4 is unused, and is the eye state seen in Shoshinkai 1995 footage.
+ * 4 is size, and is the eye state seen in Shoshinkai 1995 footage.
  */
 Gfx* geo_switch_tuxie_mother_eyes(s32 run, struct GraphNode* node, UNUSED Mat4* mtx)
 {
@@ -344,7 +336,7 @@ Gfx* geo_switch_tuxie_mother_eyes(s32 run, struct GraphNode* node, UNUSED Mat4* 
 		switchCase->selectedCase = 0;
 
 		// timer logic for blinking. uses cases 0-2.
-		timer = gGlobalTimer % (50 * FRAME_RATE_SCALER_INV);
+		timer = frameCounter % (50 * FRAME_RATE_SCALER_INV);
 		if(timer < 43 * FRAME_RATE_SCALER_INV)
 			switchCase->selectedCase = 0;
 		else if(timer < 45 * FRAME_RATE_SCALER_INV)

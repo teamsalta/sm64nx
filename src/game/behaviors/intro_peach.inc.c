@@ -42,14 +42,14 @@ void bhv_intro_peach_loop(void)
 		case 2:
 			intro_peach_set_pos_and_opacity(gCurrentObject, 255.f, 3.f);
 
-			if((gCurrentObject->oTimer > 100 * FRAME_RATE_SCALER_INV) && (get_dialog_id() == -1))
+			if((gCurrentObject->oTimer > 100 * FRAME_RATE_SCALER_INV) && (GetMessageNo() == -1))
 				gCurrentObject->oAction += 1;
 			break;
 		case 3:
 			intro_peach_set_pos_and_opacity(gCurrentObject, 0.f, 8.f);
 
 			if(gCurrentObject->oTimer > 60 * FRAME_RATE_SCALER_INV)
-				mark_object_for_deletion(gCurrentObject);
+				s_remove_obj(gCurrentObject);
 			break;
 	}
 }

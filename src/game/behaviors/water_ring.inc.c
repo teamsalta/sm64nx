@@ -68,12 +68,8 @@ void CheckWaterRingCollection(f32 avgScale, struct Object* ringManager)
 
 				if(ringSpawner->oWaterRingSpawnerRingsCollected < 6)
 				{
-					spawn_orange_number(ringSpawner->oWaterRingSpawnerRingsCollected, 0, -40, 0);
-#ifdef VERSION_JP
-					play_sound(SOUND_MENU_STAR_SOUND, gDefaultSoundArgs);
-#else
-					play_sound(SOUND_MENU_COLLECT_SECRET + (((u8)ringSpawner->oWaterRingSpawnerRingsCollected - 1) << 16), gDefaultSoundArgs);
-#endif
+					AppNumber(ringSpawner->oWaterRingSpawnerRingsCollected, 0, -40, 0);
+					AudStartSound(SOUND_MENU_COLLECT_SECRET + (((u8)ringSpawner->oWaterRingSpawnerRingsCollected - 1) << 16), gDefaultSoundArgs);
 				}
 
 				ringManager->oWaterRingMgrLastRingCollected = o->oWaterRingIndex;
@@ -134,7 +130,7 @@ void JetStreamWaterRingNotCollectedLoop(void)
 
 	o->oPosY += 10.0f * FRAME_RATE_SCALER;
 	o->oFaceAngleYaw += 0x100 / FRAME_RATE_SCALER_INV;
-	set_object_visibility(o, 5000);
+	PlayerApproachOnOff(o, 5000);
 
 	if(ringSpawner->oWaterRingSpawnerRingsCollected == 4 && o->oWaterRingIndex == ringManager->oWaterRingMgrLastRingCollected + 1)
 		o->oOpacity = sins((o->oTimer / FRAME_RATE_SCALER_INV) * 0x1000) * 200.0f + 50.0f;
@@ -158,7 +154,7 @@ void bhv_jet_stream_water_ring_loop(void)
 
 void Unknown802EB8A4(void)
 {
-	struct Object* ringManager = spawn_object(o, MODEL_NONE, sm64::bhv::bhvMantaRayRingManager());
+	struct Object* ringManager = s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvMantaRayRingManager());
 	o->parentObj		   = ringManager;
 }
 
@@ -178,7 +174,7 @@ void JetStreamRingSpawnerActiveLoop(void)
 
 	if((o->oTimer == 0) || (o->oTimer == 50 * FRAME_RATE_SCALER_INV) || (o->oTimer == 150 * FRAME_RATE_SCALER_INV) || (o->oTimer == 200 * FRAME_RATE_SCALER_INV) || (o->oTimer == 250 * FRAME_RATE_SCALER_INV))
 	{
-		waterRing		   = spawn_object(o, MODEL_WATER_RING, sm64::bhv::bhvJetStreamWaterRing());
+		waterRing		   = s_makeobj_nowpos(o, MODEL_WATER_RING, sm64::bhv::bhvJetStreamWaterRing());
 		waterRing->oWaterRingIndex = currentObj->oWaterRingMgrNextRingIndex;
 		currentObj->oWaterRingMgrNextRingIndex++;
 
@@ -198,9 +194,9 @@ void bhv_jet_stream_ring_spawner_loop(void)
 
 			if(o->oWaterRingSpawnerRingsCollected == 5)
 			{
-				func_802A3004();
+				s_kemuri();
 
-				create_star(3400.0f, -3200.0f, -500.0f);
+				s_enemyset_star(3400.0f, -3200.0f, -500.0f);
 
 				o->oAction = JS_RING_SPAWNER_ACT_INACTIVE;
 			}
@@ -235,7 +231,7 @@ void MantaRayWaterRingNotCollectedLoop(void)
 
 	CheckWaterRingCollection(avgScale, ringManager);
 	SetWaterRingScale(avgScale);
-	set_object_visibility(o, 5000);
+	PlayerApproachOnOff(o, 5000);
 
 	if(ringSpawner->oWaterRingSpawnerRingsCollected == 4 && o->oWaterRingIndex == ringManager->oWaterRingMgrLastRingCollected + 1)
 	{

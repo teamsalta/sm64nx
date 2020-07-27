@@ -29,7 +29,7 @@ static void fire_spitter_act_spit_fire(void)
 		}
 		else
 		{
-			PlaySound2(SOUND_OBJ_FLAME_BLOWN);
+			objsound(SOUND_OBJ_FLAME_BLOWN);
 			obj_spit_fire(0, 0, 0, 5.0f, MODEL_RED_FLAME_SHADOW, 20.0f, 15.0f, 0x1000);
 		}
 	}
@@ -37,7 +37,7 @@ static void fire_spitter_act_spit_fire(void)
 
 void bhv_fire_spitter_update(void)
 {
-	obj_scale(o->header.gfx.scale[0]);
+	s_set_scale(o->header.gfx.scale[0]);
 	o->oGraphYOffset = 40.0f;
 	obj_update_floor_and_walls();
 

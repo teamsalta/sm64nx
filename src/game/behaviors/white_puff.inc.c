@@ -10,14 +10,14 @@ void bhv_white_puff_1_loop(void)
 		o->oPosY += 30.0f * FRAME_RATE_SCALER;
 	}
 
-	obj_scale(o->oTimer / FRAME_RATE_SCALER_INV * sp18 + sp1C);
+	s_set_scale(o->oTimer / FRAME_RATE_SCALER_INV * sp18 + sp1C);
 	o->oOpacity = 50;
 
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 
 	if(o->oTimer > 4 * FRAME_RATE_SCALER_INV)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }
 

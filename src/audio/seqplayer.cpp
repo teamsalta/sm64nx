@@ -916,8 +916,6 @@ void seq_channel_layer_process_script(struct SequenceChannelLayer* layer)
 	}
 }
 
-#elif defined(VERSION_JP)
-GLOBAL_ASM("asm/non_matchings/seq_channel_layer_process_script_jp.s")
 #else
 GLOBAL_ASM("asm/non_matchings/seq_channel_layer_process_script_us.s")
 #endif
@@ -1395,8 +1393,6 @@ void sequence_channel_process_script(struct SequenceChannel* seqChannel)
 	}
 }
 
-#elif defined(VERSION_JP)
-GLOBAL_ASM("asm/non_matchings/sequence_channel_process_script_jp.s")
 #else
 GLOBAL_ASM("asm/non_matchings/sequence_channel_process_script_us.s")
 #endif

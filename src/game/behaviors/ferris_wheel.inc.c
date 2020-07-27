@@ -37,7 +37,7 @@ void bhv_ferris_wheel_axle_init(void)
 
 	for(i = 0; i < 4; i++)
 	{
-		platform = spawn_object_relative(i, 0, 0, 0, o, sFerrisWheelProperties[o->oBehParams2ndByte].platformModel, sm64::bhv::bhvFerrisWheelPlatform());
+		platform = s_makeobj_chain(i, 0, 0, 0, o, sFerrisWheelProperties[o->oBehParams2ndByte].platformModel, sm64::bhv::bhvFerrisWheelPlatform());
 
 		if(platform != NULL)
 		{

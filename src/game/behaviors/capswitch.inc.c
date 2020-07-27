@@ -1,14 +1,15 @@
 // capswitch.c.inc
+#include "game/motor.h"
 
-void ActionActivateCapSwitch0(void)
+void bikkuri_init(void)
 {
 	o->oAnimState = o->oBehParams2ndByte;
-	obj_scale(0.5f);
+	s_set_scale(0.5f);
 	o->oPosY += 71.0f * FRAME_RATE_SCALER;
 	spawn_object_relative_with_scale(0, 0, -71, 0, 0.5f, o, MODEL_CAP_SWITCH_BASE, sm64::bhv::bhvCapSwitchBase());
-	if(gCurrLevelNum != LEVEL_UNKNOWN_32)
+	if(activeStageNo != LEVEL_UNKNOWN_32)
 	{
-		if(save_file_get_flags() & D_8032F0C0[o->oBehParams2ndByte])
+		if(BuGetItemFlag() & D_8032F0C0[o->oBehParams2ndByte])
 		{
 			o->oAction	       = 3;
 			o->header.gfx.scale[1] = 0.1f;
@@ -20,27 +21,28 @@ void ActionActivateCapSwitch0(void)
 		o->oAction = 1;
 }
 
-void ActionActivateCapSwitch1(void)
+void bikkuri_oncheck(void)
 {
-	if(obj_is_mario_on_platform())
+	if(s_rideon_player())
 	{
-		save_file_set_flags(D_8032F0C0[o->oBehParams2ndByte]);
+		BuSetItemFlag(D_8032F0C0[o->oBehParams2ndByte]);
 		o->oAction = 2;
-		PlaySound2(SOUND_GENERAL_ACTIVATE_CAP_SWITCH);
+		objsound(SOUND_GENERAL_ACTIVATE_CAP_SWITCH);
 	}
 }
 
-void ActionActivateCapSwitch2(void)
+void bikkuri_on(void)
 {
 	s32 sp1C;
 	if(o->oTimer < 5 * FRAME_RATE_SCALER_INV)
 	{
-		func_802A3398(2, 4, 0.5f, 0.1f);
+		s_scale_timezoom(2, 4, 0.5f, 0.1f);
 		if(o->oTimer == 4 * FRAME_RATE_SCALER_INV)
 		{
-			ShakeScreen(SHAKE_POS_SMALL);
-			func_802A3004();
-			spawn_triangle_break_particles(60, 139, 0.3f, o->oBehParams2ndByte);
+			s_call_Viewshake(SHAKE_POS_SMALL);
+			s_kemuri();
+			s_boxeffect(60, 139, 0.3f, o->oBehParams2ndByte);
+			SendMotorEvent(5, 80);
 		}
 	}
 	else
@@ -51,15 +53,15 @@ void ActionActivateCapSwitch2(void)
 	}
 }
 
-void ActionActivateCapSwitch3()
+void bikkuri_off()
 {
 } // dead function
 
-void (*sCapSwitchActions[])(void) = {ActionActivateCapSwitch0, ActionActivateCapSwitch1, ActionActivateCapSwitch2, ActionActivateCapSwitch3};
+void (*sCapSwitchActions[])(void) = {bikkuri_init, bikkuri_oncheck, bikkuri_on, bikkuri_off};
 
 void bhv_cap_switch_loop(void)
 {
-	obj_call_action_function(sCapSwitchActions);
+	s_modejmp(sCapSwitchActions);
 }
 
 Gfx* Geo18_802A719C(s32 run, UNUSED struct GraphNode* node, Mat4 mtx)

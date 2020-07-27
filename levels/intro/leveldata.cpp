@@ -3337,18 +3337,6 @@ static const Vtx intro_seg7_vertex_0700B460[] = {
     {{{   268,    196,     -1}, 0, {     0,      0}, {0xff, 0xff, 0xff, 0xff}}},
 };
 
-#ifdef VERSION_EU
-// 0x0700B4A0 - 0x0700B4A2
-ALIGNED8 static const u8 intro_seg7_texture_0700B4A0[] = {
-#include "levels/intro/2_eu_copyright.rgba16.inc.c"
-};
-
-// 0x0700C4A0 - 0x0700D4A0
-ALIGNED8 static const u8 intro_seg7_texture_0700C4A0[] = {
-#include "levels/intro/3_eu_tm.rgba16.inc.c"
-};
-
-#else
 // 0x0700B4A0 - 0x0700B4A2
 ALIGNED8 static const u8 intro_seg7_texture_0700B4A0[] = {
 #include "levels/intro/2_copyright.rgba16.inc.c"
@@ -3358,7 +3346,6 @@ ALIGNED8 static const u8 intro_seg7_texture_0700B4A0[] = {
 ALIGNED8 static const u8 intro_seg7_texture_0700C4A0[] = {
 #include "levels/intro/3_tm.rgba16.inc.c"
 };
-#endif
 
 // 0x0700C6A0 - 0x0700C790
 const Gfx intro_seg7_dl_0700C6A0[] = {

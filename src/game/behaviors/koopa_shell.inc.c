@@ -16,8 +16,8 @@ void func_802BCA8C(void)
 {
 	UNUSED s32 unused;
 	struct Object* drop;
-	spawn_object(o, MODEL_WATER_WAVES, sm64::bhv::bhvWaterType());
-	if(gMarioStates->forwardVel > 10.0f)
+	s_makeobj_nowpos(o, MODEL_WATER_WAVES, sm64::bhv::bhvWaterType());
+	if(playerWorks->forwardVel > 10.0f)
 	{
 		drop	    = spawn_object_with_scale(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvWaterDrops(), 1.5f);
 		drop->oVelY = RandomFloat() * 30.0f;
@@ -37,31 +37,31 @@ void bhv_koopa_shell_flame_loop(void)
 		o->oKoopaShellFlameUnkF8 = 4.0f;
 	}
 	obj_update_floor_height();
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 	if(o->oFloorHeight > o->oPosY || o->oTimer > 10 * FRAME_RATE_SCALER_INV)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	o->oKoopaShellFlameUnkF8 += -0.3 * FRAME_RATE_SCALER;
-	obj_scale(o->oKoopaShellFlameUnkF8);
+	s_set_scale(o->oKoopaShellFlameUnkF8);
 }
 
 void bhv_koopa_shell_flame_spawn(void)
 {
 	s32 i;
 	for(i = 0; i < 2; i++)
-		spawn_object(o, MODEL_RED_FLAME, sm64::bhv::bhvKoopaShellFlame());
+		s_makeobj_nowpos(o, MODEL_RED_FLAME, sm64::bhv::bhvKoopaShellFlame());
 }
 
 void func_802BCCD4(f32 a)
 {
-	struct Object* sp1C = spawn_object(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
+	struct Object* sp1C = s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
 	sp1C->oPosY += a * FRAME_RATE_SCALER;
 }
 
 void bhv_koopa_shell_loop(void)
 {
 	struct Surface* sp34;
-	set_object_hitbox(o, &sKoopaShellHitbox);
-	obj_scale(1.0f);
+	s_set_hitparam(o, &sKoopaShellHitbox);
+	s_set_scale(1.0f);
 	switch(o->oAction)
 	{
 		case 0:
@@ -90,8 +90,8 @@ void bhv_koopa_shell_loop(void)
 			o->oFaceAngleYaw = gMarioObject->oMoveAngleYaw;
 			if(o->oInteractStatus & INT_STATUS_STOP_RIDING)
 			{
-				mark_object_for_deletion(o);
-				func_802A3004();
+				s_remove_obj(o);
+				s_kemuri();
 				o->oAction = 0;
 			}
 			break;

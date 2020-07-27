@@ -7,13 +7,11 @@ void bhv_bobomb_anchor_mario_loop(void)
 
 void ActionKingBobomb0(void)
 {
-#ifndef VERSION_JP
 	o->oForwardVel = 0;
 	o->oVelY       = 0;
-#endif
 	if(o->oSubAction == 0)
 	{
-		obj_become_intangible();
+		s_hitOFF();
 		gSecondCameraFocus = o;
 		set_obj_animation_and_sound_state(5);
 		obj_set_pos_to_home();
@@ -41,16 +39,16 @@ int func_802A6AF8(f32 arg0)
 
 void ActionKingBobomb2(void)
 {
-	obj_become_tangible();
+	s_hitON();
 	if(o->oPosY - o->oHomeY < -100.0f)
 	{ // Thrown off hill
 		o->oAction = 5;
-		obj_become_intangible();
+		s_hitOFF();
 	}
 	if(o->oKingBobombUnk100 == 0)
 	{
 		if(obj_check_anim_frame(15))
-			ShakeScreen(SHAKE_POS_SMALL);
+			s_call_Viewshake(SHAKE_POS_SMALL);
 		if(func_802A4AB0(4))
 			o->oKingBobombUnk100++;
 	}
@@ -91,7 +89,7 @@ void ActionKingBobomb3(void)
 		o->oKingBobombUnk104 = 0;
 		o->oKingBobombUnkFC  = 0;
 		if(o->oTimer == 0)
-			PlaySound2(SOUND_OBJ_UNKNOWN3);
+			objsound(SOUND_OBJ_UNKNOWN3);
 		if(func_802A4AB0(0))
 		{
 			o->oSubAction++;
@@ -129,7 +127,7 @@ void ActionKingBobomb3(void)
 			if(obj_check_anim_frame(31))
 			{
 				o->oKingBobombUnk88 = 2;
-				PlaySound2(SOUND_OBJ_UNKNOWN4);
+				objsound(SOUND_OBJ_UNKNOWN4);
 			}
 			else if(func_8029F788())
 			{
@@ -162,12 +160,12 @@ void ActionKingBobomb6(void)
 		if(o->oTimer == 0)
 		{
 			o->oKingBobombUnk104 = 0;
-			PlaySound2(SOUND_OBJ_KING_BOBOMB);
-			PlaySound2(SOUND_OBJ2_KING_BOBOMB_DAMAGE);
-			ShakeScreen(SHAKE_POS_SMALL);
-			func_802AA618(0, 0, 100.0f);
+			objsound(SOUND_OBJ_KING_BOBOMB);
+			objsound(SOUND_OBJ2_KING_BOBOMB_DAMAGE);
+			s_call_Viewshake(SHAKE_POS_SMALL);
+			s_burneffect(0, 0, 100.0f);
 			o->oInteractType = 8;
-			obj_become_tangible();
+			s_hitON();
 		}
 		if(func_802A4AB0(2))
 			o->oKingBobombUnk104++;
@@ -185,7 +183,7 @@ void ActionKingBobomb6(void)
 			{
 				o->oSubAction++;
 				o->oInteractType = 2;
-				obj_become_intangible();
+				s_hitOFF();
 			}
 		}
 		else
@@ -202,18 +200,13 @@ void ActionKingBobomb7(void)
 	set_obj_animation_and_sound_state(2);
 	if(obj_update_dialog_with_cutscene(2, 2, CUTSCENE_DIALOG, DIALOG_116))
 	{
-		create_sound_spawner(SOUND_OBJ_KING_WHOMP_DEATH);
-		obj_hide();
-		obj_become_intangible();
-		func_802AA618(0, 0, 200.0f);
-		spawn_triangle_break_particles(20, 138, 3.0f, 4);
-		ShakeScreen(SHAKE_POS_SMALL);
-#ifndef VERSION_JP
+		obj_remove_sound(SOUND_OBJ_KING_WHOMP_DEATH);
+		s_shape_hide();
+		s_hitOFF();
+		s_burneffect(0, 0, 200.0f);
+		s_boxeffect(20, 138, 3.0f, 4);
+		s_call_Viewshake(SHAKE_POS_SMALL);
 		obj_spawn_star_at_y_offset(2000.0f, 4500.0f, -4500.0f, 200.0f);
-#else
-		o->oPosY += 100.0f;
-		create_star(2000.0f, 4500.0f, -4500.0f);
-#endif
 		o->oAction = 8;
 	}
 }
@@ -233,7 +226,7 @@ void ActionKingBobomb4()
 			o->oHealth--;
 			o->oForwardVel = 0;
 			o->oVelY       = 0;
-			PlaySound2(SOUND_OBJ_KING_BOBOMB);
+			objsound(SOUND_OBJ_KING_BOBOMB);
 			if(o->oHealth)
 				o->oAction = 6;
 			else
@@ -251,7 +244,7 @@ void ActionKingBobomb4()
 				o->oSubAction++;
 			}
 			else if(o->oMoveFlags & 1)
-				PlaySound2(SOUND_OBJ_KING_BOBOMB);
+				objsound(SOUND_OBJ_KING_BOBOMB);
 		}
 		else
 		{
@@ -268,7 +261,7 @@ void ActionKingBobomb5()
 	{
 		case 0:
 			if(o->oTimer == 0)
-				PlaySound2(SOUND_OBJ_KING_BOBOMB_JUMP);
+				objsound(SOUND_OBJ_KING_BOBOMB_JUMP);
 			o->oKingBobombUnkF8 = 1;
 			func_802A4AEC(8);
 			o->oMoveAngleYaw = obj_angle_to_home();
@@ -290,8 +283,8 @@ void ActionKingBobomb5()
 				o->oGravity	    = -4.0f;
 				o->oKingBobombUnkF8 = 0;
 				set_obj_animation_and_sound_state(7);
-				PlaySound2(SOUND_OBJ_KING_BOBOMB);
-				ShakeScreen(SHAKE_POS_SMALL);
+				objsound(SOUND_OBJ_KING_BOBOMB);
+				s_call_Viewshake(SHAKE_POS_SMALL);
 				o->oSubAction++;
 			}
 			break;
@@ -339,8 +332,8 @@ void func_802A7748(void)
 	if(o->oKingBobombUnkF8 == 0)
 		obj_move_standard(-78);
 	else
-		obj_move_using_fvel_and_gravity();
-	obj_call_action_function(sKingBobombActions);
+		s_optionmove_F();
+	s_modejmp(sKingBobombActions);
 	exec_anim_sound_state(sKingBobombSoundStates);
 
 	if(!sm64::config().camera().disableDistanceClip())
@@ -373,7 +366,7 @@ void bhv_king_bobomb_loop(void)
 		case HELD_THROWN:
 		case HELD_DROPPED:
 			obj_get_thrown_or_placed(sp34, sp30, 4);
-			obj_become_intangible();
+			s_hitOFF();
 			o->oPosY += 20.0f * FRAME_RATE_SCALER;
 			break;
 	}

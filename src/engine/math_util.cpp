@@ -961,4 +961,3 @@ s32 anim_spline_poll(Vec3f& result)
 
 	return hasEnded;
 }
-

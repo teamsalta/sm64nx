@@ -4,7 +4,7 @@ void bhv_wf_solid_tower_platform_loop(void)
 {
 	if(o->parentObj->oAction == 3)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }
 
@@ -19,7 +19,7 @@ void bhv_wf_elevator_tower_platform_loop(void)
 			}
 			break;
 		case 1:
-			PlaySound(SOUND_ENV_ELEVATOR1);
+			objsound_level(SOUND_ENV_ELEVATOR1);
 			if(o->oTimer > 140 * FRAME_RATE_SCALER_INV)
 			{
 				o->oAction++;
@@ -36,7 +36,7 @@ void bhv_wf_elevator_tower_platform_loop(void)
 			}
 			break;
 		case 3:
-			PlaySound(SOUND_ENV_ELEVATOR1);
+			objsound_level(SOUND_ENV_ELEVATOR1);
 			if(o->oTimer > 140 * FRAME_RATE_SCALER_INV)
 			{
 				o->oAction = 0;
@@ -49,7 +49,7 @@ void bhv_wf_elevator_tower_platform_loop(void)
 	}
 	if(o->parentObj->oAction == 3)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }
 
@@ -82,14 +82,14 @@ void bhv_wf_sliding_tower_platform_loop(void)
 
 	if(o->parentObj->oAction == 3)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }
 
 void func_802AF9A4(s16 a, const BehaviorScript* beh)
 {
 	s16 yaw;
-	struct Object* platform = spawn_object(o, a, beh);
+	struct Object* platform = s_makeobj_nowpos(o, a, beh);
 
 	yaw			= o->oPlatformSpawnerUnkF4 * o->oPlatformSpawnerUnkFC + o->oPlatformSpawnerUnkF8;
 	platform->oMoveAngleYaw = yaw;

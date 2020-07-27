@@ -2,8 +2,8 @@
 
 void func_802AD01C(void)
 {
-	PlaySound2(SOUND_GENERAL_QUIET_POUND1);
-	ShakeScreen(SHAKE_POS_SMALL);
+	objsound(SOUND_GENERAL_QUIET_POUND1);
+	s_call_Viewshake(SHAKE_POS_SMALL);
 }
 
 void ActionElevator0(void)
@@ -35,8 +35,8 @@ void ActionElevator0(void)
 
 void ActionElevator1(void)
 {
-	PlaySound(SOUND_ENV_ELEVATOR1);
-	if(o->oTimer == 0 && obj_is_mario_on_platform())
+	objsound_level(SOUND_ENV_ELEVATOR1);
+	if(o->oTimer == 0 && s_rideon_player())
 		func_802AD01C();
 	approach_f32_signed(&o->oVelY, 10.0f, 2.0f * FRAME_RATE_SCALER);
 	o->oPosY += o->oVelY * FRAME_RATE_SCALER;
@@ -54,8 +54,8 @@ void ActionElevator1(void)
 
 void ActionElevator2() // Pretty similar code to action 1
 {
-	PlaySound(SOUND_ENV_ELEVATOR1);
-	if(o->oTimer == 0 && obj_is_mario_on_platform())
+	objsound_level(SOUND_ENV_ELEVATOR1);
+	if(o->oTimer == 0 && s_rideon_player())
 		func_802AD01C();
 	approach_f32_signed(&o->oVelY, -10.0f, -2.0f * FRAME_RATE_SCALER);
 	o->oPosY += o->oVelY * FRAME_RATE_SCALER;
@@ -78,10 +78,10 @@ void ActionElevator4()
 	o->oVelY = 0;
 	if(o->oTimer == 0)
 	{
-		ShakeScreen(SHAKE_POS_SMALL);
-		PlaySound2(SOUND_GENERAL_METAL_POUND);
+		s_call_Viewshake(SHAKE_POS_SMALL);
+		objsound(SOUND_GENERAL_METAL_POUND);
 	}
-	if(!mario_is_in_air_action() && !obj_is_mario_on_platform())
+	if(!mario_is_in_air_action() && !s_rideon_player())
 		o->oAction = 1;
 }
 
@@ -90,10 +90,10 @@ void ActionElevator3() // nearly identical to action 2
 	o->oVelY = 0;
 	if(o->oTimer == 0)
 	{
-		ShakeScreen(SHAKE_POS_SMALL);
-		PlaySound2(SOUND_GENERAL_METAL_POUND);
+		s_call_Viewshake(SHAKE_POS_SMALL);
+		objsound(SOUND_GENERAL_METAL_POUND);
 	}
-	if(!mario_is_in_air_action() && !obj_is_mario_on_platform())
+	if(!mario_is_in_air_action() && !s_rideon_player())
 		o->oAction = 0;
 }
 
@@ -128,5 +128,5 @@ struct SpawnParticlesInfo D_8032F3FC = {0, 5, MODEL_WHITE_PARTICLE_DL, 0, 0, 20,
 
 void bhv_elevator_loop(void)
 {
-	obj_call_action_function(sElevatorActions);
+	s_modejmp(sElevatorActions);
 }

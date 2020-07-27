@@ -4,7 +4,7 @@
 void bhv_water_mist_spawn_loop(void)
 {
 	func_802ADBBC(0x20000);
-	spawn_object(o, MODEL_MIST, sm64::bhv::bhvWaterMist());
+	s_makeobj_nowpos(o, MODEL_MIST, sm64::bhv::bhvWaterMist());
 }
 
 void bhv_water_mist_loop(void)
@@ -15,10 +15,10 @@ void bhv_water_mist_loop(void)
 		o->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
 		translate_object_xz_random(o, 10.0f);
 	}
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 	o->oOpacity -= 42;
 	sp1C = (254 - o->oOpacity) / 254.0 * 1.0 + 0.5; // seen this before
-	obj_scale(sp1C);
+	s_set_scale(sp1C);
 	if(o->oOpacity < 2)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }

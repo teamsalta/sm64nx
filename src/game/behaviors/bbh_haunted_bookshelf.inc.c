@@ -9,7 +9,7 @@
  */
 void bhv_haunted_bookshelf_loop(void)
 {
-	// oDistanceToMario is unused by this object.
+	// oDistanceToMario is size by this object.
 	// This may have been used for revealing the books when Mario comes near,
 	// but in the final game this is done by bhvHauntedBookshelfManager.
 	o->oDistanceToMario = dist_between_objects(o, gMarioObject);
@@ -36,12 +36,12 @@ void bhv_haunted_bookshelf_loop(void)
 		case HAUNTED_BOOKSHELF_ACT_RECEDE:
 			// Move the bookshelf and play the sound
 			o->oPosX += 5.0f * FRAME_RATE_SCALER;
-			PlaySound(SOUND_ENV_ELEVATOR4_2);
+			objsound_level(SOUND_ENV_ELEVATOR4_2);
 
 			// Delete the object after 102 frames
 			if(o->oTimer > 101 * FRAME_RATE_SCALER_INV)
 			{
-				mark_object_for_deletion(o);
+				s_remove_obj(o);
 			}
 
 			break;

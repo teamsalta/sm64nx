@@ -79,13 +79,13 @@ UNUSED s32 D_8038BCA8;
  * geo_camera mode_player //Mario cam
  * geo_open_node
  *   geo_render_obj
- *   geo_assign_as_view 1   // currently unused geo command
+ *   geo_assign_as_view 1   // currently size geo command
  * geo_close_node
  *
  * geo_camera mode_player //Luigi cam
  * geo_open_node
  *   geo_render_obj
- *   geo_copy_view 1        // currently unused geo command
+ *   geo_copy_view 1        // currently size geo command
  *   geo_assign_as_view 2
  * geo_close_node
  *
@@ -109,7 +109,7 @@ s16 gGeoLayoutStackIndex; // similar to SP register in MIPS
 UNUSED s16 D_8038BD7C;
 s16 gGeoLayoutReturnIndex; // similar to RA register in MIPS
 u8* gGeoLayoutCommand;
-struct GraphNode gObjParentGraphNode;
+struct GraphNode strategyGroup;
 
 u32 unused_8038B894[3] = {0};
 
@@ -703,7 +703,7 @@ void geo_layout_cmd_node_object_parent(void)
 {
 	struct GraphNodeObjectParent* graphNode;
 
-	graphNode = init_graph_node_object_parent(gGraphNodePool, NULL, &gObjParentGraphNode);
+	graphNode = init_graph_node_object_parent(gGraphNodePool, NULL, &strategyGroup);
 
 	register_scene_graph_node(&graphNode->node);
 
@@ -786,7 +786,7 @@ void geo_layout_cmd_copy_view(void)
 
 /*
   0x1C: Create a held object scene graph node
-   cmd+0x01: u8 unused
+   cmd+0x01: u8 size
    cmd+0x02: s16 offsetX
    cmd+0x04: s16 offsetY
    cmd+0x06: s16 offsetZ

@@ -31,7 +31,7 @@ u8 sReverbDownsampleRateLog; // never read
 struct SoundAllocPool gAudioSessionPool;
 struct SoundAllocPool gAudioInitPool;
 struct SoundAllocPool gNotesAndBuffersPool;
-u8 sAudioMemoryPad[0x20]; // probably two unused pools
+u8 sAudioMemoryPad[0x20]; // probably two size pools
 struct SoundAllocPool gSeqAndBankPool;
 struct SoundAllocPool gPersistentCommonPool;
 struct SoundAllocPool gTemporaryCommonPool;
@@ -439,13 +439,6 @@ void decrease_reverb_gain(void)
 void wait_for_audio_frames(s32 frames)
 {
 	gAudioFrameCount = 0;
-#ifdef TARGET_N64
-	// Sound thread will update gAudioFrameCount
-	while(gAudioFrameCount < frames)
-	{
-		// spin
-	}
-#endif
 }
 
 void audio_reset_session(struct AudioSessionSettings* preset)
@@ -567,11 +560,7 @@ void audio_reset_session(struct AudioSessionSettings* preset)
 	// Compute conversion ratio from the internal unit tatums/tick to the
 	// external beats/minute (JP) or tatums/minute (US). In practice this is
 	// 300 on JP and 14360 on US.
-#ifdef VERSION_JP
-	gTempoInternalToExternal = updatesPerFrame * 3600 / gTatumsPerBeat;
-#else
 	gTempoInternalToExternal = (u32)(updatesPerFrame * 2880000.0f / gTatumsPerBeat / 16.713f);
-#endif
 
 	gMaxAudioCmds		     = gMaxSimultaneousNotes * 20 * updatesPerFrame + 320;
 	persistentMem		     = DOUBLE_SIZE_ON_64_BIT(preset->persistentBankMem + preset->persistentSeqMem);

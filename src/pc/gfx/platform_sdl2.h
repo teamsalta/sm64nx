@@ -18,78 +18,187 @@
 
 namespace sm64::gfx::platform
 {
-	static const SDL_Scancode windows_scancode_table[] =
-	{
-		/*	0						1							2							3							4						5							6							7 */
-		/*	8						9							A							B							C						D							E							F */
-		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_ESCAPE,		SDL_SCANCODE_1,				SDL_SCANCODE_2,				SDL_SCANCODE_3,			SDL_SCANCODE_4,				SDL_SCANCODE_5,				SDL_SCANCODE_6,			/* 0 */
-		SDL_SCANCODE_7,				SDL_SCANCODE_8,				SDL_SCANCODE_9,				SDL_SCANCODE_0,				SDL_SCANCODE_MINUS,		SDL_SCANCODE_EQUALS,		SDL_SCANCODE_BACKSPACE,		SDL_SCANCODE_TAB,		/* 0 */
+	static const SDL_Scancode windows_scancode_table[] = {
+	    /*	0						1							2							3							4						5							6							7
+	     */
+	    /*	8						9							A							B							C						D							E							F
+	     */
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_ESCAPE,
+	    SDL_SCANCODE_1,
+	    SDL_SCANCODE_2,
+	    SDL_SCANCODE_3,
+	    SDL_SCANCODE_4,
+	    SDL_SCANCODE_5,
+	    SDL_SCANCODE_6, /* 0 */
+	    SDL_SCANCODE_7,
+	    SDL_SCANCODE_8,
+	    SDL_SCANCODE_9,
+	    SDL_SCANCODE_0,
+	    SDL_SCANCODE_MINUS,
+	    SDL_SCANCODE_EQUALS,
+	    SDL_SCANCODE_BACKSPACE,
+	    SDL_SCANCODE_TAB, /* 0 */
 
-		SDL_SCANCODE_Q,				SDL_SCANCODE_W,				SDL_SCANCODE_E,				SDL_SCANCODE_R,				SDL_SCANCODE_T,			SDL_SCANCODE_Y,				SDL_SCANCODE_U,				SDL_SCANCODE_I,			/* 1 */
-		SDL_SCANCODE_O,				SDL_SCANCODE_P,				SDL_SCANCODE_LEFTBRACKET,	SDL_SCANCODE_RIGHTBRACKET,	SDL_SCANCODE_RETURN,	SDL_SCANCODE_LCTRL,			SDL_SCANCODE_A,				SDL_SCANCODE_S,			/* 1 */
+	    SDL_SCANCODE_Q,
+	    SDL_SCANCODE_W,
+	    SDL_SCANCODE_E,
+	    SDL_SCANCODE_R,
+	    SDL_SCANCODE_T,
+	    SDL_SCANCODE_Y,
+	    SDL_SCANCODE_U,
+	    SDL_SCANCODE_I, /* 1 */
+	    SDL_SCANCODE_O,
+	    SDL_SCANCODE_P,
+	    SDL_SCANCODE_LEFTBRACKET,
+	    SDL_SCANCODE_RIGHTBRACKET,
+	    SDL_SCANCODE_RETURN,
+	    SDL_SCANCODE_LCTRL,
+	    SDL_SCANCODE_A,
+	    SDL_SCANCODE_S, /* 1 */
 
-		SDL_SCANCODE_D,				SDL_SCANCODE_F,				SDL_SCANCODE_G,				SDL_SCANCODE_H,				SDL_SCANCODE_J,			SDL_SCANCODE_K,				SDL_SCANCODE_L,				SDL_SCANCODE_SEMICOLON,	/* 2 */
-		SDL_SCANCODE_APOSTROPHE,	SDL_SCANCODE_GRAVE,			SDL_SCANCODE_LSHIFT,		SDL_SCANCODE_BACKSLASH,		SDL_SCANCODE_Z,			SDL_SCANCODE_X,				SDL_SCANCODE_C,				SDL_SCANCODE_V,			/* 2 */
+	    SDL_SCANCODE_D,
+	    SDL_SCANCODE_F,
+	    SDL_SCANCODE_G,
+	    SDL_SCANCODE_H,
+	    SDL_SCANCODE_J,
+	    SDL_SCANCODE_K,
+	    SDL_SCANCODE_L,
+	    SDL_SCANCODE_SEMICOLON, /* 2 */
+	    SDL_SCANCODE_APOSTROPHE,
+	    SDL_SCANCODE_GRAVE,
+	    SDL_SCANCODE_LSHIFT,
+	    SDL_SCANCODE_BACKSLASH,
+	    SDL_SCANCODE_Z,
+	    SDL_SCANCODE_X,
+	    SDL_SCANCODE_C,
+	    SDL_SCANCODE_V, /* 2 */
 
-		SDL_SCANCODE_B,				SDL_SCANCODE_N,				SDL_SCANCODE_M,				SDL_SCANCODE_COMMA,			SDL_SCANCODE_PERIOD,	SDL_SCANCODE_SLASH,			SDL_SCANCODE_RSHIFT,		SDL_SCANCODE_PRINTSCREEN,/* 3 */
-		SDL_SCANCODE_LALT,			SDL_SCANCODE_SPACE,			SDL_SCANCODE_CAPSLOCK,		SDL_SCANCODE_F1,			SDL_SCANCODE_F2,		SDL_SCANCODE_F3,			SDL_SCANCODE_F4,			SDL_SCANCODE_F5,		/* 3 */
+	    SDL_SCANCODE_B,
+	    SDL_SCANCODE_N,
+	    SDL_SCANCODE_M,
+	    SDL_SCANCODE_COMMA,
+	    SDL_SCANCODE_PERIOD,
+	    SDL_SCANCODE_SLASH,
+	    SDL_SCANCODE_RSHIFT,
+	    SDL_SCANCODE_PRINTSCREEN, /* 3 */
+	    SDL_SCANCODE_LALT,
+	    SDL_SCANCODE_SPACE,
+	    SDL_SCANCODE_CAPSLOCK,
+	    SDL_SCANCODE_F1,
+	    SDL_SCANCODE_F2,
+	    SDL_SCANCODE_F3,
+	    SDL_SCANCODE_F4,
+	    SDL_SCANCODE_F5, /* 3 */
 
-		SDL_SCANCODE_F6,			SDL_SCANCODE_F7,			SDL_SCANCODE_F8,			SDL_SCANCODE_F9,			SDL_SCANCODE_F10,		SDL_SCANCODE_NUMLOCKCLEAR,	SDL_SCANCODE_SCROLLLOCK,	SDL_SCANCODE_HOME,		/* 4 */
-		SDL_SCANCODE_UP,			SDL_SCANCODE_PAGEUP,		SDL_SCANCODE_KP_MINUS,		SDL_SCANCODE_LEFT,			SDL_SCANCODE_KP_5,		SDL_SCANCODE_RIGHT,			SDL_SCANCODE_KP_PLUS,		SDL_SCANCODE_END,		/* 4 */
+	    SDL_SCANCODE_F6,
+	    SDL_SCANCODE_F7,
+	    SDL_SCANCODE_F8,
+	    SDL_SCANCODE_F9,
+	    SDL_SCANCODE_F10,
+	    SDL_SCANCODE_NUMLOCKCLEAR,
+	    SDL_SCANCODE_SCROLLLOCK,
+	    SDL_SCANCODE_HOME, /* 4 */
+	    SDL_SCANCODE_UP,
+	    SDL_SCANCODE_PAGEUP,
+	    SDL_SCANCODE_KP_MINUS,
+	    SDL_SCANCODE_LEFT,
+	    SDL_SCANCODE_KP_5,
+	    SDL_SCANCODE_RIGHT,
+	    SDL_SCANCODE_KP_PLUS,
+	    SDL_SCANCODE_END, /* 4 */
 
-		SDL_SCANCODE_DOWN,			SDL_SCANCODE_PAGEDOWN,		SDL_SCANCODE_INSERT,		SDL_SCANCODE_DELETE,		SDL_SCANCODE_UNKNOWN,	SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_NONUSBACKSLASH,SDL_SCANCODE_F11,		/* 5 */
-		SDL_SCANCODE_F12,			SDL_SCANCODE_PAUSE,			SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_LGUI,			SDL_SCANCODE_RGUI,		SDL_SCANCODE_APPLICATION,	SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN,	/* 5 */
+	    SDL_SCANCODE_DOWN,
+	    SDL_SCANCODE_PAGEDOWN,
+	    SDL_SCANCODE_INSERT,
+	    SDL_SCANCODE_DELETE,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_NONUSBACKSLASH,
+	    SDL_SCANCODE_F11, /* 5 */
+	    SDL_SCANCODE_F12,
+	    SDL_SCANCODE_PAUSE,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_LGUI,
+	    SDL_SCANCODE_RGUI,
+	    SDL_SCANCODE_APPLICATION,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN, /* 5 */
 
-		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_F13,		SDL_SCANCODE_F14,			SDL_SCANCODE_F15,			SDL_SCANCODE_F16,		/* 6 */
-		SDL_SCANCODE_F17,			SDL_SCANCODE_F18,			SDL_SCANCODE_F19,			SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN,	SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN,	/* 6 */
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_F13,
+	    SDL_SCANCODE_F14,
+	    SDL_SCANCODE_F15,
+	    SDL_SCANCODE_F16, /* 6 */
+	    SDL_SCANCODE_F17,
+	    SDL_SCANCODE_F18,
+	    SDL_SCANCODE_F19,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN, /* 6 */
 
-		SDL_SCANCODE_INTERNATIONAL2,		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_INTERNATIONAL1,		SDL_SCANCODE_UNKNOWN,	SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN,	/* 7 */
-		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_INTERNATIONAL4,		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_INTERNATIONAL5,		SDL_SCANCODE_UNKNOWN,	SDL_SCANCODE_INTERNATIONAL3,		SDL_SCANCODE_UNKNOWN,		SDL_SCANCODE_UNKNOWN	/* 7 */
+	    SDL_SCANCODE_INTERNATIONAL2,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_INTERNATIONAL1,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN, /* 7 */
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_INTERNATIONAL4,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_INTERNATIONAL5,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_INTERNATIONAL3,
+	    SDL_SCANCODE_UNKNOWN,
+	    SDL_SCANCODE_UNKNOWN /* 7 */
 	};
 
 	static const SDL_Scancode scancode_rmapping_nonextended[][2] = {
-			{SDL_SCANCODE_KP_7, SDL_SCANCODE_HOME},
-			{SDL_SCANCODE_KP_8, SDL_SCANCODE_UP},
-			{SDL_SCANCODE_KP_9, SDL_SCANCODE_PAGEUP},
-			{SDL_SCANCODE_KP_4, SDL_SCANCODE_LEFT},
-			{SDL_SCANCODE_KP_6, SDL_SCANCODE_RIGHT},
-			{SDL_SCANCODE_KP_1, SDL_SCANCODE_END},
-			{SDL_SCANCODE_KP_2, SDL_SCANCODE_DOWN},
-			{SDL_SCANCODE_KP_3, SDL_SCANCODE_PAGEDOWN},
-			{SDL_SCANCODE_KP_0, SDL_SCANCODE_INSERT},
-			{SDL_SCANCODE_KP_PERIOD, SDL_SCANCODE_DELETE},
-			{SDL_SCANCODE_KP_MULTIPLY, SDL_SCANCODE_PRINTSCREEN}
-	};
+	    {SDL_SCANCODE_KP_7, SDL_SCANCODE_HOME},
+	    {SDL_SCANCODE_KP_8, SDL_SCANCODE_UP},
+	    {SDL_SCANCODE_KP_9, SDL_SCANCODE_PAGEUP},
+	    {SDL_SCANCODE_KP_4, SDL_SCANCODE_LEFT},
+	    {SDL_SCANCODE_KP_6, SDL_SCANCODE_RIGHT},
+	    {SDL_SCANCODE_KP_1, SDL_SCANCODE_END},
+	    {SDL_SCANCODE_KP_2, SDL_SCANCODE_DOWN},
+	    {SDL_SCANCODE_KP_3, SDL_SCANCODE_PAGEDOWN},
+	    {SDL_SCANCODE_KP_0, SDL_SCANCODE_INSERT},
+	    {SDL_SCANCODE_KP_PERIOD, SDL_SCANCODE_DELETE},
+	    {SDL_SCANCODE_KP_MULTIPLY, SDL_SCANCODE_PRINTSCREEN}};
 
 	static const SDL_Scancode scancode_rmapping_extended[][2] = {
-			{SDL_SCANCODE_KP_ENTER, SDL_SCANCODE_RETURN},
-			{SDL_SCANCODE_RALT, SDL_SCANCODE_LALT},
-			{SDL_SCANCODE_RCTRL, SDL_SCANCODE_LCTRL},
-			{SDL_SCANCODE_KP_DIVIDE, SDL_SCANCODE_SLASH},
-			//{SDL_SCANCODE_KP_PLUS, SDL_SCANCODE_CAPSLOCK}
+	    {SDL_SCANCODE_KP_ENTER, SDL_SCANCODE_RETURN}, {SDL_SCANCODE_RALT, SDL_SCANCODE_LALT}, {SDL_SCANCODE_RCTRL, SDL_SCANCODE_LCTRL}, {SDL_SCANCODE_KP_DIVIDE, SDL_SCANCODE_SLASH},
+	    //{SDL_SCANCODE_KP_PLUS, SDL_SCANCODE_CAPSLOCK}
 	};
 
 	static int inverted_scancode_table[512];
 
 	class Sdl : public Base
 	{
-	public:
-		SDL_Window *wnd;
+		public:
+		SDL_Window* wnd;
 
-		unsigned int window_width = DESIRED_SCREEN_WIDTH;
+		unsigned int window_width  = DESIRED_SCREEN_WIDTH;
 		unsigned int window_height = DESIRED_SCREEN_HEIGHT;
 		bool fullscreen_state;
-		void(*on_fullscreen_changed_callback)(bool is_now_fullscreen) = NULL;
+		void (*on_fullscreen_changed_callback)(bool is_now_fullscreen) = NULL;
 
-		Sdl(const char *game_name, bool start_in_fullscreen)
+		Sdl(const char* game_name, bool start_in_fullscreen)
 		{
 			SDL_Init(SDL_INIT_VIDEO);
 
 			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-			//SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+			// SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-			//SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-			//SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+			// SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+			// SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
 			char title[512];
 			int len = sprintf(title, "%s (%s)", game_name, GFX_API_NAME);
@@ -98,7 +207,6 @@ namespace sm64::gfx::platform
 			wnd = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 #else
 			wnd = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-
 
 			if(start_in_fullscreen)
 			{
@@ -127,13 +235,12 @@ namespace sm64::gfx::platform
 
 			if(on)
 			{
-				
-				window_width = mode.w;
+				window_width  = mode.w;
 				window_height = mode.h;
 			}
 			else
 			{
-				window_width = DESIRED_SCREEN_WIDTH;
+				window_width  = DESIRED_SCREEN_WIDTH;
 				window_height = DESIRED_SCREEN_HEIGHT;
 			}
 			SDL_SetWindowSize(wnd, window_width, window_height);
@@ -148,11 +255,11 @@ namespace sm64::gfx::platform
 
 		void set_vsync()
 		{
-			if (SDL_GetNumVideoDisplays() > 0)
+			if(SDL_GetNumVideoDisplays() > 0)
 			{
 				SDL_DisplayMode mode;
 
-				if (SDL_GetDesktopDisplayMode(SDL_GetWindowDisplayIndex(wnd), &mode) == 0) // assume highest resolution display is the one in use
+				if(SDL_GetDesktopDisplayMode(SDL_GetWindowDisplayIndex(wnd), &mode) == 0) // assume highest resolution display is the one in use
 				{
 					m_refreshInterval = std::chrono::microseconds(1000 * 1000 / mode.refresh_rate);
 					return;
@@ -164,14 +271,14 @@ namespace sm64::gfx::platform
 			return;
 		}
 
-		void set_fullscreen_changed_callback(void(*on_fullscreen_changed)(bool is_now_fullscreen))
+		void set_fullscreen_changed_callback(void (*on_fullscreen_changed)(bool is_now_fullscreen))
 		{
 			on_fullscreen_changed_callback = on_fullscreen_changed;
 		}
 
-		void get_dimensions(u32 *width, u32 *height)
+		void get_dimensions(u32* width, u32* height)
 		{
-			*width = window_width;
+			*width	= window_width;
 			*height = window_height;
 		}
 
@@ -197,7 +304,7 @@ namespace sm64::gfx::platform
 					case SDL_WINDOWEVENT:
 						if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
 						{
-							window_width = event.window.data1;
+							window_width  = event.window.data1;
 							window_height = event.window.data2;
 						}
 						break;
@@ -217,7 +324,6 @@ namespace sm64::gfx::platform
 			return true;
 		}
 
-
 		void swap_buffers_begin()
 		{
 			SDL_GL_SwapWindow(wnd);
@@ -227,4 +333,4 @@ namespace sm64::gfx::platform
 		{
 		}
 	};
-}
+} // namespace sm64::gfx::platform

@@ -28,13 +28,13 @@ static struct ObjectHitbox sMovingBlueCoinHitbox = {
 
 s32 CoinStep(s16* collisionFlagsPtr)
 {
-	*collisionFlagsPtr = object_step();
+	*collisionFlagsPtr = ObjMoveEvent();
 
 	obj_check_floor_death(*collisionFlagsPtr, sObjFloor);
 
 	if((*collisionFlagsPtr & 0x1) != 0 && (*collisionFlagsPtr & 0x8) == 0) /* bit 0, bit 3 */
 	{
-		PlaySound2(SOUND_GENERAL_COIN_DROP);
+		objsound(SOUND_GENERAL_COIN_DROP);
 		return 1;
 	}
 
@@ -46,12 +46,12 @@ void MovingCoinFlickerLoop(void)
 	s16 collisionFlags;
 
 	CoinStep(&collisionFlags);
-	obj_flicker_and_disappear(o, 0);
+	iwa_TimerRemove(o, 0);
 }
 
 void CoinCollected(void)
 {
-	spawn_object(o, MODEL_SPARKLES, sm64::bhv::bhvGoldenCoinSparkles());
+	s_makeobj_nowpos(o, MODEL_SPARKLES, sm64::bhv::bhvGoldenCoinSparkles());
 	o->activeFlags = 0;
 }
 
@@ -61,7 +61,7 @@ void bhv_moving_yellow_coin_init(void)
 	o->oFriction = 1.0f;
 	o->oBuoyancy = 1.5f;
 
-	set_object_hitbox(o, &sMovingYellowCoinHitbox);
+	s_set_hitparam(o, &sMovingYellowCoinHitbox);
 }
 
 void bhv_moving_yellow_coin_loop(void)
@@ -74,9 +74,9 @@ void bhv_moving_yellow_coin_loop(void)
 			CoinStep(&collisionFlags);
 
 			if(o->oTimer < 10 * FRAME_RATE_SCALER_INV)
-				obj_become_intangible();
+				s_hitOFF();
 			else
-				obj_become_tangible();
+				s_hitON();
 
 			if(o->oTimer >= 301 * FRAME_RATE_SCALER_INV)
 				o->oAction = 1;
@@ -108,33 +108,29 @@ void bhv_moving_blue_coin_init(void)
 	o->oFriction = 1.0f;
 	o->oBuoyancy = 1.5f;
 
-	set_object_hitbox(o, &sMovingBlueCoinHitbox);
+	s_set_hitparam(o, &sMovingBlueCoinHitbox);
 }
 
 void bhv_moving_blue_coin_loop(void)
 {
-#ifdef VERSION_EU
-	s32 collisionFlags;
-#else
 	s16 collisionFlags;
-#endif
 
 	switch(o->oAction)
 	{
 		case MOV_BCOIN_ACT_STILL:
-			if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 1500) != 0)
+			if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 1500) != 0)
 			{
 				o->oAction = MOV_YCOIN_ACT_BLINKING;
 			}
 			break;
 
 		case MOV_BCOIN_ACT_MOVING:
-			collisionFlags = object_step();
+			collisionFlags = ObjMoveEvent();
 			if((collisionFlags & 0x1) != 0) /* bit 0 */
 			{
 				o->oForwardVel += 25.0f * FRAME_RATE_SCALER;
 				if((collisionFlags & 0x8) == 0)
-					PlaySound2(SOUND_GENERAL_COIN_DROP); /* bit 3 */
+					objsound(SOUND_GENERAL_COIN_DROP); /* bit 3 */
 			}
 			else
 				o->oForwardVel *= 0.98;
@@ -142,7 +138,7 @@ void bhv_moving_blue_coin_loop(void)
 			if(o->oForwardVel > 75.0)
 				o->oForwardVel = 75.0f;
 
-			obj_flicker_and_disappear(o, 600);
+			iwa_TimerRemove(o, 600);
 			break;
 	}
 
@@ -159,7 +155,7 @@ void bhv_blue_coin_sliding_jumping_init(void)
 	o->oFriction = 0.98;
 	o->oBuoyancy = 1.5;
 
-	set_object_hitbox(o, &sMovingBlueCoinHitbox);
+	s_set_hitparam(o, &sMovingBlueCoinHitbox);
 }
 
 void func_802E540C(void)
@@ -174,7 +170,7 @@ void func_802E540C(void)
 	if((collisionFlags & 0x2) != 0)
 		o->oAction = 3; /* bit 1 */
 
-	if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 1000) == 0)
+	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 1000) == 0)
 		o->oAction = 2;
 }
 
@@ -184,7 +180,7 @@ void func_802E54DC(void)
 
 	CoinStep(&collisionFlags);
 
-	if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 500) == 1)
+	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 500) == 1)
 	{
 		o->oAction = MOV_YCOIN_ACT_BLINKING;
 	}
@@ -200,12 +196,12 @@ void bhv_blue_coin_sliding_loop(void)
 	switch(o->oAction)
 	{
 		case 0:
-			if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 500) == 1)
+			if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 500) == 1)
 			{
 				o->oAction = MOV_YCOIN_ACT_BLINKING;
 			}
 
-			set_object_visibility(o, 3000);
+			PlayerApproachOnOff(o, 3000);
 			break;
 
 		case 1:
@@ -214,7 +210,7 @@ void bhv_blue_coin_sliding_loop(void)
 
 		case 2:
 			func_802E54DC();
-			set_object_visibility(o, 3000);
+			PlayerApproachOnOff(o, 3000);
 			break;
 
 		case 3:
@@ -252,15 +248,15 @@ void bhv_blue_coin_jumping_loop(void)
 		case 0:
 			if(o->oTimer == 0)
 			{
-				obj_become_intangible();
+				s_hitOFF();
 				o->oVelY = 50.0;
 			}
 
-			object_step();
+			ObjMoveEvent();
 
 			if(o->oTimer == 15 * FRAME_RATE_SCALER_INV)
 			{
-				obj_become_tangible();
+				s_hitON();
 				o->oAction = MOV_YCOIN_ACT_BLINKING;
 			}
 			break;
@@ -271,7 +267,7 @@ void bhv_blue_coin_jumping_loop(void)
 
 		case 2:
 			func_802E54DC();
-			set_object_visibility(o, 3000);
+			PlayerApproachOnOff(o, 3000);
 			break;
 
 		case 3:

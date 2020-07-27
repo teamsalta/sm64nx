@@ -32,7 +32,7 @@ void bhv_homing_amp_init(void)
 
 	// Homing amps start at 1/10th their normal size.
 	// They grow when they "appear" to Mario.
-	obj_scale(0.1f);
+	s_set_scale(0.1f);
 
 	// Hide the amp (until Mario gets near).
 	o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
@@ -46,7 +46,7 @@ static void check_amp_attack(void)
 	// Strange placement for this call. The hitbox is never cleared.
 	// For perspective, this code is run every frame of bhv_circling_amp_loop
 	// and every frame of a homing amp's HOMING_AMP_ACT_CHASE action.
-	set_object_hitbox(o, &sAmpHitbox);
+	s_set_hitparam(o, &sAmpHitbox);
 
 	if(o->oInteractStatus & INT_STATUS_INTERACTED)
 	{
@@ -82,12 +82,12 @@ static void homing_amp_appear_loop(void)
 	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, targetYaw, 0x1000 / FRAME_RATE_SCALER_INV);
 
 	// For 30 frames, make the amp "appear" by increasing its size by 0.03 each frame,
-	// except for the first frame (when oTimer == 0) because the expression in obj_scale
+	// except for the first frame (when oTimer == 0) because the expression in s_set_scale
 	// evaluates to 0.1, which is the same as it was before. After 30 frames, it ends at
 	// a scale factor of 0.97. The amp remains at 97% of its real height for 60 more frames.
 	if(o->oTimer < 30 * FRAME_RATE_SCALER_INV)
 	{
-		obj_scale(0.1 + 0.9 * (f32)(o->oTimer / 30.0f * FRAME_RATE_SCALER));
+		s_set_scale(0.1 + 0.9 * (f32)(o->oTimer / 30.0f * FRAME_RATE_SCALER));
 	}
 	else
 	{
@@ -98,7 +98,7 @@ static void homing_amp_appear_loop(void)
 	// reset the amp's size and start chasing Mario.
 	if(o->oTimer >= 91 * FRAME_RATE_SCALER_INV)
 	{
-		obj_scale(1.0f);
+		s_set_scale(1.0f);
 		o->oAction    = HOMING_AMP_ACT_CHASE;
 		o->oAmpYPhase = 0;
 	}
@@ -146,7 +146,7 @@ static void homing_amp_chase_loop(void)
 		// while curving towards him.
 		o->oForwardVel = 10.0f;
 
-		obj_turn_toward_object(o, gMarioObject, 16, 0x400 / FRAME_RATE_SCALER_INV);
+		s_chase_obj_angle(o, gMarioObject, 16, 0x400 / FRAME_RATE_SCALER_INV);
 
 		// The amp's average Y will approach Mario's graphical Y position + 250
 		// at a rate of 10 units per frame. Interestingly, this is different from
@@ -164,7 +164,7 @@ static void homing_amp_chase_loop(void)
 	check_amp_attack();
 
 	// Give up if Mario goes further than 1500 units from the amp's original position
-	if(is_point_within_radius_of_mario(o->oHomeX, o->oHomeY, o->oHomeZ, 1500) == FALSE)
+	if(PlayerApproach(o->oHomeX, o->oHomeY, o->oHomeZ, 1500) == FALSE)
 	{
 		o->oAction = HOMING_AMP_ACT_GIVE_UP;
 	}
@@ -203,7 +203,7 @@ static void amp_attack_cooldown_loop(void)
 	o->header.gfx.unk38.incrementFrame(2);
 	o->oForwardVel = 0;
 
-	obj_become_intangible();
+	s_hitOFF();
 
 	if(o->oTimer >= 31 * FRAME_RATE_SCALER_INV)
 	{
@@ -213,7 +213,7 @@ static void amp_attack_cooldown_loop(void)
 	if(o->oTimer >= 91 * FRAME_RATE_SCALER_INV)
 	{
 		o->oAnimState = 1;
-		obj_become_tangible();
+		s_hitON();
 		o->oAction = HOMING_AMP_ACT_CHASE;
 	}
 }
@@ -226,7 +226,7 @@ void bhv_homing_amp_loop(void)
 	switch(o->oAction)
 	{
 		case HOMING_AMP_ACT_INACTIVE:
-			if(is_point_within_radius_of_mario(o->oHomeX, o->oHomeY, o->oHomeZ, 800) == TRUE)
+			if(PlayerApproach(o->oHomeX, o->oHomeY, o->oHomeZ, 800) == TRUE)
 			{
 				// Make the amp start to appear, and un-hide it.
 				o->oAction = HOMING_AMP_ACT_APPEAR;
@@ -240,7 +240,7 @@ void bhv_homing_amp_loop(void)
 
 		case HOMING_AMP_ACT_CHASE:
 			homing_amp_chase_loop();
-			PlaySound(SOUND_AIR_AMP_BUZZ);
+			objsound_level(SOUND_AIR_AMP_BUZZ);
 			break;
 
 		case HOMING_AMP_ACT_GIVE_UP:
@@ -252,7 +252,7 @@ void bhv_homing_amp_loop(void)
 			break;
 	}
 
-	object_step();
+	ObjMoveEvent();
 
 	// Oscillate
 	o->oAmpYPhase++;
@@ -306,7 +306,7 @@ static void fixed_circling_amp_idle_loop(void)
 	f32 zToMario	  = gMarioObject->header.gfx.pos[2] - o->oPosZ;
 	s16 vAngleToMario = atan2s(sqrtf(xToMario * xToMario + zToMario * zToMario), -yToMario);
 
-	obj_turn_toward_object(o, gMarioObject, 19, 0x1000 / FRAME_RATE_SCALER_INV);
+	s_chase_obj_angle(o, gMarioObject, 19, 0x1000 / FRAME_RATE_SCALER_INV);
 	o->oFaceAnglePitch = approach_s16_symmetric(o->oFaceAnglePitch, vAngleToMario, 0x1000 / FRAME_RATE_SCALER_INV);
 
 	// Oscillate 40 units up and down.
@@ -322,7 +322,7 @@ static void fixed_circling_amp_idle_loop(void)
 	// Oscillate
 	o->oAmpYPhase++;
 
-	// Where there is a PlaySound call in the main circling amp update function,
+	// Where there is a objsound_level call in the main circling amp update function,
 	// there is nothing here. Fixed amps are the only amps that never play
 	// the "amp buzzing" sound.
 }
@@ -349,7 +349,7 @@ static void circling_amp_idle_loop(void)
 	// Oscillate
 	o->oAmpYPhase++;
 
-	PlaySound(SOUND_AIR_AMP_BUZZ);
+	objsound_level(SOUND_AIR_AMP_BUZZ);
 }
 
 /**

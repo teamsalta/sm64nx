@@ -9,10 +9,10 @@
 #include "pc/nx.h"
 #endif
 
-extern u32 gGlobalTimer;
+extern u32 frameCounter;
 extern s32 sActSelectorMenuTimer;
 extern s16 gMenuMode;
-extern s8 sSelectedFileNum;
+extern s8 goTogame;
 
 namespace sm64
 {
@@ -52,7 +52,7 @@ namespace sm64
 				{
 					break;
 				}
-				m_mods[i].hash = XXHash64::hash(d.first.c_str(), d.first.length(), 0);
+				m_mods[i].hash	  = XXHash64::hash(d.first.c_str(), d.first.length(), 0);
 				m_mods[i].enabled = d.second;
 				i++;
 			}
@@ -91,7 +91,7 @@ namespace sm64
 		void Mods::set(const std::string& name, const u8 value)
 		{
 			modDirs()[name] = value;
-		}		
+		}
 
 		void Mods::cleanup()
 		{
@@ -189,7 +189,7 @@ namespace sm64
 		{
 			memset(this, 0, sizeof(*this));
 		}
-		
+
 		u8& Game::overclock()
 		{
 			return m_overclock;
@@ -222,32 +222,32 @@ namespace sm64
 
 		const bool Game::mirror() const
 		{
-			if (!m_mirror)
+			if(!m_mirror)
 			{
 				return false;
 			}
 
-			if (gCurrLevelNum == 1)
+			if(activeStageNo == 1)
 			{
 				return false;
 			}
 
-			if (get_dialog_id() != -1)
+			if(GetMessageNo() != -1)
 			{
 				return false;
 			}
 
-			if (sActSelectorMenuTimer != 0)
+			if(sActSelectorMenuTimer != 0)
 			{
 				return false;
 			}
 
-			if (gMenuMode != -1)
+			if(gMenuMode != -1)
 			{
 				return false;
 			}
 
-			if (sSelectedFileNum == 0)
+			if(goTogame == 0)
 			{
 				return false;
 			}
@@ -264,7 +264,6 @@ namespace sm64
 		{
 			return m_disableSound;
 		}
-		
 
 		Camera::Camera() : m_distanceScaler(1.0f), m_yawReturnScaler(1.0f), m_disableDistanceClip(false), m_useClassicCamera(false), m_mousexInvert(false), m_mouseyInvert(false), m_mousexScaler(1.0f), m_mouseyScaler(1.0f)
 		{
@@ -275,12 +274,12 @@ namespace sm64
 
 		const bool Camera::levelLoaded() const
 		{
-			return g_levelLoaded && (gGlobalTimer - g_levelLoaded) > 15 * FRAME_RATE_SCALER_INV;
+			return g_levelLoaded && (frameCounter - g_levelLoaded) > 15 * FRAME_RATE_SCALER_INV;
 		}
 
 		void Camera::setLevelLoaded()
 		{
-			g_levelLoaded = gGlobalTimer;
+			g_levelLoaded = frameCounter;
 		}
 
 		void Camera::unsetLevelLoaded()

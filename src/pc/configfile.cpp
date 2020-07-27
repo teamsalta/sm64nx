@@ -11,39 +11,42 @@
 
 #define ARRAY_LEN(arr) (sizeof(arr) / sizeof(arr[0]))
 
-enum ConfigOptionType {
-    CONFIG_TYPE_BOOL,
-    CONFIG_TYPE_UINT,
-    CONFIG_TYPE_FLOAT,
+enum ConfigOptionType
+{
+	CONFIG_TYPE_BOOL,
+	CONFIG_TYPE_UINT,
+	CONFIG_TYPE_FLOAT,
 };
 
-struct ConfigOption {
-    const char *name;
-    enum ConfigOptionType type;
-    union {
-        bool *boolValue;
-        unsigned int *uintValue;
-        float *floatValue;
-    };
+struct ConfigOption
+{
+	const char* name;
+	enum ConfigOptionType type;
+	union
+	{
+		bool* boolValue;
+		unsigned int* uintValue;
+		float* floatValue;
+	};
 };
 
 /*
  *Config options and default values
  */
-bool configFullscreen            = false;
-unsigned int configWidth         = 1920;
-unsigned int configHeight        = 1080;
+bool configFullscreen	  = false;
+unsigned int configWidth  = 1920;
+unsigned int configHeight = 1080;
 // Keyboard mappings (scancode values)
-unsigned int configKeyA          = SDL_SCANCODE_SPACE;
-unsigned int configKeyB          = SDL_SCANCODE_F;
-unsigned int configKeyStart      = SDL_SCANCODE_RETURN;
-unsigned int configKeyR          = SDL_SCANCODE_V;
-unsigned int configKeyZ          = SDL_SCANCODE_LSHIFT;
-unsigned int configKeyCUp        = SDL_SCANCODE_UP;
-unsigned int configKeyCDown      = SDL_SCANCODE_DOWN;
-unsigned int configKeyCLeft      = SDL_SCANCODE_LEFT;
-unsigned int configKeyCRight     = SDL_SCANCODE_RIGHT;
-unsigned int configKeyStickUp    = SDL_SCANCODE_W;
-unsigned int configKeyStickDown  = SDL_SCANCODE_S;
-unsigned int configKeyStickLeft  = SDL_SCANCODE_A;
+unsigned int configKeyA		 = SDL_SCANCODE_SPACE;
+unsigned int configKeyB		 = SDL_SCANCODE_F;
+unsigned int configKeyStart	 = SDL_SCANCODE_RETURN;
+unsigned int configKeyR		 = SDL_SCANCODE_V;
+unsigned int configKeyZ		 = SDL_SCANCODE_LSHIFT;
+unsigned int configKeyCUp	 = SDL_SCANCODE_UP;
+unsigned int configKeyCDown	 = SDL_SCANCODE_DOWN;
+unsigned int configKeyCLeft	 = SDL_SCANCODE_LEFT;
+unsigned int configKeyCRight	 = SDL_SCANCODE_RIGHT;
+unsigned int configKeyStickUp	 = SDL_SCANCODE_W;
+unsigned int configKeyStickDown	 = SDL_SCANCODE_S;
+unsigned int configKeyStickLeft	 = SDL_SCANCODE_A;
 unsigned int configKeyStickRight = SDL_SCANCODE_D;

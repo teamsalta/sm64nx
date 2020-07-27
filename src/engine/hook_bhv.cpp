@@ -60,6 +60,5 @@ namespace sm64::hook::bhv
 	BehaviorScript* mount(BehaviorScript* func, u64 size)
 	{
 		return func;
-		//return (BehaviorScript*)asset::mount((u8*)func, size);
 	}
 } // namespace sm64::hook::bhv

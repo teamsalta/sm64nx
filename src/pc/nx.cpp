@@ -4,7 +4,8 @@
 
 static char g_initialized = 0;
 
-extern "C" {
+extern "C"
+{
 	void userAppInit(void);
 	void userAppExit(void);
 }
@@ -27,12 +28,11 @@ void initialize()
 		return;
 	}
 
-	g_initialized  = 1;
+	g_initialized = 1;
 
 	accountInitialize(AccountServiceType_Application);
-	
 
-	if (appletSetCpuBoostMode(ApmCpuBoostMode_Type1))
+	if(appletSetCpuBoostMode(ApmCpuBoostMode_Type1))
 	{
 	}
 }
@@ -47,29 +47,29 @@ int appletEnsureSaveData(AccountUid uid)
 AccountUid currentUser()
 {
 	AccountUid uid;
-	
+
 	uid.uid[0] = 0;
 	uid.uid[1] = 0;
-	
-	if (accountGetPreselectedUser(&uid))
+
+	if(accountGetPreselectedUser(&uid))
 	{
 	}
-	
+
 	return uid;
 }
 
 int mountSaveData()
 {
 	FsFileSystem fileSystem;
-	
+
 	initialize();
 
-	if (fsOpen_SaveData(&fileSystem, FS_SAVEDATA_CURRENT_APPLICATIONID, currentUser()))
+	if(fsOpen_SaveData(&fileSystem, FS_SAVEDATA_CURRENT_APPLICATIONID, currentUser()))
 	{
 		return -1;
 	}
 
-	if (fsdevMountDevice("sv", fileSystem) == -1)
+	if(fsdevMountDevice("sv", fileSystem) == -1)
 	{
 		fsdevUnmountDevice("sv");
 		return -2;
@@ -79,7 +79,7 @@ int mountSaveData()
 
 int unmountSaveData()
 {
-	if (fsdevUnmountDevice("sv") == -1)
+	if(fsdevUnmountDevice("sv") == -1)
 	{
 		return -1;
 	}

@@ -50,7 +50,7 @@ static s32 spiny_check_active(void)
 			//  It can also be used on a bob-omb respawner to change its model
 			//  to a butterfly or fish.
 			o->parentObj->oEnemyLakituNumSpinies -= 1;
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 			return FALSE;
 		}
 	}
@@ -179,8 +179,8 @@ static void spiny_act_thrown_by_lakitu(void)
 
 		if(o->oMoveFlags & OBJ_MOVE_LANDED)
 		{
-			PlaySound2(SOUND_OBJ_SPINY_UNK59);
-			obj_set_model(MODEL_SPINY);
+			objsound(SOUND_OBJ_SPINY_UNK59);
+			s_change_shape(MODEL_SPINY);
 			func_8029EE20(o, (Animation**)spiny_seg5_anims_05016EAC, 0);
 			o->oGraphYOffset = -17.0f;
 

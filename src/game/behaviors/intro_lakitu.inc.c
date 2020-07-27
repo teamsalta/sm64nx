@@ -87,7 +87,7 @@ void bhv_intro_lakitu_loop(void)
 			}
 			if(gCutsceneTimer > 52 * FRAME_RATE_SCALER_INV)
 			{
-				PlaySound(SOUND_AIR_LAKITU_FLY_HIGHPRIO);
+				objsound_level(SOUND_AIR_LAKITU_FLY_HIGHPRIO);
 			}
 
 			if(intro_lakitu_set_pos_and_focus(gCurrentObject, gIntroLakituStartToPipeOffsetFromCamera, gIntroLakituStartToPipeFocus) == 1)
@@ -97,14 +97,12 @@ void bhv_intro_lakitu_loop(void)
 
 			switch(gCurrentObject->oTimer)
 			{
-#ifdef VERSION_US
 				case 534 * FRAME_RATE_SCALER_INV:
-					PlaySound2(SOUND_ACTION_FLYING_FAST);
+					objsound(SOUND_ACTION_FLYING_FAST);
 					break;
 				case 581 * FRAME_RATE_SCALER_INV:
-					PlaySound2(SOUND_ACTION_INTRO_UNK45E);
+					objsound(SOUND_ACTION_INTRO_UNK45E);
 					break;
-#endif
 				case 73 * FRAME_RATE_SCALER_INV:
 					gCurrentObject->oAnimState += 1;
 					break;
@@ -118,12 +116,6 @@ void bhv_intro_lakitu_loop(void)
 					gCurrentObject->oAnimState -= 1;
 					break;
 			}
-#ifdef VERSION_EU
-			if(gCurrentObject->oTimer == 446 * FRAME_RATE_SCALER_INV)
-				PlaySound2(SOUND_ACTION_FLYING_FAST);
-			if(gCurrentObject->oTimer == 485 * FRAME_RATE_SCALER_INV)
-				PlaySound2(SOUND_ACTION_INTRO_UNK45E);
-#endif
 			break;
 		case 2:
 			if(gCutsceneTimer > 720 * FRAME_RATE_SCALER_INV)
@@ -137,11 +129,11 @@ void bhv_intro_lakitu_loop(void)
 				gCurrentObject->oFaceAngleYaw	   = gCurrentObject->oMoveAngleYaw + 0x4000;
 				gCurrentObject->oMoveAnglePitch	   = 0x800;
 			}
-			PlaySound(SOUND_AIR_LAKITU_FLY_HIGHPRIO);
+			objsound_level(SOUND_AIR_LAKITU_FLY_HIGHPRIO);
 			break;
 
 		case 3:
-			PlaySound(SOUND_AIR_LAKITU_FLY_HIGHPRIO);
+			objsound_level(SOUND_AIR_LAKITU_FLY_HIGHPRIO);
 			vec3f_set(sp58, -1128.f, 560.f, 4664.f);
 			gCurrentObject->oMoveAngleYaw += 0x200 / FRAME_RATE_SCALER_INV;
 			gCurrentObject->oIntroLakituUnk100 = approach_f32_asymptotic(gCurrentObject->oIntroLakituUnk100, 100.f, 0.03f * FRAME_RATE_SCALER);
@@ -165,21 +157,15 @@ void bhv_intro_lakitu_loop(void)
 				func_802ADA94();
 				gCurrentObject->oPosY += 158.f * FRAME_RATE_SCALER;
 			}
-#ifdef VERSION_EU
-#define TIMER 74
-#else
 #define TIMER 98
-#endif
 
 			if(gCurrentObject->oTimer == TIMER * FRAME_RATE_SCALER_INV)
 			{
-				mark_object_for_deletion(gCurrentObject);
-				mark_object_for_deletion(gCurrentObject->oIntroLakituCloud);
+				s_remove_obj(gCurrentObject);
+				s_remove_obj(gCurrentObject->oIntroLakituCloud);
 			}
-#ifndef VERSION_JP
 			if(gCurrentObject->oTimer == 14 * FRAME_RATE_SCALER_INV)
-				PlaySound2(SOUND_ACTION_INTRO_UNK45F);
-#endif
+				objsound(SOUND_ACTION_INTRO_UNK45F);
 			break;
 		case 100:
 			obj_enable_rendering();

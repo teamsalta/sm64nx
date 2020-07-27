@@ -14,12 +14,12 @@ void bhv_punch_tiny_triangle_loop(void)
 		obj_set_pos_relative(gMarioObject, 0.0f, 60.0f, 100.0f);
 		o->oMoveAngleYaw = sp1E; // does obj_set_pos_relative modify currentObject?
 	}
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 	o->oAnimState = 5;
-	obj_scale(o->oCollisionParticleUnkF4);
+	s_set_scale(o->oCollisionParticleUnkF4);
 	o->oCollisionParticleUnkF4 -= 0.2f;
 	if(gDebugInfo[4][0] + 6 < o->oTimer)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }
 
 void bhv_punch_tiny_triangle_init(void)
@@ -29,7 +29,7 @@ void bhv_punch_tiny_triangle_init(void)
 	struct Object* triangle;
 	for(i = 0; i < 6; i++)
 	{
-		triangle		= spawn_object(o, MODEL_DIRT_ANIMATION, sm64::bhv::bhvPunchTinyTriangle());
+		triangle		= s_makeobj_nowpos(o, MODEL_DIRT_ANIMATION, sm64::bhv::bhvPunchTinyTriangle());
 		triangle->oMoveAngleYaw = gMarioObject->oMoveAngleYaw + D_8032F2CC[2 * i] + 0x8000;
 		triangle->oVelY		= sins(D_8032F2CC[2 * i + 1]) * 25.0f;
 		triangle->oForwardVel	= coss(D_8032F2CC[2 * i + 1]) * 25.0f;
@@ -46,9 +46,9 @@ void bhv_wall_tiny_star_particle_loop(void)
 		obj_set_pos_relative(gMarioObject, 0.0f, 30.0f, 110.0f);
 		o->oMoveAngleYaw = sp1E;
 	}
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 	o->oAnimState = 4;
-	obj_scale(o->oCollisionParticleUnkF4);
+	s_set_scale(o->oCollisionParticleUnkF4);
 	o->oCollisionParticleUnkF4 -= 0.015f;
 }
 
@@ -59,7 +59,7 @@ void bhv_tiny_star_particles_init(void)
 	struct Object* particle;
 	for(i = 0; i < 7; i++)
 	{
-		particle		= spawn_object(o, MODEL_CARTOON_STAR, sm64::bhv::bhvWallTinyStarParticle());
+		particle		= s_makeobj_nowpos(o, MODEL_CARTOON_STAR, sm64::bhv::bhvWallTinyStarParticle());
 		particle->oMoveAngleYaw = gMarioObject->oMoveAngleYaw + D_8032F2E4[2 * i] + 0x8000;
 		particle->oVelY		= sins(D_8032F2E4[2 * i + 1]) * 25.0f;
 		particle->oForwardVel	= coss(D_8032F2E4[2 * i + 1]) * 25.0f;
@@ -75,9 +75,9 @@ void bhv_pound_tiny_star_particle_loop(void)
 		o->oPosY -= 20.0f;
 		o->oVelY = 14.0f;
 	}
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 	o->oAnimState = 4;
-	obj_scale(o->oCollisionParticleUnkF4);
+	s_set_scale(o->oCollisionParticleUnkF4);
 	o->oCollisionParticleUnkF4 -= 0.015f;
 }
 
@@ -88,7 +88,7 @@ void bhv_pound_tiny_star_particle_init(void)
 	struct Object* particle;
 	for(sp24 = 0; sp24 < sp20; sp24++)
 	{
-		particle		= spawn_object(o, MODEL_CARTOON_STAR, sm64::bhv::bhvPoundTinyStarParticle());
+		particle		= s_makeobj_nowpos(o, MODEL_CARTOON_STAR, sm64::bhv::bhvPoundTinyStarParticle());
 		particle->oMoveAngleYaw = (sp24 * 65536) / sp20;
 	}
 }

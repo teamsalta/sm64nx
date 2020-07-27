@@ -14,7 +14,7 @@ s32 func_802BB414(s16* a0, s32 a1)
 			o->oMoveAngleYaw = a0[a1 + 2];
 			o->oForwardVel	 = a0[a1 + 3] / 100.0f;
 
-			if(obj_is_mario_on_platform())
+			if(s_rideon_player())
 			{
 				a1 += 4;
 				o->oTimer = 0;
@@ -49,7 +49,7 @@ s32 func_802BB414(s16* a0, s32 a1)
 
 s32 func_802BB680(s32* a0, f32* a1, s32 a2, s32 a3)
 {
-	if(obj_is_mario_on_platform())
+	if(s_rideon_player())
 	{
 		if(a0[0] < 0x4000)
 			a0[0] += a2;
@@ -82,7 +82,7 @@ void bhv_lll_moving_octagonal_mesh_platform_loop(void)
 		o->oHorizontalMovementUnkF8 = func_802BB414(D_8032F8C8[o->oBehParams2ndByte], o->oHorizontalMovementUnkF8);
 	}
 
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 
 	if(func_802BB680(&o->oHorizontalMovementUnk104, &o->oHorizontalMovementUnk108, 0x400 / FRAME_RATE_SCALER_INV, -80))
 	{

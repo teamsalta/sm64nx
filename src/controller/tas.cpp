@@ -8,7 +8,7 @@ namespace sm64::hid
 	{
 		class Tas : public Controller
 		{
-		public:
+			public:
 			Tas() : Controller()
 			{
 				fp = fopen("cont.m64", "rb");
@@ -32,18 +32,18 @@ namespace sm64::hid
 			{
 				if(fp != NULL)
 				{
-					u8 bytes[4] = { 0 };
+					u8 bytes[4] = {0};
 					fread(bytes, 1, 4, fp);
-					m_state.button = (bytes[0] << 8) | bytes[1];
+					m_state.button	= (bytes[0] << 8) | bytes[1];
 					m_state.stick_x = bytes[2];
 					m_state.stick_y = bytes[3];
 				}
 			}
 
-		protected:
+			protected:
 			FILE* fp;
 		};
-	}
+	} // namespace controller
 
 	Tas::Tas() : Driver()
 	{
@@ -63,4 +63,4 @@ namespace sm64::hid
 		}
 	}
 
-}
+} // namespace sm64::hid

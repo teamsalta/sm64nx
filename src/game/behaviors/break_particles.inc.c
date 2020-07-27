@@ -1,12 +1,12 @@
 // break_particles.c.inc
 
-void spawn_triangle_break_particles(s16 numTris, s16 triModel, f32 triSize, s16 triAnimState)
+void s_boxeffect(s16 numTris, s16 triModel, f32 triSize, s16 triAnimState)
 {
 	struct Object* triangle;
 	s32 i;
 	for(i = 0; i < numTris; i++)
 	{
-		triangle	     = spawn_object(o, triModel, sm64::bhv::bhvBreakBoxTriangle());
+		triangle	     = s_makeobj_nowpos(o, triModel, sm64::bhv::bhvBreakBoxTriangle());
 		triangle->oAnimState = triAnimState;
 		triangle->oPosY += 100.0f;
 		triangle->oMoveAngleYaw	  = RandomU16();

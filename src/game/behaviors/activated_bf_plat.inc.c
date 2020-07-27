@@ -7,7 +7,7 @@
 
 /**
  * Table of activated back-and-forth platform collision models.
- * The second entry is unused. It corresponds to the mesh platform
+ * The second entry is size. It corresponds to the mesh platform
  * at the beginning of BitFS. In the game, it's a bhvPlatformOnTrack,
  * which allows for more complex movement; its path is mostly a straight line
  * except for where it dips into the lava. It seems the programmers

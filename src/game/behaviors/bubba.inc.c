@@ -73,7 +73,7 @@ void bubba_act_1(void)
 	{
 		if(--o->oBubbaUnk100 == 0)
 		{
-			PlaySound2(SOUND_OBJ_BUBBA_CHOMP);
+			objsound(SOUND_OBJ_BUBBA_CHOMP);
 			o->oAction = 0;
 		}
 		else if(o->oBubbaUnk100 < 15)
@@ -171,7 +171,7 @@ void bhv_bubba_loop(void)
 	{
 		if(o->oMoveFlags & 0x00000008)
 		{
-			sp38 = spawn_object(o, MODEL_WATER_SPLASH, sm64::bhv::bhvWaterSplash());
+			sp38 = s_makeobj_nowpos(o, MODEL_WATER_SPLASH, sm64::bhv::bhvWaterSplash());
 			if(sp38 != NULL)
 			{
 				scale_object(sp38, 3.0f);
@@ -189,7 +189,7 @@ void bhv_bubba_loop(void)
 			{
 				sp36 = RandomU16();
 				o->oBubbaUnk10C -= 1.0f;
-				spawn_object_relative(0, 150.0f * coss(sp36), 0x64, 150.0f * sins(sp36), o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvSmallParticleSnow());
+				s_makeobj_chain(0, 150.0f * coss(sp36), 0x64, 150.0f * sins(sp36), o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvSmallParticleSnow());
 			}
 		}
 

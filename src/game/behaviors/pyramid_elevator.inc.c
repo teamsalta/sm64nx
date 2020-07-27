@@ -16,7 +16,7 @@ void bhv_pyramid_elevator_init(void)
 
 	for(i = 0; i < 10; i++)
 	{
-		ball	    = spawn_object(o, MODEL_TRAJECTORY_MARKER_BALL, sm64::bhv::bhvPyramidElevatorTrajectoryMarkerBall());
+		ball	    = s_makeobj_nowpos(o, MODEL_TRAJECTORY_MARKER_BALL, sm64::bhv::bhvPyramidElevatorTrajectoryMarkerBall());
 		ball->oPosY = 4600 - i * 460;
 	}
 }
@@ -81,8 +81,8 @@ void bhv_pyramid_elevator_trajectory_marker_ball_loop(void)
 {
 	struct Object* elevator;
 
-	obj_scale(0.15f);
-	elevator = obj_nearest_object_with_behavior(sm64::bhv::bhvPyramidElevator());
+	s_set_scale(0.15f);
+	elevator = s_find_obj(sm64::bhv::bhvPyramidElevator());
 
 	if(elevator != NULL)
 	{

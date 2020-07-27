@@ -79,7 +79,7 @@ void unagi_act_1_4(s32 arg0)
 
 	if(obj_check_anim_frame(6))
 	{
-		PlaySound2(SOUND_GENERAL_MOVING_WATER);
+		objsound(SOUND_GENERAL_MOVING_WATER);
 	}
 
 	if(obj_follow_path(0) == -1)
@@ -133,7 +133,7 @@ void unagi_act_3(void)
 
 			if(o->oTimer > 60 * FRAME_RATE_SCALER_INV && o->oUnagiUnk1AC < 1000.0f)
 			{
-				PlaySound2(SOUND_OBJ_EEL_2);
+				objsound(SOUND_OBJ_EEL_2);
 				o->oUnagiUnkF8 = o->oUnagiUnk110 = 30.0f;
 			}
 			else
@@ -191,7 +191,7 @@ void bhv_unagi_loop(void)
 		{
 			for(val04 = -4; val04 < 4; val04++)
 			{
-				spawn_object_relative(val04, 0, 0, 0, o, MODEL_NONE, sm64::bhv::bhvUnagiSubobject());
+				s_makeobj_chain(val04, 0, 0, 0, o, MODEL_NONE, sm64::bhv::bhvUnagiSubobject());
 			}
 			o->oUnagiUnk1B2 = 1;
 		}
@@ -226,7 +226,7 @@ void bhv_unagi_subobject_loop(void)
 
 	if(o->parentObj->oUnagiUnk1B2 == 0)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{
@@ -244,7 +244,7 @@ void bhv_unagi_subobject_loop(void)
 			if(o->parentObj->oAnimState != 0 && o->oDistanceToMario < 150.0f)
 			{
 				o->oBehParams = o->parentObj->oBehParams;
-				create_star(6833.0f, -3654.0f, 2230.0f);
+				s_enemyset_star(6833.0f, -3654.0f, 2230.0f);
 				o->parentObj->oAnimState = 0;
 			}
 		}

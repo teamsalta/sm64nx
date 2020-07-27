@@ -48,7 +48,7 @@ namespace sm64::gfx
 		{
 		}
 
-		ShaderProgram * create_and_load_new_shader(u32 shader_id)
+		ShaderProgram* create_and_load_new_shader(u32 shader_id)
 		{
 			return nullptr;
 		}
@@ -58,7 +58,7 @@ namespace sm64::gfx
 			return nullptr;
 		}
 
-		void shader_get_info(ShaderProgram *prg, u8& num_inputs, bool used_textures[2])
+		void shader_get_info(ShaderProgram* prg, u8& num_inputs, bool used_textures[2])
 		{
 			num_inputs = 0;
 		}
@@ -72,7 +72,7 @@ namespace sm64::gfx
 		{
 		}
 
-		void upload_texture(const u8 *rgba32_buf, int width, int height, TextureNode& node)
+		void upload_texture(const u8* rgba32_buf, int width, int height, TextureNode& node)
 		{
 		}
 
@@ -142,4 +142,4 @@ namespace sm64::gfx
 		{
 		}
 	};
-}
+} // namespace sm64::gfx

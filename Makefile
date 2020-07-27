@@ -322,10 +322,6 @@ OBJCOPY := objcopy
 ifeq ($(WINDOWS_BUILD),1)
 CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17 -DGLEW_STATIC
 CFLAGS := $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17 -DGLEW_STATIC
-else ifeq ($(OS),Windows_NT)
-# mingw
-CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -DUSE_SDL=2 -Wno-narrowing -fpermissive -std=gnu++17 -DGLEW_STATIC
-CFLAGS := $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -DUSE_SDL=2 -Wno-narrowing -fpermissive -std=gnu++17 -DGLEW_STATIC
 else
 CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17
 CFLAGS := $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17
@@ -335,14 +331,9 @@ ASFLAGS := -I include -I $(BUILD_DIR) $(VERSION_ASFLAGS)
 
 
 ifeq ($(WINDOWS_BUILD),1)
-LDFLAGS := -static -lm -lglew32 -lopengl32 `sdl2-config --static-libs` -no-pie -lpthread -static-libgcc -lzstd -lz -lole32 -loleaut32 -limm32 -lversion -lwinmm -lsetupapi
+LDFLAGS := -Wl,-Bstatic -lm -lglew32 -lopengl32 -Wl,-Bdynamic `sdl2-config --libs` -no-pie -Wl,-Bstatic -lpthread -static-libgcc -lzstd
 else
-ifeq ($(OS),Windows_NT)
-# mingw
-LDFLAGS := -static -lm -lglew32 -lopengl32 `sdl2-config --static-libs` -no-pie -lpthread -static-libgcc -lzstd -lole32 -loleaut32 -limm32 -lversion -lwinmm -lsetupapi
-else
-LDFLAGS := -lm -lGL `sdl2-config --libs` -no-pie -lpthread -lasound -lzstd -lX11 -lXrandr -lpulse
-endif
+LDFLAGS := -lm -lGL `sdl2-config --libs` -no-pie -lpthread -lzstd
 endif
 
 endif

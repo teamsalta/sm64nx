@@ -144,7 +144,8 @@ namespace sm64
 
 	u8* Buffer::ptr() const
 	{
-		return m_ptr + m_offset;;
+		return m_ptr + m_offset;
+		;
 	}
 
 	u64 Buffer::size() const
@@ -182,7 +183,7 @@ namespace sm64
 
 		if(m_ptr)
 		{
-			//if(preserveData)
+			// if(preserveData)
 			{
 				memcpy(newAlloc, m_ptr, m_size);
 			}
@@ -224,15 +225,14 @@ namespace sm64
 		resize(decompressedSize + buffOutSize, false);
 		resize(0, false);
 
-		ZSTD_inBuffer input = {buffer, sz, 0};
-		ZSTD_outBuffer output = { m_ptr, m_allocSize + buffOutSize, 0 };
-		
+		ZSTD_inBuffer input   = {buffer, sz, 0};
+		ZSTD_outBuffer output = {m_ptr, m_allocSize + buffOutSize, 0};
 
 		ZSTD_DCtx* dctx = ZSTD_createDCtx();
 
 		while(input.pos < input.size)
-		{			
-			size_t const ret      = ZSTD_decompressStream(dctx, &output, &input);
+		{
+			size_t const ret = ZSTD_decompressStream(dctx, &output, &input);
 
 			if(ZSTD_isError(ret))
 			{
@@ -431,11 +431,11 @@ namespace sm64
 				switch(entry.type)
 				{
 					case Type::GEO:
-						//hook::geo::mount((GeoLayout*)object.ptr, object.size);
+						// hook::geo::mount((GeoLayout*)object.ptr, object.size);
 						break;
 
 					case Type::DISPLAY_LIST:
-						//hook::dl::mount((Gfx*)object.ptr, object.size);
+						// hook::dl::mount((Gfx*)object.ptr, object.size);
 						break;
 				}
 
@@ -684,10 +684,10 @@ namespace sm64
 				loadDir("romfs:/", paks);
 				loadDir("sdmc:/switch/sm64/", paks);
 #else
-				loadDir("romfs/", paks);	
+				loadDir("romfs/", paks);
 #endif
 
-				std::sort(paks.begin(), paks.end());// , std::greater<std::filesystem::path>());
+				std::sort(paks.begin(), paks.end()); // , std::greater<std::filesystem::path>());
 
 				for(const auto& path : paks)
 				{
@@ -732,7 +732,7 @@ namespace sm64
 						{
 							if(config().mods().isEnabled(entry.path().filename().generic_u8string()))
 							{
-								loadDir(entry.path(), paks, depth+1);
+								loadDir(entry.path(), paks, depth + 1);
 							}
 						}
 					}
@@ -744,7 +744,8 @@ namespace sm64
 
 			void loadLooseDir(const std::filesystem::path& path, bool rootDir)
 			{
-				static std::unordered_map<std::string, u64> defaultFileMapping = { {"bank_sets", (u64)hook::sound::Id::gBankSetsData}, {"sequences.bin", (u64)hook::sound::Id::gMusicData}, {"sound_data.ctl", (u64)hook::sound::Id::gSoundDataADSR}, {"sound_data.tbl", (u64)hook::sound::Id::gSoundDataRaw} };
+				static std::unordered_map<std::string, u64> defaultFileMapping = {
+				    {"bank_sets", (u64)hook::sound::Id::gBankSetsData}, {"sequences.bin", (u64)hook::sound::Id::gMusicData}, {"sound_data.ctl", (u64)hook::sound::Id::gSoundDataADSR}, {"sound_data.tbl", (u64)hook::sound::Id::gSoundDataRaw}};
 				try
 				{
 					for(const auto& entry : std::filesystem::directory_iterator(path))
@@ -780,7 +781,7 @@ namespace sm64
 							}
 							else if(defaultFileMapping.count(entry.path().filename().string()))
 							{
-								auto s = entry.path().u8string();
+								auto s							    = entry.path().u8string();
 								m_map[defaultFileMapping[entry.path().filename().string()]] = std::move(std::unique_ptr<Object>(loadFileObject(s.c_str())));
 							}
 						}
@@ -844,7 +845,7 @@ namespace sm64
 		{
 		}
 
-		static u8 g_zeroes[0x1000] = { 0 };
+		static u8 g_zeroes[0x1000] = {0};
 
 		u64 Object::align(const u64 alignment)
 		{
@@ -890,7 +891,7 @@ namespace sm64
 			for(u64 i = 0; i < func->entryCount; i++)
 			{
 				auto& entry = func->entries[i];
-				auto& v = *(u64*)(ptr + entry.offset1);
+				auto& v	    = *(u64*)(ptr + entry.offset1);
 
 #ifdef DEBUG
 				if((v & 0xFFFFFFFF00000000) != ASSET_MAGIC_MASK)

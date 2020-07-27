@@ -70,7 +70,7 @@ void bhv_wiggler_body_part_update(void)
 	struct ChainSegment* segment = &o->parentObj->oWigglerSegments[o->oBehParams2ndByte];
 	f32 posOffset;
 
-	obj_scale(o->parentObj->header.gfx.scale[0]);
+	s_set_scale(o->parentObj->header.gfx.scale[0]);
 
 	o->oFaceAnglePitch = segment->pitch;
 	o->oFaceAngleYaw   = segment->yaw;
@@ -111,7 +111,7 @@ void bhv_wiggler_body_part_update(void)
 
 	if(o->parentObj->oAction == WIGGLER_ACT_SHRINK)
 	{
-		obj_become_intangible();
+		s_hitOFF();
 	}
 	else
 	{
@@ -153,7 +153,7 @@ static void wiggler_init_segments(void)
 		// Spawn each body part
 		for(i = 1; i <= 3; i++)
 		{
-			bodyPart = spawn_object_relative(i, 0, 0, 0, o, MODEL_WIGGLER_BODY, sm64::bhv::bhvWigglerBody());
+			bodyPart = s_makeobj_chain(i, 0, 0, 0, o, MODEL_WIGGLER_BODY, sm64::bhv::bhvWigglerBody());
 			if(bodyPart != NULL)
 			{
 				func_8029EE20(bodyPart, (Animation**)wiggler_seg5_anims_0500C874, 0);
@@ -162,7 +162,7 @@ static void wiggler_init_segments(void)
 		}
 
 		o->oAction = WIGGLER_ACT_WALK;
-		obj_unhide();
+		s_shape_disp();
 	}
 }
 
@@ -350,7 +350,7 @@ static void wiggler_act_jumped_on(void)
 				if(--o->oHealth == 1)
 				{
 					o->oAction = WIGGLER_ACT_SHRINK;
-					obj_become_intangible();
+					s_hitOFF();
 				}
 				else
 				{
@@ -359,7 +359,7 @@ static void wiggler_act_jumped_on(void)
 
 					if(o->oHealth == 2)
 					{
-						PlaySound2(SOUND_OBJ_WIGGLER_JUMP);
+						objsound(SOUND_OBJ_WIGGLER_JUMP);
 						o->oForwardVel = 10.0f;
 						o->oVelY       = 70.0f;
 					}
@@ -407,17 +407,17 @@ static void wiggler_act_shrink(void)
 	{
 		if(o->oTimer == 20 * FRAME_RATE_SCALER_INV)
 		{
-			PlaySound2(SOUND_OBJ_ENEMY_DEFEAT_SHRINK);
+			objsound(SOUND_OBJ_ENEMY_DEFEAT_SHRINK);
 		}
 
 		// 4 is the default scale, so shrink to 1/4 of regular size
 		if(approach_f32_ptr(&o->header.gfx.scale[0], 1.0f, 0.1f * FRAME_RATE_SCALER))
 		{
-			create_star(0.0f, 2048.0f, 0.0f);
+			s_enemyset_star(0.0f, 2048.0f, 0.0f);
 			o->oAction = WIGGLER_ACT_FALL_THROUGH_FLOOR;
 		}
 
-		obj_scale(o->header.gfx.scale[0]);
+		s_set_scale(o->header.gfx.scale[0]);
 	}
 }
 
@@ -442,7 +442,7 @@ static void wiggler_act_fall_through_floor(void)
 			o->oFaceAnglePitch = obj_get_pitch_from_vel();
 		}
 
-		obj_move_using_fvel_and_gravity();
+		s_optionmove_F();
 	}
 }
 
@@ -452,7 +452,7 @@ static void wiggler_act_fall_through_floor(void)
  */
 void wiggler_jumped_on_attack_handler(void)
 {
-	PlaySound2(SOUND_OBJ_WIGGLER_ATTACKED);
+	objsound(SOUND_OBJ_WIGGLER_ATTACKED);
 	o->oAction     = WIGGLER_ACT_JUMPED_ON;
 	o->oForwardVel = o->oVelY = 0.0f;
 	o->oWigglerSquishSpeed	  = 0.4f;

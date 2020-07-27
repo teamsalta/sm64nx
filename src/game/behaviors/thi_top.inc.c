@@ -10,10 +10,10 @@ void bhv_thi_huge_island_top_loop(void)
 	{
 		if(o->oTimer == 0)
 			gEnvironmentRegions[18] = 3000;
-		obj_hide();
+		s_shape_hide();
 	}
 	else
-		load_object_collision_model();
+		stMainMoveBG();
 }
 
 void bhv_thi_tiny_island_top_loop(void)
@@ -23,13 +23,13 @@ void bhv_thi_tiny_island_top_loop(void)
 		if(o->oAction == 0)
 		{
 			if(o->oDistanceToMario < 500.0f)
-				if(gMarioStates->action == ACT_GROUND_POUND_LAND)
+				if(playerWorks->status == ACT_GROUND_POUND_LAND)
 				{
 					o->oAction++;
 					obj_spawn_particles(&D_8032F134);
-					spawn_triangle_break_particles(20, 138, 0.3f, 3);
-					PlaySound2(SOUND_GENERAL_ACTIVATE_CAP_SWITCH);
-					obj_hide();
+					s_boxeffect(20, 138, 0.3f, 3);
+					objsound(SOUND_GENERAL_ACTIVATE_CAP_SWITCH);
+					s_shape_hide();
 				}
 		}
 		else
@@ -37,12 +37,12 @@ void bhv_thi_tiny_island_top_loop(void)
 			if(o->oTimer < 50 * FRAME_RATE_SCALER_INV)
 			{
 				gEnvironmentRegions[18]--;
-				PlaySound(SOUND_ENV_WATER_DRAIN);
+				objsound_level(SOUND_ENV_WATER_DRAIN);
 			}
 			else
 			{
 				gTHIWaterDrained |= 1;
-				play_puzzle_jingle();
+				Na_NazoClearBgm();
 				o->oAction += 1;
 			}
 		}
@@ -51,6 +51,6 @@ void bhv_thi_tiny_island_top_loop(void)
 	{
 		if(o->oTimer == 0)
 			gEnvironmentRegions[18] = 700;
-		obj_hide();
+		s_shape_hide();
 	}
 }

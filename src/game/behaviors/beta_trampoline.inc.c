@@ -58,17 +58,17 @@ void bhv_beta_trampoline_spring_loop(void)
  */
 void bhv_beta_trampoline_top_loop(void)
 {
-	obj_set_model(MODEL_TRAMPOLINE);
+	s_change_shape(MODEL_TRAMPOLINE);
 
 	// When initialized, spawn the rest of the trampoline
 	if(o->oTimer == 0)
 	{
 		struct Object* trampolinePart;
 
-		trampolinePart = spawn_object(o, MODEL_TRAMPOLINE_CENTER, sm64::bhv::bhvBetaTrampolineSpring());
+		trampolinePart = s_makeobj_nowpos(o, MODEL_TRAMPOLINE_CENTER, sm64::bhv::bhvBetaTrampolineSpring());
 		trampolinePart->oPosY -= 75.0f;
 
-		trampolinePart = spawn_object(o, MODEL_TRAMPOLINE_BASE, sm64::bhv::bhvStaticObject());
+		trampolinePart = s_makeobj_nowpos(o, MODEL_TRAMPOLINE_BASE, sm64::bhv::bhvStaticObject());
 		trampolinePart->oPosY -= 150.0f;
 	}
 

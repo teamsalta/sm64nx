@@ -95,7 +95,7 @@ void bhv_rolling_log_loop(void)
 
 	if(absf_2(o->oFaceAnglePitch & 0x1FFF) < 528.0f && o->oAngleVelPitch != 0)
 	{
-		PlaySound2(SOUND_GENERAL_UNKNOWN1_2);
+		objsound(SOUND_GENERAL_UNKNOWN1_2);
 	}
 }
 
@@ -111,7 +111,7 @@ void func_802F2820(void)
 		o->oAngleVelPitch   = 0;
 		o->oRollingLogUnkF4 = 0;
 		o->oAction	    = 2;
-		PlaySound2(SOUND_GENERAL_BIG_POUND);
+		objsound(SOUND_GENERAL_BIG_POUND);
 		set_camera_shake_from_point(SHAKE_POS_LARGE, o->oPosX, o->oPosY, o->oPosZ);
 	}
 }
@@ -132,10 +132,10 @@ void bhvLllVolcanoFallingTrap_loop(void)
 	switch(o->oAction)
 	{
 		case 0:
-			if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 1000))
+			if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 1000))
 			{
 				o->oAction = 1;
-				PlaySound2(SOUND_GENERAL_QUIET_POUND2);
+				objsound(SOUND_GENERAL_QUIET_POUND2);
 			}
 			break;
 
@@ -150,7 +150,7 @@ void bhvLllVolcanoFallingTrap_loop(void)
 			}
 			if(o->oTimer == 50 * FRAME_RATE_SCALER_INV)
 			{
-				PlaySound2(SOUND_GENERAL_UNK45);
+				objsound(SOUND_GENERAL_UNK45);
 				o->oAction = 3;
 			}
 			break;

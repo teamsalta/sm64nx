@@ -420,9 +420,7 @@
 #define /*0x0F4*/ oCoinUnkF4  OBJECT_FIELD_S32(0x1B)
 #define /*0x0F8*/ oCoinUnkF8  OBJECT_FIELD_S32(0x1C)
 #define /*0x110*/ oCoinUnk110 OBJECT_FIELD_F32(0x22)
-#ifndef VERSION_JP
 #define /*0x1B0*/ oCoinUnk1B0 OBJECT_FIELD_S32(0x4A)
-#endif
 
 /* Collision Particle */
 #define /*0x0F4*/ oCollisionParticleUnkF4  OBJECT_FIELD_F32(0x1B)
@@ -657,9 +655,7 @@
 #define /*0x0F8*/ oCameraLakituSpeed          OBJECT_FIELD_F32(0x1C)
 #define /*0x0FC*/ oCameraLakituCircleRadius   OBJECT_FIELD_F32(0x1D)
 #define /*0x100*/ oCameraLakituFinishedDialog OBJECT_FIELD_S32(0x1E)
-#ifndef VERSION_JP
 #define /*0x104*/ oCameraLakituUnk104         OBJECT_FIELD_S32(0x1F)
-#endif
 #define /*0x1AC*/ oCameraLakituPitchVel       OBJECT_FIELD_S16(0x49, 0)
 #define /*0x1AE*/ oCameraLakituYawVel         OBJECT_FIELD_S16(0x49, + 1)
 

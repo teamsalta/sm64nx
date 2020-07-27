@@ -32,7 +32,7 @@ void bhv_ship_part_3_loop(void)
 	o->oAngleVelPitch  = o->oFaceAnglePitch - sp1E;
 	o->oAngleVelRoll   = o->oFaceAngleRoll - sp1C;
 	if(gMarioObject->oPosY > 1000.0f)
-		PlaySound(SOUND_ENV_BOAT_ROCKING1);
+		objsound_level(SOUND_ENV_BOAT_ROCKING1);
 }
 
 void bhv_jrb_sliding_box_loop(void)
@@ -49,7 +49,7 @@ void bhv_jrb_sliding_box_loop(void)
 	if(o->oJrbSlidingBoxUnkF4 == NULL)
 	{
 		sp1E = 0;
-		sp3C = obj_nearest_object_with_behavior(sm64::bhv::bhvInSunkenShip3());
+		sp3C = s_find_obj(sm64::bhv::bhvInSunkenShip3());
 		if(sp3C != NULL) // NULL check only for assignment, not for dereference?
 			o->oJrbSlidingBoxUnkF4 = sp3C;
 		o->oParentRelativePosX = o->oPosX - sp3C->oPosX;
@@ -90,13 +90,13 @@ void bhv_jrb_sliding_box_loop(void)
 
 	if(gMarioObject->oPosY > 1000.0f)
 		if(absf(o->oJrbSlidingBoxUnkFC) > 3.0f)
-			PlaySound(SOUND_AIR_ROUGH_SLIDE);
-	set_object_hitbox(o, &sSkullSlidingBoxHitbox);
+			objsound_level(SOUND_AIR_ROUGH_SLIDE);
+	s_set_hitparam(o, &sSkullSlidingBoxHitbox);
 	if(!(o->oJrbSlidingBoxUnkF8 & 0x7FFF))
-		obj_become_tangible();
-	if(are_objects_collided(o, gMarioObject))
+		s_hitON();
+	if(s_hitcheck(o, gMarioObject))
 	{
 		o->oInteractStatus = 0;
-		obj_become_intangible();
+		s_hitOFF();
 	}
 }

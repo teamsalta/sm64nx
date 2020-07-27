@@ -21,8 +21,8 @@ extern f32 gSineTable[];
 extern f32 gCosineTable[];
 #endif
 
-#define sins(x) gSineTable[(u16) (x) >> 4]
-#define coss(x) gCosineTable[(u16) (x) >> 4]
+#define sins(x) gSineTable[(u16)(x) >> 4]
+#define coss(x) gCosineTable[(u16)(x) >> 4]
 
 //#define min(a, b) ((a) <= (b) ? (a) : (b))
 //#define max(a, b) ((a) > (b) ? (a) : (b))
@@ -58,11 +58,11 @@ void mtxf_align_terrain_triangle(Mat4& mtx, const Vec3f pos, const s16 yaw, cons
 void mtxf_mul(Mat4& dest, const Mat4 a, const Mat4 b);
 void mtxf_scale_vec3f(Mat4& dest, const Mat4 mtx, const Vec3f s);
 void mtxf_mul_vec3s(const Mat4 mtx, Vec3s& b);
-void mtxf_to_mtx(Mtx *dest, const Mat4 src);
-void mtxf_rotate_xy(Mtx *a, s16 b);
+void mtxf_to_mtx(Mtx* dest, const Mat4 src);
+void mtxf_rotate_xy(Mtx* a, s16 b);
 void get_pos_from_transform_mtx(Vec3f& dest, const Mat4 objMtx, const Mat4 camMtx);
-void vec3f_get_dist_and_angle(const Vec3f from, const Vec3f to, f32 *dist, s16 *pitch, s16 *yaw);
-void vec3f_set_dist_and_angle(Vec3f from, Vec3f to, f32  dist, s16  pitch, s16  yaw);
+void vec3f_get_dist_and_angle(const Vec3f from, const Vec3f to, f32* dist, s16* pitch, s16* yaw);
+void vec3f_set_dist_and_angle(Vec3f from, Vec3f to, f32 dist, s16 pitch, s16 yaw);
 s32 approach_s32(const s32 current, const s32 target, const s32 inc, const s32 dec);
 f32 approach_f32(const f32 current, const f32 target, const f32 inc, const f32 dec);
 s16 atan2s(f32 a, f32 b);

@@ -2,7 +2,7 @@
  * Behavior for bhvBetaHoldableObject.
  * This is a simple implementation of a holdable object, probably used
  * for testing. This was previously assumed to be a beta shell, as there
- * are unused shell models left in the game; however, there is no evidence
+ * are size shell models left in the game; however, there is no evidence
  * to support this theory.
  */
 
@@ -64,7 +64,7 @@ void bhv_beta_holdable_object_loop(void)
 	{
 		case HELD_FREE:
 			// Apply standard physics
-			object_step();
+			ObjMoveEvent();
 			break;
 
 		case HELD_HELD:

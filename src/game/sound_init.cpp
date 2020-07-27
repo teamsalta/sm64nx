@@ -13,6 +13,7 @@
 #include "engine/graph_node.h"
 #include "paintings.h"
 #include "level_table.h"
+#include "game/motor.h"
 
 #define MUSIC_NONE 0xFFFF
 
@@ -72,12 +73,12 @@ static s8 paintingEjectSoundPlayed = FALSE;
 
 static void play_menu_sounds_extra(int a, void* b);
 
-void func_80248C10(void)
+void AudResetMute(void)
 {
 	D_8032C6C0 = 0;
 }
 
-void func_80248C28(s32 a) // Soften volume
+void AudStartMute(s32 a) // Soften volume
 {
 	switch(a)
 	{
@@ -91,7 +92,7 @@ void func_80248C28(s32 a) // Soften volume
 	D_8032C6C0 |= a;
 }
 
-void func_80248CB8(s32 a) // harden volume
+void AudEndMute(s32 a) // harden volume
 {
 	switch(a)
 	{
@@ -99,7 +100,7 @@ void func_80248CB8(s32 a) // harden volume
 			set_sound_disabled(FALSE);
 			break;
 		case 2:
-			sequence_player_unlower(0, 60);
+			Na_SeqVolRecover(0, 60);
 			break;
 	}
 	D_8032C6C0 &= ~a;
@@ -114,7 +115,7 @@ void func_80248D48(void)
 	}
 }
 
-void func_80248D90(void)
+void AudUnlockSound(void)
 {
 	if(D_8032C6C4 == 1)
 	{
@@ -139,55 +140,60 @@ void set_sound_mode(u16 soundMode)
  */
 void play_menu_sounds(s16 soundMenuFlags)
 {
-	if(soundMenuFlags & SOUND_MENU_FLAG_HANDAPPEAR)
+	if(soundMenuFlags & AUD_FACE_APPEAR)
 	{
-		play_sound(SOUND_MENU_HAND_APPEAR, gDefaultSoundArgs);
+		AudStartSound(SOUND_MENU_HAND_APPEAR, gDefaultSoundArgs);
 	}
-	else if(soundMenuFlags & SOUND_MENU_FLAG_HANDISAPPEAR)
+	else if(soundMenuFlags & AUD_FACE_DISAPPEAR)
 	{
-		play_sound(SOUND_MENU_HAND_DISAPPEAR, gDefaultSoundArgs);
+		AudStartSound(SOUND_MENU_HAND_DISAPPEAR, gDefaultSoundArgs);
 	}
-	else if(soundMenuFlags & SOUND_MENU_FLAG_UNKNOWN1)
+	else if(soundMenuFlags & AUD_FACE_SPARK)
 	{
-		play_sound(SOUND_MENU_UNK0C, gDefaultSoundArgs);
+		AudStartSound(SOUND_MENU_UNK0C, gDefaultSoundArgs);
 	}
-	else if(soundMenuFlags & SOUND_MENU_FLAG_PINCHMARIOFACE)
+	else if(soundMenuFlags & AUD_FACE_PINCH)
 	{
-		play_sound(SOUND_MENU_PINCH_MARIO_FACE, gDefaultSoundArgs);
+		AudStartSound(SOUND_MENU_PINCH_MARIO_FACE, gDefaultSoundArgs);
 	}
-	else if(soundMenuFlags & SOUND_MENU_FLAG_PINCHMARIOFACE2)
+	else if(soundMenuFlags & AUD_FACE_PULL)
 	{
-		play_sound(SOUND_MENU_PINCH_MARIO_FACE, gDefaultSoundArgs);
+		AudStartSound(SOUND_MENU_PINCH_MARIO_FACE, gDefaultSoundArgs);
 	}
-	else if(soundMenuFlags & SOUND_MENU_FLAG_LETGOMARIOFACE)
+	else if(soundMenuFlags & AUD_FACE_REFORM)
 	{
-		play_sound(SOUND_MENU_LET_GO_MARIO_FACE, gDefaultSoundArgs);
+		AudStartSound(SOUND_MENU_LET_GO_MARIO_FACE, gDefaultSoundArgs);
 	}
-	else if(soundMenuFlags & SOUND_MENU_FLAG_CAMERAZOOMIN)
+	else if(soundMenuFlags & AUD_FACE_ZOOMUP)
 	{
-		play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gDefaultSoundArgs);
+		AudStartSound(SOUND_MENU_CAMERA_ZOOM_IN, gDefaultSoundArgs);
 	}
-	else if(soundMenuFlags & SOUND_MENU_FLAG_CAMERAZOOMOUT)
+	else if(soundMenuFlags & AUD_FACE_ZOOMDOWN)
 	{
-		play_sound(SOUND_MENU_CAMERA_ZOOM_OUT, gDefaultSoundArgs);
+		AudStartSound(SOUND_MENU_CAMERA_ZOOM_OUT, gDefaultSoundArgs);
 	}
 
 	if(soundMenuFlags & 0x100)
 	{
 		play_menu_sounds_extra(20, NULL);
 	}
+
+	if((soundMenuFlags & 0x20) != 0)
+	{
+		SendMotorEvent(5, 80);
+	}
 }
 
 /**
  * Plays the painting eject sound effect if it has not already been played
  */
-void play_painting_eject_sound(void)
+void AudPictWaveSound(void)
 {
 	if(ripplingPainting != NULL && ripplingPainting->rippleStatus == 2) // ripple when Mario enters painting
 	{
 		if(paintingEjectSoundPlayed == FALSE)
 		{
-			play_sound(SOUND_GENERAL_PAINTING_EJECT, gMarioStates[0].marioObj->header.gfx.cameraToObject);
+			AudStartSound(SOUND_GENERAL_PAINTING_EJECT, playerWorks[0].marioObj->header.gfx.cameraToObject);
 		}
 		paintingEjectSoundPlayed = TRUE;
 	}
@@ -202,11 +208,11 @@ void play_infinite_stairs_music(void)
 	u8 shouldPlay = FALSE;
 
 	/* Infinite stairs? */
-	if(gCurrLevelNum == LEVEL_CASTLE && gCurrAreaIndex == 2 && gMarioState->numStars < 70)
+	if(activeStageNo == LEVEL_CASTLE && activeSceneNo == 2 && marioWorks->numStars < 70)
 	{
-		if(gMarioState->floor != NULL && gMarioState->floor->room == 6)
+		if(marioWorks->floor != NULL && marioWorks->floor->room == 6)
 		{
-			if(gMarioState->pos[2] < 2540.0f)
+			if(marioWorks->pos[2] < 2540.0f)
 			{
 				shouldPlay = TRUE;
 			}
@@ -227,11 +233,11 @@ void play_infinite_stairs_music(void)
 	}
 }
 
-void set_background_music(u16 a, u16 seqArgs, s16 fadeTimer)
+void AudPlayMusic(u16 a, u16 seqArgs, s16 fadeTimer)
 {
 	if(gResetTimer == 0 && seqArgs != sCurrentMusic)
 	{
-		if(gCurrCreditsEntry != 0)
+		if(snEndingScene != 0)
 		{
 			sound_reset(7);
 		}
@@ -240,15 +246,15 @@ void set_background_music(u16 a, u16 seqArgs, s16 fadeTimer)
 			sound_reset(a);
 		}
 
-		if(!(gShouldNotPlayCastleMusic && seqArgs == SEQ_LEVEL_INSIDE_CASTLE))
+		if(!(mesgCastle && seqArgs == SEQ_LEVEL_INSIDE_CASTLE))
 		{
-			play_music(0, seqArgs, fadeTimer);
+			Na_MusicStart(0, seqArgs, fadeTimer);
 			sCurrentMusic = seqArgs;
 		}
 	}
 }
 
-void func_802491FC(s16 fadeOutTime)
+void AudStopMusic(s16 fadeOutTime)
 {
 	func_803210D4(fadeOutTime);
 	sCurrentMusic	   = MUSIC_NONE;
@@ -258,7 +264,7 @@ void func_802491FC(s16 fadeOutTime)
 
 void func_8024924C(s16 fadeTimer)
 {
-	sequence_player_fade_out(0, fadeTimer);
+	Na_BossBgmStop(0, fadeTimer);
 	sCurrentMusic	   = MUSIC_NONE;
 	sCurrentShellMusic = MUSIC_NONE;
 	sCurrentCapMusic   = MUSIC_NONE;
@@ -266,13 +272,13 @@ void func_8024924C(s16 fadeTimer)
 
 void play_cutscene_music(u16 seqArgs)
 {
-	play_music(0, seqArgs, 0);
+	Na_MusicStart(0, seqArgs, 0);
 	sCurrentMusic = seqArgs;
 }
 
 void play_shell_music(void)
 {
-	play_music(0, SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP | SEQ_VARIATION), 0);
+	Na_MusicStart(0, SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP | SEQ_VARIATION), 0);
 	sCurrentShellMusic = SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP | SEQ_VARIATION);
 }
 
@@ -285,9 +291,9 @@ void stop_shell_music(void)
 	}
 }
 
-void play_cap_music(u16 seqArgs)
+void AudPlaySpecialMusic(u16 seqArgs)
 {
-	play_music(0, seqArgs, 0);
+	Na_MusicStart(0, seqArgs, 0);
 	if(sCurrentCapMusic != MUSIC_NONE && sCurrentCapMusic != seqArgs)
 	{
 		stop_background_music(sCurrentCapMusic);
@@ -314,7 +320,7 @@ void stop_cap_music(void)
 
 void play_menu_sounds_extra(s32 a, void* b)
 {
-	play_sound(menuSoundsExtra[a], (f32*)b);
+	AudStartSound(menuSoundsExtra[a], (f32*)b);
 }
 
 void audio_game_loop_tick(void)
@@ -330,7 +336,7 @@ void thread4_sound(UNUSED void* arg)
 	audio_init();
 	sound_init();
 
-	// Zero-out unused vector
+	// Zero-out size vector
 	vec3f_copy(unused80339DC0, gVec3fZero);
 
 	osCreateMesgQueue(&sSoundMesgQueue, sSoundMesgBuf, ARRAY_COUNT(sSoundMesgBuf));

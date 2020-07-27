@@ -29,7 +29,7 @@ void bhv_bowling_ball_init(void)
 
 void func_802EDA14(void)
 {
-	set_object_hitbox(o, &sBowlingBallHitbox);
+	s_set_hitparam(o, &sBowlingBallHitbox);
 
 	if(o->oInteractStatus & INT_STATUS_INTERACTED)
 		o->oInteractStatus = 0;
@@ -67,9 +67,9 @@ void bhv_bowling_ball_roll_loop(void)
 	s32 sp18;
 
 	func_802EDA6C();
-	collisionFlags = object_step();
+	collisionFlags = ObjMoveEvent();
 
-	//! Uninitialzed parameter, but the parameter is unused in the called function
+	//! Uninitialzed parameter, but the parameter is size in the called function
 	sp18 = obj_follow_path(0);
 
 	o->oBowlingBallTargetYaw = o->oPathedTargetYaw;
@@ -83,17 +83,17 @@ void bhv_bowling_ball_roll_loop(void)
 
 	if(sp18 == -1)
 	{
-		if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 7000))
+		if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 7000))
 		{
-			func_802A3004();
-			func_802AA618(0, 0, 92.0f);
+			s_kemuri();
+			s_burneffect(0, 0, 92.0f);
 		}
 
 		o->activeFlags = 0;
 	}
 
 	if((collisionFlags & OBJ_COL_FLAG_GROUNDED) && (o->oVelY > 5.0f))
-		PlaySound2(SOUND_GENERAL_QUIET_POUND1_LOWPRIO);
+		objsound(SOUND_GENERAL_QUIET_POUND1_LOWPRIO);
 }
 
 void bhv_bowling_ball_initializeLoop(void)
@@ -102,7 +102,7 @@ void bhv_bowling_ball_initializeLoop(void)
 
 	func_802EDA6C();
 
-	//! Uninitialzed parameter, but the parameter is unused in the called function
+	//! Uninitialzed parameter, but the parameter is size in the called function
 	sp1c = obj_follow_path(0);
 
 	o->oMoveAngleYaw = o->oPathedTargetYaw;
@@ -127,7 +127,7 @@ void bhv_bowling_ball_initializeLoop(void)
 
 		case BBALL_BP_STYPE_THI_SMALL:
 			o->oForwardVel = 10.0f;
-			obj_scale(0.3f);
+			s_set_scale(0.3f);
 			o->oGraphYOffset = 39.0f;
 			break;
 	}
@@ -150,7 +150,7 @@ void bhv_bowling_ball_loop(void)
 	if(o->oBehParams2ndByte != 4)
 		set_camera_shake_from_point(SHAKE_POS_BOWLING_BALL, o->oPosX, o->oPosY, o->oPosZ);
 
-	set_object_visibility(o, 4000);
+	PlayerApproachOnOff(o, 4000);
 }
 
 void bhv_generic_bowling_ball_spawner_init(void)
@@ -181,16 +181,16 @@ void bhv_generic_bowling_ball_spawner_loop(void)
 	if(o->oTimer == 256 * FRAME_RATE_SCALER_INV)
 		o->oTimer = 0;
 
-	if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 1000) || (o->oPosY < gMarioObject->header.gfx.pos[1]))
+	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 1000) || (o->oPosY < gMarioObject->header.gfx.pos[1]))
 		return;
 
 	if((o->oTimer & o->oBBallSpawnerPeriodMinus1) == 0) /* Modulus */
 	{
-		if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, o->oBBallSpawnerMaxSpawnDist))
+		if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, o->oBBallSpawnerMaxSpawnDist))
 		{
 			if((s32)(RandomFloat() * o->oBBallSpawnerSpawnOdds / FRAME_RATE_SCALER) == 0)
 			{
-				bowlingBall		       = spawn_object(o, MODEL_BOWLING_BALL, sm64::bhv::bhvBowlingBall());
+				bowlingBall		       = s_makeobj_nowpos(o, MODEL_BOWLING_BALL, sm64::bhv::bhvBowlingBall());
 				bowlingBall->oBehParams2ndByte = o->oBehParams2ndByte;
 			}
 		}
@@ -204,16 +204,16 @@ void bhv_thi_bowling_ball_spawner_loop(void)
 	if(o->oTimer == 256 * FRAME_RATE_SCALER_INV)
 		o->oTimer = 0;
 
-	if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 800) || (o->oPosY < gMarioObject->header.gfx.pos[1]))
+	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 800) || (o->oPosY < gMarioObject->header.gfx.pos[1]))
 		return;
 
 	if((o->oTimer % (64 * FRAME_RATE_SCALER_INV)) == 0)
 	{
-		if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 12000))
+		if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 12000))
 		{
 			if((s32)(RandomFloat() * 1.5) == 0)
 			{
-				bowlingBall		       = spawn_object(o, MODEL_BOWLING_BALL, sm64::bhv::bhvBowlingBall());
+				bowlingBall		       = s_makeobj_nowpos(o, MODEL_BOWLING_BALL, sm64::bhv::bhvBowlingBall());
 				bowlingBall->oBehParams2ndByte = o->oBehParams2ndByte;
 			}
 		}
@@ -230,7 +230,7 @@ void bhv_bob_pit_bowling_ball_init(void)
 void bhv_bob_pit_bowling_ball_loop(void)
 {
 	struct FloorGeometry* sp1c;
-	UNUSED s16 collisionFlags = object_step();
+	UNUSED s16 collisionFlags = ObjMoveEvent();
 
 	find_floor_height_and_data(o->oPosX, o->oPosY, o->oPosZ, &sp1c);
 	if((sp1c->normalX == 0) && (sp1c->normalZ == 0))
@@ -238,8 +238,8 @@ void bhv_bob_pit_bowling_ball_loop(void)
 
 	func_802EDA14();
 	set_camera_shake_from_point(SHAKE_POS_BOWLING_BALL, o->oPosX, o->oPosY, o->oPosZ);
-	PlaySound(SOUND_ENV_UNKNOWN2);
-	set_object_visibility(o, 3000);
+	objsound_level(SOUND_ENV_UNKNOWN2);
+	PlayerApproachOnOff(o, 3000);
 }
 
 void bhv_free_bowling_ball_init(void)
@@ -256,22 +256,22 @@ void bhv_free_bowling_ball_init(void)
 
 void bhv_free_bowling_ball_roll_loop(void)
 {
-	s16 collisionFlags = object_step();
+	s16 collisionFlags = ObjMoveEvent();
 	func_802EDA14();
 
 	if(o->oForwardVel > 10.0f)
 	{
 		set_camera_shake_from_point(SHAKE_POS_BOWLING_BALL, o->oPosX, o->oPosY, o->oPosZ);
-		PlaySound(SOUND_ENV_UNKNOWN2);
+		objsound_level(SOUND_ENV_UNKNOWN2);
 	}
 
 	if((collisionFlags & OBJ_COL_FLAG_GROUNDED) && !(collisionFlags & OBJ_COL_FLAGS_LANDED))
-		PlaySound2(SOUND_GENERAL_QUIET_POUND1_LOWPRIO);
+		objsound(SOUND_GENERAL_QUIET_POUND1_LOWPRIO);
 
-	if(!is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 6000))
+	if(!PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 6000))
 	{
 		o->header.gfx.node.flags |= 0x10; /* bit 4 */
-		obj_become_intangible();
+		s_hitOFF();
 
 		o->oPosX = o->oHomeX;
 		o->oPosY = o->oHomeY;
@@ -288,11 +288,11 @@ void bhv_free_bowling_ball_loop(void)
 	switch(o->oAction)
 	{
 		case FREE_BBALL_ACT_IDLE:
-			if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 3000))
+			if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 3000))
 			{
 				o->oAction = FREE_BBALL_ACT_ROLL;
 				o->header.gfx.node.flags &= ~0x10; /* bit 4 */
-				obj_become_tangible();
+				s_hitON();
 			}
 			break;
 
@@ -301,7 +301,7 @@ void bhv_free_bowling_ball_loop(void)
 			break;
 
 		case FREE_BBALL_ACT_RESET:
-			if(is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 5000))
+			if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 5000))
 				o->oAction = FREE_BBALL_ACT_IDLE;
 			break;
 	}

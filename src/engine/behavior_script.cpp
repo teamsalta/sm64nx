@@ -16,7 +16,7 @@
 
 static u16 gRandomSeed16;
 
-// unused
+// size
 static void func_80383B70(void* segptr)
 {
 	gBehCommand		   = (BehaviorScript*)segmented_to_virtual(segptr);
@@ -112,7 +112,7 @@ static void Unknown80383E44(void) // ?
 
 static s32 beh_cmd_hide(void)
 {
-	obj_hide();
+	s_shape_hide();
 	gBehCommand++;
 	return BEH_CONTINUE;
 }
@@ -134,7 +134,7 @@ static s32 beh_cmd_billboard(void)
 static s32 beh_cmd_set_model(void)
 {
 	s32 modelID			       = (s16)(gBehCommand[0] & 0xFFFF);
-	gCurrentObject->header.gfx.sharedChild = gLoadedGraphNodes[modelID];
+	gCurrentObject->header.gfx.sharedChild = stageShapes[modelID];
 	gBehCommand++;
 	return BEH_CONTINUE;
 }
@@ -194,7 +194,7 @@ static s32 beh_cmd_break(void)
 	return BEH_BREAK;
 }
 
-// unused
+// size
 static s32 beh_cmd_break2(void)
 {
 	return BEH_BREAK;
@@ -260,7 +260,7 @@ static s32 beh_cmd_goto(void)
 	return BEH_CONTINUE;
 }
 
-// unused
+// size
 static s32 Behavior26(void)
 {
 	s32 value = (u8)(gBehCommand[0] >> 16) & 0xFF;
@@ -376,7 +376,7 @@ static s32 beh_cmd_set_int(void)
 	return BEH_CONTINUE;
 }
 
-// unused
+// size
 static s32 Behavior36(void)
 {
 	u8 objectOffset = (u8)((gBehCommand[0] >> 16) & 0xFF);
@@ -436,7 +436,7 @@ static s32 beh_cmd_add_random_float(void)
 	return BEH_CONTINUE;
 }
 
-// unused
+// size
 static s32 beh_cmd_add_int_rand_rshift(void)
 {
 	u8 objectOffset = (u8)((gBehCommand[0] >> 16) & 0xFF);
@@ -484,7 +484,7 @@ static s32 beh_cmd_or_int(void)
 	return BEH_CONTINUE;
 }
 
-// unused
+// size
 static s32 beh_cmd_bit_clear_int(void)
 {
 	u8 objectOffset = (u8)((gBehCommand[0] >> 16) & 0xFF);
@@ -532,7 +532,7 @@ static s32 beh_cmd_drop_to_floor(void)
 	return BEH_CONTINUE;
 }
 
-// unused
+// size
 static s32 Behavior18(void)
 {
 	/* no operation */
@@ -542,7 +542,7 @@ static s32 Behavior18(void)
 	return BEH_CONTINUE;
 }
 
-// unused
+// size
 static s32 Behavior1A(void)
 {
 	/* no operation */
@@ -552,7 +552,7 @@ static s32 Behavior1A(void)
 	return BEH_CONTINUE;
 }
 
-// unused
+// size
 static s32 Behavior19(void)
 {
 	/* no operation */
@@ -574,7 +574,7 @@ static s32 beh_cmd_sum_float(void)
 	return BEH_CONTINUE;
 }
 
-// unused
+// size
 static s32 beh_cmd_sum_int(void)
 {
 	u32 objectOffsetDst  = (u8)((gBehCommand[0] >> 16) & 0xFF);
@@ -625,7 +625,7 @@ static s32 beh_cmd_set_hitbox_with_offset(void)
 	return BEH_CONTINUE;
 }
 
-// unused
+// size
 static s32 Behavior24(void)
 {
 	/* no operation */
@@ -694,7 +694,7 @@ static s32 beh_cmd_set_interact_type(void)
 	return BEH_CONTINUE;
 }
 
-// unused
+// size
 static s32 Behavior31(void)
 {
 	gCurrentObject->oInteractionSubtype = (u32)gBehCommand[1];
@@ -708,7 +708,7 @@ static s32 beh_cmd_scale(void)
 	UNUSED u8 sp1f = (u8)((gBehCommand[0] >> 16) & 0xFF);
 	s16 sp1c       = gBehCommand[0] & 0xFFFF;
 
-	obj_scale((f32)sp1c / 100.0f);
+	s_set_scale((f32)sp1c / 100.0f);
 
 	gBehCommand++;
 	return BEH_CONTINUE;
@@ -725,7 +725,7 @@ static s32 beh_cmd_set_obj_physics(void)
 	gCurrentObject->oFriction	  = (f32)(s16)(gBehCommand[3] >> 16) / 100.0f;
 	gCurrentObject->oBuoyancy	  = (f32)(s16)(gBehCommand[3] & 0xFFFF) / 100.0f;
 
-	// unused parameters
+	// size parameters
 	sp04 = (f32)(s16)(gBehCommand[4] >> 16) / 100.0f;
 	sp00 = (f32)(s16)(gBehCommand[4] & 0xFFFF) / 100.0f;
 
@@ -759,7 +759,7 @@ static s32 beh_cmd_tex_anim_rate(void)
 	u8 objectOffset = (u8)((gBehCommand[0] >> 16) & 0xFF);
 	s16 rate	= (gBehCommand[0] & 0xFFFF);
 
-	if((gGlobalTimer % (rate * FRAME_RATE_SCALER_INV)) == 0)
+	if((frameCounter % (rate * FRAME_RATE_SCALER_INV)) == 0)
 	{
 		cur_object_add_int(objectOffset, 1);
 	}

@@ -1,5 +1,4 @@
-#ifndef PAINTINGS_H
-#define PAINTINGS_H
+#pragma once
 
 #define DEFAULT_HEIGHT 614.0
 
@@ -42,56 +41,56 @@
 
 struct Painting
 {
-    s16 id;
-    s8 faceCount;
-    s8 rippleShape;
+	s16 id;
+	s8 faceCount;
+	s8 rippleShape;
 
-    s8 lastFloor;
-    s8 currFloor;
-    s8 floorEntered;
+	s8 lastFloor;
+	s8 currFloor;
+	s8 floorEntered;
 
-    s8 rippleStatus;
+	s8 rippleStatus;
 
-    float vXRotation;
-    float vYRotation;
+	float vXRotation;
+	float vYRotation;
 
-    float vXPos;
-    float vYPos;
-    float vZPos;
+	float vXPos;
+	float vYPos;
+	float vZPos;
 
-    float currRippleMag;
-    float passiveRippleMag;
-    float entryRippleMag;
+	float currRippleMag;
+	float passiveRippleMag;
+	float entryRippleMag;
 
-    float rippleMagMultiplier;
-    float passiveRippleMagMultiplier;
-    float entryRippleMagMultiplier;
+	float rippleMagMultiplier;
+	float passiveRippleMagMultiplier;
+	float entryRippleMagMultiplier;
 
-    float currRippleRate;
-    float passiveRippleRate;
-    float entryRippleRate;
+	float currRippleRate;
+	float passiveRippleRate;
+	float entryRippleRate;
 
-    float dispersionFactor; // the rate at which the magnitude of the ripple decreases as you move farther from the central point of the ripple
-    float passiveDispersionFactor;
-    float entryDispersionFactor;
+	float dispersionFactor; // the rate at which the magnitude of the ripple decreases as you move farther from the central point of the ripple
+	float passiveDispersionFactor;
+	float entryDispersionFactor;
 
-    float rippleTimer;
+	float rippleTimer;
 
-    float horizontalRippleSpot;
-    float verticalRippleSpot;
+	float horizontalRippleSpot;
+	float verticalRippleSpot;
 
-    const Gfx *displayList58;
-    const s16 *const *meshData;
-    const u8 *const *textureArray;
-    s16 textureWidth;
-    s16 textureHeight;
-    const Gfx *displayList68;
-    s8 rippleTrigger;
-    u8 brightness;
-    s8 lastMarioUnderPainting;
-    s8 currMarioUnderPainting;
-    s8 marioNewlyUnderPainting;
-    float vSize;
+	const Gfx* displayList58;
+	const s16* const* meshData;
+	const u8* const* textureArray;
+	s16 textureWidth;
+	s16 textureHeight;
+	const Gfx* displayList68;
+	s8 rippleTrigger;
+	u8 brightness;
+	s8 lastMarioUnderPainting;
+	s8 currMarioUnderPainting;
+	s8 marioNewlyUnderPainting;
+	float vSize;
 };
 
 extern struct Painting cotmc_painting;
@@ -113,24 +112,23 @@ extern struct Painting thi_huge_painting;
 
 extern struct Painting ttm_slide_painting;
 
-extern u16 gAreaUpdateCounter;
+extern u16 animationCounter;
 extern float gPaintingMarioYEntry;
 
 // defined in file
 extern s16 gPaintingMarioFloorType;
 extern float gPaintingMarioXPos, gPaintingMarioYPos, gPaintingMarioZPos;
 
-struct Thing { //TODO: Give me a better name
-    /*0x00*/ s16 unk0[3];
-    /*0x06*/ s8 unk6[3];
+struct Thing
+{ // TODO: Give me a better name
+	/*0x00*/ s16 unk0[3];
+	/*0x06*/ s8 unk6[3];
 };
 
-extern struct Thing *D_8035FFA0;
-extern Vec3f *D_8035FFA4;
-extern struct Painting *ripplingPainting;
+extern struct Thing* D_8035FFA0;
+extern Vec3f* D_8035FFA4;
+extern struct Painting* ripplingPainting;
 extern s8 dddStatus;
 
-extern Gfx *Geo18_802D5B98(s32 run, struct GraphNode *node, void *context);
-extern Gfx *Geo18_802D5D0C(s32 run, struct GraphNode *node, f32 c[4][4]);
-
-#endif /* PAINTINGS_H */
+extern Gfx* Geo18_802D5B98(s32 run, struct GraphNode* node, void* context);
+extern Gfx* Geo18_802D5D0C(s32 run, struct GraphNode* node, f32 c[4][4]);

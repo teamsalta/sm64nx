@@ -40,11 +40,11 @@ void flying_bookend_act_0(void)
 {
 	if(obj_is_near_to_and_facing_mario(400.0f, 0x3000))
 	{
-		PlaySound2(SOUND_OBJ_DEFAULT_DEATH);
+		objsound(SOUND_OBJ_DEFAULT_DEATH);
 		o->oAction	 = 1;
 		o->oBookendUnkF4 = o->oFaceAnglePitch + 0x7FFF;
 		o->oBookendUnkF8 = o->oFaceAngleRoll - 0x7FFF;
-		obj_set_model(MODEL_BOOKEND_PART);
+		s_change_shape(MODEL_BOOKEND_PART);
 	}
 }
 
@@ -75,7 +75,7 @@ void flying_bookend_act_1(void)
 		}
 	}
 
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 }
 
 void flying_bookend_act_2(void)
@@ -110,7 +110,7 @@ void flying_bookend_act_3(void)
 	}
 
 	obj_forward_vel_approach(50.0f, 2.0f * FRAME_RATE_SCALER);
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 }
 
 void bhv_flying_bookend_loop(void)
@@ -118,7 +118,7 @@ void bhv_flying_bookend_loop(void)
 	if(!(o->activeFlags & 0x0008))
 	{
 		o->oDeathSound = SOUND_OBJ_POUNDING1;
-		obj_scale(o->header.gfx.scale[0]);
+		s_set_scale(o->header.gfx.scale[0]);
 
 		switch(o->oAction)
 		{
@@ -155,11 +155,11 @@ void bhv_bookend_spawn_loop(void)
 	{
 		if(o->oTimer > 40 * FRAME_RATE_SCALER_INV && obj_is_near_to_and_facing_mario(600.0f, 0x2000))
 		{
-			sp1C = spawn_object(o, MODEL_BOOKEND, sm64::bhv::bhvFlyingBookend());
+			sp1C = s_makeobj_nowpos(o, MODEL_BOOKEND, sm64::bhv::bhvFlyingBookend());
 			if(sp1C != NULL)
 			{
 				sp1C->oAction = 3;
-				PlaySound2(SOUND_OBJ_DEFAULT_DEATH);
+				objsound(SOUND_OBJ_DEFAULT_DEATH);
 			}
 			o->oTimer = 0;
 		}
@@ -174,7 +174,7 @@ void bookshelf_manager_act_0(void)
 	{
 		for(val04 = 0; val04 < 3; val04++)
 		{
-			spawn_object_relative(val04, D_80331B30[val04].unk00, D_80331B30[val04].unk02, 0, o, MODEL_BOOKEND, sm64::bhv::bhvBookSwitch());
+			s_makeobj_chain(val04, D_80331B30[val04].unk00, D_80331B30[val04].unk02, 0, o, MODEL_BOOKEND, sm64::bhv::bhvBookSwitch());
 		}
 
 		o->oAction = 1;
@@ -218,14 +218,14 @@ void bookshelf_manager_act_2(void)
 			{
 				if(o->oTimer > 100 * FRAME_RATE_SCALER_INV)
 				{
-					o->parentObj	      = obj_nearest_object_with_behavior(sm64::bhv::bhvHauntedBookshelf());
+					o->parentObj	      = s_find_obj(sm64::bhv::bhvHauntedBookshelf());
 					o->parentObj->oAction = 1;
 					o->oPosX	      = o->parentObj->oPosX;
 					o->oAction	      = 3;
 				}
 				else if(o->oTimer == 30 * FRAME_RATE_SCALER_INV)
 				{
-					play_puzzle_jingle();
+					Na_NazoClearBgm();
 				}
 			}
 			else
@@ -257,7 +257,7 @@ void bookshelf_manager_act_4(void)
 {
 	if(o->oBookSwitchManagerUnkF4 >= 3)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{
@@ -299,7 +299,7 @@ void bhv_book_switch_loop(void)
 
 	if(o->parentObj->oAction == 4)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{
@@ -308,17 +308,17 @@ void bhv_book_switch_loop(void)
 		{
 			if(o->oDistanceToMario < 100.0f)
 			{
-				obj_become_tangible();
+				s_hitON();
 			}
 			else
 			{
-				obj_become_intangible();
+				s_hitOFF();
 			}
 
 			o->oAction = 1;
 			if(o->oBookSwitchUnkF4 == 0.0f)
 			{
-				PlaySound2(SOUND_OBJ_DEFAULT_DEATH);
+				objsound(SOUND_OBJ_DEFAULT_DEATH);
 			}
 
 			if(approach_f32_ptr(&o->oBookSwitchUnkF4, 50.0f, 20.0f * FRAME_RATE_SCALER))
@@ -338,28 +338,28 @@ void bhv_book_switch_loop(void)
 		}
 		else
 		{
-			obj_become_intangible();
+			s_hitOFF();
 			if(approach_f32_ptr(&o->oBookSwitchUnkF4, 0.0f, 20.0f * FRAME_RATE_SCALER))
 			{
 				if(o->oAction != 0)
 				{
 					if(o->parentObj->oBookSwitchManagerUnkF4 == o->oBehParams2ndByte)
 					{
-						play_sound(SOUND_GENERAL2_RIGHT_ANSWER, gDefaultSoundArgs);
+						AudStartSound(SOUND_GENERAL2_RIGHT_ANSWER, gDefaultSoundArgs);
 						o->parentObj->oBookSwitchManagerUnkF4 += 1;
 					}
 					else
 					{
 						sp36 = RandomU16() & 0x1;
-						sp34 = gMarioObject->oPosZ + 1.5f * gMarioStates[0].vel[2];
+						sp34 = gMarioObject->oPosZ + 1.5f * playerWorks[0].vel[2];
 
-						play_sound(SOUND_MENU_CAMERA_BUZZ, gDefaultSoundArgs);
+						AudStartSound(SOUND_MENU_CAMERA_BUZZ, gDefaultSoundArgs);
 						if(sp34 > 0)
 						{
 							sp34 = 0;
 						}
 
-						sp38 = spawn_object_abs_with_rot(o, 0, MODEL_BOOKEND, sm64::bhv::bhvFlyingBookend(), 0x1FC * sp36 - 0x8CA, 890, sp34, 0, 0x8000 * sp36 + 0x4000, 0);
+						sp38 = s_makeobj_absolute(o, 0, MODEL_BOOKEND, sm64::bhv::bhvFlyingBookend(), 0x1FC * sp36 - 0x8CA, 890, sp34, 0, 0x8000 * sp36 + 0x4000, 0);
 
 						if(sp38 != NULL)
 						{
@@ -376,6 +376,6 @@ void bhv_book_switch_loop(void)
 
 		o->oPosX += o->parentObj->oForwardVel * FRAME_RATE_SCALER;
 		o->oPosZ = o->oHomeZ - o->oBookSwitchUnkF4;
-		obj_push_mario_away_from_cylinder(70.0f, 70.0f);
+		s_player_slideout_RH(70.0f, 70.0f);
 	}
 }

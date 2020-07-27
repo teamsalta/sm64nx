@@ -29,7 +29,7 @@ static void enemy_lakitu_act_uninitialized(void)
 	{
 		spawn_object_relative_with_scale(CLOUD_BP_LAKITU_CLOUD, 0, 0, 0, 2.0f, o, MODEL_MIST, sm64::bhv::bhvCloud());
 
-		obj_unhide();
+		s_shape_disp();
 		o->oAction = ENEMY_LAKITU_ACT_MAIN;
 	}
 }
@@ -77,7 +77,7 @@ static void enemy_lakitu_update_speed_and_angle(void)
 	}
 
 	// Move faster the farther away mario is and the faster mario is moving
-	if((minSpeed = 1.2f * gMarioStates[0].forwardVel) < 8.0f)
+	if((minSpeed = 1.2f * playerWorks[0].forwardVel) < 8.0f)
 	{
 		minSpeed = 8.0f;
 	}
@@ -117,7 +117,7 @@ static void enemy_lakitu_sub_act_no_spiny(void)
 	}
 	else if(o->oEnemyLakituNumSpinies < 3 && o->oDistanceToMario < 800.0f && abs_angle_diff(o->oAngleToMario, o->oFaceAngleYaw) < 0x4000)
 	{
-		struct Object* spiny = spawn_object(o, MODEL_SPINY_BALL, sm64::bhv::bhvSpiny());
+		struct Object* spiny = s_makeobj_nowpos(o, MODEL_SPINY_BALL, sm64::bhv::bhvSpiny());
 		if(spiny != NULL)
 		{
 			o->prevObj     = spiny;
@@ -159,7 +159,7 @@ static void enemy_lakitu_sub_act_throw_spiny(void)
 {
 	if(func_802F92EC(2, 2))
 	{
-		PlaySound2(SOUND_OBJ_EVIL_LAKITU_THROW);
+		objsound(SOUND_OBJ_EVIL_LAKITU_THROW);
 		o->prevObj = NULL;
 	}
 
@@ -175,7 +175,7 @@ static void enemy_lakitu_sub_act_throw_spiny(void)
  */
 static void enemy_lakitu_act_main(void)
 {
-	PlaySound(SOUND_AIR_LAKITU_FLY);
+	objsound_level(SOUND_AIR_LAKITU_FLY);
 
 	obj_update_floor_and_walls();
 

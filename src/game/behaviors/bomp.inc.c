@@ -30,7 +30,7 @@ void bhv_small_bomp_loop(void)
 			{
 				o->oAction     = BOMP_ACT_EXTEND;
 				o->oForwardVel = 40.0f;
-				PlaySound2(SOUND_OBJ_UNKNOWN2);
+				objsound(SOUND_OBJ_UNKNOWN2);
 			}
 			break;
 
@@ -46,7 +46,7 @@ void bhv_small_bomp_loop(void)
 				o->oAction     = BOMP_ACT_RETRACT;
 				o->oForwardVel = 10.0f;
 				o->oMoveAngleYaw -= 0x8000;
-				PlaySound2(SOUND_OBJ_UNKNOWN2);
+				objsound(SOUND_OBJ_UNKNOWN2);
 			}
 			break;
 
@@ -96,7 +96,7 @@ void bhv_large_bomp_loop(void)
 			{
 				o->oAction     = BOMP_ACT_EXTEND;
 				o->oForwardVel = 10.0f;
-				PlaySound2(SOUND_OBJ_UNKNOWN2);
+				objsound(SOUND_OBJ_UNKNOWN2);
 			}
 			break;
 
@@ -112,7 +112,7 @@ void bhv_large_bomp_loop(void)
 				o->oAction     = BOMP_ACT_RETRACT;
 				o->oForwardVel = 10.0f;
 				o->oMoveAngleYaw -= 0x8000;
-				PlaySound2(SOUND_OBJ_UNKNOWN2);
+				objsound(SOUND_OBJ_UNKNOWN2);
 			}
 			break;
 

@@ -19,7 +19,7 @@
  * object-based particle effects, are rendered more efficiently by manually
  * generating display lists instead of drawing each particle separately.
  * This file implements snow effects, while in 'envfx_bubbles.c' the
- * implementation for flowers (unused), lava bubbles and jetstream bubbles
+ * implementation for flowers (size), lava bubbles and jetstream bubbles
  * can be found.
  * The main entry point for envfx is at the bottom of this file, which is
  * called from geo_enfvx_main in level_geo.c
@@ -97,7 +97,7 @@ s32 envfx_init_snow(s32 mode)
  */
 void envfx_update_snowflake_count(s32 mode, Vec3s marioPos)
 {
-	s32 timer = gGlobalTimer;
+	s32 timer = frameCounter;
 	f32 waterLevel;
 	switch(mode)
 	{
@@ -233,11 +233,7 @@ void envfx_update_snow_normal(s32 snowCylinderX, s32 snowCylinderY, s32 snowCyli
 		else
 		{
 			(gEnvFxBuffer + i)->xPos += RandomFloat() * 2 - 1.0f + (s16)(deltaX / 1.2);
-#ifdef VERSION_EU
-			(gEnvFxBuffer + i)->yPos -= (s16)(deltaY * 0.8) + 2;
-#else
 			(gEnvFxBuffer + i)->yPos -= -(s16)(deltaY * 0.8) + 2;
-#endif
 			(gEnvFxBuffer + i)->zPos += RandomFloat() * 2 - 1.0f + (s16)(deltaZ / 1.2);
 		}
 	}
@@ -273,11 +269,7 @@ void envfx_update_snow_blizzard(s32 snowCylinderX, s32 snowCylinderY, s32 snowCy
 		else
 		{
 			(gEnvFxBuffer + i)->xPos += RandomFloat() * 2 - 1.0f + (s16)(deltaX / 1.2) + 20.0f;
-#ifdef VERSION_EU
-			(gEnvFxBuffer + i)->yPos -= (s16)(deltaY * 0.8) + 5;
-#else
 			(gEnvFxBuffer + i)->yPos -= -(s16)(deltaY * 0.8) + 5;
-#endif
 			(gEnvFxBuffer + i)->zPos += RandomFloat() * 2 - 1.0f + (s16)(deltaZ / 1.2);
 		}
 	}
@@ -288,7 +280,7 @@ void envfx_update_snow_blizzard(s32 snowCylinderX, s32 snowCylinderY, s32 snowCy
 }
 
 /*! Unused function. Checks whether a position is laterally within 3000 units
- *  to the point (x: 3380, z: -520). Considering there is an unused blizzard
+ *  to the point (x: 3380, z: -520). Considering there is an size blizzard
  *  snow mode, this could have been used to check whether Mario is in a
  *  'blizzard area'. In Cool Cool Mountain and Snowman's Land the area lies
  *  near the starting point and doesn't seem meaningfull. Notably, the point is
@@ -370,14 +362,10 @@ void rotate_triangle_vertices(Vec3s vertex1, Vec3s vertex2, Vec3s vertex3, s16 p
  * around (0,0,0) that will be translated to snowflake positions to draw the
  * snowflake image.
  */
-#if defined(VERSION_EU) && !defined(NON_MATCHING)
-void append_snowflake_vertex_buffer(Gfx* gfx, s32 index, Vec3s vertex1, Vec3s vertex2, Vec3s vertex3);
-GLOBAL_ASM("asm/non_matchings/append_snowflake_vertex_buffer_eu.s")
-#else
 void append_snowflake_vertex_buffer(Gfx* gfx, s32 index, Vec3s vertex1, Vec3s vertex2, Vec3s vertex3)
 {
-	s32 i = 0;
-	Vtx* vertBuf = (Vtx*)alloc_display_list(15 * sizeof(Vtx));
+	s32 i	     = 0;
+	Vtx* vertBuf = (Vtx*)AllocDynamic(15 * sizeof(Vtx));
 
 	if(vertBuf == NULL)
 	{
@@ -386,17 +374,17 @@ void append_snowflake_vertex_buffer(Gfx* gfx, s32 index, Vec3s vertex1, Vec3s ve
 
 	for(i = 0; i < 15; i += 3)
 	{
-		vertBuf[i] = gSnowTempVtx[0];
+		vertBuf[i]	   = gSnowTempVtx[0];
 		vertBuf[i].v.ob[0] = gEnvFxBuffer[index + i / 3].xPos + vertex1[0];
 		vertBuf[i].v.ob[1] = gEnvFxBuffer[index + i / 3].yPos + vertex1[1];
 		vertBuf[i].v.ob[2] = gEnvFxBuffer[index + i / 3].zPos + vertex1[2];
 
-		vertBuf[i + 1] = gSnowTempVtx[1];
+		vertBuf[i + 1]	       = gSnowTempVtx[1];
 		vertBuf[i + 1].v.ob[0] = gEnvFxBuffer[index + i / 3].xPos + vertex2[0];
 		vertBuf[i + 1].v.ob[1] = gEnvFxBuffer[index + i / 3].yPos + vertex2[1];
 		vertBuf[i + 1].v.ob[2] = gEnvFxBuffer[index + i / 3].zPos + vertex2[2];
 
-		vertBuf[i + 2] = gSnowTempVtx[2];
+		vertBuf[i + 2]	       = gSnowTempVtx[2];
 		vertBuf[i + 2].v.ob[0] = gEnvFxBuffer[index + i / 3].xPos + vertex3[0];
 		vertBuf[i + 2].v.ob[1] = gEnvFxBuffer[index + i / 3].yPos + vertex3[1];
 		vertBuf[i + 2].v.ob[2] = gEnvFxBuffer[index + i / 3].zPos + vertex3[2];
@@ -404,7 +392,6 @@ void append_snowflake_vertex_buffer(Gfx* gfx, s32 index, Vec3s vertex1, Vec3s ve
 
 	gSPVertex(gfx, VIRTUAL_TO_PHYSICAL(vertBuf), 15, 0);
 }
-#endif
 
 /**
  * Updates positions of snow particles and returns a pointer to a display list
@@ -423,7 +410,7 @@ Gfx* envfx_update_snow(s32 snowMode, Vec3s marioPos, Vec3s camFrom, Vec3s camTo)
 	vertex2 = gSnowFlakeVertex2;
 	vertex3 = gSnowFlakeVertex3;
 
-	gfxStart = (Gfx*)alloc_display_list((gSnowParticleCount * 6 + 3) * sizeof(Gfx));
+	gfxStart = (Gfx*)AllocDynamic((gSnowParticleCount * 6 + 3) * sizeof(Gfx));
 	gfx	 = gfxStart;
 
 	if(gfxStart == NULL)
@@ -517,7 +504,7 @@ Gfx* envfx_update_particles(s32 mode, Vec3s marioPos, Vec3s camTo, Vec3s camFrom
 {
 	Gfx* gfx;
 
-	if(get_dialog_id() != -1)
+	if(GetMessageNo() != -1)
 	{
 		return NULL;
 	}

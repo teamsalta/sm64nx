@@ -3,7 +3,7 @@
 // bullet bill smoke
 void bhv_white_puff_smoke_init(void)
 {
-	obj_scale(RandomFloat() * 2 + 2.0);
+	s_set_scale(RandomFloat() * 2 + 2.0);
 }
 
 void bhv_bullet_bill_init(void)
@@ -13,7 +13,7 @@ void bhv_bullet_bill_init(void)
 
 void ActionBulletBill0(void)
 {
-	obj_become_tangible();
+	s_hitON();
 	o->oForwardVel	   = 0.0f;
 	o->oMoveAngleYaw   = o->oBulletBillUnkF8;
 	o->oFaceAnglePitch = 0;
@@ -46,7 +46,7 @@ void ActionBulletBill2(void)
 		if(o->oTimer > 70 * FRAME_RATE_SCALER_INV)
 			obj_update_floor_and_walls();
 
-		spawn_object(o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke());
+		s_makeobj_nowpos(o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke());
 		o->oForwardVel = 30.0f;
 
 		if(o->oDistanceToMario > 300.0f)
@@ -54,13 +54,13 @@ void ActionBulletBill2(void)
 
 		if(o->oTimer == 50 * FRAME_RATE_SCALER_INV)
 		{
-			PlaySound2(SOUND_OBJ_POUNDING_CANNON);
-			ShakeScreen(SHAKE_POS_SMALL);
+			objsound(SOUND_OBJ_POUNDING_CANNON);
+			s_call_Viewshake(SHAKE_POS_SMALL);
 		}
 		if(o->oTimer > 150 * FRAME_RATE_SCALER_INV || o->oMoveFlags & 0x200)
 		{
 			o->oAction = 3;
-			func_802A3004();
+			s_kemuri();
 		}
 	}
 }
@@ -75,7 +75,7 @@ void ActionBulletBill4(void)
 	if(o->oTimer == 0)
 	{
 		o->oForwardVel = -30.0f;
-		obj_become_intangible();
+		s_hitOFF();
 	}
 	o->oFaceAnglePitch += 0x1000 / FRAME_RATE_SCALER_INV;
 	o->oFaceAngleRoll += 0x1000 / FRAME_RATE_SCALER_INV;
@@ -88,7 +88,7 @@ void (*sBulletBillActions[])(void) = {ActionBulletBill0, ActionBulletBill1, Acti
 
 void bhv_bullet_bill_loop(void)
 {
-	obj_call_action_function(sBulletBillActions);
+	s_modejmp(sBulletBillActions);
 	if(obj_check_interacted())
 		o->oAction = 4;
 }

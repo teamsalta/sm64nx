@@ -26,7 +26,7 @@ void bhv_alpha_boo_key_loop(void)
 	o->oFaceAngleRoll += 0x200 / FRAME_RATE_SCALER_INV;
 	o->oFaceAngleYaw += 0x200 / FRAME_RATE_SCALER_INV;
 
-	if(are_objects_collided(o, gMarioObject))
+	if(s_hitcheck(o, gMarioObject))
 	{
 		// This line makes the object inside the key's parent boo drop.
 		// Was this intended to make the boo die when the key is collected?
@@ -40,8 +40,8 @@ void bhv_alpha_boo_key_loop(void)
 		o->parentObj->oBooDeathStatus = BOO_DEATH_STATUS_DYING;
 
 		// Delete the object and spawn sparkles
-		mark_object_for_deletion(o);
-		spawn_object(o, MODEL_SPARKLES, sm64::bhv::bhvGoldenCoinSparkles());
+		s_remove_obj(o);
+		s_makeobj_nowpos(o, MODEL_SPARKLES, sm64::bhv::bhvGoldenCoinSparkles());
 	}
 }
 
@@ -89,9 +89,9 @@ static void beta_boo_key_dropped_loop(void)
 	// become tangible and handle collision.
 	if(o->oTimer > 90 * FRAME_RATE_SCALER_INV || o->oMoveFlags & OBJ_MOVE_LANDED)
 	{
-		obj_become_tangible();
+		s_hitON();
 
-		if(are_objects_collided(o, gMarioObject))
+		if(s_hitcheck(o, gMarioObject))
 		{
 			// This interaction status is 0x01, the first interaction status flag.
 			// It was only used for Hoot in the final game, but it seems it could've
@@ -105,8 +105,8 @@ static void beta_boo_key_dropped_loop(void)
 			o->parentObj->oInteractStatus = INT_STATUS_HOOT_GRABBED_BY_MARIO;
 
 			// Delete the object and spawn sparkles
-			mark_object_for_deletion(o);
-			spawn_object(o, MODEL_SPARKLES, sm64::bhv::bhvGoldenCoinSparkles());
+			s_remove_obj(o);
+			s_makeobj_nowpos(o, MODEL_SPARKLES, sm64::bhv::bhvGoldenCoinSparkles());
 		}
 	}
 }
@@ -182,5 +182,5 @@ static void (*sBetaBooKeyActions[])(void) = {beta_boo_key_inside_boo_loop, beta_
  */
 void bhv_beta_boo_key_loop(void)
 {
-	obj_call_action_function(sBetaBooKeyActions);
+	s_modejmp(sBetaBooKeyActions);
 }

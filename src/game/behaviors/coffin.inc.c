@@ -24,7 +24,7 @@ void bhv_coffin_manager_loop(void)
 			{
 				val06 = D_80331C00[val08].unk02;
 
-				val0C = spawn_object_relative(val08 & 0x00000001, D_80331C00[val08].unk00, 0, val06, o, MODEL_BBH_WOODEN_TOMB, sm64::bhv::bhvCoffin());
+				val0C = s_makeobj_chain(val08 & 0x00000001, D_80331C00[val08].unk00, 0, val06, o, MODEL_BBH_WOODEN_TOMB, sm64::bhv::bhvCoffin());
 				if(val0C != NULL)
 				{
 					if(val06 > 0)
@@ -60,7 +60,7 @@ void coffin_act_0(void)
 
 			if(obj_face_pitch_approach(0, -o->oAngleVelPitch / FRAME_RATE_SCALER_INV))
 			{
-				PlaySound2(SOUND_GENERAL_ELEVATOR_MOVE_2);
+				objsound(SOUND_GENERAL_ELEVATOR_MOVE_2);
 				obj_perform_position_op(0);
 				o->oMoveAngleYaw = o->oFaceAngleYaw - 0x4000;
 
@@ -82,13 +82,13 @@ void coffin_act_0(void)
 			val04 = val0C * val14 + val08 * val10;
 			val00 = val08 * val14 - val0C * val10;
 
-			if(o->oTimer > 60 * FRAME_RATE_SCALER_INV && (o->oDistanceToMario > 100.0f || gMarioState->action == ACT_SQUISHED))
+			if(o->oTimer > 60 * FRAME_RATE_SCALER_INV && (o->oDistanceToMario > 100.0f || marioWorks->status == ACT_SQUISHED))
 			{
 				if(gMarioObject->oPosY - o->oPosY < 200.0f && absf(val04) < 140.0f)
 				{
 					if(val00 < 150.0f && val00 > -450.0f)
 					{
-						PlaySound2(SOUND_GENERAL_BUTTON_PRESS_2_LOWPRIO);
+						objsound(SOUND_GENERAL_BUTTON_PRESS_2_LOWPRIO);
 						o->oAction = 1;
 					}
 				}
@@ -115,11 +115,11 @@ void coffin_act_1(void)
 		}
 		else if(o->oTimer > 30 * FRAME_RATE_SCALER_INV)
 		{
-			if(gGlobalTimer % (4 * FRAME_RATE_SCALER_INV) == 0)
+			if(frameCounter % (4 * FRAME_RATE_SCALER_INV) == 0)
 			{
-				PlaySound2(SOUND_GENERAL_ELEVATOR_MOVE_2);
+				objsound(SOUND_GENERAL_ELEVATOR_MOVE_2);
 			}
-			o->oFaceAngleRoll = 400 * ((gGlobalTimer / FRAME_RATE_SCALER_INV) % 2) - 200;
+			o->oFaceAngleRoll = 400 * ((frameCounter / FRAME_RATE_SCALER_INV) % 2) - 200;
 		}
 
 		o->oAngleVelPitch = 0;
@@ -130,7 +130,7 @@ void bhv_coffin_loop(void)
 {
 	if(o->parentObj->oAction == 0)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{
@@ -146,6 +146,6 @@ void bhv_coffin_loop(void)
 				break;
 		}
 
-		load_object_collision_model();
+		stMainMoveBG();
 	}
 }

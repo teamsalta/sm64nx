@@ -33,11 +33,7 @@ s32 osContInit(OSMesgQueue *mq, u8 *a1, OSContStatus *status) {
         osRecvMesg(&sp38, &mesg, OS_MESG_BLOCK);
     }
     _osCont_numControllers = 4; // TODO: figure out what it means
-#ifdef VERSION_EU
-    __osPackRequestData(0);
-#else
     __osPackRequestData(255);
-#endif
     sp78 = __osSiRawStartDma(1, D_80365CE0);
     osRecvMesg(mq, &mesg, OS_MESG_BLOCK);
     sp78 = __osSiRawStartDma(0, D_80365CE0);

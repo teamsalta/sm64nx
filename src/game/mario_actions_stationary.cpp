@@ -14,8 +14,9 @@
 #include "level_update.h"
 #include "save_file.h"
 #include "camera.h"
+#include "motor.h"
 
-s32 MarioState::func_802604E0()
+s32 PlayerRecord::func_802604E0()
 {
 	mario_drop_held_object(this);
 	if(this->floor->normal.y < 0.29237169f)
@@ -25,7 +26,7 @@ s32 MarioState::func_802604E0()
 
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_A_PRESSED)
@@ -35,39 +36,39 @@ s32 MarioState::func_802604E0()
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_ABOVE_SLIDE)
 	{
-		return set_mario_action(ACT_BEGIN_SLIDING, 0);
+		return ChangePlayerStatus(ACT_BEGIN_SLIDING, 0);
 	}
 
 	if(this->input & INPUT_FIRST_PERSON)
 	{
-		return set_mario_action(ACT_FIRST_PERSON, 0);
+		return ChangePlayerStatus(ACT_FIRST_PERSON, 0);
 	}
 
 	if(this->input & INPUT_NONZERO_ANALOG)
 	{
 		this->faceAngle[1] = (s16)this->intendedYaw;
-		return set_mario_action(ACT_WALKING, 0);
+		return ChangePlayerStatus(ACT_WALKING, 0);
 	}
 
 	if(this->input & INPUT_B_PRESSED)
 	{
-		return set_mario_action(ACT_PUNCHING, 0);
+		return ChangePlayerStatus(ACT_PUNCHING, 0);
 	}
 
 	if(this->input & INPUT_Z_DOWN)
 	{
-		return set_mario_action(ACT_START_CROUCHING, 0);
+		return ChangePlayerStatus(ACT_START_CROUCHING, 0);
 	}
 
 	return 0;
 }
 
-s32 MarioState::func_802606DC()
+s32 PlayerRecord::func_802606DC()
 {
 	if(this->floor->normal.y < 0.29237169f)
 	{
@@ -77,7 +78,7 @@ s32 MarioState::func_802606DC()
 	if(this->heldObj->oInteractionSubtype & INT_SUBTYPE_DROP_IMMEDIATELY)
 	{
 		this->heldObj->oInteractionSubtype = (s32)(this->heldObj->oInteractionSubtype & ~INT_SUBTYPE_DROP_IMMEDIATELY);
-		return set_mario_action(ACT_PLACING_DOWN, 0);
+		return ChangePlayerStatus(ACT_PLACING_DOWN, 0);
 	}
 
 	if(this->input & INPUT_UNKNOWN_10)
@@ -92,23 +93,23 @@ s32 MarioState::func_802606DC()
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_HOLD_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_HOLD_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_ABOVE_SLIDE)
 	{
-		return set_mario_action(ACT_HOLD_BEGIN_SLIDING, 0);
+		return ChangePlayerStatus(ACT_HOLD_BEGIN_SLIDING, 0);
 	}
 
 	if(this->input & INPUT_NONZERO_ANALOG)
 	{
 		this->faceAngle[1] = (s16)this->intendedYaw;
-		return set_mario_action(ACT_HOLD_WALKING, 0);
+		return ChangePlayerStatus(ACT_HOLD_WALKING, 0);
 	}
 
 	if(this->input & INPUT_B_PRESSED)
 	{
-		return set_mario_action(ACT_THROWING, 0);
+		return ChangePlayerStatus(ACT_THROWING, 0);
 	}
 
 	if(this->input & INPUT_Z_DOWN)
@@ -119,21 +120,21 @@ s32 MarioState::func_802606DC()
 	return 0;
 }
 
-s32 MarioState::act_idle()
+s32 PlayerRecord::act_idle()
 {
-	if(this->quicksandDepth > 30.0f)
+	if(this->sinking > 30.0f)
 	{
-		return set_mario_action(ACT_IN_QUICKSAND, 0);
+		return ChangePlayerStatus(ACT_IN_QUICKSAND, 0);
 	}
 
 	if(this->input & INPUT_IN_POISON_GAS)
 	{
-		return set_mario_action(ACT_COUGHING, 0);
+		return ChangePlayerStatus(ACT_COUGHING, 0);
 	}
 
 	if(!(this->actionArg & 1) && this->health < 0x300)
 	{
-		return set_mario_action(ACT_PANTING, 0);
+		return ChangePlayerStatus(ACT_PANTING, 0);
 	}
 
 	if(func_802604E0())
@@ -145,11 +146,11 @@ s32 MarioState::act_idle()
 	{
 		if((this->area->terrainType & TERRAIN_MASK) == TERRAIN_SNOW)
 		{
-			return set_mario_action(ACT_SHIVERING, 0);
+			return ChangePlayerStatus(ACT_SHIVERING, 0);
 		}
 		else
 		{
-			return set_mario_action(ACT_START_SLEEPING, 0);
+			return ChangePlayerStatus(ACT_START_SLEEPING, 0);
 		}
 	}
 
@@ -210,68 +211,50 @@ s32 MarioState::act_idle()
 	return 0;
 }
 
-void MarioState::func_80260BC4(u32 actionState, s32 animFrame, u32 sound)
+void PlayerRecord::func_80260BC4(u32 actionState, s32 animFrame, u32 sound)
 {
 	if(this->actionState == actionState && this->marioObj->header.gfx.unk38.frame() == animFrame)
 	{
-		play_sound(sound, this->marioObj->header.gfx.cameraToObject);
+		AudStartSound(sound, this->marioObj->header.gfx.cameraToObject);
 	}
 }
 
-s32 MarioState::act_start_sleeping()
+s32 PlayerRecord::act_start_sleeping()
 {
-#ifndef VERSION_JP
 	s32 sp24;
-#endif
 
 	if(func_802604E0())
 	{
 		return 1;
 	}
 
-	if(this->quicksandDepth > 30.0f)
+	if(this->sinking > 30.0f)
 	{
-		return set_mario_action(ACT_IN_QUICKSAND, 0);
+		return ChangePlayerStatus(ACT_IN_QUICKSAND, 0);
 	}
 
 	if(this->actionState == 4)
 	{
-		return set_mario_action(ACT_SLEEPING, 0);
+		return ChangePlayerStatus(ACT_SLEEPING, 0);
 	}
 
 	switch(this->actionState)
 	{
 		case 0:
-#ifndef VERSION_JP
 			sp24 = set_mario_animation(MARIO_ANIM_START_SLEEP_IDLE);
-#else
-			set_mario_animation(MARIO_ANIM_START_SLEEP_IDLE);
-#endif
 			break;
 
 		case 1:
-#ifndef VERSION_JP
 			sp24 = set_mario_animation(MARIO_ANIM_START_SLEEP_SCRATCH);
-#else
-			set_mario_animation(MARIO_ANIM_START_SLEEP_SCRATCH);
-#endif
 			break;
 
 		case 2:
-#ifndef VERSION_JP
-			sp24 = set_mario_animation(MARIO_ANIM_START_SLEEP_YAWN);
-#else
-			set_mario_animation(MARIO_ANIM_START_SLEEP_YAWN);
-#endif
+			sp24			       = set_mario_animation(MARIO_ANIM_START_SLEEP_YAWN);
 			this->marioBodyState->eyeState = MARIO_EYES_HALF_CLOSED;
 			break;
 
 		case 3:
-#ifndef VERSION_JP
-			sp24 = set_mario_animation(MARIO_ANIM_START_SLEEP_SITTING);
-#else
-			set_mario_animation(MARIO_ANIM_START_SLEEP_SITTING);
-#endif
+			sp24			       = set_mario_animation(MARIO_ANIM_START_SLEEP_SITTING);
 			this->marioBodyState->eyeState = MARIO_EYES_HALF_CLOSED;
 			break;
 	}
@@ -285,12 +268,11 @@ s32 MarioState::act_start_sleeping()
 		this->actionState++;
 	}
 
-#ifndef VERSION_JP
 	if(this->actionState == 2)
 	{
 		if(sp24 == -1)
 		{
-			play_sound(SOUND_MARIO_YAWNING, this->marioObj->header.gfx.cameraToObject);
+			AudStartSound(SOUND_MARIO_YAWNING, this->marioObj->header.gfx.cameraToObject);
 		}
 	}
 
@@ -298,36 +280,30 @@ s32 MarioState::act_start_sleeping()
 	{
 		if(sp24 == -1)
 		{
-			play_sound(SOUND_MARIO_IMA_TIRED, this->marioObj->header.gfx.cameraToObject);
+			AudStartSound(SOUND_MARIO_IMA_TIRED, this->marioObj->header.gfx.cameraToObject);
 		}
 	}
-#else
-	if(this->actionState == 2)
-	{
-		play_sound_if_no_flag(SOUND_MARIO_YAWNING, MARIO_MARIO_SOUND_PLAYED);
-	}
-#endif
 
 	stationary_ground_step();
 	return 0;
 }
 
-s32 MarioState::act_sleeping()
+s32 PlayerRecord::act_sleeping()
 {
 	s32 sp24;
 	if(this->input & INPUT_UNKNOWN_A41F /* ? */)
 	{
-		return set_mario_action(ACT_WAKING_UP, this->actionState);
+		return ChangePlayerStatus(ACT_WAKING_UP, this->actionState);
 	}
 
-	if(this->quicksandDepth > 30.0f)
+	if(this->sinking > 30.0f)
 	{
-		return set_mario_action(ACT_WAKING_UP, this->actionState);
+		return ChangePlayerStatus(ACT_WAKING_UP, this->actionState);
 	}
 
 	if(this->pos[1] - find_floor_height_relative_polar(-0x8000, 60.0f) > 24.0f)
 	{
-		return set_mario_action(ACT_WAKING_UP, this->actionState);
+		return ChangePlayerStatus(ACT_WAKING_UP, this->actionState);
 	}
 
 	this->marioBodyState->eyeState = MARIO_EYES_CLOSED;
@@ -340,17 +316,17 @@ s32 MarioState::act_sleeping()
 
 			if(sp24 == -1 && !this->actionTimer)
 			{
-				func_80248C28(2);
+				AudStartMute(2);
 			}
 
 			if(sp24 == 2)
 			{
-				play_sound(SOUND_MARIO_SNORING1, this->marioObj->header.gfx.cameraToObject);
+				AudStartSound(SOUND_MARIO_SNORING1, this->marioObj->header.gfx.cameraToObject);
 			}
 
 			if(sp24 == 20)
 			{
-				play_sound(SOUND_MARIO_SNORING2, this->marioObj->header.gfx.cameraToObject);
+				AudStartSound(SOUND_MARIO_SNORING2, this->marioObj->header.gfx.cameraToObject);
 			}
 
 			if(is_anim_at_end())
@@ -379,57 +355,43 @@ s32 MarioState::act_sleeping()
 		case 2:
 		{
 			sp24 = set_mario_animation(MARIO_ANIM_SLEEP_LYING);
-#ifndef VERSION_JP
 			play_sound_if_no_flag(SOUND_MARIO_SNORING3, MARIO_ACTION_SOUND_PLAYED);
-#else
-			if(sp24 == 2)
-			{
-				play_sound(SOUND_MARIO_SNORING2, this->marioObj->header.gfx.cameraToObject);
-			}
-
-			if(sp24 == 25)
-			{
-				play_sound(SOUND_MARIO_SNORING1, this->marioObj->header.gfx.cameraToObject);
-			}
-#endif
 			break;
 		}
 	}
 	return 0;
 }
 
-s32 MarioState::act_waking_up()
+s32 PlayerRecord::act_waking_up()
 {
 	if(!this->actionTimer)
 	{
 		func_803205E8(SOUND_MARIO_SNORING1, this->marioObj->header.gfx.cameraToObject);
 		func_803205E8(SOUND_MARIO_SNORING2, this->marioObj->header.gfx.cameraToObject);
-#ifndef VERSION_JP
 		func_803205E8(SOUND_MARIO_SNORING3, this->marioObj->header.gfx.cameraToObject);
-#endif
-		func_80248CB8(2);
+		AudEndMute(2);
 	}
 
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_ABOVE_SLIDE)
 	{
-		return set_mario_action(ACT_BEGIN_SLIDING, 0);
+		return ChangePlayerStatus(ACT_BEGIN_SLIDING, 0);
 	}
 
 	this->actionTimer++;
 
 	if(this->actionTimer > 20 * FRAME_RATE_SCALER_INV)
 	{
-		return set_mario_action(ACT_IDLE, 0);
+		return ChangePlayerStatus(ACT_IDLE, 0);
 	}
 
 	stationary_ground_step();
@@ -439,23 +401,23 @@ s32 MarioState::act_waking_up()
 	return 0;
 }
 
-s32 MarioState::act_shivering()
+s32 PlayerRecord::act_shivering()
 {
 	s32 sp24;
 
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_ABOVE_SLIDE)
 	{
-		return set_mario_action(ACT_BEGIN_SLIDING, 0);
+		return ChangePlayerStatus(ACT_BEGIN_SLIDING, 0);
 	}
 
 	if(this->input & INPUT_UNKNOWN_A41F)
@@ -472,11 +434,11 @@ s32 MarioState::act_shivering()
 			if(sp24 == 0x31)
 			{
 				this->particleFlags |= PARTICLE_WATER_MIST;
-				play_sound(SOUND_MARIO_PANTING_COLD, this->marioObj->header.gfx.cameraToObject);
+				AudStartSound(SOUND_MARIO_PANTING_COLD, this->marioObj->header.gfx.cameraToObject);
 			}
 			if(sp24 == 7 || sp24 == 0x51)
 			{
-				play_sound(SOUND_ACTION_CLAP_HANDS_COLD, this->marioObj->header.gfx.cameraToObject);
+				AudStartSound(SOUND_ACTION_CLAP_HANDS_COLD, this->marioObj->header.gfx.cameraToObject);
 			}
 			if(is_anim_past_end())
 			{
@@ -489,7 +451,7 @@ s32 MarioState::act_shivering()
 			sp24 = set_mario_animation(MARIO_ANIM_SHIVERING);
 			if(sp24 == 9 || sp24 == 0x19 || sp24 == 0x2C)
 			{
-				play_sound(SOUND_ACTION_CLAP_HANDS_COLD, this->marioObj->header.gfx.cameraToObject);
+				AudStartSound(SOUND_ACTION_CLAP_HANDS_COLD, this->marioObj->header.gfx.cameraToObject);
 			}
 			break;
 		}
@@ -498,7 +460,7 @@ s32 MarioState::act_shivering()
 			set_mario_animation(MARIO_ANIM_SHIVERING_RETURN_TO_IDLE);
 			if(is_anim_past_end())
 			{
-				set_mario_action(ACT_IDLE, 0);
+				ChangePlayerStatus(ACT_IDLE, 0);
 			}
 			break;
 		}
@@ -506,7 +468,7 @@ s32 MarioState::act_shivering()
 	return 0;
 }
 
-s32 MarioState::act_coughing()
+s32 PlayerRecord::act_coughing()
 {
 	s32 sp1C;
 
@@ -519,27 +481,27 @@ s32 MarioState::act_coughing()
 	sp1C = set_mario_animation(MARIO_ANIM_COUGHING);
 	if(sp1C == 0x19 || sp1C == 0x23)
 	{
-		play_sound(SOUND_MARIO_COUGHING3, this->marioObj->header.gfx.cameraToObject);
+		AudStartSound(SOUND_MARIO_COUGHING3, this->marioObj->header.gfx.cameraToObject);
 	}
 
 	if(sp1C == 0x32 || sp1C == 0x3A)
 	{
-		play_sound(SOUND_MARIO_COUGHING2, this->marioObj->header.gfx.cameraToObject);
+		AudStartSound(SOUND_MARIO_COUGHING2, this->marioObj->header.gfx.cameraToObject);
 	}
 
 	if(sp1C == 0x47 || sp1C == 0x50)
 	{
-		play_sound(SOUND_MARIO_COUGHING1, this->marioObj->header.gfx.cameraToObject);
+		AudStartSound(SOUND_MARIO_COUGHING1, this->marioObj->header.gfx.cameraToObject);
 	}
 
 	return 0;
 }
 
-s32 MarioState::act_hold_idle()
+s32 PlayerRecord::act_hold_idle()
 {
 	if(segmented_to_virtual(sm64::bhv::bhvJumpingBox()) == this->heldObj->behavior)
 	{
-		return set_mario_action(ACT_CRAZY_BOX_BOUNCE, 0);
+		return ChangePlayerStatus(ACT_CRAZY_BOX_BOUNCE, 0);
 	}
 
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
@@ -547,7 +509,7 @@ s32 MarioState::act_hold_idle()
 		return drop_and_set_mario_action(ACT_IDLE, 0);
 	}
 
-	if(this->quicksandDepth > 30.0f)
+	if(this->sinking > 30.0f)
 	{
 		return drop_and_set_mario_action(ACT_IN_QUICKSAND, 0);
 	}
@@ -562,7 +524,7 @@ s32 MarioState::act_hold_idle()
 	return 0;
 }
 
-s32 MarioState::act_hold_heavy_idle()
+s32 PlayerRecord::act_hold_heavy_idle()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
@@ -581,12 +543,12 @@ s32 MarioState::act_hold_heavy_idle()
 
 	if(this->input & INPUT_NONZERO_ANALOG)
 	{
-		return set_mario_action(ACT_HOLD_HEAVY_WALKING, 0);
+		return ChangePlayerStatus(ACT_HOLD_HEAVY_WALKING, 0);
 	}
 
 	if(this->input & INPUT_B_PRESSED)
 	{
-		return set_mario_action(ACT_HEAVY_THROW, 0);
+		return ChangePlayerStatus(ACT_HEAVY_THROW, 0);
 	}
 
 	stationary_ground_step();
@@ -594,11 +556,11 @@ s32 MarioState::act_hold_heavy_idle()
 	return 0;
 }
 
-s32 MarioState::act_standing_against_wall()
+s32 PlayerRecord::act_standing_against_wall()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & (INPUT_NONZERO_ANALOG | INPUT_A_PRESSED | INPUT_OFF_FLOOR | INPUT_ABOVE_SLIDE))
@@ -608,12 +570,12 @@ s32 MarioState::act_standing_against_wall()
 
 	if(this->input & INPUT_FIRST_PERSON)
 	{
-		return set_mario_action(ACT_FIRST_PERSON, 0);
+		return ChangePlayerStatus(ACT_FIRST_PERSON, 0);
 	}
 
 	if(this->input & INPUT_B_PRESSED)
 	{
-		return set_mario_action(ACT_PUNCHING, 0);
+		return ChangePlayerStatus(ACT_PUNCHING, 0);
 	}
 
 	set_mario_animation(MARIO_ANIM_STAND_AGAINST_WALL);
@@ -621,11 +583,11 @@ s32 MarioState::act_standing_against_wall()
 	return 0;
 }
 
-s32 MarioState::act_in_quicksand()
+s32 PlayerRecord::act_in_quicksand()
 {
-	if(this->quicksandDepth < 30.0f)
+	if(this->sinking < 30.0f)
 	{
-		return set_mario_action(ACT_IDLE, 0);
+		return ChangePlayerStatus(ACT_IDLE, 0);
 	}
 
 	if(func_802604E0() != 0)
@@ -633,7 +595,7 @@ s32 MarioState::act_in_quicksand()
 		return 1;
 	}
 
-	if(this->quicksandDepth > 70.0f)
+	if(this->sinking > 70.0f)
 	{
 		set_mario_animation(MARIO_ANIM_DYING_IN_QUICKSAND);
 	}
@@ -646,11 +608,11 @@ s32 MarioState::act_in_quicksand()
 	return 0;
 }
 
-s32 MarioState::act_crouching()
+s32 PlayerRecord::act_crouching()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_A_PRESSED)
@@ -660,32 +622,32 @@ s32 MarioState::act_crouching()
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_ABOVE_SLIDE)
 	{
-		return set_mario_action(ACT_BEGIN_SLIDING, 0);
+		return ChangePlayerStatus(ACT_BEGIN_SLIDING, 0);
 	}
 
 	if(this->input & INPUT_FIRST_PERSON)
 	{
-		return set_mario_action(ACT_UNKNOWN_022, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_022, 0);
 	}
 
 	if(!(this->input & INPUT_Z_DOWN))
 	{
-		return set_mario_action(ACT_UNKNOWN_022, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_022, 0);
 	}
 
 	if(this->input & INPUT_NONZERO_ANALOG)
 	{
-		return set_mario_action(ACT_START_CRAWLING, 0);
+		return ChangePlayerStatus(ACT_START_CRAWLING, 0);
 	}
 
 	if(this->input & INPUT_B_PRESSED)
 	{
-		return set_mario_action(ACT_PUNCHING, 9);
+		return ChangePlayerStatus(ACT_PUNCHING, 9);
 	}
 
 	stationary_ground_step();
@@ -693,16 +655,16 @@ s32 MarioState::act_crouching()
 	return 0;
 }
 
-s32 MarioState::act_panting()
+s32 PlayerRecord::act_panting()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->health >= 0x500)
 	{
-		return set_mario_action(ACT_IDLE, 0);
+		return ChangePlayerStatus(ACT_IDLE, 0);
 	}
 
 	if(func_802604E0())
@@ -712,7 +674,7 @@ s32 MarioState::act_panting()
 
 	if(set_mario_animation(MARIO_ANIM_WALK_PANTING) == 1)
 	{
-		play_sound(SOUND_MARIO_PANTING + ((gAudioRandom % 3U) << 0x10), this->marioObj->header.gfx.cameraToObject);
+		AudStartSound(SOUND_MARIO_PANTING + ((gAudioRandom % 3U) << 0x10), this->marioObj->header.gfx.cameraToObject);
 	}
 
 	stationary_ground_step();
@@ -720,7 +682,7 @@ s32 MarioState::act_panting()
 	return 0;
 }
 
-s32 MarioState::act_hold_panting_unused()
+s32 PlayerRecord::act_hold_panting_unused()
 {
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
@@ -734,7 +696,7 @@ s32 MarioState::act_hold_panting_unused()
 
 	if(this->health >= 0x500)
 	{
-		return set_mario_action(ACT_HOLD_IDLE, 0);
+		return ChangePlayerStatus(ACT_HOLD_IDLE, 0);
 	}
 
 	if(func_802606DC() != 0)
@@ -748,31 +710,31 @@ s32 MarioState::act_hold_panting_unused()
 	return 0;
 }
 
-void MarioState::func_80261D70(s32 animID, u32 action)
+void PlayerRecord::func_80261D70(s32 animID, u32 action)
 {
 	stationary_ground_step();
 	set_mario_animation(animID);
 	if(is_anim_at_end() != 0)
 	{
-		set_mario_action(action, 0);
+		ChangePlayerStatus(action, 0);
 	}
 }
 
-s32 MarioState::act_braking_stop()
+s32 PlayerRecord::act_braking_stop()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_B_PRESSED)
 	{
-		return set_mario_action(ACT_PUNCHING, 0);
+		return ChangePlayerStatus(ACT_PUNCHING, 0);
 	}
 
 	if(!(this->input & INPUT_FIRST_PERSON) && this->input & (INPUT_NONZERO_ANALOG | INPUT_A_PRESSED | INPUT_OFF_FLOOR | INPUT_ABOVE_SLIDE))
@@ -784,11 +746,11 @@ s32 MarioState::act_braking_stop()
 	return 0;
 }
 
-s32 MarioState::act_butt_slide_stop()
+s32 PlayerRecord::act_butt_slide_stop()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & (INPUT_NONZERO_ANALOG | INPUT_A_PRESSED | INPUT_OFF_FLOOR | INPUT_ABOVE_SLIDE))
@@ -805,7 +767,7 @@ s32 MarioState::act_butt_slide_stop()
 	return 0;
 }
 
-s32 MarioState::func_80261F8C()
+s32 PlayerRecord::func_80261F8C()
 {
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
@@ -824,14 +786,14 @@ s32 MarioState::func_80261F8C()
 
 	if(this->input & INPUT_B_PRESSED)
 	{
-		return set_mario_action(ACT_THROWING, 0);
+		return ChangePlayerStatus(ACT_THROWING, 0);
 	}
 
 	func_80261D70(MARIO_ANIM_STAND_UP_FROM_SLIDING_WITH_LIGHT_OBJ, ACT_HOLD_IDLE);
 	return 0;
 }
 
-s32 MarioState::act_slide_kick_slide_stop()
+s32 PlayerRecord::act_slide_kick_slide_stop()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
@@ -847,16 +809,16 @@ s32 MarioState::act_slide_kick_slide_stop()
 	return 0;
 }
 
-s32 MarioState::act_start_crouching()
+s32 PlayerRecord::act_start_crouching()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_A_PRESSED)
@@ -866,28 +828,28 @@ s32 MarioState::act_start_crouching()
 
 	if(this->input & INPUT_ABOVE_SLIDE)
 	{
-		return set_mario_action(ACT_BEGIN_SLIDING, 0);
+		return ChangePlayerStatus(ACT_BEGIN_SLIDING, 0);
 	}
 
 	stationary_ground_step();
 	set_mario_animation(MARIO_ANIM_START_CROUCHING);
 	if(is_anim_past_end())
 	{
-		set_mario_action(ACT_CROUCHING, 0);
+		ChangePlayerStatus(ACT_CROUCHING, 0);
 	}
 	return 0;
 }
 
-s32 MarioState::act_stop_crouching()
+s32 PlayerRecord::act_stop_crouching()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_A_PRESSED)
@@ -897,88 +859,90 @@ s32 MarioState::act_stop_crouching()
 
 	if(this->input & INPUT_ABOVE_SLIDE)
 	{
-		return set_mario_action(ACT_BEGIN_SLIDING, 0);
+		return ChangePlayerStatus(ACT_BEGIN_SLIDING, 0);
 	}
 
 	stationary_ground_step();
 	set_mario_animation(MARIO_ANIM_STOP_CROUCHING);
 	if(is_anim_past_end())
 	{
-		set_mario_action(ACT_IDLE, 0);
+		ChangePlayerStatus(ACT_IDLE, 0);
 	}
 	return 0;
 }
 
-s32 MarioState::act_start_crawling()
+s32 PlayerRecord::act_start_crawling()
 {
 	if(this->input & INPUT_FIRST_PERSON)
 	{
-		return set_mario_action(ACT_UNKNOWN_022, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_022, 0);
 	}
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_ABOVE_SLIDE)
 	{
-		return set_mario_action(ACT_BEGIN_SLIDING, 0);
+		return ChangePlayerStatus(ACT_BEGIN_SLIDING, 0);
 	}
 
 	stationary_ground_step();
 	set_mario_animation(MARIO_ANIM_START_CRAWLING);
 	if(is_anim_past_end())
 	{
-		set_mario_action(ACT_CRAWLING, 0);
+		ChangePlayerStatus(ACT_CRAWLING, 0);
 	}
 
 	return 0;
 }
 
-s32 MarioState::act_stop_crawling()
+s32 PlayerRecord::act_stop_crawling()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_ABOVE_SLIDE)
 	{
-		return set_mario_action(ACT_BEGIN_SLIDING, 0);
+		return ChangePlayerStatus(ACT_BEGIN_SLIDING, 0);
 	}
 
 	stationary_ground_step();
 	set_mario_animation(MARIO_ANIM_STOP_CRAWLING);
 	if(is_anim_past_end())
 	{
-		set_mario_action(ACT_CROUCHING, 0);
+		ChangePlayerStatus(ACT_CROUCHING, 0);
 	}
 	return 0;
 }
 
-s32 MarioState::func_80262574()
+s32 PlayerRecord::act_shockwave_bounce()
 {
 	s16 sp1E;
 	f32 sp18;
 
 	if(this->marioObj->oInteractStatus & 0x10)
 	{
+		SendMotorEvent(70, 40);
 		return hurt_and_set_mario_action(ACT_SHOCKED, 0, 4);
 	}
 
 	if(this->actionTimer == 0)
 	{
+		SendMotorEvent(70, 40);
 		if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_UNK1)
 		{
 			return hurt_and_set_mario_action(ACT_BACKWARD_GROUND_KB, 0, 0xc);
@@ -987,7 +951,7 @@ s32 MarioState::func_80262574()
 
 	if(++this->actionTimer == 0x30 * FRAME_RATE_SCALER_INV)
 	{
-		return set_mario_action(ACT_IDLE, 0);
+		return ChangePlayerStatus(ACT_IDLE, 0);
 	}
 
 	sp1E = ((this->actionTimer / FRAME_RATE_SCALER_INV) % 0x10) << 0xC;
@@ -1010,27 +974,27 @@ s32 MarioState::func_80262574()
 	return 0;
 }
 
-s32 MarioState::func_802627B8(s32 arg1, u32 action)
+s32 PlayerRecord::func_802627B8(s32 arg1, u32 action)
 {
 	stationary_ground_step();
 	set_mario_animation(arg1);
 	if(is_anim_at_end())
 	{
-		return set_mario_action(action, 0);
+		return ChangePlayerStatus(action, 0);
 	}
 	return 0;
 }
 
-s32 MarioState::func_80262828(u32 action)
+s32 PlayerRecord::func_80262828(u32 action)
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_FIRST_PERSON)
 	{
-		return set_mario_action(ACT_IDLE, 0);
+		return ChangePlayerStatus(ACT_IDLE, 0);
 	}
 
 	if(this->input & INPUT_A_PRESSED)
@@ -1052,13 +1016,13 @@ s32 MarioState::func_80262828(u32 action)
 
 	if(this->input & INPUT_B_PRESSED)
 	{
-		return set_mario_action(ACT_PUNCHING, 0);
+		return ChangePlayerStatus(ACT_PUNCHING, 0);
 	}
 
 	return 0;
 }
 
-s32 MarioState::act_jump_land_stop()
+s32 PlayerRecord::act_jump_land_stop()
 {
 	if(func_80262828(0))
 	{
@@ -1069,7 +1033,7 @@ s32 MarioState::act_jump_land_stop()
 	return 0;
 }
 
-s32 MarioState::act_double_jump_land_stop()
+s32 PlayerRecord::act_double_jump_land_stop()
 {
 	if(func_80262828(0))
 	{
@@ -1080,7 +1044,7 @@ s32 MarioState::act_double_jump_land_stop()
 	return 0;
 }
 
-s32 MarioState::act_side_flip_land_stop()
+s32 PlayerRecord::act_side_flip_land_stop()
 {
 	if(func_80262828(0))
 	{
@@ -1092,7 +1056,7 @@ s32 MarioState::act_side_flip_land_stop()
 	return 0;
 }
 
-s32 MarioState::act_freefall_land_stop()
+s32 PlayerRecord::act_freefall_land_stop()
 {
 	if(func_80262828(0))
 	{
@@ -1103,7 +1067,7 @@ s32 MarioState::act_freefall_land_stop()
 	return 0;
 }
 
-s32 MarioState::act_triple_jump_land_stop()
+s32 PlayerRecord::act_triple_jump_land_stop()
 {
 	if(func_80262828(ACT_JUMP))
 	{
@@ -1114,7 +1078,7 @@ s32 MarioState::act_triple_jump_land_stop()
 	return 0;
 }
 
-s32 MarioState::act_backflip_land_stop()
+s32 PlayerRecord::act_backflip_land_stop()
 {
 	if(!(this->input & INPUT_Z_DOWN) || this->marioObj->header.gfx.unk38.frame() >= 6)
 	{
@@ -1130,7 +1094,7 @@ s32 MarioState::act_backflip_land_stop()
 	return 0;
 }
 
-s32 MarioState::act_lava_boost_land()
+s32 PlayerRecord::act_lava_boost_land()
 {
 	this->input &= -0x2011;
 
@@ -1143,7 +1107,7 @@ s32 MarioState::act_lava_boost_land()
 	return 0;
 }
 
-s32 MarioState::act_long_jump_land_stop()
+s32 PlayerRecord::act_long_jump_land_stop()
 {
 	this->input &= -0x2001;
 	if(func_80262828(ACT_JUMP))
@@ -1155,7 +1119,7 @@ s32 MarioState::act_long_jump_land_stop()
 	return 0;
 }
 
-s32 MarioState::func_80262CEC()
+s32 PlayerRecord::func_80262CEC()
 {
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
@@ -1174,14 +1138,14 @@ s32 MarioState::func_80262CEC()
 
 	if(this->input & INPUT_B_PRESSED)
 	{
-		return set_mario_action(ACT_THROWING, 0);
+		return ChangePlayerStatus(ACT_THROWING, 0);
 	}
 
 	func_802627B8(MARIO_ANIM_JUMP_LAND_WITH_LIGHT_OBJ, ACT_HOLD_IDLE);
 	return 0;
 }
 
-s32 MarioState::func_80262DE4()
+s32 PlayerRecord::func_80262DE4()
 {
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
@@ -1200,22 +1164,22 @@ s32 MarioState::func_80262DE4()
 
 	if(this->input & INPUT_B_PRESSED)
 	{
-		return set_mario_action(ACT_THROWING, 0);
+		return ChangePlayerStatus(ACT_THROWING, 0);
 	}
 	func_802627B8(MARIO_ANIM_FALL_LAND_WITH_LIGHT_OBJ, ACT_HOLD_IDLE);
 	return 0;
 }
 
-s32 MarioState::act_air_throw_land()
+s32 PlayerRecord::act_air_throw_land()
 {
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(++this->actionTimer == 4 * FRAME_RATE_SCALER_INV)
@@ -1227,17 +1191,17 @@ s32 MarioState::act_air_throw_land()
 	return 0;
 }
 
-s32 MarioState::act_twirl_land()
+s32 PlayerRecord::act_twirl_land()
 {
 	this->actionState = 1;
 	if(this->input & INPUT_UNKNOWN_10)
 	{
-		return set_mario_action(ACT_UNKNOWN_026, 0);
+		return ChangePlayerStatus(ACT_UNKNOWN_026, 0);
 	}
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	stationary_ground_step();
@@ -1259,14 +1223,14 @@ s32 MarioState::act_twirl_land()
 		if(this->angleVel[1] == 0)
 		{
 			this->faceAngle[1] += this->twirlYaw;
-			set_mario_action(ACT_IDLE, 0);
+			ChangePlayerStatus(ACT_IDLE, 0);
 		}
 	}
 
 	return 0;
 }
 
-s32 MarioState::act_ground_pound_land()
+s32 PlayerRecord::act_ground_pound_land()
 {
 	this->actionState = 1;
 	if(this->input & INPUT_UNKNOWN_10)
@@ -1276,19 +1240,19 @@ s32 MarioState::act_ground_pound_land()
 
 	if(this->input & INPUT_OFF_FLOOR)
 	{
-		return set_mario_action(ACT_FREEFALL, 0);
+		return ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
 	if(this->input & INPUT_ABOVE_SLIDE)
 	{
-		return set_mario_action(ACT_BUTT_SLIDE, 0);
+		return ChangePlayerStatus(ACT_BUTT_SLIDE, 0);
 	}
 
 	func_802627B8(MARIO_ANIM_GROUND_POUND_LANDING, ACT_BUTT_SLIDE_STOP);
 	return 0;
 }
 
-s32 MarioState::act_first_person()
+s32 PlayerRecord::act_first_person()
 {
 	s32 sp1C;
 	s16 sp1A;
@@ -1297,7 +1261,7 @@ s32 MarioState::act_first_person()
 	sp1C = 0U < (this->input & (INPUT_UNKNOWN_10 | 0xC));
 	if(this->actionState == 0)
 	{
-		func_80248C28(2);
+		AudStartMute(2);
 		set_camera_mode(this->area->camera, CAMERA_MODE_C_UP, 0x10);
 		this->actionState = 1;
 	}
@@ -1305,16 +1269,16 @@ s32 MarioState::act_first_person()
 	{
 		if(!(this->input & INPUT_FIRST_PERSON) || sp1C)
 		{
-			func_80248CB8(2);
+			AudEndMute(2);
 			// Go back to the last camera mode
 			set_camera_mode(this->area->camera, -1, 1);
-			return set_mario_action(ACT_IDLE, 0);
+			return ChangePlayerStatus(ACT_IDLE, 0);
 		}
 	}
 
 	if(this->floor->type == SURFACE_LOOK_UP_WARP)
 	{
-		if(save_file_get_total_star_count(gCurrSaveFileNum - 1, 0, 0x18) >= 10)
+		if(BuGetSumStars(activePlayerNo - 1, 0, 0x18) >= 10)
 		{
 			sp1A = this->statusForCamera->headRotation[0];
 			sp18 = ((this->statusForCamera->headRotation[1] * 4) / 3) + this->faceAngle[1];
@@ -1322,7 +1286,7 @@ s32 MarioState::act_first_person()
 			{
 				if(sp18 < -0x6FFF || sp18 >= 0x7000)
 				{
-					level_trigger_warp(this, 1);
+					PL_StartFadeout(this, 1);
 				}
 			}
 		}
@@ -1333,13 +1297,13 @@ s32 MarioState::act_first_person()
 	return 0;
 }
 
-s32 MarioState::func_80263378()
+s32 PlayerRecord::func_80263378()
 {
 	if(this->pos[1] < this->waterLevel - 100)
 	{
-		if(this->action == ACT_SPAWN_SPIN_LANDING)
+		if(this->status == ACT_SPAWN_SPIN_LANDING)
 		{
-			func_8024980C(0);
+			PL_DisplayMessage(0);
 		}
 		update_mario_sound_and_camera();
 		return set_water_plunge_action();
@@ -1351,7 +1315,7 @@ s32 MarioState::func_80263378()
 		return drop_and_set_mario_action(ACT_SQUISHED, 0);
 	}
 
-	if(this->action != 0x0002020E)
+	if(this->status != 0x0002020E)
 	{
 		if(this->health < 0x100)
 		{
@@ -1362,7 +1326,7 @@ s32 MarioState::func_80263378()
 	return 0;
 }
 
-s32 MarioState::mario_execute_stationary_action()
+s32 PlayerRecord::mario_execute_stationary_action()
 {
 	s32 sp24;
 
@@ -1377,7 +1341,7 @@ s32 MarioState::mario_execute_stationary_action()
 	}
 
 	/* clang-format off */
-	switch(this->action)
+	switch(this->status)
 	{
 		case ACT_IDLE:                  sp24 = act_idle();                             break;
 		case ACT_START_SLEEPING:        sp24 = act_start_sleeping();                   break;
@@ -1397,7 +1361,7 @@ s32 MarioState::mario_execute_stationary_action()
 		case ACT_START_CRAWLING:        sp24 = act_start_crawling();                   break;
 		case ACT_UNKNOWN_024:           sp24 = act_stop_crawling();                    break;
 		case ACT_SLIDE_KICK_SLIDE_STOP: sp24 = act_slide_kick_slide_stop();            break;
-		case ACT_UNKNOWN_026:           sp24 = func_80262574();                        break;
+		case ACT_UNKNOWN_026:           sp24 = act_shockwave_bounce();                        break;
 		case ACT_FIRST_PERSON:          sp24 = act_first_person();                     break;
 		case ACT_JUMP_LAND_STOP:        sp24 = act_jump_land_stop();                   break;
 		case ACT_DOUBLE_JUMP_LAND_STOP: sp24 = act_double_jump_land_stop();            break;

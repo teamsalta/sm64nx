@@ -8,20 +8,44 @@ namespace sm64
 	{
 		class Camera
 		{
-		public:
+			public:
 			Camera();
 
-			const float& distanceScaler() const { return m_distanceScaler; }
-			float& distanceScaler() { return m_distanceScaler; }
+			const float& distanceScaler() const
+			{
+				return m_distanceScaler;
+			}
+			float& distanceScaler()
+			{
+				return m_distanceScaler;
+			}
 
-			const float& yawReturnScaler() const { return m_yawReturnScaler; }
-			float& yawReturnScaler() { return m_yawReturnScaler; }
+			const float& yawReturnScaler() const
+			{
+				return m_yawReturnScaler;
+			}
+			float& yawReturnScaler()
+			{
+				return m_yawReturnScaler;
+			}
 
-			const bool disableDistanceClip() const { return levelLoaded() && m_disableDistanceClip; }
-			bool& setDisableDistanceClip() { return m_disableDistanceClip; }
+			const bool disableDistanceClip() const
+			{
+				return levelLoaded() && m_disableDistanceClip;
+			}
+			bool& setDisableDistanceClip()
+			{
+				return m_disableDistanceClip;
+			}
 
-			const bool& useClassicCamera() const { return m_useClassicCamera; }
-			bool& useClassicCamera() { return m_useClassicCamera; }
+			const bool& useClassicCamera() const
+			{
+				return m_useClassicCamera;
+			}
+			bool& useClassicCamera()
+			{
+				return m_useClassicCamera;
+			}
 
 			const bool& mousexInvert() const
 			{
@@ -60,12 +84,13 @@ namespace sm64
 			float& mouseyScaler()
 			{
 				return m_mouseyScaler;
-			}			
+			}
 
 			const bool levelLoaded() const;
 			void setLevelLoaded();
 			void unsetLevelLoaded();
-		protected:
+
+			protected:
 			float m_distanceScaler;
 			float m_yawReturnScaler;
 			bool m_disableDistanceClip;
@@ -82,16 +107,35 @@ namespace sm64
 
 		class Cheats
 		{
-		public:
+			public:
 			Cheats();
 
-			bool& invincible() { return m_invincible; }
-			bool& moonJump() { return m_moonJump; }
-			bool& unlimitedLives() { return m_unlimitedLives; }
-			bool& superJump() { return m_superJump; }
-			bool& quadrupleJump() { return m_quadrupleJump; }
-			float& bowserAimAssist() { return m_bowserAimAssist; }
-		protected:
+			bool& invincible()
+			{
+				return m_invincible;
+			}
+			bool& moonJump()
+			{
+				return m_moonJump;
+			}
+			bool& unlimitedLives()
+			{
+				return m_unlimitedLives;
+			}
+			bool& superJump()
+			{
+				return m_superJump;
+			}
+			bool& quadrupleJump()
+			{
+				return m_quadrupleJump;
+			}
+			float& bowserAimAssist()
+			{
+				return m_bowserAimAssist;
+			}
+
+			protected:
 			bool m_invincible;
 			bool m_moonJump;
 			bool m_unlimitedLives;
@@ -100,7 +144,7 @@ namespace sm64
 			u8 padding[3];
 			float m_bowserAimAssist;
 
-			u8 junk[0x40 - (5+7)];
+			u8 junk[0x40 - (5 + 7)];
 		};
 
 		static_assert(sizeof(Cheats) == 0x40, "Cheats size incorrect");
@@ -117,20 +161,21 @@ namespace sm64
 
 		class Mods
 		{
-		public:
+			public:
 			void save();
 			bool isEnabled(const std::string& name) const;
 			void cleanup();
 			static void set(const std::string& name, const u8 value);
 			static std::map<std::string, bool>& dirs();
-		protected:
+
+			protected:
 			Mod m_mods[MAX_MODS];
 			u8 m_padding[0x40];
 		};
 
 		class Game
 		{
-		public:
+			public:
 			Game();
 			u8& overclock();
 			u8 framerate();
@@ -143,7 +188,7 @@ namespace sm64
 			const bool mirror() const;
 			bool& setMirror();
 
-		protected:
+			protected:
 			u8 m_overclock;
 			u8 m_framerate;
 			bool m_disableSound;
@@ -156,19 +201,37 @@ namespace sm64
 
 		class Base
 		{
-		public:
+			public:
 			Base();
 			bool load();
 			bool save();
 
-			const Camera& camera() const { return m_camera; }
-			Camera& camera() { return m_camera; }
+			const Camera& camera() const
+			{
+				return m_camera;
+			}
+			Camera& camera()
+			{
+				return m_camera;
+			}
 
-			const Cheats& cheats() const { return m_cheats; }
-			Cheats& cheats() { return m_cheats; }
+			const Cheats& cheats() const
+			{
+				return m_cheats;
+			}
+			Cheats& cheats()
+			{
+				return m_cheats;
+			}
 
-			const Mods& mods() const { return m_mods; }
-			Mods& mods() { return m_mods; }
+			const Mods& mods() const
+			{
+				return m_mods;
+			}
+			Mods& mods()
+			{
+				return m_mods;
+			}
 
 			const Game& game() const
 			{
@@ -179,7 +242,7 @@ namespace sm64
 				return m_game;
 			}
 
-		protected:
+			protected:
 			Camera m_camera;
 			Cheats m_cheats;
 			Mods m_mods;
@@ -189,9 +252,9 @@ namespace sm64
 		};
 
 		static_assert(sizeof(Base) == 0x400, "Option size incorrect");
-	}
-	
+	} // namespace options
+
 	typedef options::Base Options;
 
 	Options& config();
-}
+} // namespace sm64

@@ -438,9 +438,6 @@
     <ClCompile Include="..\src\pc\pc_main.cpp">
       <Filter>Source Files\pc</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\game\area.cpp">
-      <Filter>Source Files\game</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\game\behavior_actions.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
@@ -466,9 +463,6 @@
       <Filter>Source Files\game</Filter>
     </ClCompile>
     <ClCompile Include="..\src\game\geo_misc.cpp">
-      <Filter>Source Files\game</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\game\hud.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
     <ClCompile Include="..\src\game\ingame_menu.cpp">
@@ -1232,6 +1226,15 @@
     </ClCompile>
     <ClCompile Include="..\data\mario_anim_data.cpp">
       <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\scene.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\gauge.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\motor.cpp">
+      <Filter>Source Files\game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

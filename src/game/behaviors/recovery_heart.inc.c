@@ -13,16 +13,16 @@ struct ObjectHitbox sRecoveryHeartHitbox = {
 
 void bhv_recovery_heart_loop(void)
 {
-	set_object_hitbox(o, &sRecoveryHeartHitbox);
-	if(are_objects_collided(o, gMarioObject))
+	s_set_hitparam(o, &sRecoveryHeartHitbox);
+	if(s_hitcheck(o, gMarioObject))
 	{
 		if(o->oSpinningHeartPlayedSound == 0)
 		{
-			PlaySound2(SOUND_GENERAL_HEART_SPIN);
+			objsound(SOUND_GENERAL_HEART_SPIN);
 			o->oSpinningHeartPlayedSound += 1;
 		}
 
-		o->oAngleVelYaw = (s32)(200.0f * gMarioStates[0].forwardVel) + 1000;
+		o->oAngleVelYaw = (s32)(200.0f * playerWorks[0].forwardVel) + 1000;
 	}
 	else
 	{
@@ -37,7 +37,7 @@ void bhv_recovery_heart_loop(void)
 
 	if((o->oSpinningHeartTotalSpin += o->oAngleVelYaw) >= 0x10000)
 	{
-		gMarioStates[0].healCounter += 4;
+		playerWorks[0].healCounter += 4;
 		o->oSpinningHeartTotalSpin -= 0x10000;
 	}
 

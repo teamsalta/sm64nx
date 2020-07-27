@@ -8,7 +8,7 @@ void bhv_small_piranha_flame_loop(void)
 	{
 		if(o->oTimer > 0)
 		{
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 		}
 		else
 		{
@@ -55,12 +55,12 @@ void bhv_small_piranha_flame_loop(void)
 
 void bhv_fly_guy_flame_loop(void)
 {
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 
 	if(approach_f32_ptr(&o->header.gfx.scale[0], 0.0f, 0.6f * FRAME_RATE_SCALER))
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 
-	obj_scale(o->header.gfx.scale[0]);
+	s_set_scale(o->header.gfx.scale[0]);
 }

@@ -18,7 +18,7 @@ void bhv_piranha_plant_waking_bubbles_loop(void)
 		o->oForwardVel	 = RandomFloat() * 10.0f + 5.0f;
 		o->oMoveAngleYaw = RandomU16();
 	}
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 }
 
 /**
@@ -119,5 +119,5 @@ void bhv_piranha_plant_bubble_loop(void)
 			scale	   = 1.0f; // this has no effect; it is set to 0 in the idle state
 			break;
 	}
-	obj_scale(scale);
+	s_set_scale(scale);
 }

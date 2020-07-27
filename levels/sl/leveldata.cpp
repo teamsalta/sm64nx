@@ -20,7 +20,7 @@
 #include "levels/sl/areas/1/7/model.inc.c"
 #include "levels/sl/snow_mound/model.inc.c"
 #include "levels/sl/unused_cracked_ice/model.inc.c"
-#include "levels/sl/unused_ice_shard/model.inc.c" // Used in the unused behavior when ground pounding the cracked ice show in the above model.
+#include "levels/sl/unused_ice_shard/model.inc.c" // Used in the size behavior when ground pounding the cracked ice show in the above model.
 #include "levels/sl/areas/2/1/model.inc.c"
 #include "levels/sl/areas/2/2/model.inc.c"
 #include "levels/sl/areas/2/3/model.inc.c"

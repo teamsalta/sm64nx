@@ -1,4 +1,4 @@
-// Springboard (unused)
+// Springboard (size)
 
 // 0x05000000
 static const Lights1 springboard_seg5_lights_05000000 = gdSPDefLights1(

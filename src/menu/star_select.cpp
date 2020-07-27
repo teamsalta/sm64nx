@@ -17,6 +17,7 @@
 #include "behavior_data.h"
 #include "text_strings.h"
 #include "star_select.h"
+#include "game/motor.h"
 
 /**
  * @file star_select.c
@@ -82,7 +83,7 @@ void bhv_act_selector_star_type_loop(void)
 			break;
 	}
 	// Scale act selector stars depending of the type selected
-	obj_scale(gCurrentObject->oStarSelectorSize);
+	s_set_scale(gCurrentObject->oStarSelectorSize);
 	// Unused timer, only referenced here. Probably replaced by sActSelectorMenuTimer
 	gCurrentObject->oStarSelectorTimer++;
 }
@@ -95,7 +96,7 @@ void render_100_coin_star(u8 stars)
 	if(stars & (1 << 6))
 	{
 		// If the 100 coin star has been collected, create a new star selector next to the coin score.
-		sStarSelectorModels[6]			  = spawn_object_abs_with_rot(gCurrentObject, 0, MODEL_STAR, sm64::bhv::bhvActSelectorStarType(), 370, 24, -300, 0, 0, 0);
+		sStarSelectorModels[6]			  = s_makeobj_absolute(gCurrentObject, 0, MODEL_STAR, sm64::bhv::bhvActSelectorStarType(), 370, 24, -300, 0, 0, 0);
 		sStarSelectorModels[6]->oStarSelectorSize = 0.8;
 		sStarSelectorModels[6]->oStarSelectorType = STAR_SELECTOR_100_COINS;
 	}
@@ -111,7 +112,7 @@ void bhv_act_selector_init(void)
 {
 	s16 i = 0;
 	s32 selectorModelIDs[10];
-	u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1);
+	u8 stars = BuGetStarFlag(activePlayerNo - 1, activeCourseNo - 1);
 
 	sVisibleStars = 0;
 	while(i != sObtainedStars)
@@ -160,7 +161,7 @@ void bhv_act_selector_init(void)
 	// Render star selector objects
 	for(i = 0; i < sVisibleStars; i++)
 	{
-		sStarSelectorModels[i]			  = spawn_object_abs_with_rot(gCurrentObject, 0, selectorModelIDs[i], sm64::bhv::bhvActSelectorStarType(), 75 + sVisibleStars * -75 + i * 152, 248, -300, 0, 0, 0);
+		sStarSelectorModels[i]			  = s_makeobj_absolute(gCurrentObject, 0, selectorModelIDs[i], sm64::bhv::bhvActSelectorStarType(), 75 + sVisibleStars * -75 + i * 152, 248, -300, 0, 0, 0);
 		sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
 	}
 
@@ -178,14 +179,14 @@ void bhv_act_selector_loop()
 {
 	s8 i;
 	u8 starIndexCounter;
-	u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1);
+	u8 stars = BuGetStarFlag(activePlayerNo - 1, activeCourseNo - 1);
 
 	if(sObtainedStars != 6)
 	{
 		// Sometimes, stars are not selectable even if they appear on the screen.
 		// This code filters selectable and non-selectable stars.
 		sSelectedActIndex = 0;
-		handle_menu_scrolling(MENU_SCROLL_HORIZONTAL, &sSelectableStarIndex, 0, sObtainedStars);
+		ContCursorEvent(MENU_SCROLL_HORIZONTAL, &sSelectableStarIndex, 0, sObtainedStars);
 		starIndexCounter = sSelectableStarIndex;
 		for(i = 0; i < sVisibleStars; i++)
 		{
@@ -204,7 +205,7 @@ void bhv_act_selector_loop()
 	else
 	{
 		// If all stars are collected then they are all selectable.
-		handle_menu_scrolling(MENU_SCROLL_HORIZONTAL, &sSelectableStarIndex, 0, sVisibleStars - 1);
+		ContCursorEvent(MENU_SCROLL_HORIZONTAL, &sSelectableStarIndex, 0, sVisibleStars - 1);
 		sSelectedActIndex = sSelectableStarIndex;
 	}
 
@@ -229,32 +230,28 @@ static void print_course_number()
 {
 	u8 courseNum[4];
 
-	create_dl_translation_matrix(MENU_MTX_PUSH, 158.0f, 81.0f, 0.0f);
+	iTranslate(MENU_MTX_PUSH, 158.0f, 81.0f, 0.0f);
 
 	gSPDisplayList(gDisplayListHead++, dl_menu_rgba16_wood_course);
 	gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 	gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
 	gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
 
-	int_to_str(gCurrCourseNum, courseNum);
+	I_itochar(activeCourseNo, courseNum);
 
-	if(gCurrCourseNum < 10)
+	if(activeCourseNo < 10)
 	{ // 1 digit number
-		print_hud_lut_string(HUD_LUT_GLOBAL, 152, 158, courseNum);
+		Draw16bitFont(HUD_LUT_GLOBAL, 152, 158, courseNum);
 	}
 	else
 	{ // 2 digit number
-		print_hud_lut_string(HUD_LUT_GLOBAL, 143, 158, courseNum);
+		Draw16bitFont(HUD_LUT_GLOBAL, 143, 158, courseNum);
 	}
 
 	gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 }
 
-#ifdef VERSION_JP
-#define ACT_NAME_X 158
-#else
 #define ACT_NAME_X 163
-#endif
 
 /**
  * Print act selector strings, some with special checks.
@@ -262,35 +259,34 @@ static void print_course_number()
 static void print_act_selector_strings()
 {
 	// TODO: EU relocates level and act name tables to translation segment 0x19
-#ifndef VERSION_EU
 	unsigned char myScore[]	    = {TEXT_MYSCORE};
 	unsigned char starNumbers[] = {TEXT_ZERO};
 	u8** levelNameTbl	    = (u8**)segmented_to_virtual(seg2_course_name_table);
-	u8* currLevelName	    = (u8*)segmented_to_virtual(levelNameTbl[gCurrCourseNum - 1]);
+	u8* currLevelName	    = (u8*)segmented_to_virtual(levelNameTbl[activeCourseNo - 1]);
 	u8** actNameTbl		    = (u8**)segmented_to_virtual(seg2_act_name_table);
 	u8* selectedActName;
 	s16 lvlNameX;
 	s16 actNameX;
 	s8 i;
 
-	create_dl_ortho_matrix();
+	MakeSelectProjection();
 
 	// Print the coin highscore.
 	gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
 	gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-	print_hud_my_score_coins(1, gCurrSaveFileNum - 1, gCurrCourseNum - 1, 155, 106);
+	DrawMyScore(1, activePlayerNo - 1, activeCourseNo - 1, 155, 106);
 	gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 
 	gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 	gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
 	// Print the "MY SCORE" text if the coin score is more than 0
-	if(save_file_get_course_coin_score(gCurrSaveFileNum - 1, gCurrCourseNum - 1) != 0)
+	if(BuGetNumCoins(activePlayerNo - 1, activeCourseNo - 1) != 0)
 	{
-		print_generic_string(102, 118, myScore);
+		Draw8bitFont(102, 118, myScore);
 	}
 	// Print the level name; add 3 to skip the number and spacing to get to the actual string to center.
-	lvlNameX = get_str_x_pos_from_center(160, currLevelName + 3, 10.0f);
-	print_generic_string(lvlNameX, 33, currLevelName + 3);
+	lvlNameX = CharCentering(160, currLevelName + 3, 10.0f);
+	Draw8bitFont(lvlNameX, 33, currLevelName + 3);
 	gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
 	print_course_number();
@@ -300,8 +296,8 @@ static void print_act_selector_strings()
 	// Print the name of the selected act.
 	if(sVisibleStars != 0)
 	{
-		selectedActName = (u8*)segmented_to_virtual(actNameTbl[(gCurrCourseNum - 1) * 6 + sSelectedActIndex]);
-		actNameX	= get_str_x_pos_from_center(ACT_NAME_X, selectedActName, 8.0f);
+		selectedActName = (u8*)segmented_to_virtual(actNameTbl[(activeCourseNo - 1) * 6 + sSelectedActIndex]);
+		actNameX	= CharCentering(ACT_NAME_X, selectedActName, 8.0f);
 		print_menu_generic_string(actNameX, 81, selectedActName);
 	}
 
@@ -313,7 +309,6 @@ static void print_act_selector_strings()
 	}
 
 	gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_end);
-#endif // !VERSION_EU
 }
 
 /**
@@ -338,15 +333,15 @@ Gfx* geo_act_selector_strings(s16 callContext, UNUSED struct GraphNode* node)
  * Initiates act selector values before entering a main course.
  * Also load how much stars a course has, without counting the 100 coin star.
  */
-s32 lvl_init_act_selector_values_and_stars(s32 arg, s32 unused)
+s32 SeStarSelectInitProc(s32 arg, s32 unused)
 {
-	u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1);
+	u8 stars = BuGetStarFlag(activePlayerNo - 1, activeCourseNo - 1);
 
 	sLoadedActNum	      = 0;
 	sInitSelectedActNum   = 0;
 	sVisibleStars	      = 0;
 	sActSelectorMenuTimer = 0;
-	sObtainedStars	      = save_file_get_course_star_count(gCurrSaveFileNum - 1, gCurrCourseNum - 1);
+	sObtainedStars	      = BuGetNumStars(activePlayerNo - 1, activeCourseNo - 1);
 
 	// Don't count 100 coin star
 	if(stars & (1 << 6))
@@ -364,14 +359,16 @@ s32 lvl_init_act_selector_values_and_stars(s32 arg, s32 unused)
  * Loads act selector button actions with selected act value checks.
  * Also updates objects and returns act number selected after is choosen.
  */
-s32 lvl_update_obj_and_load_act_button_actions(s32 arg, s32 unused)
+s32 SeStarSelectProcess(s32 arg, s32 unused)
 {
 	if(sActSelectorMenuTimer >= 11 * FRAME_RATE_SCALER_INV)
 	{
 		// If any of these buttons are pressed, play sound and go to course act
 		if((sm64::player(0).controller().buttonPressed & sm64::hid::A_BUTTON) || (sm64::player(0).controller().buttonPressed & sm64::hid::START_BUTTON) || (sm64::player(0).controller().buttonPressed & sm64::hid::B_BUTTON))
 		{
-			play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gDefaultSoundArgs);
+			AudStartSound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gDefaultSoundArgs);
+			SendMotorEvent(60, 70);
+			SendMotorDecay(1);
 
 			if(sInitSelectedActNum > sSelectedActIndex)
 			{
@@ -381,12 +378,12 @@ s32 lvl_update_obj_and_load_act_button_actions(s32 arg, s32 unused)
 			{
 				sLoadedActNum = sInitSelectedActNum;
 			}
-			gDialogCourseActNum = sSelectedActIndex + 1;
+			gDialogCourseActNum   = sSelectedActIndex + 1;
 			sActSelectorMenuTimer = -1;
 		}
 	}
 
-	area_update_objects();
+	SnExecuteStrategy();
 	sActSelectorMenuTimer++;
 	return sLoadedActNum;
 }

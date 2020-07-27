@@ -8,25 +8,25 @@ void bhv_celebration_star_init(void)
 	o->oMoveAngleYaw		= gMarioObject->header.gfx.angle[1] + 0x8000;
 	o->oCelebStarDiameterOfRotation = 100;
 #if BUGFIX_STAR_BOWSER_KEY
-	if(gCurrLevelNum == LEVEL_BOWSER_1 || gCurrLevelNum == LEVEL_BOWSER_2)
+	if(activeStageNo == LEVEL_BOWSER_1 || activeStageNo == LEVEL_BOWSER_2)
 	{
-		o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_BOWSER_KEY];
+		o->header.gfx.sharedChild = stageShapes[MODEL_BOWSER_KEY];
 		o->oFaceAnglePitch	  = 0;
 		o->oFaceAngleRoll	  = 49152;
-		obj_scale(0.1f);
+		s_set_scale(0.1f);
 		o->oCelebStarUnkF4 = 1;
 	}
 	else
 	{
-		o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_STAR];
+		o->header.gfx.sharedChild = stageShapes[MODEL_STAR];
 		o->oFaceAnglePitch	  = 0;
 		o->oFaceAngleRoll	  = 0;
-		obj_scale(0.4f);
+		s_set_scale(0.4f);
 		o->oCelebStarUnkF4 = 0;
 	}
 #else
-	o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_STAR];
-	obj_scale(0.4f);
+	o->header.gfx.sharedChild = stageShapes[MODEL_STAR];
+	s_set_scale(0.4f);
 	o->oFaceAnglePitch = 0;
 	o->oFaceAngleRoll  = 0;
 #endif
@@ -44,7 +44,7 @@ void CelebrationStarSpinAroundMarioLoop(void)
 		o->oAction = CELEB_STAR_ACT_FACE_CAMERA;
 	if(o->oTimer < 35 * FRAME_RATE_SCALER_INV)
 	{
-		spawn_object(o, MODEL_SPARKLES, sm64::bhv::bhvCelebrationStarSparkle());
+		s_makeobj_nowpos(o, MODEL_SPARKLES, sm64::bhv::bhvCelebrationStarSparkle());
 		o->oCelebStarDiameterOfRotation++;
 	}
 	else
@@ -58,14 +58,14 @@ void CelebrationStarFaceCameraLoop(void)
 #if BUGFIX_STAR_BOWSER_KEY
 		if(o->oCelebStarUnkF4 == 0)
 		{
-			obj_scale((f32)o->oTimer / 10.0 * FRAME_RATE_SCALER);
+			s_set_scale((f32)o->oTimer / 10.0 * FRAME_RATE_SCALER);
 		}
 		else
 		{
-			obj_scale((f32)o->oTimer / 30.0 * FRAME_RATE_SCALER);
+			s_set_scale((f32)o->oTimer / 30.0 * FRAME_RATE_SCALER);
 		}
 #else
-		 obj_scale((f32)o->oTimer / 10.0 * FRAME_RATE_SCALER);
+		 s_set_scale((f32)o->oTimer / 10.0 * FRAME_RATE_SCALER);
 #endif
 		o->oFaceAngleYaw += 0x1000 / FRAME_RATE_SCALER_INV;
 	}
@@ -102,6 +102,6 @@ void bhv_celebration_star_sparkle_loop(void)
 
 void bhv_star_key_collection_puff_spawner_loop(void)
 {
-	func_802AA618(0, 10, 30.0f);
+	s_burneffect(0, 10, 30.0f);
 	o->activeFlags = 0;
 }

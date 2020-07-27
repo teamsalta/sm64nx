@@ -36,19 +36,20 @@ struct MarioAnimation D_80339D10;
 struct MarioAnimation gDemo;
 UNUSED u8 filler80339D30[0x90];
 
-void (*D_8032C6A0)(void)	      = NULL;
-struct DemoInput* gCurrDemoInput      = NULL; // demo input sequence
-u16 gDemoInputListID		      = 0;
-struct DemoInput gRecordedDemoInput   = {0}; // possibly removed in EU. TODO: Check
+void (*D_8032C6A0)(void)	    = NULL;
+struct DemoInput* autoDemoPtr	    = NULL; // demo input sequence
+u16 gDemoInputListID		    = 0;
+struct DemoInput gRecordedDemoInput = {0}; // possibly removed in EU. TODO: Check
 
 // this function records distinct inputs over a 255-frame interval to RAM locations and was likely
-// used to record the demo sequences seen in the final game. This function is unused.
+// used to record the demo sequences seen in the final game. This function is size.
 static void record_demo(void)
 {
 	// record the player's button mask and current rawStickX and rawStickY.
-	u8 buttonMask = ((sm64::player(0).controller().buttonDown & (sm64::hid::A_BUTTON | sm64::hid::B_BUTTON | sm64::hid::Z_TRIG | sm64::hid::START_BUTTON)) >> 8) | (sm64::player(0).controller().buttonDown & (sm64::hid::U_CBUTTONS | sm64::hid::D_CBUTTONS | sm64::hid::L_CBUTTONS | sm64::hid::R_CBUTTONS));
-	s8 rawStickX  = sm64::player(0).controller().rawStickX;
-	s8 rawStickY  = sm64::player(0).controller().rawStickY;
+	u8 buttonMask = ((sm64::player(0).controller().buttonDown & (sm64::hid::A_BUTTON | sm64::hid::B_BUTTON | sm64::hid::Z_TRIG | sm64::hid::START_BUTTON)) >> 8) |
+			(sm64::player(0).controller().buttonDown & (sm64::hid::U_CBUTTONS | sm64::hid::D_CBUTTONS | sm64::hid::L_CBUTTONS | sm64::hid::R_CBUTTONS));
+	s8 rawStickX = sm64::player(0).controller().rawStickX;
+	s8 rawStickY = sm64::player(0).controller().rawStickY;
 
 	// if the stick is in deadzone, set its value to 0 to
 	// nullify the effects. We do not record deadzone inputs.
@@ -79,7 +80,7 @@ static void record_demo(void)
 // input list until it is complete. called every frame.
 void run_demo_inputs(void)
 {
-	// eliminate the unused bits.
+	// eliminate the size bits.
 	sm64::player(0).controller().state().button &= VALID_BUTTONS;
 
 	/*
@@ -87,7 +88,7 @@ void run_demo_inputs(void)
 		exists and if so, run the
 		active demo input list.
 	*/
-	if(gCurrDemoInput != NULL)
+	if(autoDemoPtr != NULL)
 	{
 		/*
 			clear player 2's inputs if they exist. Player 2's controller
@@ -97,18 +98,17 @@ void run_demo_inputs(void)
 			the demo had to have been necessary to perform this. Co-op mode, perhaps?
 		*/
 
-			sm64::player(1).controller().state().stick_x = 0;
-			sm64::player(1).controller().state().stick_y = 0;
-			sm64::player(1).controller().state().button	= 0;
-
+		sm64::player(1).controller().state().stick_x = 0;
+		sm64::player(1).controller().state().stick_y = 0;
+		sm64::player(1).controller().state().button  = 0;
 
 		// the timer variable being 0 at the current input means the demo is over.
-		// set the button to the END_DEMO mask to end the demo.
-		if(gCurrDemoInput->timer == 0)
+		// set the button to the CONT_EXIT mask to end the demo.
+		if(autoDemoPtr->timer == 0)
 		{
 			sm64::player(0).controller().state().stick_x = 0;
 			sm64::player(0).controller().state().stick_y = 0;
-			sm64::player(0).controller().state().button	= END_DEMO;
+			sm64::player(0).controller().state().button  = CONT_EXIT;
 		}
 		else
 		{
@@ -117,8 +117,8 @@ void run_demo_inputs(void)
 			u16 startPushed = sm64::player(0).controller().state().button & sm64::hid::START_BUTTON;
 
 			// perform the demo inputs by assigning the current button mask and the stick inputs.
-			sm64::player(0).controller().state().stick_x = gCurrDemoInput->rawStickX;
-			sm64::player(0).controller().state().stick_y = gCurrDemoInput->rawStickY;
+			sm64::player(0).controller().state().stick_x = autoDemoPtr->rawStickX;
+			sm64::player(0).controller().state().stick_y = autoDemoPtr->rawStickY;
 
 			/*
 				to assign the demo input, the button information is stored in
@@ -129,7 +129,7 @@ void run_demo_inputs(void)
 				match the correct input mask. We then add this to the masked
 				lower 4 bits to get the correct button mask.
 			*/
-			sm64::player(0).controller().state().button = ((gCurrDemoInput->buttonMask & 0xF0) << 8) + ((gCurrDemoInput->buttonMask & 0xF));
+			sm64::player(0).controller().state().button = ((autoDemoPtr->buttonMask & 0xF0) << 8) + ((autoDemoPtr->buttonMask & 0xF));
 
 			// if start was pushed, put it into the demo sequence being input to
 			// end the demo.
@@ -138,17 +138,16 @@ void run_demo_inputs(void)
 			// run the current demo input's timer down. if it hits 0, advance the
 			// demo input list.
 
-			if(gGlobalTimer % FRAME_RATE_SCALER_INV == 0)
+			if(frameCounter % FRAME_RATE_SCALER_INV == 0)
 			{
-				if(--gCurrDemoInput->timer == 0)
+				if(--autoDemoPtr->timer == 0)
 				{
-					gCurrDemoInput++;
+					autoDemoPtr++;
 				}
 			}
 		}
 	}
 }
-
 
 const void* marioAnim();
 
@@ -183,15 +182,15 @@ void game_init(void* arg)
 	setup_game_memory();
 	sm64::hid::controllers().scan();
 
-	save_file_load_all();
+	BuInitBackUp();
 
 	// point levelCommandAddr to the entry point into the level script data.
 	levelCommandAddr = (LevelCommand*)segmented_to_virtual(level_script_entry);
 
-	play_music(2, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
-	set_sound_mode(save_file_get_sound_mode());
+	Na_MusicStart(2, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
+	set_sound_mode(BuGetSoundMode());
 
-	gGlobalTimer++;
+	frameCounter++;
 }
 
 void game_loop_one_iteration(void)

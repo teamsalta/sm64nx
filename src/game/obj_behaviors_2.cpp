@@ -280,7 +280,7 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, f32 x, f32
 
 		if(ballIndex != 0)
 		{
-			trackBall = spawn_object_relative(o->oPlatformOnTrackBaseBallIndex + ballIndex, 0, 0, 0, o, MODEL_TRAJECTORY_MARKER_BALL, sm64::bhv::bhvTrackBall());
+			trackBall = s_makeobj_chain(o->oPlatformOnTrackBaseBallIndex + ballIndex, 0, 0, 0, o, MODEL_TRAJECTORY_MARKER_BALL, sm64::bhv::bhvTrackBall());
 
 			if(trackBall != NULL)
 			{
@@ -473,7 +473,7 @@ static s32 func_802F9378(s8 arg0, s8 arg1, u32 sound)
 
 	if(obj_check_anim_frame_in_range(arg0, val04) || obj_check_anim_frame_in_range(arg1, val04))
 	{
-		PlaySound2(sound);
+		objsound(sound);
 		return TRUE;
 	}
 
@@ -485,7 +485,7 @@ static s16 obj_turn_pitch_toward_mario(f32 targetOffsetY, s16 turnAmount)
 	s16 targetPitch;
 
 	o->oPosY -= targetOffsetY;
-	targetPitch = obj_turn_toward_object(o, gMarioObject, O_MOVE_ANGLE_PITCH_INDEX, turnAmount);
+	targetPitch = s_chase_obj_angle(o, gMarioObject, O_MOVE_ANGLE_PITCH_INDEX, turnAmount);
 	o->oPosY += targetOffsetY;
 
 	return targetPitch;
@@ -781,12 +781,12 @@ static void obj_die_if_health_non_positive(void)
 		}
 		else
 		{
-			func_802A3004();
+			s_kemuri();
 		}
 
 		if(o->oNumLootCoins < 0)
 		{
-			spawn_object(o, MODEL_BLUE_COIN, sm64::bhv::bhvMrIBlueCoin());
+			s_makeobj_nowpos(o, MODEL_BLUE_COIN, sm64::bhv::bhvMrIBlueCoin());
 		}
 		else
 		{
@@ -797,12 +797,12 @@ static void obj_die_if_health_non_positive(void)
 
 		if(o->oHealth < 0)
 		{
-			obj_hide();
-			obj_become_intangible();
+			s_shape_hide();
+			s_hitOFF();
 		}
 		else
 		{
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 		}
 	}
 }
@@ -837,7 +837,7 @@ static void obj_set_knockback_action(s32 attackType)
 
 static void obj_set_squished_action(void)
 {
-	PlaySound2(SOUND_OBJ_STOMPED);
+	objsound(SOUND_OBJ_STOMPED);
 	o->oAction = OBJ_ACT_SQUISHED;
 }
 
@@ -856,11 +856,11 @@ static s32 obj_die_if_above_lava_and_health_non_positive(void)
 		{
 			if(o->oWallHitboxRadius < 200.0f)
 			{
-				PlaySound2(SOUND_OBJ_DIVING_INTO_WATER);
+				objsound(SOUND_OBJ_DIVING_INTO_WATER);
 			}
 			else
 			{
-				PlaySound2(SOUND_OBJ_DIVING_IN_WATER);
+				objsound(SOUND_OBJ_DIVING_IN_WATER);
 			}
 		}
 		return FALSE;
@@ -874,7 +874,7 @@ static s32 obj_handle_attacks(struct ObjectHitbox* hitbox, s32 attackedMarioActi
 {
 	s32 attackType;
 
-	set_object_hitbox(o, hitbox);
+	s_set_hitparam(o, hitbox);
 
 	//! Die immediately if above lava
 	if(obj_die_if_above_lava_and_health_non_positive())
@@ -994,7 +994,7 @@ static s32 obj_update_standard_actions(f32 scale)
 	}
 	else
 	{
-		obj_become_intangible();
+		s_hitOFF();
 
 		switch(o->oAction)
 		{
@@ -1016,7 +1016,7 @@ static s32 obj_check_attacks(struct ObjectHitbox* hitbox, s32 attackedMarioActio
 {
 	s32 attackType;
 
-	set_object_hitbox(o, hitbox);
+	s_set_hitparam(o, hitbox);
 
 	//! Dies immediately if above lava
 	if(obj_die_if_above_lava_and_health_non_positive())

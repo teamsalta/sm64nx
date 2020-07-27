@@ -6,7 +6,7 @@ void bhv_play_music_track_when_touched_loop(void)
 	{
 		if(o->oDistanceToMario < 200.0f)
 		{
-			play_puzzle_jingle();
+			Na_NazoClearBgm();
 			o->oAction++;
 		}
 	}

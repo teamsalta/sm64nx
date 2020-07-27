@@ -664,8 +664,8 @@ void* func_802D3CF0(u8* img, s16 tWidth, s16 tHeight, s16* d, s16 e, s16 f, u8 g
 	s16 sp8E   = f % 5;
 	s16 sp8C   = f * 3;
 	s16 sp8A   = sp90 * 2 + sp8E + 7;
-	Vtx* verts = (Vtx*)alloc_display_list(sp8C * sizeof(*verts));
-	Gfx* sp80  = (Gfx*)alloc_display_list(sp8A * sizeof(*sp80));
+	Vtx* verts = (Vtx*)AllocDynamic(sp8C * sizeof(*verts));
+	Gfx* sp80  = (Gfx*)AllocDynamic(sp8A * sizeof(*sp80));
 	Gfx* sp7C  = sp80;
 
 	if(verts == NULL || sp80 == NULL)
@@ -712,11 +712,11 @@ void* func_802D3CF0(u8* img, s16 tWidth, s16 tHeight, s16* d, s16 e, s16 f, u8 g
 Gfx* func_802D43FC(struct Painting* painting)
 {
 	float sp4C = painting->vSize / DEFAULT_HEIGHT;
-	Mtx* sp48  = (Mtx*)alloc_display_list(sizeof(Mtx));
-	Mtx* sp44  = (Mtx*)alloc_display_list(sizeof(Mtx));
-	Mtx* sp40  = (Mtx*)alloc_display_list(sizeof(Mtx));
-	Mtx* sp3C  = (Mtx*)alloc_display_list(sizeof(Mtx));
-	Gfx* sp38  = (Gfx*)alloc_display_list(5 * sizeof(Gfx));
+	Mtx* sp48  = (Mtx*)AllocDynamic(sizeof(Mtx));
+	Mtx* sp44  = (Mtx*)AllocDynamic(sizeof(Mtx));
+	Mtx* sp40  = (Mtx*)AllocDynamic(sizeof(Mtx));
+	Mtx* sp3C  = (Mtx*)AllocDynamic(sizeof(Mtx));
+	Gfx* sp38  = (Gfx*)AllocDynamic(5 * sizeof(Gfx));
 	Gfx* sp34  = (Gfx*)sp38;
 
 	if(sp48 == NULL || sp44 == NULL || sp40 == NULL || sp38 == NULL)
@@ -748,7 +748,7 @@ Gfx* func_802D45FC(struct Painting* painting)
 	s16 tHeight	= painting->textureHeight;
 	s16** meshArray = (s16**)segmented_to_virtual(painting->meshData);
 	u8** tArray	= (u8**)segmented_to_virtual(painting->textureArray);
-	Gfx* sp48	= (Gfx*)alloc_display_list((faceCount + 6) * sizeof(Gfx));
+	Gfx* sp48	= (Gfx*)AllocDynamic((faceCount + 6) * sizeof(Gfx));
 	Gfx* sp44	= (Gfx*)sp48;
 
 	if(sp48 == NULL)
@@ -783,7 +783,7 @@ Gfx* func_802D4874(struct Painting* painting)
 	s16 tHeight	= painting->textureHeight;
 	s16** meshArray = (s16**)segmented_to_virtual(painting->meshData);
 	u8** tArray	= (u8**)segmented_to_virtual(painting->textureArray);
-	Gfx* sp48	= (Gfx*)alloc_display_list(7 * sizeof(Gfx));
+	Gfx* sp48	= (Gfx*)AllocDynamic(7 * sizeof(Gfx));
 	Gfx* sp44	= (Gfx*)sp48;
 
 	if(sp48 == NULL)
@@ -832,7 +832,7 @@ Gfx* display_painting_rippling(struct Painting* painting)
 
 Gfx* display_painting_not_rippling(struct Painting* painting)
 {
-	Gfx* sp2C = (Gfx*)alloc_display_list(4 * sizeof(Gfx));
+	Gfx* sp2C = (Gfx*)AllocDynamic(4 * sizeof(Gfx));
 	Gfx* sp28 = sp2C;
 
 	if(sp2C == NULL)
@@ -855,7 +855,6 @@ void reset_painting(struct Painting* painting)
 	painting->currMarioUnderPainting  = 0;
 	painting->marioNewlyUnderPainting = 0;
 	ripplingPainting		  = NULL;
-#ifndef TARGET_N64
 	// Make sure all variables are reset correctly.
 	// On N64 the segments that contain the relevant
 	// Painting structs are reloaded from ROM upon level load.
@@ -873,17 +872,16 @@ void reset_painting(struct Painting* painting)
 		// that moves the painting stops during level unload.
 		painting->vXPos = 3456.0f;
 	}
-#endif
 }
 
 void update_ddd_painting(struct Painting* painting, float frontPos, float backPos,
 			 float speed) // Tells the DDD painting whether to move back
 {
-	u32 dddFlags	     = save_file_get_star_flags(gCurrSaveFileNum - 1,
-						DIRE_DIRE_DOCKS - 1); // Obtain the DDD star flags
-	u32 saveFileFlags    = save_file_get_flags();			      // Get the other save file flags
-	u32 bowsersSubBeaten = dddFlags & BOARD_BOWSERS_SUB;		      // Find out whether Board Bowser's Sub was collected
-	u32 dddBack	     = saveFileFlags & SAVE_FLAG_DDD_MOVED_BACK;      // Check whether DDD has already moved back
+	u32 dddFlags	     = BuGetStarFlag(activePlayerNo - 1,
+				     DIRE_DIRE_DOCKS - 1);	 // Obtain the DDD star flags
+	u32 saveFileFlags    = BuGetItemFlag();				 // Get the other save file flags
+	u32 bowsersSubBeaten = dddFlags & BOARD_BOWSERS_SUB;		 // Find out whether Board Bowser's Sub was collected
+	u32 dddBack	     = saveFileFlags & SAVE_FLAG_DDD_MOVED_BACK; // Check whether DDD has already moved back
 
 	if(!bowsersSubBeaten && !dddBack)
 	{
@@ -898,7 +896,7 @@ void update_ddd_painting(struct Painting* painting, float frontPos, float backPo
 		if(painting->vXPos >= backPos)
 		{
 			painting->vXPos = backPos;
-			save_file_set_flags(SAVE_FLAG_DDD_MOVED_BACK); // Tell the save file that we've moved DDD back.
+			BuSetItemFlag(SAVE_FLAG_DDD_MOVED_BACK); // Tell the save file that we've moved DDD back.
 		}
 	}
 	else if(bowsersSubBeaten && dddBack)
@@ -1041,23 +1039,23 @@ Gfx* Geo18_802D5D0C(s32 run, UNUSED struct GraphNode* node, UNUSED f32 c[4][4])
 
 	if(run != TRUE)
 	{
-		gLastPaintingUpdateCounter = gAreaUpdateCounter - 1;
-		gPaintingUpdateCounter	   = gAreaUpdateCounter;
+		gLastPaintingUpdateCounter = animationCounter - 1;
+		gPaintingUpdateCounter	   = animationCounter;
 	}
 	else
 	{
 		gLastPaintingUpdateCounter = gPaintingUpdateCounter;
-		gPaintingUpdateCounter	   = gAreaUpdateCounter;
+		gPaintingUpdateCounter	   = animationCounter;
 		find_floor(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &surface);
 
-		if (surface)
+		if(surface)
 		{
 			gPaintingMarioFloorType = surface->type;
 		}
 
-		gPaintingMarioXPos	= gMarioObject->oPosX;
-		gPaintingMarioYPos	= gMarioObject->oPosY;
-		gPaintingMarioZPos	= gMarioObject->oPosZ;
+		gPaintingMarioXPos = gMarioObject->oPosX;
+		gPaintingMarioYPos = gMarioObject->oPosY;
+		gPaintingMarioZPos = gMarioObject->oPosZ;
 	}
 	return NULL;
 }

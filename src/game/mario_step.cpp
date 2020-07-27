@@ -32,7 +32,7 @@ f32 get_additive_y_vel_for_jumps(void)
 }
 
 /**
- * Does nothing, but takes in a MarioState. This is only ever
+ * Does nothing, but takes in a PlayerRecord. This is only ever
  * called by update_mario_inputs, which is called as part of Mario's
  * update routine. Due to its proximity to nop_80254E50, an
  * incomplete trampoline function, and get_additive_y_vel_for_jumps,
@@ -40,7 +40,7 @@ f32 get_additive_y_vel_for_jumps(void)
  * this could be used for checking if Mario was on the trampoline.
  * It could, for example, make him bounce.
  */
-void nop_80254E3C(UNUSED struct MarioState* x)
+void nop_80254E3C(UNUSED struct PlayerRecord* x)
 {
 }
 
@@ -91,18 +91,18 @@ void init_bully_collision_data(struct BullyCollisionData* data, f32 posX, f32 po
 	data->velZ	      = forwardVel * coss(yaw);
 }
 
-void MarioState::mario_bonk_reflection(u32 negateSpeed)
+void PlayerRecord::mario_bonk_reflection(u32 negateSpeed)
 {
 	if(this->wall != NULL)
 	{
 		s16 wallAngle	   = atan2s(this->wall->normal.z, this->wall->normal.x);
 		this->faceAngle[1] = wallAngle - (s16)(this->faceAngle[1] - wallAngle);
 
-		play_sound((this->flags & MARIO_METAL_CAP) ? SOUND_ACTION_METAL_BONK : SOUND_ACTION_BONK, this->marioObj->header.gfx.cameraToObject);
+		AudStartSound((this->flags & MARIO_METAL_CAP) ? SOUND_ACTION_METAL_BONK : SOUND_ACTION_BONK, this->marioObj->header.gfx.cameraToObject);
 	}
 	else
 	{
-		play_sound(SOUND_ACTION_HIT, this->marioObj->header.gfx.cameraToObject);
+		AudStartSound(SOUND_ACTION_HIT, this->marioObj->header.gfx.cameraToObject);
 	}
 
 	if(negateSpeed)
@@ -115,46 +115,46 @@ void MarioState::mario_bonk_reflection(u32 negateSpeed)
 	}
 }
 
-u32 MarioState::mario_update_quicksand(f32 sinkingSpeed)
+u32 PlayerRecord::mario_update_quicksand(f32 sinkingSpeed)
 {
-	if(this->action & ACT_FLAG_RIDING_SHELL)
+	if(this->status & ACT_FLAG_RIDING_SHELL)
 	{
-		this->quicksandDepth = 0.0f;
+		this->sinking = 0.0f;
 	}
 	else
 	{
-		if(this->quicksandDepth < 1.1f)
+		if(this->sinking < 1.1f)
 		{
-			this->quicksandDepth = 1.1f;
+			this->sinking = 1.1f;
 		}
 
 		switch(this->floor->type)
 		{
 			case SURFACE_SHALLOW_QUICKSAND:
-				if((this->quicksandDepth += sinkingSpeed) >= 10.0f)
+				if((this->sinking += sinkingSpeed) >= 10.0f)
 				{
-					this->quicksandDepth = 10.0f;
+					this->sinking = 10.0f;
 				}
 				break;
 
 			case SURFACE_SHALLOW_MOVING_QUICKSAND:
-				if((this->quicksandDepth += sinkingSpeed) >= 25.0f)
+				if((this->sinking += sinkingSpeed) >= 25.0f)
 				{
-					this->quicksandDepth = 25.0f;
+					this->sinking = 25.0f;
 				}
 				break;
 
 			case SURFACE_QUICKSAND:
 			case SURFACE_MOVING_QUICKSAND:
-				if((this->quicksandDepth += sinkingSpeed) >= 60.0f)
+				if((this->sinking += sinkingSpeed) >= 60.0f)
 				{
-					this->quicksandDepth = 60.0f;
+					this->sinking = 60.0f;
 				}
 				break;
 
 			case SURFACE_DEEP_QUICKSAND:
 			case SURFACE_DEEP_MOVING_QUICKSAND:
-				if((this->quicksandDepth += sinkingSpeed) >= 160.0f)
+				if((this->sinking += sinkingSpeed) >= 160.0f)
 				{
 					update_mario_sound_and_camera();
 					return drop_and_set_mario_action(ACT_QUICKSAND_DEATH, 0);
@@ -168,7 +168,7 @@ u32 MarioState::mario_update_quicksand(f32 sinkingSpeed)
 				break;
 
 			default:
-				this->quicksandDepth = 0.0f;
+				this->sinking = 0.0f;
 				break;
 		}
 	}
@@ -176,7 +176,7 @@ u32 MarioState::mario_update_quicksand(f32 sinkingSpeed)
 	return 0;
 }
 
-u32 MarioState::mario_push_off_steep_floor(u32 action, u32 actionArg)
+u32 PlayerRecord::mario_push_off_steep_floor(u32 action, u32 actionArg)
 {
 	s16 floorDYaw = this->floorAngle - this->faceAngle[1];
 
@@ -191,10 +191,10 @@ u32 MarioState::mario_push_off_steep_floor(u32 action, u32 actionArg)
 		this->faceAngle[1] = this->floorAngle + 0x8000;
 	}
 
-	return set_mario_action(action, actionArg);
+	return ChangePlayerStatus(action, actionArg);
 }
 
-u32 MarioState::mario_update_moving_sand()
+u32 PlayerRecord::mario_update_moving_sand()
 {
 	s32 floorType = floor->type;
 
@@ -212,14 +212,14 @@ u32 MarioState::mario_update_moving_sand()
 	return 0;
 }
 
-u32 MarioState::mario_update_windy_ground()
+u32 PlayerRecord::mario_update_windy_ground()
 {
 	if(floor->type == SURFACE_HORIZONTAL_WIND)
 	{
 		f32 pushSpeed;
 		s16 pushAngle = floor->force << 8;
 
-		if(action & ACT_FLAG_MOVING)
+		if(status & ACT_FLAG_MOVING)
 		{
 			s16 pushDYaw = this->faceAngle[1] - pushAngle;
 
@@ -234,7 +234,7 @@ u32 MarioState::mario_update_windy_ground()
 		}
 		else
 		{
-			pushSpeed = 3.2f + ((gGlobalTimer / FRAME_RATE_SCALER_INV) % 4);
+			pushSpeed = 3.2f + ((frameCounter / FRAME_RATE_SCALER_INV) % 4);
 		}
 
 		vel[0] += pushSpeed * sins(pushAngle);
@@ -246,7 +246,7 @@ u32 MarioState::mario_update_windy_ground()
 	return 0;
 }
 
-void MarioState::stop_and_set_height_to_floor()
+void PlayerRecord::stop_and_set_height_to_floor()
 {
 	mario_set_forward_vel(0.0f);
 	this->vel[1] = 0.0f;
@@ -258,7 +258,7 @@ void MarioState::stop_and_set_height_to_floor()
 	vec3s_set(marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 }
 
-s32 MarioState::stationary_ground_step()
+s32 PlayerRecord::stationary_ground_step()
 {
 	u32 takeStep;
 	u32 stepResult = GROUND_STEP_NONE;
@@ -283,7 +283,7 @@ s32 MarioState::stationary_ground_step()
 	return stepResult;
 }
 
-s32 MarioState::perform_ground_quarter_step(Vec3f nextPos)
+s32 PlayerRecord::perform_ground_quarter_step(Vec3f nextPos)
 {
 	UNUSED struct Surface* lowerWall;
 	struct Surface* upperWall;
@@ -308,7 +308,7 @@ s32 MarioState::perform_ground_quarter_step(Vec3f nextPos)
 		return GROUND_STEP_HIT_WALL_STOP_QSTEPS;
 	}
 
-	if((this->action & ACT_FLAG_RIDING_SHELL) && floorHeight < waterLevel)
+	if((this->status & ACT_FLAG_RIDING_SHELL) && floorHeight < waterLevel)
 	{
 		floorHeight	    = waterLevel;
 		floor		    = &gWaterSurfacePseudoFloor;
@@ -356,7 +356,7 @@ s32 MarioState::perform_ground_quarter_step(Vec3f nextPos)
 	return GROUND_STEP_NONE;
 }
 
-s32 MarioState::perform_ground_step()
+s32 PlayerRecord::perform_ground_step()
 {
 	s32 i;
 	u32 stepResult;
@@ -386,7 +386,7 @@ s32 MarioState::perform_ground_step()
 	return stepResult;
 }
 
-u32 MarioState::check_ledge_grab(struct Surface* wall, Vec3f intendedPos, Vec3f nextPos)
+u32 PlayerRecord::check_ledge_grab(struct Surface* wall, Vec3f intendedPos, Vec3f nextPos)
 {
 	struct Surface* ledgeFloor;
 	Vec3f ledgePos;
@@ -430,7 +430,7 @@ u32 MarioState::check_ledge_grab(struct Surface* wall, Vec3f intendedPos, Vec3f 
 	return 1;
 }
 
-s32 MarioState::perform_air_quarter_step(Vec3f intendedPos, u32 stepArg)
+s32 PlayerRecord::perform_air_quarter_step(Vec3f intendedPos, u32 stepArg)
 {
 	s16 wallDYaw;
 	Vec3f nextPos;
@@ -469,7 +469,7 @@ s32 MarioState::perform_air_quarter_step(Vec3f intendedPos, u32 stepArg)
 		return AIR_STEP_HIT_WALL;
 	}
 
-	if((this->action & ACT_FLAG_RIDING_SHELL) && floorHeight < waterLevel)
+	if((this->status & ACT_FLAG_RIDING_SHELL) && floorHeight < waterLevel)
 	{
 		floorHeight	    = waterLevel;
 		floor		    = &gWaterSurfacePseudoFloor;
@@ -559,7 +559,7 @@ s32 MarioState::perform_air_quarter_step(Vec3f intendedPos, u32 stepArg)
 	return AIR_STEP_NONE;
 }
 
-void MarioState::apply_twirl_gravity()
+void PlayerRecord::apply_twirl_gravity()
 {
 	f32 terminalVelocity;
 	f32 heaviness = 1.0f;
@@ -578,35 +578,35 @@ void MarioState::apply_twirl_gravity()
 	}
 }
 
-u32 MarioState::should_strengthen_gravity_for_jump_ascent()
+u32 PlayerRecord::should_strengthen_gravity_for_jump_ascent()
 {
 	if(!(this->flags & MARIO_UNKNOWN_08))
 	{
 		return FALSE;
 	}
 
-	if(this->action & (ACT_FLAG_INTANGIBLE | ACT_FLAG_INVULNERABLE))
+	if(this->status & (ACT_FLAG_INTANGIBLE | ACT_FLAG_INVULNERABLE))
 	{
 		return FALSE;
 	}
 
 	if(!(this->input & INPUT_A_DOWN) && this->vel[1] > 20.0f)
 	{
-		return (this->action & ACT_FLAG_CONTROL_JUMP_HEIGHT) != 0;
+		return (this->status & ACT_FLAG_CONTROL_JUMP_HEIGHT) != 0;
 	}
 
 	return FALSE;
 }
 
-void MarioState::apply_gravity()
+void PlayerRecord::apply_gravity()
 {
 	double moonGravityMultiplier = sm64::config().cheats().moonJump() ? 0.5f : 1.0f;
 
-	if(this->action == ACT_TWIRLING && this->vel[1] < 0.0f)
+	if(this->status == ACT_TWIRLING && this->vel[1] < 0.0f)
 	{
 		apply_twirl_gravity();
 	}
-	else if(this->action == ACT_SHOT_FROM_CANNON)
+	else if(this->status == ACT_SHOT_FROM_CANNON)
 	{
 		this->vel[1] -= 1.0 * moonGravityMultiplier * FRAME_RATE_SCALER;
 		if(this->vel[1] < -75.0f)
@@ -614,7 +614,7 @@ void MarioState::apply_gravity()
 			this->vel[1] = -75.0f;
 		}
 	}
-	else if(this->action == ACT_LONG_JUMP || this->action == ACT_SLIDE_KICK || this->action == ACT_BBH_ENTER_SPIN)
+	else if(this->status == ACT_LONG_JUMP || this->status == ACT_SLIDE_KICK || this->status == ACT_BBH_ENTER_SPIN)
 	{
 		this->vel[1] -= 2.0 * moonGravityMultiplier * FRAME_RATE_SCALER;
 		if(this->vel[1] < -75.0f)
@@ -622,7 +622,7 @@ void MarioState::apply_gravity()
 			this->vel[1] = -75.0f;
 		}
 	}
-	else if(this->action == ACT_LAVA_BOOST || this->action == ACT_FALL_AFTER_STAR_GRAB)
+	else if(this->status == ACT_LAVA_BOOST || this->status == ACT_FALL_AFTER_STAR_GRAB)
 	{
 		this->vel[1] -= 3.2 * moonGravityMultiplier * FRAME_RATE_SCALER;
 		if(this->vel[1] < -65.0f)
@@ -630,9 +630,9 @@ void MarioState::apply_gravity()
 			this->vel[1] = -65.0f;
 		}
 	}
-	else if(this->action == ACT_GETTING_BLOWN)
+	else if(this->status == ACT_GETTING_BLOWN)
 	{
-		this->vel[1] -= this->unkC4 * moonGravityMultiplier * FRAME_RATE_SCALER;
+		this->vel[1] -= this->gravity * moonGravityMultiplier * FRAME_RATE_SCALER;
 		if(this->vel[1] < -75.0f)
 		{
 			this->vel[1] = -75.0f;
@@ -642,7 +642,7 @@ void MarioState::apply_gravity()
 	{
 		this->vel[1] /= 4.0 * FRAME_RATE_SCALER;
 	}
-	else if(this->action & ACT_FLAG_METAL_WATER)
+	else if(this->status & ACT_FLAG_METAL_WATER)
 	{
 		this->vel[1] -= 1.6 * moonGravityMultiplier * FRAME_RATE_SCALER;
 		if(this->vel[1] < -16.0f)
@@ -674,12 +674,12 @@ void MarioState::apply_gravity()
 	}
 }
 
-void MarioState::apply_vertical_wind()
+void PlayerRecord::apply_vertical_wind()
 {
 	f32 maxVelY;
 	f32 offsetY;
 
-	if(this->action != ACT_GROUND_POUND)
+	if(this->status != ACT_GROUND_POUND)
 	{
 		offsetY = this->pos[1] - -1500.0f;
 
@@ -701,15 +701,11 @@ void MarioState::apply_vertical_wind()
 					this->vel[1] = maxVelY;
 				}
 			}
-
-#ifdef VERSION_JP
-			play_sound(SOUND_ENV_WIND2, this->marioObj->header.gfx.cameraToObject);
-#endif
 		}
 	}
 }
 
-s32 MarioState::perform_air_step(u32 stepArg)
+s32 PlayerRecord::perform_air_step(u32 stepArg)
 {
 	Vec3f intendedPos;
 	s32 i;
@@ -743,12 +739,12 @@ s32 MarioState::perform_air_step(u32 stepArg)
 
 	if(this->vel[1] >= 0.0f)
 	{
-		this->peakHeight = this->pos[1];
+		this->fallpos = this->pos[1];
 	}
 
 	this->terrainSoundAddend = mario_get_terrain_sound_addend();
 
-	if(this->action != ACT_FLYING)
+	if(this->status != ACT_FLYING)
 	{
 		apply_gravity();
 	}
@@ -762,14 +758,14 @@ s32 MarioState::perform_air_step(u32 stepArg)
 
 // They had these functions the whole time and never used them? Lol
 
-void MarioState::set_vel_from_pitch_and_yaw()
+void PlayerRecord::set_vel_from_pitch_and_yaw()
 {
 	this->vel[0] = this->forwardVel * coss(this->faceAngle[0]) * sins(this->faceAngle[1]);
 	this->vel[1] = this->forwardVel * sins(this->faceAngle[0]);
 	this->vel[2] = this->forwardVel * coss(this->faceAngle[0]) * coss(this->faceAngle[1]);
 }
 
-void MarioState::set_vel_from_yaw()
+void PlayerRecord::set_vel_from_yaw()
 {
 	this->vel[0] = this->slideVelX = this->forwardVel * sins(this->faceAngle[1]);
 	this->vel[1]		       = 0.0f;

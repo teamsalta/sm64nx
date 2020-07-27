@@ -11,20 +11,20 @@ void func_802A8D18(f32 sp28, f32 sp2C, s32 sp30)
 			break;
 		case 2:
 			gMarioObject->oInteractStatus |= (sp30 + INT_STATUS_MARIO_UNK2);
-			gMarioStates->forwardVel    = sp28;
-			gMarioStates->vel[1]	    = sp2C;
+			playerWorks->forwardVel	    = sp28;
+			playerWorks->vel[1]	    = sp2C;
 			o->parentObj->oChuckyaUnk88 = 0;
 			break;
 		case 3:
 			gMarioObject->oInteractStatus |= (INT_STATUS_MARIO_UNK2 + INT_STATUS_MARIO_UNK6); // loads 2 interactions at once?
-			gMarioStates->forwardVel    = 10.0f;
-			gMarioStates->vel[1]	    = 10.0f;
+			playerWorks->forwardVel	    = 10.0f;
+			playerWorks->vel[1]	    = 10.0f;
 			o->parentObj->oChuckyaUnk88 = 0;
 			break;
 	}
 	o->oMoveAngleYaw = o->parentObj->oMoveAngleYaw;
 	if(!o->parentObj->activeFlags)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }
 
 void bhv_chuckya_anchor_mario_loop(void)
@@ -49,7 +49,7 @@ s32 Unknown802A8EC8(s32 sp20, f32 sp24, f32 sp28, s32 sp2C)
 		}
 		else if(o->oDistanceToMario > sp28)
 		{
-			if((gGlobalTimer / FRAME_RATE_SCALER_INV) % (s16)sp2C == 0)
+			if((frameCounter / FRAME_RATE_SCALER_INV) % (s16)sp2C == 0)
 			{
 				o->oAngleToMario = angle_to_object(o, gMarioObject);
 			}
@@ -151,7 +151,7 @@ void ActionChuckya0(void)
 		o->oChuckyaUnkFC++;
 	set_obj_animation_and_sound_state(4);
 	if(o->oForwardVel > 1.0f)
-		PlaySound(SOUND_AIR_CHUCKYA_MOVE);
+		objsound_level(SOUND_AIR_CHUCKYA_MOVE);
 }
 
 void ActionChuckya1(void)
@@ -194,7 +194,7 @@ void ActionChuckya1(void)
 			set_obj_animation_and_sound_state(3);
 			if(obj_check_anim_frame(18))
 			{
-				PlaySound2(SOUND_OBJ_UNKNOWN4);
+				objsound(SOUND_OBJ_UNKNOWN4);
 				o->oChuckyaUnk88 = 2;
 				o->oAction	 = 3;
 				o->oInteractStatus &= ~(INT_STATUS_GRABBED_MARIO);
@@ -216,7 +216,7 @@ void ActionChuckya2(void)
 {
 	if(o->oMoveFlags & (0x200 | 0x40 | 0x20 | 0x10 | 0x8 | 0x1))
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 		spawn_object_loot_yellow_coins(o, 5, 20.0f);
 		func_802A3034(SOUND_OBJ_CHUCKYA_DEATH);
 	}
@@ -227,13 +227,13 @@ void (*sChuckyaActions[])(void) = {ActionChuckya0, ActionChuckya1, ActionChuckya
 void func_802A97B8(void)
 {
 	obj_update_floor_and_walls();
-	obj_call_action_function(sChuckyaActions);
+	s_modejmp(sChuckyaActions);
 	obj_move_standard(-30);
 	if(o->oInteractStatus & INT_STATUS_GRABBED_MARIO)
 	{
 		o->oAction	 = 1;
 		o->oChuckyaUnk88 = 1;
-		PlaySound2(SOUND_OBJ_UNKNOWN3);
+		objsound(SOUND_OBJ_UNKNOWN3);
 	}
 }
 
@@ -241,7 +241,7 @@ void bhv_chuckya_loop(void)
 {
 	f32 sp2C = 20.0f;
 	f32 sp28 = 50.0f;
-	obj_scale(2.0f);
+	s_set_scale(2.0f);
 	o->oInteractionSubtype |= INT_SUBTYPE_GRABS_MARIO;
 	switch(o->oHeldState)
 	{

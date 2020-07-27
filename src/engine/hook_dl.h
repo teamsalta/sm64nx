@@ -9,6 +9,6 @@ namespace sm64::hook::dl
 	u64 fingerprint(const Gfx* gfx);
 
 	Gfx* apply(Gfx* gfx);
-	//Gfx* mount(Gfx* func, u64 size);
+	// Gfx* mount(Gfx* func, u64 size);
 	GraphNodeFunc apply(GraphNodeFunc func);
-}
+} // namespace sm64::hook::dl

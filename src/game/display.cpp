@@ -11,7 +11,7 @@
 #include "display.h"
 
 int unused8032C690    = 0;
-u32 gGlobalTimer      = 0;
+u32 frameCounter      = 0;
 static u16 sCurrFBNum = 0;
 u16 frameBufferIndex  = 0;
 
@@ -93,7 +93,7 @@ void display_frame_buffer(void)
 }
 
 /** Clears the framebuffer, allowing it to be overwritten. */
-void clear_frame_buffer(s32 a)
+void SoftwareBlanking(s32 a)
 {
 	gDPPipeSync(gDisplayListHead++);
 
@@ -109,17 +109,15 @@ void clear_frame_buffer(s32 a)
 }
 
 /** Clears and initializes the viewport. */
-void clear_viewport(Vp* viewport, s32 b)
+void SoftwareTrimBlanking(Vp* viewport, s32 b)
 {
 	s16 vpUlx = (viewport->vp.vtrans[0] - viewport->vp.vscale[0]) / 4 + 1;
 	s16 vpUly = (viewport->vp.vtrans[1] - viewport->vp.vscale[1]) / 4 + 1;
 	s16 vpLrx = (viewport->vp.vtrans[0] + viewport->vp.vscale[0]) / 4 - 2;
 	s16 vpLry = (viewport->vp.vtrans[1] + viewport->vp.vscale[1]) / 4 - 2;
 
-#ifndef TARGET_N64
 	vpUlx = GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(vpUlx);
 	vpLrx = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(SCREEN_WIDTH - vpLrx);
-#endif
 
 	gDPPipeSync(gDisplayListHead++);
 
@@ -151,7 +149,7 @@ void draw_screen_borders(void)
 #endif
 }
 
-void make_viewport_clip_rect(Vp* viewport)
+void SetTrimmingRectangle(Vp* viewport)
 {
 	s16 vpUlx = (viewport->vp.vtrans[0] - viewport->vp.vscale[0]) / 4 + 1;
 	s16 vpPly = (viewport->vp.vtrans[1] - viewport->vp.vscale[1]) / 4 + 1;
@@ -170,16 +168,9 @@ void create_task_structure(void)
 {
 	s32 entries = gDisplayListHead - gGfxPool->buffer;
 
-	gGfxSPTask->msgqueue	= &D_80339CB8;
-	gGfxSPTask->msg		= (OSMesg)2;
-	gGfxSPTask->task.t.type = M_GFXTASK;
-#if TARGET_N64
-	gGfxSPTask->task.t.ucode_boot	   = rspF3DBootStart;
-	gGfxSPTask->task.t.ucode_boot_size = ((u8*)rspF3DBootEnd - (u8*)rspF3DBootStart);
-	gGfxSPTask->task.t.flags	   = 0;
-	gGfxSPTask->task.t.ucode	   = rspF3DStart;
-	gGfxSPTask->task.t.ucode_data	   = rspF3DDataStart;
-#endif
+	gGfxSPTask->msgqueue		    = &D_80339CB8;
+	gGfxSPTask->msg			    = (OSMesg)2;
+	gGfxSPTask->task.t.type		    = M_GFXTASK;
 	gGfxSPTask->task.t.ucode_size	    = SP_UCODE_SIZE; // (this size is ignored)
 	gGfxSPTask->task.t.ucode_data_size  = SP_UCODE_DATA_SIZE;
 	gGfxSPTask->task.t.dram_stack	    = (u64*)gGfxSPTaskStack;
@@ -257,17 +248,17 @@ void func_80247ED8(void)
 	gDisplayListHead = gGfxPool->buffer;
 	gGfxPoolEnd	 = (u8*)(gGfxPool->buffer + GFX_POOL_SIZE);
 	init_render_image();
-	clear_frame_buffer(0);
+	SoftwareBlanking(0);
 	end_master_display_list();
 	send_display_list(&gGfxPool->spTask);
 
 	frameBufferIndex++;
-	gGlobalTimer++;
+	frameCounter++;
 }
 
 void func_80247FAC(void)
 {
-	gGfxPool = &gGfxPools[gGlobalTimer % GFX_NUM_POOLS];
+	gGfxPool = &gGfxPools[frameCounter % GFX_NUM_POOLS];
 	set_segment_base_addr(1, gGfxPool->buffer);
 	gGfxSPTask	 = &gGfxPool->spTask;
 	gDisplayListHead = gGfxPool->buffer;
@@ -295,5 +286,5 @@ void display_and_vsync(void)
 	{
 		frameBufferIndex = 0;
 	}
-	gGlobalTimer++;
+	frameCounter++;
 }

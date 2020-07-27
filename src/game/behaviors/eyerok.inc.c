@@ -44,7 +44,7 @@ static void eyerok_boss_act_sleep(void)
 	}
 	else if(o->oDistanceToMario < 500.0f)
 	{
-		PlaySound2(SOUND_OBJ_EYEROK_EXPLODE);
+		objsound(SOUND_OBJ_EYEROK_EXPLODE);
 		o->oAction = EYEROK_BOSS_ACT_WAKE_UP;
 	}
 }
@@ -167,7 +167,7 @@ static void eyerok_boss_act_die(void)
 	{
 		if(obj_update_dialog_with_cutscene(2, 0, CUTSCENE_DIALOG, DIALOG_118))
 		{
-			create_star(0.0f, -900.0f, -3700.0f);
+			s_enemyset_star(0.0f, -900.0f, -3700.0f);
 		}
 		else
 		{
@@ -177,7 +177,7 @@ static void eyerok_boss_act_die(void)
 	else if(o->oTimer > 120 * FRAME_RATE_SCALER_INV)
 	{
 		stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }
 
@@ -207,7 +207,7 @@ static s32 eyerok_hand_check_attacked(void)
 {
 	if(o->oEyerokReceivedAttack != 0 && abs_angle_diff(o->oAngleToMario, o->oFaceAngleYaw) < 0x3000)
 	{
-		PlaySound2(SOUND_OBJ2_EYEROK_SOUND_SHORT);
+		objsound(SOUND_OBJ2_EYEROK_SOUND_SHORT);
 
 		if(--o->oHealth >= 2)
 		{
@@ -237,7 +237,7 @@ static s32 eyerok_hand_check_attacked(void)
 
 static void func_8030DBA8(void)
 {
-	PlaySound2(SOUND_OBJ_POUNDING_LOUD);
+	objsound(SOUND_OBJ_POUNDING_LOUD);
 	set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 	func_802ADA94();
 }
@@ -462,12 +462,12 @@ static void eyerok_hand_act_die(void)
 	{
 		o->parentObj->oEyerokBossUnk1AC = 0;
 		func_802A3C98(150.0f, 1);
-		create_sound_spawner(SOUND_OBJ2_EYEROK_SOUND_LONG);
+		obj_remove_sound(SOUND_OBJ2_EYEROK_SOUND_LONG);
 	}
 
 	if(o->oMoveFlags & 0x00000003)
 	{
-		PlaySound2(SOUND_OBJ_POUNDING_LOUD);
+		objsound(SOUND_OBJ_POUNDING_LOUD);
 		o->oForwardVel = 0.0f;
 	}
 }
@@ -716,6 +716,6 @@ void bhv_eyerok_hand_loop(void)
 		obj_move_standard(-78);
 	}
 
-	load_object_collision_model();
+	stMainMoveBG();
 	o->header.gfx.scale[0] = 1.5f * o->oBehParams2ndByte;
 }

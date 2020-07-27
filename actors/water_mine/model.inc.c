@@ -1,4 +1,4 @@
-// Water Mine (unused)
+// Water Mine (size)
 
 // 0x0600A4E0
 static const Lights1 water_mine_seg6_lights_0600A4E0 = gdSPDefLights1(

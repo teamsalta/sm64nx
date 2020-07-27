@@ -8,9 +8,6 @@ ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200)];
 
 // Yield buffer for audio, 0x400 bytes. Stubbed out post-JP since the audio
 // task never yields.
-#ifdef VERSION_JP
-ALIGNED8 u8 gAudioSPTaskYieldBuffer[OS_YIELD_AUDIO_SIZE];
-#endif
 
 // Probably Thread 2 stack space. Unreferenced, and stubbed out with f3dex to
 // avoid an overflowing .buffers segment.

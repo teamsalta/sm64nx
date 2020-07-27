@@ -2,11 +2,12 @@
 
 class Duration
 {
-public:
+	public:
 	Duration();
 	Duration(s16 duration);
 	operator s16() const;
 	operator s16&();
-protected:
+
+	protected:
 	s16 m_value;
 };

@@ -1,4 +1,5 @@
 // wdw_water_level.c.inc
+#include "game/motor.h"
 
 // called when WDW is loaded.
 void bhv_init_changing_water_level_loop(void)
@@ -32,7 +33,7 @@ void bhv_water_level_diamond_loop(void)
 					o->oAction++; // Sets to WATER_LEVEL_DIAMOND_ACT_IDLE
 				break;
 			case WATER_LEVEL_DIAMOND_ACT_IDLE:
-				if(are_objects_collided(o, gMarioObject))
+				if(s_hitcheck(o, gMarioObject))
 				{
 					if(gWDWWaterLevelChanging == 0)
 					{
@@ -54,19 +55,20 @@ void bhv_water_level_diamond_loop(void)
 				else
 				{
 					if(o->oTimer == 0)
-						PlaySound2(SOUND_GENERAL_WATER_LEVEL_TRIG);
+						objsound(SOUND_GENERAL_WATER_LEVEL_TRIG);
 					else
 					{
 						if(*gEnvironmentLevels > o->oWaterLevelTriggerTargetWaterLevel)
-							PlaySound(SOUND_ENV_WATER_DRAIN);
+							objsound_level(SOUND_ENV_WATER_DRAIN);
 						else
-							PlaySound(SOUND_ENV_WATER_DRAIN); // same as above
+							objsound_level(SOUND_ENV_WATER_DRAIN); // same as above
 					}
 					o->oAngleVelYaw = 0x800;
+					SendMotorVib(2);
 				}
 				break;
 			case WATER_LEVEL_DIAMOND_ACT_IDLE_SPINNING:
-				if(!are_objects_collided(o, gMarioObject))
+				if(!s_hitcheck(o, gMarioObject))
 				{
 					gWDWWaterLevelChanging = 0;
 					o->oAction	       = WATER_LEVEL_DIAMOND_ACT_IDLE;

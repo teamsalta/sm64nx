@@ -19,11 +19,11 @@ extern OSMesg D_80339BEC;
 extern OSMesgQueue gDmaMesgQueue;
 extern OSMesgQueue gSIEventMesgQueue;
 
-extern struct VblankHandler *gVblankHandler1;
-extern struct VblankHandler *gVblankHandler2;
-extern struct SPTask *gActiveSPTask;
-extern struct SPTask *D_8032C62C;
-extern struct SPTask *D_8032C630;
+extern struct VblankHandler* gVblankHandler1;
+extern struct VblankHandler* gVblankHandler2;
+extern struct SPTask* gActiveSPTask;
+extern struct SPTask* D_8032C62C;
+extern struct SPTask* D_8032C630;
 extern OSMesg D_8032C634;
 extern OSMesg D_8032C638;
 extern s8 D_8032C63C;
@@ -32,10 +32,9 @@ extern s8 gResetTimer;
 extern s8 D_8032C648;
 extern s8 D_8032C650;
 
-
-extern void set_vblank_handler(s32 a, struct VblankHandler *b, OSMesgQueue *queue, OSMesg *msg);
-extern void dispatch_audio_sptask(struct SPTask *spTask);
-extern void send_display_list(struct SPTask *a);
+extern void set_vblank_handler(s32 a, struct VblankHandler* b, OSMesgQueue* queue, OSMesg* msg);
+extern void dispatch_audio_sptask(struct SPTask* spTask);
+extern void send_display_list(struct SPTask* a);
 extern void Main(void);
 
 #endif

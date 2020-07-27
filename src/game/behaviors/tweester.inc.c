@@ -28,9 +28,9 @@ void ActionTweester0(void)
 {
 	if(o->oSubAction == 0)
 	{
-		obj_become_tangible();
+		s_hitON();
 		obj_set_pos_to_home();
-		obj_scale(0);
+		s_set_scale(0);
 		o->oTweesterUnkF8 = 0;
 		if(o->oDistanceToMario < 1500.0f)
 			o->oSubAction++;
@@ -38,7 +38,7 @@ void ActionTweester0(void)
 	}
 	else
 	{
-		PlaySound(SOUND_ENV_WIND1);
+		objsound_level(SOUND_ENV_WIND1);
 		func_802C231C(o->oTimer / (60.0f / FRAME_RATE_SCALER));
 		if(o->oTimer > 59 * FRAME_RATE_SCALER_INV)
 			o->oAction = 1;
@@ -49,13 +49,13 @@ void ActionTweester1(void)
 {
 	f32 sp1C   = o->oBehParams2ndByte * 0x64;
 	o->oUnk1BC = obj_angle_to_home();
-	PlaySound(SOUND_ENV_WIND1);
+	objsound_level(SOUND_ENV_WIND1);
 	if(obj_lateral_dist_from_mario_to_home() < sp1C && o->oSubAction == 0)
 	{
 		o->oForwardVel = 20.0f;
 		obj_rotate_yaw_toward(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
 
-		if(gMarioStates->action == ACT_TWIRLING)
+		if(playerWorks->status == ACT_TWIRLING)
 			o->oSubAction++;
 	}
 	else
@@ -72,7 +72,7 @@ void ActionTweester1(void)
 		o->oMoveAngleYaw = o->oWallAngle;
 	obj_move_standard(60);
 	func_802C231C(1.0f);
-	spawn_object(o, MODEL_SAND_DUST, sm64::bhv::bhvTornadoSandParticle());
+	s_makeobj_nowpos(o, MODEL_SAND_DUST, sm64::bhv::bhvTornadoSandParticle());
 }
 
 void ActionTweester2(void)
@@ -82,7 +82,7 @@ void ActionTweester2(void)
 		func_802C231C(sp1C / 60.0f);
 	else
 	{
-		obj_become_intangible();
+		s_hitOFF();
 		if(obj_lateral_dist_from_mario_to_home() > 2500.0f)
 			o->oAction = 0;
 		if(o->oTimer > 360 * FRAME_RATE_SCALER_INV)
@@ -94,8 +94,8 @@ void (*sTweesterActions[])(void) = {ActionTweester0, ActionTweester1, ActionTwee
 
 void bhv_tweester_loop(void)
 {
-	set_object_hitbox(o, &sTweesterHitbox);
-	obj_call_action_function(sTweesterActions);
+	s_set_hitparam(o, &sTweesterHitbox);
+	s_modejmp(sTweesterActions);
 	o->oInteractStatus = 0;
 }
 
@@ -104,7 +104,7 @@ void bhv_tweester_sand_particle_loop(void)
 	o->oMoveAngleYaw += 0x3700 / FRAME_RATE_SCALER_INV;
 	o->oForwardVel += 15.0f * FRAME_RATE_SCALER;
 	o->oPosY += 22.0f * FRAME_RATE_SCALER;
-	obj_scale(RandomFloat() + 1.0);
+	s_set_scale(RandomFloat() + 1.0);
 	if(o->oTimer == 0)
 	{
 		translate_object_xz_random(o, 100.0f);
@@ -112,5 +112,5 @@ void bhv_tweester_sand_particle_loop(void)
 		o->oFaceAngleYaw   = RandomU16();
 	}
 	if(o->oTimer > 15 * FRAME_RATE_SCALER_INV)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }

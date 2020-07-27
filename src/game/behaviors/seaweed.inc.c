@@ -9,7 +9,7 @@ void bhv_seaweed_bundle_init(void)
 {
 	struct Object* seaweed;
 
-	seaweed			     = spawn_object(o, MODEL_SEAWEED, sm64::bhv::bhvSeaweed());
+	seaweed			     = s_makeobj_nowpos(o, MODEL_SEAWEED, sm64::bhv::bhvSeaweed());
 	seaweed->oFaceAngleYaw	     = 14523;
 	seaweed->oFaceAnglePitch     = 5500;
 	seaweed->oFaceAngleRoll	     = 9600;
@@ -18,7 +18,7 @@ void bhv_seaweed_bundle_init(void)
 	seaweed->header.gfx.scale[2] = 1.0;
 	//! gfx.animFrame uninitialized
 
-	seaweed			     = spawn_object(o, MODEL_SEAWEED, sm64::bhv::bhvSeaweed());
+	seaweed			     = s_makeobj_nowpos(o, MODEL_SEAWEED, sm64::bhv::bhvSeaweed());
 	seaweed->oFaceAngleYaw	     = 41800;
 	seaweed->oFaceAnglePitch     = 6102;
 	seaweed->oFaceAngleRoll	     = 0;
@@ -27,7 +27,7 @@ void bhv_seaweed_bundle_init(void)
 	seaweed->header.gfx.scale[2] = 0.8;
 	seaweed->header.gfx.unk38.setFrameRaw(RandomFloat() * 80.0f);
 
-	seaweed			     = spawn_object(o, MODEL_SEAWEED, sm64::bhv::bhvSeaweed());
+	seaweed			     = s_makeobj_nowpos(o, MODEL_SEAWEED, sm64::bhv::bhvSeaweed());
 	seaweed->oFaceAngleYaw	     = 40500;
 	seaweed->oFaceAnglePitch     = 8700;
 	seaweed->oFaceAngleRoll	     = 4100;
@@ -36,7 +36,7 @@ void bhv_seaweed_bundle_init(void)
 	seaweed->header.gfx.scale[2] = 0.8;
 	seaweed->header.gfx.unk38.setFrameRaw(RandomFloat() * 80.0f);
 
-	seaweed			     = spawn_object(o, MODEL_SEAWEED, sm64::bhv::bhvSeaweed());
+	seaweed			     = s_makeobj_nowpos(o, MODEL_SEAWEED, sm64::bhv::bhvSeaweed());
 	seaweed->oFaceAngleYaw	     = 57236;
 	seaweed->oFaceAnglePitch     = 9500;
 	seaweed->oFaceAngleRoll	     = 0;

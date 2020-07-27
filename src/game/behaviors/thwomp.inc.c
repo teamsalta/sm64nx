@@ -25,8 +25,8 @@ void ActionGrindelThwomp3(void)
 	if(o->oTimer == 0)
 		if(o->oDistanceToMario < 1500.0f)
 		{
-			ShakeScreen(SHAKE_POS_SMALL);
-			PlaySound2(SOUND_OBJ_THWOMP);
+			s_call_Viewshake(SHAKE_POS_SMALL);
+			objsound(SOUND_OBJ_THWOMP);
 		}
 	if(o->oTimer > 9 * FRAME_RATE_SCALER_INV)
 		o->oAction = 4;
@@ -55,5 +55,5 @@ void (*sGrindelThwompActions[])(void) = {ActionGrindelThwomp0, ActionGrindelThwo
 
 void bhv_grindel_thwomp_loop(void)
 {
-	obj_call_action_function(sGrindelThwompActions);
+	s_modejmp(sGrindelThwompActions);
 }

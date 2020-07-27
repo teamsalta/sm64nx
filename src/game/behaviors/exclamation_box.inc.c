@@ -1,4 +1,5 @@
 // exclamation_box.c.inc
+#include "game/motor.h"
 
 struct ObjectHitbox sExclamationBoxHitbox = {
     /* interactType: */ INTERACT_BREAKABLE,
@@ -33,15 +34,15 @@ struct Struct802C0DF0 sExclamationBoxContents[] = {
 void bhv_rotatin_exclamation_box_loop(void)
 {
 	if(o->parentObj->oAction != 1)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }
 
-void ActionExclamationBox0(void)
+static void itembox_init(void)
 {
 	if(o->oBehParams2ndByte < 3)
 	{
 		o->oAnimState = o->oBehParams2ndByte;
-		if((save_file_get_flags() & D_8032F0C0[o->oBehParams2ndByte]) || ((o->oBehParams >> 24) & 0xFF) != 0)
+		if((BuGetItemFlag() & D_8032F0C0[o->oBehParams2ndByte]) || ((o->oBehParams >> 24) & 0xFF) != 0)
 			o->oAction = 2;
 		else
 			o->oAction = 1;
@@ -53,53 +54,56 @@ void ActionExclamationBox0(void)
 	}
 }
 
-void ActionExclamationBox1(void)
+static void itembox_disable(void)
 {
-	obj_become_intangible();
+	s_hitOFF();
 	if(o->oTimer == 0)
 	{
-		spawn_object(o, MODEL_EXCLAMATION_POINT, sm64::bhv::bhvRotatingExclamationMark());
-		obj_set_model(MODEL_EXCLAMATION_BOX_OUTLINE);
+		s_makeobj_nowpos(o, MODEL_EXCLAMATION_POINT, sm64::bhv::bhvRotatingExclamationMark());
+		s_change_shape(MODEL_EXCLAMATION_BOX_OUTLINE);
 	}
-	if((save_file_get_flags() & D_8032F0C0[o->oBehParams2ndByte]) || ((o->oBehParams >> 24) & 0xFF) != 0)
+	if((BuGetItemFlag() & D_8032F0C0[o->oBehParams2ndByte]) || ((o->oBehParams >> 24) & 0xFF) != 0)
 	{
 		o->oAction = 2;
-		obj_set_model(MODEL_EXCLAMATION_BOX);
+		s_change_shape(MODEL_EXCLAMATION_BOX);
 	}
 }
 
-void ActionExclamationBox2(void)
+static void itembox_enable(void)
 {
-	set_object_hitbox(o, &sExclamationBoxHitbox);
+	s_set_hitparam(o, &sExclamationBoxHitbox);
 	if(o->oTimer == 0)
 	{
-		obj_unhide();
-		obj_become_tangible();
+		s_shape_disp();
+		s_hitON();
 		o->oInteractStatus = 0;
 		o->oPosY	   = o->oHomeY;
 		o->oGraphYOffset   = 0.0f;
 	}
-	if(obj_was_attacked_or_ground_pounded())
+	if(s_block_hitcheck())
 	{
-		obj_become_intangible();
+		s_hitOFF();
 		o->oExclamationBoxUnkFC = 0x4000;
 		o->oVelY		= 30.0f;
 		o->oGravity		= -8.0f;
 		o->oFloorHeight		= o->oPosY;
 		o->oAction		= 3;
+
+		SendMotorEvent(5, 80);
 	}
-	load_object_collision_model();
+	stMainMoveBG();
 }
 
-void ActionExclamationBox3(void)
+static void itembox_burn(void)
 {
-	UNUSED s32 unused;
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
+
 	if(o->oVelY < 0.0f)
 	{
 		o->oVelY    = 0.0f;
 		o->oGravity = 0.0f;
 	}
+
 	o->oExclamationBoxUnkF8 = (sins(o->oExclamationBoxUnkFC) + 1.0) * 0.3 + 0.0;
 	o->oExclamationBoxUnkF4 = (-sins(o->oExclamationBoxUnkFC) + 1.0) * 0.5 + 1.0;
 	o->oGraphYOffset	= (-sins(o->oExclamationBoxUnkFC) + 1.0) * 26.0;
@@ -111,18 +115,18 @@ void ActionExclamationBox3(void)
 		o->oAction = 4;
 }
 
-void func_802C0DF0(struct Struct802C0DF0* a0, u8 a1)
+static void s_itembox_makeobj(struct Struct802C0DF0* a0, u8 a1)
 {
-	struct Object* sp1C = NULL;
+	Object* stp = NULL;
 
 	while(a0->unk0 != 99)
 	{
 		if(a1 == a0->unk0)
 		{
-			sp1C		    = spawn_object(o, a0->model, a0->behavior);
-			sp1C->oVelY	    = 20.0f;
-			sp1C->oForwardVel   = 3.0f;
-			sp1C->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
+			stp		   = s_makeobj_nowpos(o, a0->model, a0->behavior);
+			stp->oVelY	   = 20.0f;
+			stp->oForwardVel   = 3.0f;
+			stp->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
 			o->oBehParams |= a0->unk2 << 24;
 			if(a0->model == 122)
 				o->oFlags |= 0x4000;
@@ -132,31 +136,36 @@ void func_802C0DF0(struct Struct802C0DF0* a0, u8 a1)
 	}
 }
 
-void ActionExclamationBox4(void)
+void itembox_makeitem(void)
 {
-	func_802C0DF0(sExclamationBoxContents, o->oBehParams2ndByte);
-	func_802AA618(0, 0, 46.0f);
-	spawn_triangle_break_particles(20, 139, 0.3f, o->oAnimState);
-	create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
+	s_itembox_makeobj(sExclamationBoxContents, o->oBehParams2ndByte);
+	s_burneffect(0, 0, 46.0f);
+	s_boxeffect(20, 139, 0.3f, o->oAnimState);
+	obj_remove_sound(SOUND_GENERAL_BREAK_BOX);
+
 	if(o->oBehParams2ndByte < 3)
 	{
 		o->oAction = 5;
-		obj_hide();
+		s_shape_hide();
 	}
 	else
-		mark_object_for_deletion(o);
+	{
+		s_remove_obj(o);
+	}
 }
 
-void ActionExclamationBox5(void)
+void itembox_return(void)
 {
 	if(o->oTimer > 300 * FRAME_RATE_SCALER_INV)
+	{
 		o->oAction = 2;
+	}
 }
 
-void (*sExclamationBoxActions[])(void) = {ActionExclamationBox0, ActionExclamationBox1, ActionExclamationBox2, ActionExclamationBox3, ActionExclamationBox4, ActionExclamationBox5};
+void (*itembox_modejmp[])(void) = {itembox_init, itembox_disable, itembox_enable, itembox_burn, itembox_makeitem, itembox_return};
 
 void bhv_exclamation_box_loop(void)
 {
-	obj_scale(2.0f);
-	obj_call_action_function(sExclamationBoxActions);
+	s_set_scale(2.0f);
+	s_modejmp(itembox_modejmp);
 }

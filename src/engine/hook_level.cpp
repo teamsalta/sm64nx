@@ -398,7 +398,7 @@ namespace sm64::hook::level
 
 	void Level::set_rooms()
 	{
-		// gAreas[sCurrAreaIndex].surfaceRooms = (s8*)segmented_to_virtual(CMD_GET(void *, 4));
+		// stageScenes[sCurrAreaIndex].surfaceRooms = (s8*)segmented_to_virtual(CMD_GET(void *, 4));
 		ip = CMD_NEXT;
 	}
 
@@ -410,13 +410,13 @@ namespace sm64::hook::level
 		{
 			len += 4;
 		}
-		gAreas[sCurrAreaIndex].macroObjects = (s16*)alloc_only_pool_alloc(sLevelPool, len * sizeof(MacroObject));
-		memcpy(gAreas[sCurrAreaIndex].macroObjects, data, len * sizeof(MacroObject));*/
+		stageScenes[sCurrAreaIndex].macroObjects = (s16*)alloc_only_pool_alloc(sLevelPool, len * sizeof(MacroObject));
+		memcpy(stageScenes[sCurrAreaIndex].macroObjects, data, len * sizeof(MacroObject));*/
 
 		ip = CMD_NEXT;
 	}
 
-	void Level::load_area()
+	void Level::SnOpenScene()
 	{
 		hashOp();
 		ip = CMD_NEXT;
@@ -542,7 +542,7 @@ namespace sm64::hook::level
 	    /*26*/ &Level::create_warp_node,
 	    /*27*/ &Level::create_painting_warp_node,
 	    /*28*/ &Level::create_instant_warp,
-	    /*29*/ &Level::load_area,
+	    /*29*/ &Level::SnOpenScene,
 	    /*2A*/ &Level::cmd_2A,
 	    /*2B*/ &Level::set_mario_start_pos,
 	    /*2C*/ &Level::cmd_2C,
@@ -641,6 +641,6 @@ namespace sm64::hook::level
 	LevelCommand* mount(LevelCommand* func, u64 size)
 	{
 		return func;
-		//return (LevelCommand*)asset::mount((u8*)func, size);
+		// return (LevelCommand*)asset::mount((u8*)func, size);
 	}
 } // namespace sm64::hook::level

@@ -11,7 +11,7 @@ void bhv_sliding_snow_mound_loop(void)
 			if(o->oTimer >= 118 * FRAME_RATE_SCALER_INV)
 				o->oAction = 1;
 
-			PlaySound(SOUND_ENV_SINK_QUICKSAND);
+			objsound_level(SOUND_ENV_SINK_QUICKSAND);
 			break;
 
 		case 1:
@@ -33,11 +33,11 @@ void bhv_snow_mound_spawn_loop(void)
 {
 	struct Object* sp1C;
 
-	if(!is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 6000) || o->oPosY + 1000.0f < gMarioObject->header.gfx.pos[1])
+	if(!PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 6000) || o->oPosY + 1000.0f < gMarioObject->header.gfx.pos[1])
 		return;
 
 	if(o->oTimer == 64 * FRAME_RATE_SCALER_INV || o->oTimer == 128 * FRAME_RATE_SCALER_INV || o->oTimer == 192 * FRAME_RATE_SCALER_INV || o->oTimer == 224 * FRAME_RATE_SCALER_INV || o->oTimer == 256 * FRAME_RATE_SCALER_INV)
-		sp1C = spawn_object(o, MODEL_SL_SNOW_TRIANGLE, sm64::bhv::bhvSlidingSnowMound());
+		sp1C = s_makeobj_nowpos(o, MODEL_SL_SNOW_TRIANGLE, sm64::bhv::bhvSlidingSnowMound());
 
 	if(o->oTimer == 256 * FRAME_RATE_SCALER_INV)
 	{

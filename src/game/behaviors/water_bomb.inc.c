@@ -64,7 +64,7 @@ void bhv_water_bomb_spawner_update(void)
 	f32 spawnerRadius;
 
 	spawnerRadius  = 50 * (u16)(o->oBehParams >> 16) + 200.0f;
-	latDistToMario = lateral_dist_between_objects(o, gMarioObject);
+	latDistToMario = s_distanceXZ_obj2obj(o, gMarioObject);
 
 	// When mario is in range and a water bomb isn't already active
 	if(!o->oWaterBombSpawnerBombActive && latDistToMario < spawnerRadius && gMarioObject->oPosY - o->oPosY < 1000.0f)
@@ -75,19 +75,19 @@ void bhv_water_bomb_spawner_update(void)
 		}
 		else
 		{
-			struct Object* waterBomb = spawn_object_relative(0, 0, 2000, 0, o, MODEL_WATER_BOMB, sm64::bhv::bhvWaterBomb());
+			struct Object* waterBomb = s_makeobj_chain(0, 0, 2000, 0, o, MODEL_WATER_BOMB, sm64::bhv::bhvWaterBomb());
 
 			if(waterBomb != NULL)
 			{
 				// Drop farther ahead of mario when he is moving faster
-				f32 waterBombDistToMario = 28.0f * gMarioStates[0].forwardVel + 100.0f;
+				f32 waterBombDistToMario = 28.0f * playerWorks[0].forwardVel + 100.0f;
 
 				waterBomb->oAction = WATER_BOMB_ACT_INIT;
 
 				waterBomb->oPosX = gMarioObject->oPosX + waterBombDistToMario * sins(gMarioObject->oMoveAngleYaw);
 				waterBomb->oPosZ = gMarioObject->oPosZ + waterBombDistToMario * coss(gMarioObject->oMoveAngleYaw);
 
-				spawn_object(waterBomb, MODEL_WATER_BOMB_SHADOW, sm64::bhv::bhvWaterBombShadow());
+				s_makeobj_nowpos(waterBomb, MODEL_WATER_BOMB_SHADOW, sm64::bhv::bhvWaterBombShadow());
 
 				o->oWaterBombSpawnerBombActive	= TRUE;
 				o->oWaterBombSpawnerTimeToSpawn = random_linear_offset(0, 50);
@@ -112,7 +112,7 @@ static void water_bomb_spawn_explode_particles(s8 offsetY, s8 forwardVelRange, s
  */
 static void water_bomb_act_init(void)
 {
-	PlaySound2(SOUND_OBJ_SOMETHING_LANDING);
+	objsound(SOUND_OBJ_SOMETHING_LANDING);
 
 	o->oAction    = WATER_BOMB_ACT_DROP;
 	o->oMoveFlags = 0;
@@ -127,12 +127,12 @@ static void water_bomb_act_drop(void)
 {
 	f32 stretch;
 
-	set_object_hitbox(o, &sWaterBombHitbox);
+	s_set_hitparam(o, &sWaterBombHitbox);
 
 	// Explode if touched or if hit water
 	if((o->oInteractStatus & INT_STATUS_INTERACTED) || (o->oMoveFlags & OBJ_MOVE_ENTERED_WATER))
 	{
-		create_sound_spawner(SOUND_OBJ_DIVING_IN_WATER);
+		obj_remove_sound(SOUND_OBJ_DIVING_IN_WATER);
 		set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 		o->oAction = WATER_BOMB_ACT_EXPLODE;
 	}
@@ -145,11 +145,11 @@ static void water_bomb_act_drop(void)
 
 			if((o->oWaterBombNumBounces += 1.0f) < 3.0f)
 			{
-				PlaySound2(SOUND_OBJ_WATER_BOMB_BOUNCING);
+				objsound(SOUND_OBJ_WATER_BOMB_BOUNCING);
 			}
 			else
 			{
-				create_sound_spawner(SOUND_OBJ_DIVING_IN_WATER);
+				obj_remove_sound(SOUND_OBJ_DIVING_IN_WATER);
 			}
 
 			set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
@@ -202,7 +202,7 @@ static void water_bomb_act_explode(void)
 {
 	water_bomb_spawn_explode_particles(25, 60, 10);
 	o->parentObj->oWaterBombSpawnerBombActive = FALSE;
-	mark_object_for_deletion(o);
+	s_remove_obj(o);
 }
 
 /**
@@ -212,7 +212,7 @@ static void water_bomb_act_shot_from_cannon(void)
 {
 	if(o->oTimer > 100 * FRAME_RATE_SCALER_INV)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{
@@ -272,7 +272,7 @@ void bhv_water_bomb_shadow_update(void)
 {
 	if(o->parentObj->oAction == WATER_BOMB_ACT_EXPLODE)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{

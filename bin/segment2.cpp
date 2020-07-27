@@ -827,7 +827,7 @@ const u8 *const main_hud_camera_lut[] = {
 UNUSED static const u64 segment2_unused_0 = 0;
 
 // 0x0200EC60 - 0x0200EC98
-const Gfx dl_hud_img_begin[] = {
+const Gfx RCP_tfont_on[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_COPY),
     gsDPSetTexturePersp(G_TP_NONE),
@@ -838,7 +838,7 @@ const Gfx dl_hud_img_begin[] = {
 };
 
 // 0x0200EC98 - 0x0200ECC8
-const Gfx dl_hud_img_load_tex_block[] = {
+const Gfx RCP_tfont_main[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, 4, G_TX_NOLOD),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 16 * 16 - 1, CALC_DXT(16, G_IM_SIZ_16b_BYTES)),
@@ -848,7 +848,7 @@ const Gfx dl_hud_img_load_tex_block[] = {
 };
 
 // 0x0200ECC8 - 0x0200ED00
-const Gfx dl_hud_img_end[] = {
+const Gfx RCP_tfont_off[] = {
     gsDPPipeSync(),
     gsDPSetTexturePersp(G_TP_PERSP),
     gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),

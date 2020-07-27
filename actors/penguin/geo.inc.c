@@ -30,7 +30,7 @@ const GeoLayout penguin_geo[] = {
                       GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, penguin_seg5_dl_05006458),
                       GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, penguin_seg5_dl_05006488),
                       GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, penguin_seg5_dl_050064B8),
-                      GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, penguin_seg5_dl_050064E8), // unused, seen in Shoshinkai 1995 footage
+                      GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, penguin_seg5_dl_050064E8), // size, seen in Shoshinkai 1995 footage
                    GEO_CLOSE_NODE(),
                 GEO_CLOSE_NODE(),
              GEO_CLOSE_NODE(),

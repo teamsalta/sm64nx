@@ -52,7 +52,7 @@ void spawn_macro_abs_yrot_2params(u32 model, const BehaviorScript* behavior, s16
 {
 	if(behavior != NULL)
 	{
-		struct Object* newObj = spawn_object_abs_with_rot(&gMacroObjectDefaultParent, 0, model, behavior, x, y, z, 0, convert_rotation(ry), 0);
+		struct Object* newObj = s_makeobj_absolute(&gMacroObjectDefaultParent, 0, model, behavior, x, y, z, 0, convert_rotation(ry), 0);
 		newObj->oBehParams    = ((u32)params) << 16;
 	}
 }
@@ -66,7 +66,7 @@ void spawn_macro_abs_yrot_param1(u32 model, const BehaviorScript* behavior, s16 
 {
 	if(behavior != NULL)
 	{
-		struct Object* newObj = spawn_object_abs_with_rot(&gMacroObjectDefaultParent, 0, model, behavior, x, y, z, 0, convert_rotation(ry), 0);
+		struct Object* newObj = s_makeobj_absolute(&gMacroObjectDefaultParent, 0, model, behavior, x, y, z, 0, convert_rotation(ry), 0);
 		newObj->oBehParams    = ((u32)param) << 24;
 	}
 }
@@ -77,9 +77,9 @@ void spawn_macro_abs_yrot_param1(u32 model, const BehaviorScript* behavior, s16 
  */
 void spawn_macro_abs_special(u32 model, const BehaviorScript* behavior, s16 x, s16 y, s16 z, s16 unkA, s16 unkB, s16 unkC)
 {
-	struct Object* newObj = spawn_object_abs_with_rot(&gMacroObjectDefaultParent, 0, model, behavior, x, y, z, 0, 0, 0);
+	struct Object* newObj = s_makeobj_absolute(&gMacroObjectDefaultParent, 0, model, behavior, x, y, z, 0, 0, 0);
 
-	// Are all three of these values unused?
+	// Are all three of these values size?
 	newObj->oMacroUnk108 = (f32)unkA;
 	newObj->oMacroUnk10C = (f32)unkB;
 	newObj->oMacroUnk110 = (f32)unkC;
@@ -92,7 +92,7 @@ static void Unknown802E142C(const BehaviorScript* behavior, s16 a1[])
 
 	model = sm64::bhv::bhvYellowCoin() == behavior ? MODEL_YELLOW_COIN : MODEL_NONE;
 
-	sp3C = spawn_object_abs_with_rot(&gMacroObjectDefaultParent, 0, model, behavior, a1[1], a1[2], a1[3], 0, convert_rotation(a1[0]), 0);
+	sp3C = s_makeobj_absolute(&gMacroObjectDefaultParent, 0, model, behavior, a1[1], a1[2], a1[3], 0, convert_rotation(a1[0]), 0);
 
 	sp3C->oUnk1A8	 = a1[4];
 	sp3C->oBehParams = (a1[4] & 0xFF) >> 16;
@@ -158,7 +158,7 @@ void spawn_macro_objects(s16 areaIndex, s16* macroObjList)
 		if(((macroObject[MACRO_OBJ_PARAMS] >> 8) & RESPAWN_INFO_DONT_RESPAWN) != RESPAWN_INFO_DONT_RESPAWN)
 		{
 			// Spawn the new macro object.
-			newObj = spawn_object_abs_with_rot(
+			newObj = s_makeobj_absolute(
 			    &gMacroObjectDefaultParent,			    // Parent object
 			    0,						    // Unused
 			    preset.model,				    // Model ID
@@ -252,11 +252,7 @@ void spawn_special_objects(s16 areaIndex, s16** specialObjList)
 	s16 y;
 	s16 z;
 	s16 extraParams[4];
-#ifdef VERSION_EU
-	s16 model;
-#else
 	u8 model;
-#endif
 	u8 type;
 	u8 presetID;
 	u8 defaultParam;
@@ -336,7 +332,6 @@ void spawn_special_objects(s16 areaIndex, s16** specialObjList)
 	}
 }
 
-#ifndef TARGET_N64
 u32 get_special_objects_size(s16* data)
 {
 	s16* startPos = data;
@@ -385,4 +380,3 @@ u32 get_special_objects_size(s16* data)
 
 	return data - startPos;
 }
-#endif

@@ -15,18 +15,17 @@
 #define NOTE_ALLOC_GLOBAL_FREELIST 8
 
 void process_notes(void);
-void seq_channel_layer_note_decay(struct SequenceChannelLayer *seqLayer);
-void seq_channel_layer_note_release(struct SequenceChannelLayer *seqLayer);
-void init_synthetic_wave(struct Note *note, struct SequenceChannelLayer *seqLayer);
-void init_note_lists(struct NotePool *pool);
+void seq_channel_layer_note_decay(struct SequenceChannelLayer* seqLayer);
+void seq_channel_layer_note_release(struct SequenceChannelLayer* seqLayer);
+void init_synthetic_wave(struct Note* note, struct SequenceChannelLayer* seqLayer);
+void init_note_lists(struct NotePool* pool);
 void init_note_free_list(void);
-void note_pool_clear(struct NotePool *pool);
-void note_pool_fill(struct NotePool *pool, s32 count);
-void audio_list_push_front(struct AudioListItem *list, struct AudioListItem *item);
-void audio_list_remove(struct AudioListItem *item);
-struct Note *alloc_note(struct SequenceChannelLayer *seqLayer);
+void note_pool_clear(struct NotePool* pool);
+void note_pool_fill(struct NotePool* pool, s32 count);
+void audio_list_push_front(struct AudioListItem* list, struct AudioListItem* item);
+void audio_list_remove(struct AudioListItem* item);
+struct Note* alloc_note(struct SequenceChannelLayer* seqLayer);
 void reclaim_notes(void);
 void note_init_all(void);
-
 
 #endif /* _AUDIO_PLAYBACK_H */

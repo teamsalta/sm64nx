@@ -2,5 +2,5 @@
 
 void bhv_waterfall_sound_loop(void)
 {
-	PlaySound(SOUND_ENV_WATERFALL2);
+	objsound_level(SOUND_ENV_WATERFALL2);
 }

@@ -14,7 +14,7 @@ struct ObjectHitbox sKoopaShellUnderwaterHitbox = {
 
 void func_802AA0D4(void)
 {
-	set_object_hitbox(o, &sKoopaShellUnderwaterHitbox);
+	s_set_hitparam(o, &sKoopaShellUnderwaterHitbox);
 }
 
 void bhv_koopa_shell_underwater_loop(void)
@@ -29,14 +29,14 @@ void bhv_koopa_shell_underwater_loop(void)
 			break;
 		case HELD_THROWN:
 		case HELD_DROPPED:
-			mark_object_for_deletion(o);
-			func_802A3004();
+			s_remove_obj(o);
+			s_kemuri();
 			break;
 	}
 	if(o->oInteractStatus & INT_STATUS_STOP_RIDING)
 	{
-		mark_object_for_deletion(o);
-		func_802A3004();
+		s_remove_obj(o);
+		s_kemuri();
 	}
 	o->oInteractStatus = 0;
 }

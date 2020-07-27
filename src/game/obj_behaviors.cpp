@@ -49,7 +49,7 @@
 #define OBJ_COL_FLAGS_LANDED (OBJ_COL_FLAG_GROUNDED | OBJ_COL_FLAG_NO_Y_VEL)
 
 /**
- * Current object floor as defined in object_step.
+ * Current object floor as defined in ObjMoveEvent.
  */
 static struct Surface* sObjFloor;
 
@@ -82,7 +82,7 @@ void set_yoshi_as_not_dead(void)
 }
 
 /**
- * An unused geo function. Bears strong similarity to Geo18_802B7D44, and relates something
+ * An size geo function. Bears strong similarity to Geo18_802B7D44, and relates something
  * of the opacity of an object to something else. Perhaps like, giving a parent object the same
  * opacity?
  */
@@ -108,7 +108,7 @@ Gfx UNUSED* geo_obj_transparency_something(s32 callContext, struct GraphNode* no
 			heldObject = gCurGraphNodeHeldObject->objNode;
 		}
 
-		gfxHead			   = (Gfx*)alloc_display_list(3 * sizeof(Gfx));
+		gfxHead			   = (Gfx*)AllocDynamic(3 * sizeof(Gfx));
 		gfx			   = gfxHead;
 		obj->header.gfx.node.flags = (obj->header.gfx.node.flags & 0xFF) | (GRAPH_NODE_TYPE_FUNCTIONAL | GRAPH_NODE_TYPE_400); // sets bits 8, 10 and zeros upper byte
 
@@ -231,7 +231,7 @@ void obj_orient_graph(struct Object* obj, f32 normalX, f32 normalY, f32 normalZ)
 		return;
 	}
 
-	throwMatrix = (Mat4*)alloc_display_list(sizeof(*throwMatrix));
+	throwMatrix = (Mat4*)AllocDynamic(sizeof(*throwMatrix));
 	// If out of memory, fail to try orienting the object.
 	if(throwMatrix == NULL)
 	{
@@ -428,23 +428,23 @@ void obj_update_pos_vel_xz(void)
  */
 void obj_splash(s32 waterY, s32 objY)
 {
-	u32 globalTimer = gGlobalTimer;
+	u32 globalTimer = frameCounter;
 
 	// Spawns waves if near surface of water and plays a noise if entering.
 	if((f32)(waterY + 30) > o->oPosY && o->oPosY > (f32)(waterY - 30))
 	{
-		spawn_object(o, MODEL_WATER_WAVES_SURF, sm64::bhv::bhvObjectWaterWave());
+		s_makeobj_nowpos(o, MODEL_WATER_WAVES_SURF, sm64::bhv::bhvObjectWaterWave());
 
 		if(o->oVelY < -20.0f)
 		{
-			PlaySound2(SOUND_OBJ_DIVING_INTO_WATER);
+			objsound(SOUND_OBJ_DIVING_INTO_WATER);
 		}
 	}
 
 	// Spawns bubbles if underwater.
 	if((objY + 50) < waterY && (globalTimer & 0x1F) == 0)
 	{
-		spawn_object(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvObjectBubble());
+		s_makeobj_nowpos(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvObjectBubble());
 	}
 }
 
@@ -452,7 +452,7 @@ void obj_splash(s32 waterY, s32 objY)
  * Generic object move function. Handles walls, water, floors, and gravity.
  * Returns flags for certain interactions.
  */
-s32 object_step(void)
+s32 ObjMoveEvent(void)
 {
 	f32 objX = o->oPosX;
 	f32 objY = o->oPosY;
@@ -519,13 +519,9 @@ s32 object_step(void)
  */
 s32 object_step_without_floor_orient(void)
 {
-#ifdef VERSION_EU
-	s32 collisionFlags = 0;
-#else
-	s16 collisionFlags = 0;
-#endif
+	s16 collisionFlags  = 0;
 	sOrientObjWithFloor = FALSE;
-	collisionFlags	    = object_step();
+	collisionFlags	    = ObjMoveEvent();
 	sOrientObjWithFloor = TRUE;
 
 	return collisionFlags;
@@ -551,7 +547,7 @@ void obj_move_xyz_using_fvel_and_yaw(struct Object* obj)
 /**
  * Checks if a point is within distance from Mario's graphical position. Test is exclusive.
  */
-s32 is_point_within_radius_of_mario(f32 x, f32 y, f32 z, s32 dist)
+s32 PlayerApproach(f32 x, f32 y, f32 z, s32 dist)
 {
 	f32 mGfxX = gMarioObject->header.gfx.pos[0];
 	f32 mGfxY = gMarioObject->header.gfx.pos[1];
@@ -585,13 +581,13 @@ s32 is_point_close_to_object(struct Object* obj, f32 x, f32 y, f32 z, s32 dist)
 /**
  * Sets an object as visible if within a certain distance of Mario's graphical position.
  */
-void set_object_visibility(struct Object* obj, s32 dist)
+void PlayerApproachOnOff(struct Object* obj, s32 dist)
 {
 	f32 objX = obj->oPosX;
 	f32 objY = obj->oPosY;
 	f32 objZ = obj->oPosZ;
 
-	if(sm64::config().camera().disableDistanceClip() || is_point_within_radius_of_mario(objX, objY, objZ, dist) == TRUE)
+	if(sm64::config().camera().disableDistanceClip() || PlayerApproach(objX, objY, objZ, dist) == TRUE)
 	{
 		obj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
 	}
@@ -610,7 +606,7 @@ s32 obj_return_home_if_safe(struct Object* obj, f32 homeX, f32 y, f32 homeZ, s32
 	f32 homeDistZ	     = homeZ - obj->oPosZ;
 	s16 angleTowardsHome = atan2s(homeDistZ, homeDistX);
 
-	if(is_point_within_radius_of_mario(homeX, y, homeZ, dist) == TRUE)
+	if(PlayerApproach(homeX, y, homeZ, dist) == TRUE)
 	{
 		return TRUE;
 	}
@@ -646,7 +642,7 @@ void obj_return_and_displace_home(struct Object* obj, f32 homeX, UNUSED f32 home
  * A series of checks using sin and cos to see if a given angle is facing in the same direction
  * of a given angle, within a certain range.
  */
-s32 obj_check_if_facing_toward_angle(u32 base, u32 goal, s16 range)
+s32 ShapeSameAngle(u32 base, u32 goal, s16 range)
 {
 	s16 dAngle = (u16)goal - (u16)base;
 
@@ -661,7 +657,7 @@ s32 obj_check_if_facing_toward_angle(u32 base, u32 goal, s16 range)
 /**
  * Finds any wall collisions and returns what the displacement vector would be.
  */
-s32 obj_find_wall_displacement(Vec3f dist, f32 x, f32 y, f32 z, f32 radius)
+s32 PositionWallCheck(Vec3f dist, f32 x, f32 y, f32 z, f32 radius)
 {
 	struct WallCollisionData hitbox;
 	UNUSED u8 filler[0x20];
@@ -696,7 +692,7 @@ void obj_spawn_yellow_coins(struct Object* obj, s8 nCoins)
 
 	for(count = 0; count < nCoins; count++)
 	{
-		coin		    = spawn_object(obj, MODEL_YELLOW_COIN, sm64::bhv::bhvMovingYellowCoin());
+		coin		    = s_makeobj_nowpos(obj, MODEL_YELLOW_COIN, sm64::bhv::bhvMovingYellowCoin());
 		coin->oForwardVel   = RandomFloat() * 20;
 		coin->oVelY	    = RandomFloat() * 40 + 20;
 		coin->oMoveAngleYaw = RandomU16();
@@ -706,7 +702,7 @@ void obj_spawn_yellow_coins(struct Object* obj, s8 nCoins)
 /**
  * Controls whether certain objects should flicker/when to despawn.
  */
-s32 obj_flicker_and_disappear(struct Object* obj, s16 lifeSpan)
+s32 iwa_TimerRemove(struct Object* obj, s16 lifeSpan)
 {
 	if(obj->oTimer < lifeSpan * FRAME_RATE_SCALER_INV)
 	{
@@ -777,9 +773,7 @@ s16 trigger_obj_dialog_when_facing(s32* inDialog, s16 dialogID, f32 dist, s32 ac
 {
 	s16 dialogueResponse;
 
-	if((is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, (s32)dist) == 1 && obj_check_if_facing_toward_angle(o->oFaceAngleYaw, gMarioObject->header.gfx.angle[1] + 0x8000, 0x1000) == 1 &&
-	    obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x1000) == 1) ||
-	   (*inDialog == 1))
+	if((PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, (s32)dist) == 1 && ShapeSameAngle(o->oFaceAngleYaw, gMarioObject->header.gfx.angle[1] + 0x8000, 0x1000) == 1 && ShapeSameAngle(o->oMoveAngleYaw, o->oAngleToMario, 0x1000) == 1) || (*inDialog == 1))
 	{
 		*inDialog = 1;
 
@@ -847,8 +841,8 @@ s32 obj_lava_death(void)
 
 	if((o->oTimer % (8 * FRAME_RATE_SCALER_INV)) == 0)
 	{
-		PlaySound2(SOUND_OBJ_BULLY_EXPLODE_2);
-		deathSmoke = spawn_object(o, MODEL_SMOKE, sm64::bhv::bhvBobombBullyDeathSmoke());
+		objsound(SOUND_OBJ_BULLY_EXPLODE_2);
+		deathSmoke = s_makeobj_nowpos(o, MODEL_SMOKE, sm64::bhv::bhvBobombBullyDeathSmoke());
 		deathSmoke->oPosX += RandomFloat() * 20.0f;
 		deathSmoke->oPosY += RandomFloat() * 20.0f;
 		deathSmoke->oPosZ += RandomFloat() * 20.0f;
@@ -861,7 +855,7 @@ s32 obj_lava_death(void)
 /**
  * Spawns an orange number object relatively, such as those that count up for secrets.
  */
-void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ)
+void AppNumber(s8 behParam, s16 relX, s16 relY, s16 relZ)
 {
 	struct Object* orangeNumber;
 
@@ -870,7 +864,7 @@ void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ)
 		return;
 	}
 
-	orangeNumber = spawn_object_relative(behParam, relX, relY, relZ, o, MODEL_NUMBER, sm64::bhv::bhvOrangeNumber());
+	orangeNumber = s_makeobj_chain(behParam, relX, relY, relZ, o, MODEL_NUMBER, sm64::bhv::bhvOrangeNumber());
 	orangeNumber->oPosY += 25.0f;
 }
 

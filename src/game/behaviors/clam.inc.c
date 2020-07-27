@@ -16,16 +16,16 @@ void clam_act_0(void)
 {
 	if(func_802F92EC(0, 25))
 	{
-		PlaySound2(SOUND_GENERAL_CLAM_SHELL3);
+		objsound(SOUND_GENERAL_CLAM_SHELL3);
 		func_802ADA94();
-		obj_become_tangible();
+		s_hitON();
 
 		o->oClamUnkF4 = 10;
 		o->oTimer     = 0;
 	}
 	else if(o->oTimer > 150 * FRAME_RATE_SCALER_INV && o->oDistanceToMario < 500.0f)
 	{
-		PlaySound2(SOUND_GENERAL_CLAM_SHELL2);
+		objsound(SOUND_GENERAL_CLAM_SHELL2);
 		o->oAction = 1;
 	}
 	else if(o->oClamUnkF4 != 0)
@@ -52,12 +52,12 @@ void clam_act_1(void)
 			val04 = (s16)(100.0f * sins(val06));
 			val02 = (s16)(100.0f * coss(val06));
 
-			spawn_object_relative(0, val04, 30, val02, o, MODEL_BUBBLE, sm64::bhv::bhvBubbleMaybe());
+			s_makeobj_chain(0, val04, 30, val02, o, MODEL_BUBBLE, sm64::bhv::bhvBubbleMaybe());
 		}
 	}
 	else if(obj_check_anim_frame(30))
 	{
-		obj_become_intangible();
+		s_hitOFF();
 	}
 }
 

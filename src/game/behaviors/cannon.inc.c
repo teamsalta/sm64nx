@@ -18,11 +18,11 @@ void ActionOpenedCannon0(void)
 		o->oCannonUnkF4	   = 0;
 		o->oCannonUnk10C   = 0;
 		obj_enable_rendering();
-		obj_become_tangible();
+		s_hitON();
 	}
 	if(o->oDistanceToMario < 500.0f)
 	{
-		obj_become_tangible();
+		s_hitON();
 		obj_enable_rendering();
 		if(o->oInteractStatus & INT_STATUS_INTERACTED && (!(o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB))) // bob-omb explodes when it gets into a cannon
 		{
@@ -35,7 +35,7 @@ void ActionOpenedCannon0(void)
 	}
 	else
 	{
-		obj_become_intangible();
+		s_hitOFF();
 		obj_disable_rendering();
 		o->oCannonUnk10C = 0;
 	}
@@ -44,7 +44,7 @@ void ActionOpenedCannon0(void)
 void ActionOpenedCannon4(void)
 {
 	if(o->oTimer == 0)
-		PlaySound2(SOUND_OBJ_CANNON1);
+		objsound(SOUND_OBJ_CANNON1);
 	o->oPosY += 5.0f * FRAME_RATE_SCALER;
 	o->oPosX += (f32)((o->oTimer / 2 & 1) - 0.5) * 2 * FRAME_RATE_SCALER;
 	o->oPosZ += (f32)((o->oTimer / 2 & 1) - 0.5) * 2 * FRAME_RATE_SCALER;
@@ -59,7 +59,7 @@ void ActionOpenedCannon4(void)
 void ActionOpenedCannon6(void)
 {
 	if(o->oTimer == 0)
-		PlaySound2(SOUND_OBJ_CANNON2);
+		objsound(SOUND_OBJ_CANNON2);
 	if(o->oTimer < 4 * FRAME_RATE_SCALER_INV)
 	{
 		o->oPosX += (f32)((o->oTimer / 2 & 1) - 0.5) * 4.0f * FRAME_RATE_SCALER;
@@ -92,7 +92,7 @@ void ActionOpenedCannon6(void)
 void ActionOpenedCannon5(void)
 {
 	if(o->oTimer == 0)
-		PlaySound2(SOUND_OBJ_CANNON3);
+		objsound(SOUND_OBJ_CANNON3);
 
 	if(o->oTimer < 4 * FRAME_RATE_SCALER_INV)
 	{
@@ -115,7 +115,7 @@ void ActionOpenedCannon5(void)
 void ActionOpenedCannon1(void)
 {
 	UNUSED s32 unused;
-	obj_become_intangible();
+	s_hitOFF();
 	obj_disable_rendering();
 	o->oCannonUnk10C     = 0;
 	gMarioShotFromCannon = 1;
@@ -139,7 +139,7 @@ u8 unused0EA1FC[] = {2, 0, 0, 0, 0, 0, 0, 0, 63, 128, 0, 0, 2, 0, 0, 0, 65, 32, 
 
 void bhv_cannon_base_loop(void)
 {
-	obj_call_action_function(sOpenedCannonActions);
+	s_modejmp(sOpenedCannonActions);
 	if(o->oCannonUnkF8)
 		o->oCannonUnkF8++;
 	o->oInteractStatus = 0;

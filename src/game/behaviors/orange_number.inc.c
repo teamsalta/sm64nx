@@ -18,7 +18,7 @@ void bhv_orange_number_loop(void)
 
 	if(o->oTimer == 35 * FRAME_RATE_SCALER_INV)
 	{
-		sp1C = spawn_object(o, MODEL_SPARKLES, sm64::bhv::bhvGoldenCoinSparkles());
+		sp1C = s_makeobj_nowpos(o, MODEL_SPARKLES, sm64::bhv::bhvGoldenCoinSparkles());
 		sp1C->oPosY -= 30.f;
 		o->activeFlags = 0;
 	}

@@ -4,12 +4,12 @@
 
 namespace sm64
 {
-	static const u64 ASSET_MAGIC_MASK = 0xFFEF464F00000000;
+	static const u64 ASSET_MAGIC_MASK      = 0xFFEF464F00000000;
 	static const u64 ASSET_HASH_MAGIC_MASK = 0xFEEF464F00000000;
 
 	class Buffer
 	{
-	public:
+		public:
 		Buffer();
 		Buffer(const u64 sz);
 		virtual ~Buffer();
@@ -21,7 +21,8 @@ namespace sm64
 		u8* ptr() const;
 		u64 size() const;
 		void shift(u64 offset);
-	protected:
+
+		protected:
 		u8* m_ptr;
 		u64 m_size;
 		u64 m_allocSize;
@@ -32,7 +33,7 @@ namespace sm64
 	{
 		class Object : public Buffer
 		{
-		public:
+			public:
 			Object();
 			Object(const u64 xxhash);
 			virtual ~Object();
@@ -47,8 +48,8 @@ namespace sm64
 
 		Object* load(const u64 xxhash, const u64 mask = 0xFFFFFFFFFFFFFFFF);
 		Object* load(const u8* buffer, u64 size);
-	}
+	} // namespace asset
 
 	bool fileDump(const char* fileName, const void* buffer, u64 sz);
 
-}
+} // namespace sm64

@@ -17,10 +17,10 @@ void bhv_heave_ho_throw_mario_loop(void)
 		case 1:
 			break;
 		case 2:
-			PlaySound2(SOUND_OBJ_HEAVEHO_TOSSED);
+			objsound(SOUND_OBJ_HEAVEHO_TOSSED);
 			gMarioObject->oInteractStatus |= INT_STATUS_MARIO_UNK2;
-			gMarioStates->forwardVel    = -45.0f;
-			gMarioStates->vel[1]	    = 95.0f;
+			playerWorks->forwardVel	    = -45.0f;
+			playerWorks->vel[1]	    = 95.0f;
 			o->parentObj->oHeaveHoUnk88 = 0;
 			break;
 	}
@@ -92,14 +92,14 @@ void ActionHeaveHo0(void)
 	obj_set_pos_to_home();
 	if(find_water_level(o->oPosX, o->oPosZ) < o->oPosY && (o->oDistanceToMario < 4000.0f || sm64::config().camera().disableDistanceClip()))
 	{
-		obj_become_tangible();
-		obj_unhide();
+		s_hitON();
+		s_shape_disp();
 		o->oAction = 1;
 	}
 	else
 	{
-		obj_become_intangible();
-		obj_hide();
+		s_hitOFF();
+		s_shape_hide();
 	}
 }
 
@@ -108,14 +108,14 @@ void (*sHeaveHoActions[])(void) = {ActionHeaveHo0, ActionHeaveHo1, ActionHeaveHo
 void func_802B18B4(void)
 {
 	obj_update_floor_and_walls();
-	obj_call_action_function(sHeaveHoActions);
+	s_modejmp(sHeaveHoActions);
 	obj_move_standard(-78);
 	if(o->oMoveFlags & (0x40 | 0x20 | 0x10 | 0x8))
 		o->oGraphYOffset = -15.0f;
 	else
 		o->oGraphYOffset = 0.0f;
 	if(o->oForwardVel > 3.0f)
-		PlaySound(SOUND_AIR_HEAVEHO_MOVE);
+		objsound_level(SOUND_AIR_HEAVEHO_MOVE);
 	if(o->oAction != 0 && o->oMoveFlags & (0x40 | 0x20 | 0x10 | 0x8))
 		o->oAction = 0;
 	if(o->oInteractStatus & INT_STATUS_GRABBED_MARIO)
@@ -128,7 +128,7 @@ void func_802B18B4(void)
 
 void bhv_heave_ho_loop(void)
 {
-	obj_scale(2.0f);
+	s_set_scale(2.0f);
 
 	switch(o->oHeldState)
 	{

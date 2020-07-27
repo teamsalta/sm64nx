@@ -246,13 +246,13 @@ Gfx* geo_movtex_pause_control(s32 callContext, UNUSED struct GraphNode* node, UN
 {
 	if(callContext != GEO_CONTEXT_RENDER)
 	{
-		gMovtexCounterPrev = gAreaUpdateCounter - 1;
-		gMovtexCounter	   = gAreaUpdateCounter;
+		gMovtexCounterPrev = animationCounter - 1;
+		gMovtexCounter	   = animationCounter;
 	}
 	else
 	{
 		gMovtexCounterPrev = gMovtexCounter;
-		gMovtexCounter	   = gAreaUpdateCounter;
+		gMovtexCounter	   = animationCounter;
 	}
 	return NULL;
 }
@@ -334,17 +334,17 @@ Gfx* movtex_gen_from_quad(s16 y, struct MovtexQuad* quad)
 	s16 rotDir    = quad->rotDir;
 	s16 alpha     = quad->alpha;
 	s16 textureId = quad->textureId;
-	Vtx* verts    = (Vtx*)alloc_display_list(4 * sizeof(*verts));
+	Vtx* verts    = (Vtx*)AllocDynamic(4 * sizeof(*verts));
 	Gfx* gfxHead;
 	Gfx* gfx;
 
 	if(textureId == gMovetexLastTextureId)
 	{
-		gfxHead = (Gfx*)alloc_display_list(3 * sizeof(*gfxHead));
+		gfxHead = (Gfx*)AllocDynamic(3 * sizeof(*gfxHead));
 	}
 	else
 	{
-		gfxHead = (Gfx*)alloc_display_list(8 * sizeof(*gfxHead));
+		gfxHead = (Gfx*)AllocDynamic(8 * sizeof(*gfxHead));
 	}
 
 	if(gfxHead == NULL || verts == NULL)
@@ -415,7 +415,7 @@ Gfx* movtex_gen_from_quad_array(s16 y, void* quadArrSegmented)
 {
 	s16* quadArr = (s16*)segmented_to_virtual(quadArrSegmented);
 	s16 numLists = quadArr[0];
-	Gfx* gfxHead = (Gfx*)alloc_display_list((numLists + 1) * sizeof(*gfxHead));
+	Gfx* gfxHead = (Gfx*)AllocDynamic((numLists + 1) * sizeof(*gfxHead));
 	Gfx* gfx     = gfxHead;
 	Gfx* subList;
 	s32 i;
@@ -569,7 +569,7 @@ Gfx* geo_movtex_draw_water_regions(s32 callContext, struct GraphNode* node, UNUS
 			return NULL;
 		}
 		numWaterBoxes = gEnvironmentRegions[0];
-		gfxHead	      = (Gfx*)alloc_display_list((numWaterBoxes + 3) * sizeof(*gfxHead));
+		gfxHead	      = (Gfx*)AllocDynamic((numWaterBoxes + 3) * sizeof(*gfxHead));
 		if(gfxHead == NULL)
 		{
 			return NULL;
@@ -585,7 +585,7 @@ Gfx* geo_movtex_draw_water_regions(s32 callContext, struct GraphNode* node, UNUS
 			{ // if camera under water
 				return NULL;
 			}
-			if(save_file_get_star_flags(gCurrSaveFileNum - 1, 2) & 1)
+			if(BuGetStarFlag(activePlayerNo - 1, 2) & 1)
 			{ // first level in JRB complete
 				return NULL;
 			}
@@ -755,8 +755,8 @@ void movtex_write_vertex_index(Vtx* verts, s32 index, s16* movtexVerts, const st
  */
 Gfx* movtex_gen_list(s16* movtexVerts, const struct MovtexObject* movtexList, s8 attrLayout)
 {
-	Vtx* verts   = (Vtx*)alloc_display_list(movtexList->vtx_count * sizeof(*verts));
-	Gfx* gfxHead = (Gfx*)alloc_display_list(11 * sizeof(*gfxHead));
+	Vtx* verts   = (Vtx*)AllocDynamic(movtexList->vtx_count * sizeof(*verts));
+	Gfx* gfxHead = (Gfx*)AllocDynamic(11 * sizeof(*gfxHead));
 	Gfx* gfx     = gfxHead;
 	s32 i;
 

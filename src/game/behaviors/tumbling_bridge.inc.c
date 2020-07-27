@@ -27,7 +27,7 @@ void bhv_tumbling_bridge_platform_loop(void)
 			if(o->oTimer > 5 * FRAME_RATE_SCALER_INV)
 			{
 				o->oAction++;
-				PlaySound2(SOUND_GENERAL_PLATFORM);
+				objsound(SOUND_GENERAL_PLATFORM);
 			}
 			break;
 		case 2:
@@ -37,7 +37,7 @@ void bhv_tumbling_bridge_platform_loop(void)
 				o->oAngleVelRoll += o->oTumblingBridgeUnkF4 / FRAME_RATE_SCALER_INV; // acceleration?
 			o->oGravity = -3.0f;
 			obj_rotate_face_angle_using_vel();
-			obj_move_using_fvel_and_gravity();
+			s_optionmove_F();
 			if(o->oPosY < o->oFloorHeight - 300.0f)
 				o->oAction++;
 			break;
@@ -45,7 +45,7 @@ void bhv_tumbling_bridge_platform_loop(void)
 			break;
 	}
 	if(o->parentObj->oAction == 3)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }
 
 void ActionTumblingBridge1(void)
@@ -75,7 +75,7 @@ void ActionTumblingBridge1(void)
 			relativeInitialPlatformY = 450;
 		}
 
-		platformObj = spawn_object_relative(0, relativePlatformX, relativePlatformY + relativeInitialPlatformY, relativePlatformZ, o, sTumblingBridgeParams[bridgeID].model, sm64::bhv::bhvTumblingBridgePlatform());
+		platformObj = s_makeobj_chain(0, relativePlatformX, relativePlatformY + relativeInitialPlatformY, relativePlatformZ, o, sTumblingBridgeParams[bridgeID].model, sm64::bhv::bhvTumblingBridgePlatform());
 
 		set_object_collision_data(platformObj, sTumblingBridgeParams[bridgeID].segAddr);
 	}
@@ -85,19 +85,19 @@ void ActionTumblingBridge1(void)
 
 void ActionTumblingBridge2(void)
 {
-	obj_hide();
+	s_shape_hide();
 	if(obj_has_behavior(sm64::bhv::bhvLllTumblingBridge()))
-		obj_unhide();
+		s_shape_disp();
 	else if(o->oDistanceToMario > 1200.0f)
 	{
 		o->oAction = 3;
-		obj_unhide();
+		s_shape_disp();
 	}
 }
 
 void ActionTumblingBridge3(void)
 {
-	obj_unhide();
+	s_shape_disp();
 	o->oAction = 0;
 }
 
@@ -113,5 +113,5 @@ s16 D_8032F38C[] = {-51, 0, 0, -461, 0, 0, -512, 0, 0, -2611, 0, 0, -2360, 0, 0,
 
 void bhv_tumbling_bridge_loop(void)
 {
-	obj_call_action_function(sTumblingBridgeActions);
+	s_modejmp(sTumblingBridgeActions);
 }

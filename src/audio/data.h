@@ -11,7 +11,7 @@
 
 // constant .data
 extern struct AudioSessionSettings gAudioSessionPresets[18];
-extern u16 D_80332388[128]; // unused
+extern u16 D_80332388[128]; // size
 
 extern f32 gPitchBendFrequencyScale[255];
 extern f32 gNoteFrequencies[128];
@@ -21,7 +21,7 @@ extern u8 gDefaultShortNoteDurationTable[16];
 extern s8 gVibratoCurve[16];
 extern struct AdsrEnvelope gDefaultEnvelope[3];
 
-extern s16 *gWaveSamples[4];
+extern s16* gWaveSamples[4];
 
 extern u16 gHeadsetPanQuantization[10];
 extern f32 gHeadsetPanVolume[128];
@@ -43,7 +43,7 @@ extern s32 D_80333EF0; // amount of heap designated to gAudioInitPool, 0x2500
 extern volatile s32 gAudioLoadLock;
 
 // .bss
-extern struct CtlEntry *gCtlEntries;
+extern struct CtlEntry* gCtlEntries;
 extern s32 gAiFrequency;
 extern u32 D_80226D68;
 extern s32 gMaxAudioCmds;
@@ -61,13 +61,13 @@ extern volatile s32 gCurrAudioFrameDmaCount; // number of DMAs performed during 
 extern s32 gAudioTaskIndex;
 extern s32 gCurrAiBufferIndex;
 
-extern u64 *gAudioCmdBuffers[2];
-extern u64 *gAudioCmd;
+extern u64* gAudioCmdBuffers[2];
+extern u64* gAudioCmd;
 
-extern struct SPTask *gAudioTask;
+extern struct SPTask* gAudioTask;
 extern struct SPTask gAudioTasks[2];
 
-extern u16 *gAiBuffers[NUMAIBUFFERS];
+extern u16* gAiBuffers[NUMAIBUFFERS];
 extern s16 gAiBufferLengths[NUMAIBUFFERS];
 
 extern u32 gUnused80226E58[0x10];

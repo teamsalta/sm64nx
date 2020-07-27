@@ -15,9 +15,9 @@ void bhv_camera_lakitu_init(void)
 	if(o->oBehParams2ndByte != CAMERA_LAKITU_BP_FOLLOW_CAMERA)
 	{
 		// Despawn unless this is the very beginning of the game
-		if(gShouldNotPlayCastleMusic != TRUE)
+		if(mesgCastle != TRUE)
 		{
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 		}
 	}
 	else
@@ -70,9 +70,9 @@ static void camera_lakitu_intro_act_spawn_cloud(void)
 static void camera_lakitu_intro_act_show_dialog(void)
 {
 	s16 targetMovePitch = 0;
-	s16 targetMoveYaw = 0;
+	s16 targetMoveYaw   = 0;
 
-	PlaySound(SOUND_AIR_LAKITU_FLY);
+	objsound_level(SOUND_AIR_LAKITU_FLY);
 
 	// Face toward mario
 	o->oFaceAnglePitch = obj_turn_pitch_toward_mario(120.0f, 0);
@@ -84,7 +84,7 @@ static void camera_lakitu_intro_act_show_dialog(void)
 		approach_f32_ptr(&o->oCameraLakituSpeed, 60.0f, 3.0f * FRAME_RATE_SCALER);
 		if(o->oDistanceToMario > 6000.0f)
 		{
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 		}
 
 		targetMovePitch = -0x3000;
@@ -114,13 +114,11 @@ static void camera_lakitu_intro_act_show_dialog(void)
 				approach_f32_ptr(&o->oCameraLakituCircleRadius, 200.0f, 50.0f * FRAME_RATE_SCALER);
 				if(o->oDistanceToMario < 1000.0f)
 				{
-#ifndef VERSION_JP
 					if(!o->oCameraLakituUnk104)
 					{
-						play_music(0, SEQUENCE_ARGS(15, SEQ_EVENT_CUTSCENE_LAKITU), 0);
+						Na_MusicStart(0, SEQUENCE_ARGS(15, SEQ_EVENT_CUTSCENE_LAKITU), 0);
 						o->oCameraLakituUnk104 = TRUE;
 					}
-#endif
 
 					// Once within 1000 units, slow down
 					approach_f32_ptr(&o->oCameraLakituSpeed, 20.0f, 1.0f * FRAME_RATE_SCALER);
@@ -147,7 +145,7 @@ static void camera_lakitu_intro_act_show_dialog(void)
 
 	// vel y is explicitly computed, so gravity doesn't apply
 	obj_compute_vel_from_move_pitch(o->oCameraLakituSpeed);
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 }
 
 /**
@@ -179,11 +177,11 @@ void bhv_camera_lakitu_update(void)
 			f32 val0C = (f32)0x875C3D / 0x800 - gLakituState.curPos[0];
 			if(gLakituState.curPos[0] < 1700.0f || val0C < 0.0f)
 			{
-				obj_hide();
+				s_shape_hide();
 			}
 			else
 			{
-				obj_unhide();
+				s_shape_disp();
 
 				o->oPosX = gLakituState.curPos[0];
 				o->oPosY = gLakituState.curPos[1];

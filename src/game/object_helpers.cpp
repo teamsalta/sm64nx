@@ -48,7 +48,7 @@ extern void copy_object_angle(struct Object*, struct Object*);
 extern struct Object* obj_find_nearest_object_with_behavior(const BehaviorScript*, f32*);
 extern void obj_move_y(f32, f32, f32);
 static s32 clear_move_flag(u32*, s32);
-extern void func_802AA618(s32, s32, f32);
+extern void s_burneffect(s32, s32, f32);
 
 #define o gCurrentObject
 
@@ -91,7 +91,7 @@ Gfx* geo_update_layer_transparency(s32 run, struct GraphNode* node, void* contex
 		}
 
 		sp28 = sp34->oOpacity;
-		sp3C = (Gfx*)alloc_display_list(sizeof(Gfx) * 3);
+		sp3C = (Gfx*)AllocDynamic(sizeof(Gfx) * 3);
 
 		sp38 = sp3C;
 
@@ -121,22 +121,6 @@ Gfx* geo_update_layer_transparency(s32 run, struct GraphNode* node, void* contex
 
 			sp34->oAnimState = 1;
 
-#ifdef VERSION_JP
-			if(sp30->parameter == 10)
-			{
-				if(gDebugInfo[DEBUG_PAGE_ENEMYINFO][3])
-				{
-					gDPSetAlphaCompare(sp38++, G_AC_DITHER);
-				}
-			}
-			else
-			{
-				if(sp34->activeFlags & ACTIVE_FLAG_UNK7)
-				{
-					gDPSetAlphaCompare(sp38++, G_AC_DITHER);
-				}
-			}
-#else // gDebugInfo accesses were removed in all non-JP versions.
 			if(sp28 == 0 && segmented_to_virtual(sm64::bhv::bhvBowser()) == sp34->behavior)
 			{
 				sp34->oAnimState = 2;
@@ -151,7 +135,6 @@ Gfx* geo_update_layer_transparency(s32 run, struct GraphNode* node, void* contex
 					gDPSetAlphaCompare(sp38++, G_AC_DITHER);
 				}
 			}
-#endif
 		}
 
 		gDPSetEnvColor(sp38++, 255, 255, 255, sp28);
@@ -335,7 +318,7 @@ void set_object_held_state(struct Object* obj, const BehaviorScript* heldBehavio
 	}
 }
 
-f32 lateral_dist_between_objects(struct Object* obj1, struct Object* obj2)
+f32 s_distanceXZ_obj2obj(struct Object* obj1, struct Object* obj2)
 {
 	f32 dx = obj1->oPosX - obj2->oPosX;
 	f32 dz = obj1->oPosZ - obj2->oPosZ;
@@ -495,7 +478,7 @@ s16 angle_to_object(struct Object* obj1, struct Object* obj2)
 	return angle;
 }
 
-s16 obj_turn_toward_object(struct Object* obj, struct Object* target, s16 angleIndex, s16 turnAmount)
+s16 s_chase_obj_angle(struct Object* obj, struct Object* target, s16 angleIndex, s16 turnAmount)
 {
 	f32 a, b, c, d;
 
@@ -559,9 +542,9 @@ void set_object_angle(struct Object* a0, s16 pitch, s16 yaw, s16 roll)
 /*
  * Spawns an object at an absolute location with a specified angle.
  */
-struct Object* spawn_object_abs_with_rot(struct Object* parent, s16 uselessArg, u32 model, const BehaviorScript* behavior, s16 x, s16 y, s16 z, s16 rx, s16 ry, s16 rz)
+struct Object* s_makeobj_absolute(struct Object* parent, s16 uselessArg, u32 model, const BehaviorScript* behavior, s16 x, s16 y, s16 z, s16 rx, s16 ry, s16 rz)
 {
-	// 'uselessArg' is unused in the function spawn_object_at_origin()
+	// 'uselessArg' is size in the function spawn_object_at_origin()
 	struct Object* newObj = spawn_object_at_origin(parent, uselessArg, model, behavior);
 	set_object_pos(newObj, x, y, z);
 	set_object_angle(newObj, rx, ry, rz);
@@ -574,7 +557,7 @@ struct Object* spawn_object_abs_with_rot(struct Object* parent, s16 uselessArg, 
  * The rz argument is never used, and the z offset is used for z-rotation instead. This is most likely
  * a copy-paste typo by one of the programmers.
  */
-struct Object* spawn_object_rel_with_rot(struct Object* parent, u32 model, const BehaviorScript* behavior, s16 xOff, s16 yOff, s16 zOff, s16 rx, s16 ry, s16 rz)
+struct Object* s_makeobj_relative(struct Object* parent, u32 model, const BehaviorScript* behavior, s16 xOff, s16 yOff, s16 zOff, s16 rx, s16 ry, s16 rz)
 {
 	struct Object* newObj = spawn_object_at_origin(parent, 0, model, behavior);
 	newObj->oFlags |= OBJ_FLAG_TRANSFORM_RELATIVE_TO_PARENT;
@@ -586,7 +569,7 @@ struct Object* spawn_object_rel_with_rot(struct Object* parent, u32 model, const
 
 struct Object* Unknown8029E330(struct Object* sp20, s32 model, const BehaviorScript* sp28)
 {
-	struct Object* sp1C = spawn_object(sp20, model, sp28);
+	struct Object* sp1C = s_makeobj_nowpos(sp20, model, sp28);
 	sp1C->oFlags |= OBJ_FLAG_0020 | OBJ_FLAG_0800;
 	return sp1C;
 }
@@ -594,7 +577,7 @@ struct Object* Unknown8029E330(struct Object* sp20, s32 model, const BehaviorScr
 struct Object* spawn_water_splash(struct Object* parent, struct WaterSplashParams* params)
 {
 	f32 randomScale;
-	struct Object* newObj = spawn_object(parent, params->model, params->behavior);
+	struct Object* newObj = s_makeobj_nowpos(parent, params->model, params->behavior);
 
 	if(params->flags & WATER_SPLASH_FLAG_RAND_ANGLE)
 	{
@@ -647,12 +630,12 @@ struct Object* spawn_object_at_origin(struct Object* parent, s32 unusedArg, u32 
 	obj->header.gfx.unk18 = parent->header.gfx.unk18;
 	obj->header.gfx.unk19 = parent->header.gfx.unk18;
 
-	geo_obj_init((struct GraphNodeObject*)&obj->header.gfx, gLoadedGraphNodes[model], gVec3fZero, gVec3sZero);
+	geo_obj_init((struct GraphNodeObject*)&obj->header.gfx, stageShapes[model], gVec3fZero, gVec3sZero);
 
 	return obj;
 }
 
-struct Object* spawn_object(struct Object* parent, s32 model, const BehaviorScript* behavior)
+struct Object* s_makeobj_nowpos(struct Object* parent, s32 model, const BehaviorScript* behavior)
 {
 	struct Object* obj;
 
@@ -668,7 +651,7 @@ struct Object* try_to_spawn_object(s16 offsetY, f32 scale, struct Object* parent
 
 	if(gFreeObjectList.next != NULL)
 	{
-		obj = spawn_object(parent, model, behavior);
+		obj = s_makeobj_nowpos(parent, model, behavior);
 		obj->oPosY += offsetY;
 		scale_object(obj, scale);
 		return obj;
@@ -696,7 +679,7 @@ static void build_relative_object_transform(struct Object* obj)
 	translate_object_local(obj, O_POS_INDEX, O_PARENT_RELATIVE_POS_INDEX);
 }
 
-struct Object* spawn_object_relative(s16 behaviorParam, s16 relativePosX, s16 relativePosY, s16 relativePosZ, struct Object* parent, s32 model, const BehaviorScript* behavior)
+struct Object* s_makeobj_chain(s16 behaviorParam, s16 relativePosX, s16 relativePosY, s16 relativePosZ, struct Object* parent, s32 model, const BehaviorScript* behavior)
 {
 	struct Object* obj = spawn_object_at_origin(parent, 0, model, behavior);
 
@@ -714,7 +697,7 @@ struct Object* spawn_object_relative_with_scale(s16 behaviorParam, s16 relativeP
 {
 	struct Object* obj;
 
-	obj = spawn_object_relative(behaviorParam, relativePosX, relativePosY, relativePosZ, parent, model, behavior);
+	obj = s_makeobj_chain(behaviorParam, relativePosX, relativePosY, relativePosZ, parent, model, behavior);
 	scale_object(obj, scale);
 
 	return obj;
@@ -847,7 +830,7 @@ void scale_object(struct Object* obj, f32 scale)
 	obj->header.gfx.scale[2] = scale;
 }
 
-void obj_scale(f32 scale)
+void s_set_scale(f32 scale)
 {
 	o->header.gfx.scale[0] = scale;
 	o->header.gfx.scale[1] = scale;
@@ -905,12 +888,12 @@ void obj_disable_rendering(void)
 	o->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
 }
 
-void obj_unhide(void)
+void s_shape_disp(void)
 {
 	o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
 }
 
-void obj_hide(void)
+void s_shape_hide(void)
 {
 	o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 }
@@ -977,7 +960,7 @@ u32 get_object_list_from_behavior(const BehaviorScript* behavior)
 	return objectList;
 }
 
-struct Object* obj_nearest_object_with_behavior(const BehaviorScript* behavior)
+struct Object* s_find_obj(const BehaviorScript* behavior)
 {
 	struct Object* obj;
 	f32 dist;
@@ -1169,7 +1152,7 @@ void obj_change_action(s32 action)
 
 void func_8029F684(f32 f12, f32 f14)
 {
-	f32 sp4 = gMarioStates[0].forwardVel;
+	f32 sp4 = playerWorks[0].forwardVel;
 	f32 sp0 = f12 * f14;
 
 	if(sp4 < sp0)
@@ -1294,7 +1277,7 @@ s32 Unknown8029F930(s16* a0)
 
 s32 mario_is_in_air_action(void)
 {
-	if(gMarioStates[0].action & ACT_FLAG_AIR)
+	if(playerWorks[0].status & ACT_FLAG_AIR)
 	{
 		return TRUE;
 	}
@@ -1306,7 +1289,7 @@ s32 mario_is_in_air_action(void)
 
 s32 mario_is_dive_sliding(void)
 {
-	if(gMarioStates[0].action == ACT_DIVE_SLIDE)
+	if(playerWorks[0].status == ACT_DIVE_SLIDE)
 	{
 		return TRUE;
 	}
@@ -1324,7 +1307,7 @@ void func_8029FA1C(f32 sp18, s32 sp1C)
 
 void func_8029FA5C(s32 sp18, s32 sp1C)
 {
-	obj_become_intangible();
+	s_hitOFF();
 	obj_disable_rendering();
 
 	if(sp18 >= 0)
@@ -1372,7 +1355,7 @@ void obj_get_thrown_or_placed(f32 forwardVel, f32 velY, s32 thrownAction)
 	{
 	}
 
-	obj_become_tangible();
+	s_hitON();
 	obj_enable_rendering();
 
 	o->oHeldState = HELD_FREE;
@@ -1390,21 +1373,21 @@ void obj_get_thrown_or_placed(f32 forwardVel, f32 velY, s32 thrownAction)
 
 void obj_get_dropped(void)
 {
-	obj_become_tangible();
+	s_hitON();
 	obj_enable_rendering();
 
 	o->oHeldState = HELD_FREE;
 	obj_move_after_thrown_or_dropped(0.0f, 0.0f);
 }
 
-void obj_set_model(s32 a0)
+void s_change_shape(s32 a0)
 {
-	o->header.gfx.sharedChild = gLoadedGraphNodes[a0];
+	o->header.gfx.sharedChild = stageShapes[a0];
 }
 
 void mario_set_flag(s32 flag)
 {
-	gMarioStates[0].flags |= flag;
+	playerWorks[0].flags |= flag;
 }
 
 s32 obj_clear_interact_status_flag(s32 flag)
@@ -1420,7 +1403,7 @@ s32 obj_clear_interact_status_flag(s32 flag)
 /**
  * Mark an object to be unloaded at the end of the frame.
  */
-void mark_object_for_deletion(struct Object* obj)
+void s_remove_obj(struct Object* obj)
 {
 	//! This clears all activeFlags. Since some of these flags disable behavior,
 	//  setting it to 0 could potentially enable unexpected behavior. After an
@@ -1432,18 +1415,18 @@ void mark_object_for_deletion(struct Object* obj)
 void obj_disable(void)
 {
 	obj_disable_rendering();
-	obj_hide();
-	obj_become_intangible();
+	s_shape_hide();
+	s_hitOFF();
 }
 
-void obj_become_intangible(void)
+void s_hitOFF(void)
 {
 	// When the timer is negative, the object is intangible and the timer
 	// doesn't count down
 	o->oIntangibleTimer = -1;
 }
 
-void obj_become_tangible(void)
+void s_hitON(void)
 {
 	o->oIntangibleTimer = 0;
 }
@@ -1827,7 +1810,7 @@ f32 func_802A0BF4(f32 value, f32 center, f32 zeroThreshold, f32 increment)
 	}
 }
 
-s32 are_objects_collided(struct Object* obj1, struct Object* obj2)
+s32 s_hitcheck(struct Object* obj1, struct Object* obj2)
 {
 	s32 i;
 	for(i = 0; i < obj1->numCollidedObjs; i++)
@@ -1975,8 +1958,8 @@ void obj_shake_y(f32 amount)
 
 void obj_start_cam_event(struct Object* obj, s32 cameraEvent)
 {
-	gPlayerCameraState->cameraEvent = (s16)cameraEvent;
-	gSecondCameraFocus		= o;
+	camPlayerInfo->cameraEvent = (s16)cameraEvent;
+	gSecondCameraFocus	   = o;
 }
 
 void Unknown802A11E4(s32 sp0, s32 sp4, f32 sp8)
@@ -2027,7 +2010,7 @@ static void spawn_object_loot_coins(struct Object* obj, s32 numCoins, f32 sp30, 
 
 		obj->oNumLootCoins--;
 
-		coin = spawn_object(obj, model, coinBehavior);
+		coin = s_makeobj_nowpos(obj, model, coinBehavior);
 		translate_object_xz_random(coin, posJitter);
 		coin->oPosY	  = spawnHeight;
 		coin->oCoinUnk110 = sp30;
@@ -2063,7 +2046,7 @@ void obj_spawn_loot_coin_at_mario_pos(void)
 
 	o->oNumLootCoins--;
 
-	coin	    = spawn_object(o, MODEL_YELLOW_COIN, sm64::bhv::bhvSingleCoinGetsSpawned());
+	coin	    = s_makeobj_nowpos(o, MODEL_YELLOW_COIN, sm64::bhv::bhvSingleCoinGetsSpawned());
 	coin->oVelY = 30.0f;
 
 	copy_object_pos(coin, gMarioObject);
@@ -2189,13 +2172,11 @@ static void obj_update_floor(void)
 		{
 			o->oMoveFlags |= OBJ_MOVE_ABOVE_LAVA;
 		}
-#ifndef VERSION_JP
 		else if(floor->type == SURFACE_DEATH_PLANE)
 		{
 			//! This misses SURFACE_VERTICAL_WIND (and maybe SURFACE_WARP)
 			o->oMoveFlags |= OBJ_MOVE_ABOVE_DEATH_BARRIER;
 		}
-#endif
 
 		o->oFloorType = floor->type;
 		o->oFloorRoom = floor->room;
@@ -2209,11 +2190,7 @@ static void obj_update_floor(void)
 
 static void obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegrees)
 {
-#ifdef VERSION_JP
-	o->oMoveFlags &= ~OBJ_MOVE_ABOVE_LAVA;
-#else
 	o->oMoveFlags &= ~(OBJ_MOVE_ABOVE_LAVA | OBJ_MOVE_ABOVE_DEATH_BARRIER);
-#endif
 
 	if(o->activeFlags & (ACTIVE_FLAG_FAR_AWAY | ACTIVE_FLAG_IN_DIFFERENT_ROOM))
 	{
@@ -2329,7 +2306,7 @@ void obj_move_using_vel_and_gravity(void)
 	}
 }
 
-void obj_move_using_fvel_and_gravity(void)
+void s_optionmove_F(void)
 {
 	obj_compute_vel_xz();
 	obj_move_using_vel_and_gravity(); //! No terminal velocity
@@ -2414,7 +2391,7 @@ void func_802A2270(struct Object* obj)
 
 	//! Sets scale of gCurrentObject instead of obj. Not exploitable since this
 	//  function is only called with obj = gCurrentObject
-	obj_scale(1.0f);
+	s_set_scale(1.0f);
 }
 
 void build_object_transform_relative_to_parent(struct Object* obj)
@@ -2433,7 +2410,7 @@ void build_object_transform_relative_to_parent(struct Object* obj)
 
 	//! Sets scale of gCurrentObject instead of obj. Not exploitable since this
 	//  function is only called with obj = gCurrentObject
-	obj_scale(1.0f);
+	s_set_scale(1.0f);
 }
 
 void Unknown802A2380(struct Object* a0)
@@ -2611,7 +2588,7 @@ void obj_spawn_particles(struct SpawnParticlesInfo* info)
 	{
 		scale = RandomFloat() * (info->sizeRange * 0.1f) + info->sizeBase * 0.1f;
 
-		particle = spawn_object(o, info->model, sm64::bhv::bhvWhitePuffExplosion());
+		particle = s_makeobj_nowpos(o, info->model, sm64::bhv::bhvWhitePuffExplosion());
 
 		particle->oBehParams2ndByte = info->behParam;
 		particle->oMoveAngleYaw	    = RandomU16();
@@ -2626,7 +2603,7 @@ void obj_spawn_particles(struct SpawnParticlesInfo* info)
 	}
 }
 
-void set_object_hitbox(struct Object* obj, struct ObjectHitbox* hitbox)
+void s_set_hitparam(struct Object* obj, struct ObjectHitbox* hitbox)
 {
 	if(!(obj->oFlags & OBJ_FLAG_30))
 	{
@@ -2637,7 +2614,7 @@ void set_object_hitbox(struct Object* obj, struct ObjectHitbox* hitbox)
 		obj->oHealth		= hitbox->health;
 		obj->oNumLootCoins	= hitbox->numLootCoins;
 
-		obj_become_tangible();
+		s_hitON();
 	}
 
 	obj->hitboxRadius     = obj->header.gfx.scale[0] * hitbox->radius;
@@ -2707,11 +2684,11 @@ s32 obj_wait_then_blink(s32 timeUntilBlinking, s32 numBlinks)
 	return done;
 }
 
-s32 obj_is_mario_ground_pounding_platform(void)
+s32 s_checkplayer_hipaatack(void)
 {
 	if(gMarioObject->platform == o)
 	{
-		if(gMarioStates[0].action == ACT_GROUND_POUND_LAND)
+		if(playerWorks[0].status == ACT_GROUND_POUND_LAND)
 		{
 			return TRUE;
 		}
@@ -2720,15 +2697,15 @@ s32 obj_is_mario_ground_pounding_platform(void)
 	return FALSE;
 }
 
-void func_802A3004(void)
+void s_kemuri(void)
 {
-	func_802AA618(0, 0, 46.0f);
+	s_burneffect(0, 0, 46.0f);
 }
 
 void func_802A3034(s32 sp18)
 {
-	func_802AA618(0, 0, 46.0f);
-	create_sound_spawner(sp18);
+	s_burneffect(0, 0, 46.0f);
+	obj_remove_sound(sp18);
 }
 
 void obj_push_mario_away(f32 radius)
@@ -2741,12 +2718,12 @@ void obj_push_mario_away(f32 radius)
 	{
 		//! If this function pushes mario out of bounds, it will trigger mario's
 		//  oob failsafe
-		gMarioStates[0].pos[0] += (radius - marioDist) / radius * marioRelX;
-		gMarioStates[0].pos[2] += (radius - marioDist) / radius * marioRelZ;
+		playerWorks[0].pos[0] += (radius - marioDist) / radius * marioRelX;
+		playerWorks[0].pos[2] += (radius - marioDist) / radius * marioRelZ;
 	}
 }
 
-void obj_push_mario_away_from_cylinder(f32 radius, f32 extentY)
+void s_player_slideout_RH(f32 radius, f32 extentY)
 {
 	f32 marioRelY = gMarioObject->oPosY - o->oPosY;
 
@@ -2769,7 +2746,7 @@ void BehDustSmokeLoop(void)
 
 	if(o->oSmokeTimer == 10 * FRAME_RATE_SCALER_INV)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 
 	o->oSmokeTimer++;
@@ -2811,7 +2788,7 @@ static void nop_802A3380(s32 sp0, s32 sp4)
 {
 }
 
-void func_802A3398(s32 axis, s32 frames, f32 startHeight, f32 endHeight)
+void s_scale_timezoom(s32 axis, s32 frames, f32 startHeight, f32 endHeight)
 {
 	f32 distance = endHeight - startHeight;
 	f32 sp0	     = (f32)o->oTimer / frames;
@@ -2837,14 +2814,14 @@ void func_802A3470(void)
 	o->oPosX = o->oHomeX + gDebugInfo[5][0];
 	o->oPosY = o->oHomeY + gDebugInfo[5][1];
 	o->oPosZ = o->oHomeZ + gDebugInfo[5][2];
-	obj_scale(gDebugInfo[5][3] / 100.0f + 1.0l);
+	s_set_scale(gDebugInfo[5][3] / 100.0f + 1.0l);
 }
 
 static void nop_802A3544(void)
 {
 }
 
-s32 obj_is_mario_on_platform(void)
+s32 s_rideon_player(void)
 {
 	if(gMarioObject->platform == o)
 	{
@@ -2888,7 +2865,7 @@ s32 func_802A362C(s32 a0)
 	return 0;
 }
 
-void obj_call_action_function(void (*actionFunctions[])(void))
+void s_modejmp(void (*actionFunctions[])(void))
 {
 	void (*actionFunction)(void) = actionFunctions[o->oAction];
 	actionFunction();
@@ -2896,7 +2873,7 @@ void obj_call_action_function(void (*actionFunctions[])(void))
 
 static struct Object* func_802A36D8(s32 sp20, s32 sp24)
 {
-	struct Object* sp1C	  = spawn_object(o, MODEL_STAR, sm64::bhv::bhvSpawnedStarNoLevelExit());
+	struct Object* sp1C	  = s_makeobj_nowpos(o, MODEL_STAR, sm64::bhv::bhvSpawnedStarNoLevelExit());
 	sp1C->oSparkleSpawnUnk1B0 = sp24;
 	sp1C->oBehParams	  = o->oBehParams;
 	sp1C->oBehParams2ndByte	  = sp20;
@@ -2904,7 +2881,7 @@ static struct Object* func_802A36D8(s32 sp20, s32 sp24)
 	return sp1C;
 }
 
-// old unused initializer for 2d star spawn behavior.
+// old size initializer for 2d star spawn behavior.
 // speculation: was 2d spawn handler from spaceworld 1995.
 // uses behavior parameters not used in the current sparkle code.
 void Unknown802A3750(void)
@@ -2936,12 +2913,12 @@ s32 obj_mario_far_away(void)
 
 s32 obj_is_mario_moving_fast_or_in_air(s32 speedThreshold)
 {
-	if(gMarioStates[0].forwardVel > speedThreshold)
+	if(playerWorks[0].forwardVel > speedThreshold)
 	{
 		return TRUE;
 	}
 
-	if(gMarioStates[0].action & ACT_FLAG_AIR)
+	if(playerWorks[0].status & ACT_FLAG_AIR)
 	{
 		return TRUE;
 	}
@@ -2975,7 +2952,7 @@ void bhv_init_room(void)
 	struct Surface* floor;
 	f32 floorHeight;
 
-	if(item_in_array(gCurrLevelNum, sLevelsWithRooms))
+	if(item_in_array(activeStageNo, sLevelsWithRooms))
 	{
 		floorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
 
@@ -3046,7 +3023,7 @@ s32 obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox* hitbox, s32 deathSou
 {
 	s32 interacted = FALSE;
 
-	set_object_hitbox(o, hitbox);
+	s_set_hitparam(o, hitbox);
 
 	if(noLootCoins)
 	{
@@ -3057,10 +3034,10 @@ s32 obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox* hitbox, s32 deathSou
 	{
 		if(o->oInteractStatus & INT_STATUS_WAS_ATTACKED)
 		{
-			func_802A3004();
+			s_kemuri();
 			spawn_object_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
-			mark_object_for_deletion(o);
-			create_sound_spawner(deathSound);
+			s_remove_obj(o);
+			obj_remove_sound(deathSound);
 		}
 		else
 		{
@@ -3074,9 +3051,9 @@ s32 obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox* hitbox, s32 deathSou
 
 void func_802A3C98(f32 sp18, s32 sp1C)
 {
-	func_802AA618(0, 0, sp18);
-	spawn_triangle_break_particles(30, 138, 3.0f, 4);
-	mark_object_for_deletion(o);
+	s_burneffect(0, 0, sp18);
+	s_boxeffect(30, 138, 3.0f, 4);
+	s_remove_obj(o);
 
 	if(sp1C == 1)
 	{
@@ -3105,12 +3082,12 @@ s32 obj_hide_if_mario_far_away_y(f32 distY)
 {
 	if(absf(o->oPosY - gMarioObject->oPosY) < distY)
 	{
-		obj_unhide();
+		s_shape_disp();
 		return FALSE;
 	}
 	else
 	{
-		obj_hide();
+		s_shape_hide();
 		return TRUE;
 	}
 }
@@ -3180,9 +3157,9 @@ s32 func_802A3FF8(f32 radius, f32 height, s32 unused)
 
 	if(o->oDistanceToMario < 1500.0f)
 	{
-		latDistToMario = lateral_dist_between_objects(o, gMarioObject);
+		latDistToMario = s_distanceXZ_obj2obj(o, gMarioObject);
 
-		if(latDistToMario < radius && o->oPosY < gMarioObject->oPosY + 160.0f && gMarioObject->oPosY < o->oPosY + height && !(gMarioStates[0].action & ACT_FLAG_AIR) && mario_ready_to_speak())
+		if(latDistToMario < radius && o->oPosY < gMarioObject->oPosY + 160.0f && gMarioObject->oPosY < o->oPosY + height && !(playerWorks[0].status & ACT_FLAG_AIR) && mario_ready_to_speak())
 		{
 			return TRUE;
 		}
@@ -3216,7 +3193,7 @@ s32 obj_update_dialog(s32 actionArg, s32 dialogFlags, s32 dialogID, s32 unused)
 		case DIALOG_UNK1_ENABLE_TIME_STOP:
 			// Patched :(
 			// Wait for mario to be ready to speak, and then enable time stop
-			if(mario_ready_to_speak() || gMarioState->action == ACT_READING_NPC_DIALOG)
+			if(mario_ready_to_speak() || marioWorks->status == ACT_READING_NPC_DIALOG)
 			{
 				gTimeStopState |= TIME_STOP_ENABLED;
 				o->activeFlags |= ACTIVE_FLAG_INITIATED_TIME_STOP;
@@ -3239,11 +3216,11 @@ s32 obj_update_dialog(s32 actionArg, s32 dialogFlags, s32 dialogID, s32 unused)
 		case DIALOG_UNK1_BEGIN_DIALOG:
 			if(dialogFlags & DIALOG_UNK1_FLAG_RESPONSE)
 			{
-				create_dialog_box_with_response(dialogID);
+				CallMessageYesNo(dialogID);
 			}
 			else if(dialogFlags & DIALOG_UNK1_FLAG_DEFAULT)
 			{
-				create_dialog_box(dialogID);
+				CallMessage(dialogID);
 			}
 			o->oDialogState++;
 			break;
@@ -3258,7 +3235,7 @@ s32 obj_update_dialog(s32 actionArg, s32 dialogFlags, s32 dialogID, s32 unused)
 			}
 			else if(dialogFlags & DIALOG_UNK1_FLAG_DEFAULT)
 			{
-				if(get_dialog_id() == -1)
+				if(GetMessageNo() == -1)
 				{
 					obj_end_dialog(dialogFlags, 3);
 				}
@@ -3270,7 +3247,7 @@ s32 obj_update_dialog(s32 actionArg, s32 dialogFlags, s32 dialogID, s32 unused)
 			break;
 
 		case DIALOG_UNK1_DISABLE_TIME_STOP:
-			if(gMarioState->action != ACT_READING_NPC_DIALOG || (dialogFlags & DIALOG_UNK1_FLAG_4))
+			if(marioWorks->status != ACT_READING_NPC_DIALOG || (dialogFlags & DIALOG_UNK1_FLAG_4))
 			{
 				gTimeStopState &= ~TIME_STOP_ENABLED;
 				o->activeFlags &= ~ACTIVE_FLAG_INITIATED_TIME_STOP;
@@ -3294,23 +3271,9 @@ s32 obj_update_dialog_with_cutscene(s32 actionArg, s32 dialogFlags, s32 cutscene
 
 	switch(o->oDialogState)
 	{
-#ifdef VERSION_JP
-		case DIALOG_UNK2_ENABLE_TIME_STOP:
-			//! We enable time stop even if mario is not ready to speak. This
-			//  allows us to move during time stop as long as mario never enters
-			//  an action that can be interrupted with text.
-			if(gMarioState->health >= 0x0100)
-			{
-				gTimeStopState |= TIME_STOP_ENABLED;
-				o->activeFlags |= ACTIVE_FLAG_INITIATED_TIME_STOP;
-				o->oDialogState++;
-				o->oDialogResponse = 0;
-			}
-			break;
-#else
 		case DIALOG_UNK2_ENABLE_TIME_STOP:
 			// Wait for mario to be ready to speak, and then enable time stop
-			if(mario_ready_to_speak() || gMarioState->action == ACT_READING_NPC_DIALOG)
+			if(mario_ready_to_speak() || marioWorks->status == ACT_READING_NPC_DIALOG)
 			{
 				gTimeStopState |= TIME_STOP_ENABLED;
 				o->activeFlags |= ACTIVE_FLAG_INITIATED_TIME_STOP;
@@ -3323,7 +3286,6 @@ s32 obj_update_dialog_with_cutscene(s32 actionArg, s32 dialogFlags, s32 cutscene
 			}
 			// Fall through so that mario's action is interrupted immediately
 			// after time is stopped
-#endif
 
 		case DIALOG_UNK2_TURN_AND_INTERRUPT_MARIO_ACTION:
 			if(dialogFlags & DIALOG_UNK2_FLAG_0)
@@ -3369,7 +3331,7 @@ s32 obj_update_dialog_with_cutscene(s32 actionArg, s32 dialogFlags, s32 cutscene
 				dialogResponse	= o->oDialogResponse;
 				o->oDialogState = DIALOG_UNK2_ENABLE_TIME_STOP;
 			}
-			else if(gMarioState->action != ACT_READING_NPC_DIALOG)
+			else if(marioWorks->status != ACT_READING_NPC_DIALOG)
 			{
 				gTimeStopState &= ~TIME_STOP_ENABLED;
 				o->activeFlags &= ~ACTIVE_FLAG_INITIATED_TIME_STOP;
@@ -3388,7 +3350,7 @@ s32 obj_update_dialog_with_cutscene(s32 actionArg, s32 dialogFlags, s32 cutscene
 
 s32 obj_has_model(u16 a0)
 {
-	if(o->header.gfx.sharedChild == gLoadedGraphNodes[a0])
+	if(o->header.gfx.sharedChild == stageShapes[a0])
 	{
 		return TRUE;
 	}
@@ -3435,7 +3397,7 @@ s32 mario_is_within_rectangle(s16 minX, s16 maxX, s16 minZ, s16 maxZ)
 	return TRUE;
 }
 
-void ShakeScreen(s32 shake)
+void s_call_Viewshake(s32 shake)
 {
 	set_camera_shake_from_point(shake, o->oPosX, o->oPosY, o->oPosZ);
 }
@@ -3461,7 +3423,7 @@ s32 attack_collided_non_mario_object(struct Object* obj)
 	return touchedOtherObject;
 }
 
-s32 obj_was_attacked_or_ground_pounded(void)
+s32 s_block_hitcheck(void)
 {
 	s32 attacked = FALSE;
 
@@ -3470,7 +3432,7 @@ s32 obj_was_attacked_or_ground_pounded(void)
 		attacked = TRUE;
 	}
 
-	if(obj_is_mario_ground_pounding_platform())
+	if(s_checkplayer_hipaatack())
 	{
 		attacked = TRUE;
 	}
@@ -3508,7 +3470,7 @@ s32 obj_check_grabbed_mario(void)
 	if(o->oInteractStatus & INT_STATUS_GRABBED_MARIO)
 	{
 		o->oKingBobombUnk88 = 1;
-		obj_become_intangible();
+		s_hitOFF();
 		return TRUE;
 	}
 
@@ -3542,7 +3504,7 @@ void obj_unused_play_footstep_sound(s32 animFrame1, s32 animFrame2, s32 sound)
 {
 	if(obj_check_anim_frame(animFrame1) || obj_check_anim_frame(animFrame2))
 	{
-		PlaySound2(sound);
+		objsound(sound);
 	}
 }
 
@@ -3575,20 +3537,18 @@ void obj_spawn_loot_blue_coin(void)
 {
 	if(o->oNumLootCoins >= 5)
 	{
-		spawn_object(o, MODEL_BLUE_COIN, sm64::bhv::bhvMrIBlueCoin());
+		s_makeobj_nowpos(o, MODEL_BLUE_COIN, sm64::bhv::bhvMrIBlueCoin());
 		o->oNumLootCoins -= 5;
 	}
 }
 
-#ifndef VERSION_JP
 void obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 offsetY)
 {
 	f32 objectPosY = o->oPosY;
 	o->oPosY += offsetY + gDebugInfo[5][0];
-	create_star(targetX, targetY, targetZ);
+	s_enemyset_star(targetX, targetY, targetZ);
 	o->oPosY = objectPosY;
 }
-#endif
 
 float scale_scaler(float n, float scale)
 {

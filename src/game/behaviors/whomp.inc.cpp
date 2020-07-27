@@ -3,7 +3,7 @@
 void func_802C61CC(void)
 {
 	UNUSED s32 sp2C = o->header.gfx.unk38.frame();
-	s32 sp28 = 0;
+	s32 sp28	= 0;
 	if(o->oForwardVel < 5.0f)
 	{
 		sp28 = obj_check_anim_frame(0);
@@ -15,7 +15,7 @@ void func_802C61CC(void)
 		sp28 |= obj_check_anim_frame_in_range(23, 3);
 	}
 	if(sp28)
-		PlaySound2(SOUND_OBJ_POUNDING1);
+		objsound(SOUND_OBJ_POUNDING1);
 }
 
 void ActionWhomp0(void)
@@ -25,7 +25,7 @@ void ActionWhomp0(void)
 	if(o->oBehParams2ndByte != 0)
 	{
 		gSecondCameraFocus = o;
-		obj_scale(2.0f);
+		s_set_scale(2.0f);
 		if(o->oSubAction == 0)
 		{
 			if(o->oDistanceToMario < 600.0f)
@@ -74,7 +74,7 @@ void ActionWhomp1(void)
 	f32 sp1C;
 	sp26 = abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw);
 	sp20 = obj_lateral_dist_to_home();
-	if(gCurrLevelNum == LEVEL_BITS)
+	if(activeStageNo == LEVEL_BITS)
 		sp1C = 200.0f;
 	else
 		sp1C = 700.0f;
@@ -146,9 +146,9 @@ void ActionWhomp4(void)
 
 		if(o->oFaceAnglePitch > 0x4000)
 		{
-			o->oAngleVelPitch = 0;
+			o->oAngleVelPitch  = 0;
 			o->oFaceAnglePitch = 0x4000;
-			o->oAction = 5;
+			o->oAction	   = 5;
 		}
 	}
 }
@@ -157,8 +157,8 @@ void ActionWhomp5(void)
 {
 	if(o->oSubAction == 0 && o->oMoveFlags & 1)
 	{
-		PlaySound2(SOUND_OBJ_WHOMP_LOWPRIO);
-		ShakeScreen(SHAKE_POS_SMALL);
+		objsound(SOUND_OBJ_WHOMP_LOWPRIO);
+		s_call_Viewshake(SHAKE_POS_SMALL);
 		o->oVelY = 0.0f;
 		o->oSubAction++;
 	}
@@ -171,20 +171,20 @@ void func_802C6954(void)
 	Vec3f pos;
 	if(o->oSubAction == 0)
 	{
-		if(obj_is_mario_ground_pounding_platform())
+		if(s_checkplayer_hipaatack())
 		{
 			o->oHealth--;
-			PlaySound2(SOUND_OBJ2_WHOMP_SOUND_SHORT);
-			PlaySound2(SOUND_OBJ_KING_WHOMP_DEATH);
+			objsound(SOUND_OBJ2_WHOMP_SOUND_SHORT);
+			objsound(SOUND_OBJ_KING_WHOMP_DEATH);
 			if(o->oHealth == 0)
 				o->oAction = 8;
 			else
 			{
 				func_802B8F7C(pos, &o->oPosX);
 				func_802B8F7C(&o->oPosX, &gMarioObject->oPosX);
-				func_802AA618(0, 0, 100.0f);
-				spawn_triangle_break_particles(20, 138, 3.0f, 4);
-				ShakeScreen(SHAKE_POS_SMALL);
+				s_burneffect(0, 0, 100.0f);
+				s_boxeffect(20, 138, 3.0f, 4);
+				s_call_Viewshake(SHAKE_POS_SMALL);
 				func_802B8F7C(&o->oPosX, pos);
 			}
 			o->oSubAction++;
@@ -212,7 +212,7 @@ void func_802C6B28(void)
 	{
 		if(gMarioObject->platform == o)
 		{
-			if(obj_is_mario_ground_pounding_platform())
+			if(s_checkplayer_hipaatack())
 			{
 				o->oNumLootCoins = 5;
 				spawn_object_loot_yellow_coins(o, 5, 20.0f);
@@ -225,7 +225,7 @@ void func_802C6B28(void)
 			}
 		}
 	}
-	else if(!obj_is_mario_on_platform())
+	else if(!s_rideon_player())
 		o->oSubAction = 0;
 }
 
@@ -233,15 +233,15 @@ void ActionWhomp6(void)
 {
 	if(o->oSubAction != 10)
 	{
-		o->oForwardVel = 0.0f;
+		o->oForwardVel	  = 0.0f;
 		o->oAngleVelPitch = 0;
-		o->oAngleVelYaw = 0;
-		o->oAngleVelRoll = 0;
+		o->oAngleVelYaw	  = 0;
+		o->oAngleVelRoll  = 0;
 		if(o->oBehParams2ndByte != 0)
 			func_802C6954();
 		else
 			func_802C6B28();
-		if(o->oTimer > 100 * FRAME_RATE_SCALER_INV || (gMarioState->action == ACT_SQUISHED && o->oTimer > 30 * FRAME_RATE_SCALER_INV))
+		if(o->oTimer > 100 * FRAME_RATE_SCALER_INV || (marioWorks->status == ACT_SQUISHED && o->oTimer > 30 * FRAME_RATE_SCALER_INV))
 			o->oSubAction = 10;
 	}
 	else
@@ -253,7 +253,7 @@ void ActionWhomp6(void)
 		}
 		else
 		{
-			o->oAngleVelPitch = 0;
+			o->oAngleVelPitch  = 0;
 			o->oFaceAnglePitch = 0;
 			if(o->oBehParams2ndByte != 0)
 				o->oAction = 2;
@@ -270,24 +270,24 @@ void ActionWhomp8(void)
 		if(obj_update_dialog_with_cutscene(2, 2, CUTSCENE_DIALOG, DIALOG_115))
 		{
 			set_object_angle(o, 0, 0, 0);
-			obj_hide();
-			obj_become_intangible();
-			func_802AA618(0, 0, 200.0f);
-			spawn_triangle_break_particles(20, 138, 3.0f, 4);
-			ShakeScreen(SHAKE_POS_SMALL);
+			s_shape_hide();
+			s_hitOFF();
+			s_burneffect(0, 0, 200.0f);
+			s_boxeffect(20, 138, 3.0f, 4);
+			s_call_Viewshake(SHAKE_POS_SMALL);
 			o->oPosY += 100.0f * FRAME_RATE_SCALER;
-			create_star(180.0f, 3880.0f, 340.0f);
-			PlaySound2(SOUND_OBJ_KING_WHOMP_DEATH);
+			s_enemyset_star(180.0f, 3880.0f, 340.0f);
+			objsound(SOUND_OBJ_KING_WHOMP_DEATH);
 			o->oAction = 9;
 		}
 	}
 	else
 	{
-		func_802AA618(0, 0, 100.0f);
-		spawn_triangle_break_particles(20, 138, 3.0f, 4);
-		ShakeScreen(SHAKE_POS_SMALL);
-		create_sound_spawner(SOUND_OBJ_THWOMP);
-		mark_object_for_deletion(o);
+		s_burneffect(0, 0, 100.0f);
+		s_boxeffect(20, 138, 3.0f, 4);
+		s_call_Viewshake(SHAKE_POS_SMALL);
+		obj_remove_sound(SOUND_OBJ_THWOMP);
+		s_remove_obj(o);
 	}
 }
 
@@ -297,16 +297,13 @@ void ActionWhomp9(void)
 		stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
 }
 
-void(*sWhompActions[])(void) = {
-	ActionWhomp0, ActionWhomp1, ActionWhomp2, ActionWhomp3, ActionWhomp4,
-	ActionWhomp5, ActionWhomp6, ActionWhomp7, ActionWhomp8, ActionWhomp9
-};
+void (*sWhompActions[])(void) = {ActionWhomp0, ActionWhomp1, ActionWhomp2, ActionWhomp3, ActionWhomp4, ActionWhomp5, ActionWhomp6, ActionWhomp7, ActionWhomp8, ActionWhomp9};
 
 // MM
 void bhv_whomp_loop(void)
 {
 	obj_update_floor_and_walls();
-	obj_call_action_function(sWhompActions);
+	s_modejmp(sWhompActions);
 	obj_move_standard(-20);
 
 	if(o->oAction != 9)
@@ -318,6 +315,6 @@ void bhv_whomp_loop(void)
 			else
 				obj_hide_if_mario_far_away_y(1000.0f);
 		}
-		load_object_collision_model();
+		stMainMoveBG();
 	}
 }

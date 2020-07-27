@@ -24,11 +24,11 @@ static void bird_act_inactive(void)
 		{
 			s32 i;
 
-			PlaySound2(SOUND_GENERAL_BIRDS_FLY_AWAY);
+			objsound(SOUND_GENERAL_BIRDS_FLY_AWAY);
 
 			for(i = 0; i < 6; i++)
 			{
-				spawn_object(o, MODEL_BIRDS, sm64::bhv::bhvBird());
+				s_makeobj_nowpos(o, MODEL_BIRDS, sm64::bhv::bhvBird());
 			}
 
 			// The spawner bird's home acts as its target location.
@@ -46,7 +46,7 @@ static void bird_act_inactive(void)
 
 		o->oBirdSpeed = 40.0f;
 
-		obj_unhide();
+		s_shape_disp();
 	}
 }
 
@@ -69,7 +69,7 @@ static void bird_act_fly(void)
 	// fly past Y=8000, they will all despawn simultaneously. Otherwise, fly.
 	if(o->parentObj->oPosY > 8000.0f)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{
@@ -89,7 +89,7 @@ static void bird_act_fly(void)
 		}
 		else
 		{
-			distance = lateral_dist_between_objects(o, o->parentObj);
+			distance = s_distanceXZ_obj2obj(o, o->parentObj);
 
 			// The bird's target pitch will face directly to its spawner bird.
 			o->oBirdTargetPitch = atan2s(distance, o->oPosY - o->parentObj->oPosY);
@@ -111,7 +111,7 @@ static void bird_act_fly(void)
 	// a constant added to its Y position every frame since
 	// its Y velocity is reset every frame by
 	// obj_compute_vel_from_move_pitch.
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 }
 
 /**

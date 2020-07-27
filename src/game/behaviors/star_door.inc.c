@@ -1,6 +1,7 @@
 // star_door.c.inc
+#include "game/motor.h"
 
-void func_802A4DB0(void)
+void s_speedL_move(void)
 {
 	o->oVelX = (o->oUnkBC) * coss(o->oMoveAngleYaw);
 	o->oVelZ = (o->oUnkBC) * -sins(o->oMoveAngleYaw);
@@ -13,11 +14,11 @@ void bhv_star_door_loop(void)
 {
 	UNUSED u8 pad[4];
 	struct Object* sp18;
-	sp18 = obj_nearest_object_with_behavior(sm64::bhv::bhvStarDoor());
+	sp18 = s_find_obj(sm64::bhv::bhvStarDoor());
 	switch(o->oAction)
 	{
 		case 0:
-			obj_become_tangible();
+			s_hitON();
 			if(0x30000 & o->oInteractStatus)
 				o->oAction = 1;
 			if(sp18 != NULL && sp18->oAction != 0)
@@ -25,10 +26,13 @@ void bhv_star_door_loop(void)
 			break;
 		case 1:
 			if(o->oTimer == 0 && (s16)(o->oMoveAngleYaw) >= 0)
-				PlaySound2(SOUND_GENERAL_STAR_DOOR_OPEN);
-			obj_become_intangible();
+			{
+				objsound(SOUND_GENERAL_STAR_DOOR_OPEN);
+				SendMotorEvent(35, 30);
+			}
+			s_hitOFF();
 			o->oUnkBC = -8.0f;
-			func_802A4DB0();
+			s_speedL_move();
 			if(o->oTimer >= 16 * FRAME_RATE_SCALER_INV)
 				o->oAction++;
 			break;
@@ -38,9 +42,13 @@ void bhv_star_door_loop(void)
 			break;
 		case 3:
 			if(o->oTimer == 0 && (s16)(o->oMoveAngleYaw) >= 0)
-				PlaySound2(SOUND_GENERAL_STAR_DOOR_CLOSE);
+			{
+				objsound(SOUND_GENERAL_STAR_DOOR_CLOSE);
+				SendMotorEvent(35, 30);
+			}
+
 			o->oUnkBC = 8.0f;
-			func_802A4DB0();
+			s_speedL_move();
 			if(o->oTimer >= 16 * FRAME_RATE_SCALER_INV)
 				o->oAction++;
 			break;

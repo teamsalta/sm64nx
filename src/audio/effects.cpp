@@ -6,11 +6,7 @@
 #include "data.h"
 #include "seqplayer.h"
 
-#ifdef VERSION_JP
-#define US_FLOAT2(x) x##.0
-#else
 #define US_FLOAT2(x) x
-#endif
 
 void func_80319E70(void)
 {

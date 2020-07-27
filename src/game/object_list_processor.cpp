@@ -34,7 +34,7 @@ s32 gNumFindFloorMisses;
 UNUSED s32 unused_8033BEF8;
 
 /**
- * An unused debug counter with the label "WALL".
+ * An size debug counter with the label "WALL".
  */
 s32 gUnknownWallCount;
 
@@ -185,7 +185,7 @@ struct ParticleProperties sParticleTypes[] = {
 };
 
 /**
- * Copy position, velocity, and angle variables from MarioState to the mario
+ * Copy position, velocity, and angle variables from PlayerRecord to the mario
  * object.
  */
 void copy_mario_state_to_object(void)
@@ -197,13 +197,13 @@ void copy_mario_state_to_object(void)
 		i += 1;
 	}
 
-	gCurrentObject->oVelX = gMarioStates[i].vel[0];
-	gCurrentObject->oVelY = gMarioStates[i].vel[1];
-	gCurrentObject->oVelZ = gMarioStates[i].vel[2];
+	gCurrentObject->oVelX = playerWorks[i].vel[0];
+	gCurrentObject->oVelY = playerWorks[i].vel[1];
+	gCurrentObject->oVelZ = playerWorks[i].vel[2];
 
-	gCurrentObject->oPosX = gMarioStates[i].pos[0];
-	gCurrentObject->oPosY = gMarioStates[i].pos[1];
-	gCurrentObject->oPosZ = gMarioStates[i].pos[2];
+	gCurrentObject->oPosX = playerWorks[i].pos[0];
+	gCurrentObject->oPosY = playerWorks[i].pos[1];
+	gCurrentObject->oPosZ = playerWorks[i].pos[2];
 
 	gCurrentObject->oMoveAnglePitch = gCurrentObject->header.gfx.angle[0];
 	gCurrentObject->oMoveAngleYaw	= gCurrentObject->header.gfx.angle[1];
@@ -213,9 +213,9 @@ void copy_mario_state_to_object(void)
 	gCurrentObject->oFaceAngleYaw	= gCurrentObject->header.gfx.angle[1];
 	gCurrentObject->oFaceAngleRoll	= gCurrentObject->header.gfx.angle[2];
 
-	gCurrentObject->oAngleVelPitch = gMarioStates[i].angleVel[0];
-	gCurrentObject->oAngleVelYaw   = gMarioStates[i].angleVel[1];
-	gCurrentObject->oAngleVelRoll  = gMarioStates[i].angleVel[2];
+	gCurrentObject->oAngleVelPitch = playerWorks[i].angleVel[0];
+	gCurrentObject->oAngleVelYaw   = playerWorks[i].angleVel[1];
+	gCurrentObject->oAngleVelRoll  = playerWorks[i].angleVel[2];
 }
 
 /**
@@ -243,7 +243,7 @@ void bhv_mario_update(void)
 	particleFlags			    = execute_mario_action(gCurrentObject);
 	gCurrentObject->oMarioParticleFlags = particleFlags;
 
-	// Mario code updates MarioState's versions of position etc, so we need
+	// Mario code updates PlayerRecord's versions of position etc, so we need
 	// to sync it with the mario object
 	copy_mario_state_to_object();
 
@@ -417,7 +417,7 @@ void set_object_respawn_info_bits(struct Object* obj, u8 bits)
 /**
  * Unload all objects whose activeAreaIndex is areaIndex.
  */
-void unload_objects_from_area(UNUSED s32 unused, s32 areaIndex)
+void RemoveStrategy(UNUSED s32 unused, s32 areaIndex)
 {
 	struct Object* obj;
 	struct ObjectNode* node;
@@ -446,7 +446,7 @@ void unload_objects_from_area(UNUSED s32 unused, s32 areaIndex)
 /**
  * Spawn objects given a list of SpawnInfos. Called when loading an area.
  */
-void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo* spawnInfo)
+void SetStrategy(UNUSED s32 unused, struct SpawnInfo* spawnInfo)
 {
 	gObjectLists   = gObjectListArray;
 	gTimeStopState = 0;
@@ -457,11 +457,9 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo* spawnInfo)
 	//! (Spawning Displacement) On the Japanese version, mario's platform object
 	//  isn't cleared when transitioning between areas. This can cause mario to
 	//  receive displacement after spawning.
-#ifndef VERSION_JP
 	clear_mario_platform();
-#endif
 
-	if(gCurrAreaIndex == 2)
+	if(activeSceneNo == 2)
 	{
 		gCCMEnteredSlide |= 1;
 	}

@@ -58,7 +58,7 @@ struct SoundCharacteristics
 	f32* z;
 	f32 distance;
 	u32 priority;
-	u32 soundBits; // packed bits, same as first arg to play_sound
+	u32 soundBits; // packed bits, same as first arg to AudStartSound
 	u8 soundStatus;
 	u8 unk19; // ttl? sometimes set to 10
 	u8 prev;
@@ -93,11 +93,7 @@ s32 sGameLoopTicked  = 0;
 #define YOSHI 10
 #define _ 0xFF
 
-#ifdef VERSION_JP
-#define DIFF KOOPA
-#else
 #define DIFF TUXIE
-#endif
 
 u8 sDialogSpeaker[] = {
     //       0      1      2      3      4      5      6      7      8      9
@@ -232,7 +228,7 @@ struct MusicDynamic sMusicDynamics[8] = {
     {0x03f7, 127, 100, 0x0008, 0, 100}, // SEQ_LEVEL_UNDERGROUND
     {0x0070, 127, 10, 0x0000, 0, 100},	// SEQ_LEVEL_SPOOKY
     {0x0000, 127, 100, 0x0070, 0, 10},	// SEQ_LEVEL_SPOOKY
-    {0xffff, 127, 100, 0x0000, 0, 100}, // any (unused)
+    {0xffff, 127, 100, 0x0000, 0, 100}, // any (size)
 };
 
 #define STUB_LEVEL(_0, _1, _2, _3, echo1, echo2, echo3, _7, _8) {echo1, echo2, echo3},
@@ -307,11 +303,7 @@ u8 D_803320BC[SOUND_BANK_COUNT]		      = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // only
 u8 sMaxChannelsForSoundBank[SOUND_BANK_COUNT] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 // Banks 2 and 7 both grew from 0x30 sounds to 0x40 in size in US.
-#ifdef VERSION_JP
-#define BANK27_SIZE 0x30
-#else
 #define BANK27_SIZE 0x40
-#endif
 u8 sNumSoundsPerBank[SOUND_BANK_COUNT] = {
     0x70, 0x30, BANK27_SIZE, 0x80, 0x20, 0x80, 0x20, BANK27_SIZE, 0x80, 0x80,
 };
@@ -329,9 +321,7 @@ u8 D_8033211C		     = 0;
 u8 D_80332120		     = 0;
 u8 D_80332124		     = 0;
 u8 sBackgroundMusicQueueSize = 0;
-#ifndef VERSION_JP
-u8 sUnused8033323C = 0; // never read, set to 0
-#endif
+u8 sUnused8033323C	     = 0; // never read, set to 0
 
 // bss
 u16* gCurrAiBuffer;
@@ -346,11 +336,7 @@ u8 D_80363812;
 static u8 sCapVolumeTo40;
 struct SequenceQueueItem sBackgroundMusicQueue[MAX_BG_MUSIC_QUEUE_SIZE];
 
-#ifdef VERSION_JP
-typedef u16 FadeT;
-#else
 typedef s32 FadeT;
-#endif
 
 static void func_8031E0E4(u8 bankIndex, u8 item);
 
@@ -364,7 +350,6 @@ void process_level_music_dynamics(void);
 u8 func_803200E4(u16 fadeTimer);
 void func_80320ED8(void);
 
-#ifndef VERSION_JP
 void unused_8031E4F0(void)
 {
 	// This is a debug function which is almost entirely optimized away,
@@ -431,7 +416,6 @@ void unused_8031E568(void)
 {
 	stubbed_printf("COUNT %8d\n", gAudioFrameCount);
 }
-#endif
 
 /**
  * Fade out a sequence player
@@ -439,12 +423,10 @@ void unused_8031E568(void)
 static void sequence_player_fade_out_internal(s32 player, FadeT fadeOutTime)
 {
 	struct SequencePlayer* seqPlayer = &gSequencePlayers[player];
-#ifndef VERSION_JP
 	if(fadeOutTime == 0)
 	{
 		fadeOutTime++;
 	}
-#endif
 
 	seqPlayer->fadeVelocity = -(seqPlayer->fadeVolume / fadeOutTime);
 	seqPlayer->state	= SEQUENCE_PLAYER_STATE_FADE_OUT;
@@ -548,7 +530,7 @@ void create_next_audio_buffer(s16* samples, u32 num_samples)
 	decrease_sample_dma_ttls();
 }
 
-void play_sound(s32 soundBits, f32* pos)
+void AudStartSound(s32 soundBits, f32* pos)
 {
 	sSoundRequests[sSoundRequestCount].soundBits = soundBits;
 	sSoundRequests[sSoundRequestCount].position  = pos;
@@ -775,9 +757,7 @@ static void func_8031E16C(u8 bankIndex)
 				val2 = gSoundBanks[bankIndex][sCurrentSound[bankIndex][i]].soundBits & (SOUND_LO_BITFLAG_UNK8 | SOUNDARGS_MASK_STATUS);
 				if(val2 >= (SOUND_LO_BITFLAG_UNK8 | SOUND_STATUS_PLAYING) && gSoundBanks[bankIndex][sCurrentSound[bankIndex][i]].soundStatus != SOUND_STATUS_STOPPED)
 				{
-#ifndef VERSION_JP
 					func_8031E0E4(bankIndex, sCurrentSound[bankIndex][i]);
-#endif
 					gSoundBanks[bankIndex][sCurrentSound[bankIndex][i]].soundBits	= NO_SOUND;
 					gSoundBanks[bankIndex][sCurrentSound[bankIndex][i]].soundStatus = SOUND_STATUS_STOPPED;
 					func_8031DFE8(bankIndex, sCurrentSound[bankIndex][i]);
@@ -872,30 +852,17 @@ static f32 get_sound_dynamics(u8 bankIndex, u8 item, f32 arg2)
 {
 	f32 f0;
 	f32 intensity;
-#ifndef VERSION_JP
 	s32 div = bankIndex < 3 ? 2 : 3;
-#endif
 
 	if(!(gSoundBanks[bankIndex][item].soundBits & SOUND_PL_BITFLAG_UNK1))
 	{
-#ifdef VERSION_JP
-		f0 = D_80332028[gCurrLevelNum];
-		if(f0 < gSoundBanks[bankIndex][item].distance)
-		{
-			intensity = 0.0f;
-		}
-		else
-		{
-			intensity = 1.0 - gSoundBanks[bankIndex][item].distance / f0;
-		}
-#else
 		if(gSoundBanks[bankIndex][item].distance > AUDIO_MAX_DISTANCE)
 		{
 			intensity = 0.0f;
 		}
 		else
 		{
-			f0 = D_80332028[gCurrLevelNum] / div;
+			f0 = D_80332028[activeStageNo] / div;
 			if(f0 < gSoundBanks[bankIndex][item].distance)
 			{
 				intensity = ((AUDIO_MAX_DISTANCE - gSoundBanks[bankIndex][item].distance) / (AUDIO_MAX_DISTANCE - f0)) * (1.0f - arg2);
@@ -905,15 +872,10 @@ static f32 get_sound_dynamics(u8 bankIndex, u8 item, f32 arg2)
 				intensity = 1.0f - gSoundBanks[bankIndex][item].distance / f0 * arg2;
 			}
 		}
-#endif
 
 		if(gSoundBanks[bankIndex][item].soundBits & SOUND_PL_BITFLAG_UNK2)
 		{
-#ifdef VERSION_JP
-			if(intensity != 0.0)
-#else
 			if(intensity >= 0.08f)
-#endif
 			{
 				intensity -= (f32)(gAudioRandom & 0xf) / US_FLOAT(192.0);
 			}
@@ -946,11 +908,7 @@ static f32 get_sound_freq_scale(u8 bankIndex, u8 item)
 	return f2 / US_FLOAT(15.0) + US_FLOAT(1.0);
 }
 
-#ifdef VERSION_JP
-#define VAL 48.0
-#else
 #define VAL 40.0f
-#endif
 static u8 get_sound_reverb(UNUSED u8 bankIndex, UNUSED u8 item, u8 channelIndex)
 {
 	u8 area;
@@ -964,8 +922,8 @@ static u8 get_sound_reverb(UNUSED u8 bankIndex, UNUSED u8 item, u8 channelIndex)
 	}
 	else
 	{
-		level = (gCurrLevelNum > LEVEL_MAX ? LEVEL_MAX : gCurrLevelNum);
-		area  = gCurrAreaIndex - 1;
+		level = (activeStageNo > LEVEL_MAX ? LEVEL_MAX : activeStageNo);
+		area  = activeSceneNo - 1;
 		if(area > 2)
 		{
 			area = 2;
@@ -992,13 +950,8 @@ void audio_signal_game_loop_tick(void)
 	noop_8031EEC8();
 }
 
-#ifdef VERSION_JP
-#define ARG2_VAL1 0.8f
-#define ARG2_VAL2 1.0f
-#else
 #define ARG2_VAL1 0.9f
 #define ARG2_VAL2 0.8f
-#endif
 
 void update_game_sound(void)
 {
@@ -1227,7 +1180,7 @@ void play_sequence(u8 player, u8 seqId, u16 fadeTimer)
 	}
 }
 
-void sequence_player_fade_out(u8 player, u16 fadeTimer)
+void Na_BossBgmStop(u8 player, u16 fadeTimer)
 {
 	if(player == 0)
 	{
@@ -1236,7 +1189,7 @@ void sequence_player_fade_out(u8 player, u16 fadeTimer)
 	sequence_player_fade_out_internal(player, fadeTimer);
 }
 
-void fade_volume_scale(u8 player, u8 targetScale, u16 fadeTimer)
+void Na_AllSeqSubVolumeTrans(u8 player, u8 targetScale, u16 fadeTimer)
 {
 	u8 i;
 	for(i = 0; i < CHANNELS_MAX; i++)
@@ -1305,21 +1258,21 @@ void process_level_music_dynamics(void)
 		sBackgroundMusicForDynamics = sPlayer0CurSeqId;
 	}
 
-	if(gCurrLevelNum >= LEVEL_COUNT || sBackgroundMusicForDynamics != sLevelDynamics[gCurrLevelNum][0])
+	if(activeStageNo >= LEVEL_COUNT || sBackgroundMusicForDynamics != sLevelDynamics[activeStageNo][0])
 	{
 		return;
 	}
 
-	conditionBits = sLevelDynamics[gCurrLevelNum][1] & 0xff00;
-	musicDynIndex = sLevelDynamics[gCurrLevelNum][1] & 0xff;
+	conditionBits = sLevelDynamics[activeStageNo][1] & 0xff00;
+	musicDynIndex = sLevelDynamics[activeStageNo][1] & 0xff;
 	i	      = 2;
 	while(conditionBits & 0xff00)
 	{
-		for(j = 0, condIndex = 0, bit = 0x8000; j<8; j++, bit = bit>> 1)
+		for(j = 0, condIndex = 0, bit = 0x8000; j<8; j++, bit = bit >> 1)
 		{
 			if(conditionBits & bit)
 			{
-				conditionValues[condIndex] = sLevelDynamics[gCurrLevelNum][i++];
+				conditionValues[condIndex] = sLevelDynamics[activeStageNo][i++];
 				conditionTypes[condIndex]  = j;
 				condIndex++;
 			}
@@ -1332,50 +1285,50 @@ void process_level_music_dynamics(void)
 			{
 				case MARIO_X_GE:
 				{
-					s16 temp = gMarioStates[0].pos[0];
+					s16 temp = playerWorks[0].pos[0];
 					if(temp < conditionValues[j])
 						j = condIndex + 1;
 					break;
 				}
 				case MARIO_Y_GE:
 				{
-					s16 temp = gMarioStates[0].pos[1];
+					s16 temp = playerWorks[0].pos[1];
 					if(temp < conditionValues[j])
 						j = condIndex + 1;
 					break;
 				}
 				case MARIO_Z_GE:
 				{
-					s16 temp = gMarioStates[0].pos[2];
+					s16 temp = playerWorks[0].pos[2];
 					if(temp < conditionValues[j])
 						j = condIndex + 1;
 					break;
 				}
 				case MARIO_X_LT:
 				{
-					s16 temp = gMarioStates[0].pos[0];
+					s16 temp = playerWorks[0].pos[0];
 					if(temp >= conditionValues[j])
 						j = condIndex + 1;
 					break;
 				}
 				case MARIO_Y_LT:
 				{
-					s16 temp = gMarioStates[0].pos[1];
+					s16 temp = playerWorks[0].pos[1];
 					if(temp >= conditionValues[j])
 						j = condIndex + 1;
 					break;
 				}
 				case MARIO_Z_LT:
 				{
-					s16 temp = gMarioStates[0].pos[2];
+					s16 temp = playerWorks[0].pos[2];
 					if(temp >= conditionValues[j])
 						j = condIndex + 1;
 					break;
 				}
 				case MARIO_IS_IN_AREA:
 				{
-					// s16 temp = gCurrAreaIndex;
-					if(gCurrAreaIndex != conditionValues[j])
+					// s16 temp = activeSceneNo;
+					if(activeSceneNo != conditionValues[j])
 						j = condIndex + 1;
 					break;
 				}
@@ -1396,7 +1349,7 @@ void process_level_music_dynamics(void)
 		}
 		else
 		{
-			tempBits = sLevelDynamics[gCurrLevelNum][i];
+			tempBits = sLevelDynamics[activeStageNo][i];
 			i++;
 			musicDynIndex = tempBits & 0xff, tempBits &= 0xff00;
 		}
@@ -1478,7 +1431,7 @@ void func_8031FFB4(u8 player, u16 fadeTimer, u8 arg2)
 	}
 }
 
-void sequence_player_unlower(u8 player, u16 fadeTimer)
+void Na_SeqVolRecover(u8 player, u16 fadeTimer)
 {
 	sCapVolumeTo40 = FALSE;
 	if(player == 0)
@@ -1628,7 +1581,7 @@ void sound_init(void)
 	sSoundRequestCount	   = 0;
 }
 
-// (unused)
+// (size)
 void get_currently_playing_sound(u8 bankIndex, u8* numPlayingSounds, u8* arg2, u8* soundId)
 {
 	u8 i;
@@ -1708,7 +1661,7 @@ static void func_803207DC(u8 bankIndex)
 	}
 }
 
-void func_80320890(void)
+void Na_LevelSeAllStop(void)
 {
 	func_803207DC(1);
 	func_803207DC(4);
@@ -1769,7 +1722,7 @@ void func_80320A4C(u8 bankIndex, u8 arg1)
 	D_80363808[bankIndex] = arg1;
 }
 
-void play_dialog_sound(u8 dialogID)
+void Na_MessageSound(u8 dialogID)
 {
 	u8 speaker;
 
@@ -1781,23 +1734,21 @@ void play_dialog_sound(u8 dialogID)
 	speaker = sDialogSpeaker[dialogID];
 	if(speaker != 0xff)
 	{
-		play_sound(sDialogSpeakerVoice[speaker], gDefaultSoundArgs);
+		AudStartSound(sDialogSpeakerVoice[speaker], gDefaultSoundArgs);
 		if(speaker == 2) // SOUND_OBJ_BOWSER_INTRO_LAUGH
 		{
 			play_sequence(1, SEQ_EVENT_KOOPA_MESSAGE, 0);
 		}
 	}
 
-#ifndef VERSION_JP
 	// "You've stepped on the (Wing|Metal|Vanish) Cap Switch"
 	if(dialogID == DIALOG_010 || dialogID == DIALOG_011 || dialogID == DIALOG_012)
 	{
-		play_puzzle_jingle();
+		Na_NazoClearBgm();
 	}
-#endif
 }
 
-void play_music(u8 player, u16 seqArgs, s16 fadeTimer)
+void Na_MusicStart(u8 player, u16 seqArgs, s16 fadeTimer)
 {
 	u8 seqId    = seqArgs & 0xff;
 	u8 priority = seqArgs >> 8;
@@ -1898,7 +1849,7 @@ void stop_background_music(u16 seqId)
 				}
 				else
 				{
-					sequence_player_fade_out(0, 20);
+					Na_BossBgmStop(0, 20);
 				}
 			}
 			foundIndex = i;
@@ -1922,7 +1873,7 @@ void fadeout_background_music(u16 seqId, u16 fadeOut)
 {
 	if(sBackgroundMusicQueueSize != 0 && sBackgroundMusicQueue[0].seqId == (u8)(seqId & 0xff))
 	{
-		sequence_player_fade_out(0, fadeOut);
+		Na_BossBgmStop(0, fadeOut);
 	}
 }
 
@@ -1934,7 +1885,7 @@ void drop_queued_background_music(void)
 	}
 }
 
-u16 get_current_background_music(void)
+u16 AudGetPlayingMusic(void)
 {
 	if(sBackgroundMusicQueueSize != 0)
 	{
@@ -2002,7 +1953,7 @@ void func_80321080(u16 fadeTimer)
 		D_80332120 = 0;
 		D_80332124 = 0;
 		func_803200E4(fadeTimer);
-		sequence_player_fade_out(1, fadeTimer);
+		Na_BossBgmStop(1, fadeTimer);
 	}
 }
 
@@ -2053,14 +2004,14 @@ void play_peachs_jingle(void)
  * that usually plays when you solve a "puzzle", like chests, talking to
  * yoshi, releasing chain chomp, opening the pyramid top, etc.
  */
-void play_puzzle_jingle(void)
+void Na_NazoClearBgm(void)
 {
 	play_sequence(1, SEQ_EVENT_SOLVE_PUZZLE, 0);
 	D_8033211C = 0x80 | 20;
 	func_803200E4(50);
 }
 
-void play_star_fanfare(void)
+void Na_HiScoreBgm(void)
 {
 	play_sequence(1, SEQ_EVENT_HIGH_SCORE, 0);
 	D_8033211C = 0x80 | 20;
@@ -2078,7 +2029,7 @@ void play_power_star_jingle(u8 arg0)
 	func_803200E4(50);
 }
 
-void play_race_fanfare(void)
+void Na_RaceFanfareBgm(void)
 {
 	play_sequence(1, SEQ_EVENT_RACE, 0);
 	D_8033211C = 0x80 | 20;
@@ -2094,13 +2045,11 @@ void play_toads_jingle(void)
 
 void sound_reset(u8 arg0)
 {
-#ifndef VERSION_JP
 	if(arg0 >= 8)
 	{
 		arg0		= 0;
 		sUnused8033323C = 0;
 	}
-#endif
 	sGameLoopTicked = 0;
 	disable_all_sequence_players();
 	sound_init();

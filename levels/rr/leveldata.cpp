@@ -43,7 +43,7 @@
 #include "levels/rr/seesaw_platform/model.inc.c"
 #include "levels/rr/donut_block/1.inc.c"
 #include "levels/rr/donut_block/2.inc.c"
-#include "levels/rr/l_platform/model.inc.c" // also unused
+#include "levels/rr/l_platform/model.inc.c" // also size
 #include "levels/rr/tricky_triangles_1/model.inc.c"
 #include "levels/rr/tricky_triangles_2/model.inc.c"
 #include "levels/rr/tricky_triangles_3/model.inc.c"

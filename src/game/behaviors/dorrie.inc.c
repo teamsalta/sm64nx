@@ -2,15 +2,15 @@
 static void dorrie_raise_head(void)
 {
 	const u8 firstFrame = 50;
-	const u8 lastFrame = 74;
+	const u8 lastFrame  = 74;
 
 	const float startHeight = 340.81152f;
-	const float endHeight = 715.02f;
+	const float endHeight	= 715.02f;
 
-	const float endLength = 550.0f;
+	const float endLength	= 550.0f;
 	const float startLength = 710.0f;
 
-	s32 animFrame = o->header.gfx.unk38.frame();
+	s32 animFrame	  = o->header.gfx.unk38.frame();
 	float neckPercent = (animFrame - firstFrame) / float(lastFrame - firstFrame);
 
 	if(neckPercent < 0.0f)
@@ -20,7 +20,7 @@ static void dorrie_raise_head(void)
 	else if(neckPercent > 1.0f)
 	{
 		neckPercent = 1.0f;
-	}	
+	}
 
 	float s = sin(neckPercent * 3.141592653f / 2.0f);
 
@@ -46,7 +46,7 @@ static void dorrie_act_move(void)
 
 	if(o->oDorrieForwardDistToMario < 320.0f && o->oDorrieGroundPounded)
 	{
-		PlaySound2(SOUND_OBJ_DORRIE);
+		objsound(SOUND_OBJ_DORRIE);
 		o->collisionData = segmented_to_virtual(dorrie_seg6_collision_0600FBB8);
 		o->oAction	 = DORRIE_ACT_LOWER_HEAD;
 		o->oForwardVel	 = 0.0f;
@@ -92,23 +92,6 @@ static void dorrie_act_lower_head(void)
 	{
 		func_8029F6F0();
 
-#ifdef VERSION_JP
-		if(o->oTimer > 150 * FRAME_RATE_SCALER_INV)
-		{
-			dorrie_begin_head_raise(FALSE);
-		}
-		else if(gMarioObject->platform == o)
-		{
-			if(o->oDorrieForwardDistToMario > 830.0f && set_mario_npc_dialog(2) == 1)
-			{
-				dorrie_begin_head_raise(TRUE);
-			}
-			else if(o->oDorrieForwardDistToMario > 320.0f)
-			{
-				o->oTimer = 0;
-			}
-		}
-#else
 		if(gMarioObject->platform == o)
 		{
 			if(o->oDorrieOffsetY == -17.0f && o->oDorrieForwardDistToMario > 780.0f && set_mario_npc_dialog(2) == 1)
@@ -124,7 +107,6 @@ static void dorrie_act_lower_head(void)
 		{
 			dorrie_begin_head_raise(FALSE);
 		}
-#endif
 	}
 	else
 	{
@@ -164,7 +146,7 @@ static void dorrie_act_raise_head(void)
 
 void bhv_dorrie_update(void)
 {
-	// if(gGlobalTimer % FRAME_RATE_SCALER_INV == 0)
+	// if(frameCounter % FRAME_RATE_SCALER_INV == 0)
 	{
 		f32 boundsShift;
 		UNUSED s32 unused1;
@@ -176,7 +158,7 @@ void bhv_dorrie_update(void)
 			o->oDorrieForwardDistToMario = o->oDistanceToMario * coss(o->oAngleToMario - o->oMoveAngleYaw);
 
 			obj_perform_position_op(0);
-			obj_move_using_fvel_and_gravity();
+			s_optionmove_F();
 
 			o->oDorrieAngleToHome = obj_angle_to_home();
 			o->oDorrieDistToHome  = obj_lateral_dist_to_home();
@@ -190,7 +172,7 @@ void bhv_dorrie_update(void)
 				o->oPosZ = o->oHomeZ - o->oDorrieDistToHome * coss(o->oDorrieAngleToHome);
 			}
 
-			o->oDorrieGroundPounded = obj_is_mario_ground_pounding_platform();
+			o->oDorrieGroundPounded = s_checkplayer_hipaatack();
 
 			if(gMarioObject->platform == o)
 			{

@@ -82,9 +82,9 @@ void update_mario_platform(void)
  */
 void get_mario_pos(f32* x, f32* y, f32* z)
 {
-	*x = gMarioStates[0].pos[0];
-	*y = gMarioStates[0].pos[1];
-	*z = gMarioStates[0].pos[2];
+	*x = playerWorks[0].pos[0];
+	*y = playerWorks[0].pos[1];
+	*z = playerWorks[0].pos[2];
 }
 
 /**
@@ -92,9 +92,9 @@ void get_mario_pos(f32* x, f32* y, f32* z)
  */
 void set_mario_pos(f32 x, f32 y, f32 z)
 {
-	gMarioStates[0].pos[0] = x;
-	gMarioStates[0].pos[1] = y;
-	gMarioStates[0].pos[2] = z;
+	playerWorks[0].pos[0] = x;
+	playerWorks[0].pos[1] = y;
+	playerWorks[0].pos[2] = z;
 }
 
 /**
@@ -138,7 +138,7 @@ void apply_platform_displacement(u32 isMario, struct Object* platform)
 	{
 		if(isMario)
 		{
-			gMarioStates[0].faceAngle[1] += rotation[1];
+			playerWorks[0].faceAngle[1] += rotation[1];
 		}
 
 		platformPosX = platform->oPosX;
@@ -194,7 +194,6 @@ void apply_mario_platform_displacement(void)
 	}
 }
 
-#ifndef VERSION_JP
 /**
  * Set mario's platform to NULL.
  */
@@ -202,4 +201,3 @@ void clear_mario_platform(void)
 {
 	gMarioPlatform = NULL;
 }
-#endif

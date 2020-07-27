@@ -15,7 +15,7 @@
 
 /**
  * This file implements environment effects that are not snow:
- * Flowers (unused), lava bubbles and jetsream/whirlpool bubbles.
+ * Flowers (size), lava bubbles and jetsream/whirlpool bubbles.
  * Refer to 'envfx_snow.c' for more info about environment effects.
  * Note that the term 'bubbles' is used as a collective name for
  * effects in this file even though flowers aren't bubbles. For the
@@ -81,8 +81,8 @@ s32 random_flower_offset()
 void envfx_update_flower(Vec3s centerPos)
 {
 	s32 i;
-	struct FloorGeometry* floorGeo; // unused
-	s32 timer = gGlobalTimer;
+	struct FloorGeometry* floorGeo; // size
+	s32 timer = frameCounter;
 
 	s16 centerX	   = centerPos[0];
 	UNUSED s16 centerY = centerPos[1];
@@ -174,7 +174,7 @@ void envfx_set_lava_bubble_position(s32 index, Vec3s centerPos)
 void envfx_update_lava(Vec3s centerPos)
 {
 	s32 i;
-	s32 timer = gGlobalTimer;
+	s32 timer = frameCounter;
 	s8 chance;
 	UNUSED s16 centerX, centerY, centerZ;
 
@@ -202,7 +202,7 @@ void envfx_update_lava(Vec3s centerPos)
 
 	if((chance = (s32)(RandomFloat() * 16.0f)) == 8)
 	{
-		play_sound(SOUND_GENERAL_QUIET_BUBBLE2, gDefaultSoundArgs);
+		AudStartSound(SOUND_GENERAL_QUIET_BUBBLE2, gDefaultSoundArgs);
 	}
 }
 
@@ -464,14 +464,10 @@ void envfx_bubbles_update_switch(s32 mode, Vec3s camTo, Vec3s vertex1, Vec3s ver
  * 'index'. The 3 input vertices represent the roated triangle around (0,0,0)
  * that will be translated to bubble positions to draw the bubble image
  */
-#if defined(VERSION_EU) && !defined(NON_MATCHING)
-void append_bubble_vertex_buffer(Gfx* gfx, s32 index, Vec3s vertex1, Vec3s vertex2, Vec3s vertex3, Vtx* template);
-GLOBAL_ASM("asm/non_matchings/append_bubble_vertex_buffer_eu.s")
-#else
 void append_bubble_vertex_buffer(Gfx* gfx, s32 index, Vec3s vertex1, Vec3s vertex2, Vec3s vertex3, Vtx* _template)
 {
 	s32 i	     = 0;
-	Vtx* vertBuf = (Vtx*)alloc_display_list(15 * sizeof(Vtx));
+	Vtx* vertBuf = (Vtx*)AllocDynamic(15 * sizeof(Vtx));
 
 	if(vertBuf == NULL)
 	{
@@ -498,7 +494,6 @@ void append_bubble_vertex_buffer(Gfx* gfx, s32 index, Vec3s vertex1, Vec3s verte
 
 	gSPVertex(gfx, VIRTUAL_TO_PHYSICAL(vertBuf), 15, 0);
 }
-#endif
 
 /**
  * Appends to the enfvx display list a command setting the appropriate texture
@@ -548,7 +543,7 @@ Gfx* envfx_update_bubble_particles(s32 mode, UNUSED Vec3s marioPos, Vec3s camFro
 
 	Gfx* gfxStart;
 
-	gfxStart = (Gfx*)alloc_display_list(((sBubbleParticleMaxCount / 5) * 10 + sBubbleParticleMaxCount + 3) * sizeof(Gfx));
+	gfxStart = (Gfx*)AllocDynamic(((sBubbleParticleMaxCount / 5) * 10 + sBubbleParticleMaxCount + 3) * sizeof(Gfx));
 	if(gfxStart == NULL)
 	{
 		return NULL;

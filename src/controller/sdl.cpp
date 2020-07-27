@@ -33,13 +33,84 @@ extern struct Object* gMarioObject;
 
 namespace sm64::hid
 {
+	static bool g_haptics = false;
+
 	namespace controller
 	{
 		class SDL : public Controller
 		{
-		public:
-			SDL(SDL_GameController* controller) : Controller(), m_context(controller)
+			public:
+			SDL(SDL_GameController* controller) : Controller(), m_context(controller), m_haptic(nullptr)
 			{
+				m_motorEnabled = initHaptics();
+			}
+
+			virtual ~SDL()
+			{
+				closeHaptics();
+			}
+
+			bool initHaptics()
+			{
+				if(!g_haptics)
+				{
+					return false;
+				}
+
+				m_haptic = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(m_context));
+
+				if(!m_haptic)
+				{
+					return false;
+				}
+
+				if(SDL_HapticRumbleSupported(m_haptic) != 1)
+				{
+					closeHaptics();
+					return false;
+				}
+
+				if(SDL_HapticRumbleInit(m_haptic) != 0)
+				{
+					closeHaptics();
+					return NULL;
+				}
+
+				return true;
+			}
+
+			void closeHaptics()
+			{
+				if(m_haptic)
+				{
+					SDL_HapticClose(m_haptic);
+					m_haptic = nullptr;
+				}
+			}
+
+			void SendMotorEvent(short time, short level) override
+			{
+				if(m_motorEnabled)
+				{
+					SDL_HapticRumblePlay(m_haptic, level / 100.0f, time * 10);
+				}
+			}
+
+			void SendMotorDecay(short level) override
+			{
+			}
+
+			void ResetMotorPack() override
+			{
+				if(m_motorEnabled)
+				{
+					SDL_HapticRumbleStop(m_haptic);
+				}
+			}
+
+			void SendMotorVib(int level) override
+			{
+				SendMotorEvent(30, level);
 			}
 
 			static inline int8_t convertToByte(int value, int max)
@@ -155,12 +226,10 @@ namespace sm64::hid
 				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_DPAD_DOWN))
 					m_state.button |= D_CBUTTONS;
 
-
-
 				if(sm64::config().camera().useClassicCamera())
 				{
-					int16_t leftx = SDL_GameControllerGetAxis(m_context, SDL_CONTROLLER_AXIS_LEFTX);
-					int16_t lefty = SDL_GameControllerGetAxis(m_context, SDL_CONTROLLER_AXIS_LEFTY);
+					int16_t leftx  = SDL_GameControllerGetAxis(m_context, SDL_CONTROLLER_AXIS_LEFTX);
+					int16_t lefty  = SDL_GameControllerGetAxis(m_context, SDL_CONTROLLER_AXIS_LEFTY);
 					int16_t rightx = SDL_GameControllerGetAxis(m_context, SDL_CONTROLLER_AXIS_RIGHTX);
 					int16_t righty = SDL_GameControllerGetAxis(m_context, SDL_CONTROLLER_AXIS_RIGHTY);
 
@@ -197,8 +266,8 @@ namespace sm64::hid
 				if(rtrig > 30 * 256)
 					m_state.button |= R_TRIG;
 
-				m_state.stick_x = stickLeftX();
-				m_state.stick_y = invert(stickLeftY());
+				m_state.stick_x	  = stickLeftX();
+				m_state.stick_y	  = invert(stickLeftY());
 				m_state.r_stick_x = stickRightX();
 				m_state.r_stick_y = stickRightY();
 
@@ -218,20 +287,25 @@ namespace sm64::hid
 					m_state.r_stick_y = 0;
 				}
 			}
-		protected:
+
+			protected:
 			SDL_GameController* m_context;
+			SDL_Haptic* m_haptic;
 		};
-	}
+	} // namespace controller
 	SDL::SDL()
 	{
 		if(SDL_Init(SDL_INIT_GAMECONTROLLER) != 0)
 		{
 			fprintf(stderr, "SDL init error: %s\n", SDL_GetError());
 		}
+
+		g_haptics = SDL_InitSubSystem(SDL_INIT_HAPTIC) == 0;
 	}
 
 	SDL::~SDL()
 	{
+		SDL_QuitSubSystem(SDL_INIT_HAPTIC);
 	}
 
 	void SDL::scan(class Controllers* controllers)
@@ -239,12 +313,12 @@ namespace sm64::hid
 #ifdef __SWITCH__
 		// swap A, B and X, Y to correct positions
 		SDL_GameControllerAddMapping("53776974636820436F6E74726F6C6C65,Switch Controller,"
-			"a:b0,b:b1,back:b11,"
-			"dpdown:b15,dpleft:b12,dpright:b14,dpup:b13,"
-			"leftshoulder:b6,leftstick:b4,lefttrigger:b8,leftx:a0,lefty:a1,"
-			"rightshoulder:b7,rightstick:b5,righttrigger:b9,rightx:a2,righty:a3,"
-			"start:b10,x:b2,y:b3");
-#endif		
+					     "a:b0,b:b1,back:b11,"
+					     "dpdown:b15,dpleft:b12,dpright:b14,dpup:b13,"
+					     "leftshoulder:b6,leftstick:b4,lefttrigger:b8,leftx:a0,lefty:a1,"
+					     "rightshoulder:b7,rightstick:b5,righttrigger:b9,rightx:a2,righty:a3,"
+					     "start:b10,x:b2,y:b3");
+#endif
 
 		init_ok = true;
 
@@ -263,6 +337,6 @@ namespace sm64::hid
 			}
 		}
 	}
-}
+} // namespace sm64::hid
 
 #endif

@@ -32,27 +32,25 @@ AudioAPI* audio_api = nullptr;
 
 sm64::gfx::Fast64* g_fast64 = nullptr;
 
-void send_display_list(struct SPTask *spTask);
+void send_display_list(struct SPTask* spTask);
 void game_loop_one_iteration(void);
-void dispatch_audio_sptask(struct SPTask *spTask);
+void dispatch_audio_sptask(struct SPTask* spTask);
 
-extern void game_init(void *arg);
+extern void game_init(void* arg);
 
-
-void dispatch_audio_sptask(struct SPTask *spTask)
+void dispatch_audio_sptask(struct SPTask* spTask)
 {
 }
 
 static uint8_t inited = 0;
 
-
-void send_display_list(struct SPTask *spTask)
+void send_display_list(struct SPTask* spTask)
 {
 	if(!inited)
 	{
 		return;
 	}
-	g_fast64->run((Gfx *)spTask->task.t.data_ptr);
+	g_fast64->run((Gfx*)spTask->task.t.data_ptr);
 }
 
 #define printf
@@ -71,7 +69,7 @@ bool verifyIntegrity()
 	{
 		return false;
 	}
-	
+
 	for(const auto& entry : std::filesystem::directory_iterator("."))
 	{
 		if(entry.is_regular_file())
@@ -107,12 +105,12 @@ bool verifyIntegrity()
 		}
 	}
 
-	if (!hasRom)
+	if(!hasRom)
 	{
 		sm64::log("error: unable to locate Z64 rom.\n");
 	}
 
-	if (!hasPak)
+	if(!hasPak)
 	{
 		sm64::log("error: unable to locate romfs/!!base.pak\n");
 	}
@@ -130,7 +128,7 @@ void main_func(void)
 		return;
 	}
 
-	static u64 pool[0x165000 / 8 / 4 * sizeof(void *)];
+	static u64 pool[0x165000 / 8 / 4 * sizeof(void*)];
 	main_pool_init(pool, pool + sizeof(pool) / sizeof(pool[0]));
 	gEffectsMemoryPool = mem_pool_init(0x4000, MEMORY_POOL_LEFT);
 
@@ -149,12 +147,10 @@ void main_func(void)
 
 	inited = 1;
 
-
 	g_fast64->run_loop();
-
 }
 
-#if (defined(_WIN32) || defined(_WIN64)) && defined(_MSC_VER)
+#if(defined(_WIN32) || defined(_WIN64)) && defined(_MSC_VER)
 #include <windows.h>
 #include <shellscalingapi.h>
 
@@ -171,10 +167,10 @@ void initialize();
 
 extern "C"
 {
-	int main(int argc, char *argv[]);
+	int main(int argc, char* argv[]);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 #ifdef __SWITCH__
 	initialize();

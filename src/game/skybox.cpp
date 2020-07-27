@@ -179,7 +179,7 @@ static int get_top_left_tile_idx(s8 player)
  */
 Vtx* make_skybox_rect(s32 tileIndex, s8 colorIndex)
 {
-	Vtx* verts = (Vtx*)alloc_display_list(4 * sizeof(*verts));
+	Vtx* verts = (Vtx*)AllocDynamic(4 * sizeof(*verts));
 	s16 x	   = tileIndex % SKYBOX_COLS * SKYBOX_TILE_WIDTH;
 	s16 y	   = SKYBOX_HEIGHT - tileIndex / SKYBOX_COLS * SKYBOX_TILE_HEIGHT;
 
@@ -231,9 +231,8 @@ void* create_skybox_ortho_matrix(s8 player)
 	f32 right  = sSkyBoxInfo[player].scaledX + SCREEN_WIDTH;
 	f32 bottom = sSkyBoxInfo[player].scaledY - SCREEN_HEIGHT;
 	f32 top	   = sSkyBoxInfo[player].scaledY;
-	Mtx* mtx   = (Mtx*)alloc_display_list(sizeof(*mtx));
+	Mtx* mtx   = (Mtx*)AllocDynamic(sizeof(*mtx));
 
-#ifndef TARGET_N64
 	f32 half_width = (4.0f / 3.0f) / GFX_DIMENSIONS_ASPECT_RATIO * SCREEN_WIDTH / 2;
 	f32 center     = (sSkyBoxInfo[player].scaledX + SCREEN_WIDTH / 2);
 	if(half_width < SCREEN_WIDTH / 2)
@@ -242,7 +241,6 @@ void* create_skybox_ortho_matrix(s8 player)
 		left  = center - half_width;
 		right = center + half_width;
 	}
-#endif
 
 	if(mtx != NULL)
 	{
@@ -261,7 +259,7 @@ void* create_skybox_ortho_matrix(s8 player)
 Gfx* init_skybox_display_list(s8 player, s8 background, s8 colorIndex)
 {
 	s32 dlCommandCount = 5 + (3 * 3) * 7; // 5 for the start and end, plus 9 skybox tiles
-	void* skybox	   = alloc_display_list(dlCommandCount * sizeof(Gfx));
+	void* skybox	   = AllocDynamic(dlCommandCount * sizeof(Gfx));
 	Gfx* dlist	   = (Gfx*)skybox;
 
 	if(skybox == NULL)
@@ -301,7 +299,7 @@ Gfx* create_skybox_facing_camera(s8 player, s8 background, f32 fov, f32 posX, f3
 	s8 colorIndex	= 1;
 
 	// If the first star is collected in JRB, make the sky darker and slightly green
-	if(background == 8 && !(save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_JRB - 1) & 1))
+	if(background == 8 && !(BuGetStarFlag(activePlayerNo - 1, COURSE_JRB - 1) & 1))
 	{
 		colorIndex = 0;
 	}

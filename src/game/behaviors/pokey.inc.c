@@ -50,7 +50,7 @@ void bhv_pokey_body_part_update(void)
 	{
 		if(o->parentObj->oAction == POKEY_ACT_UNLOAD_PARTS)
 		{
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 		}
 		else
 		{
@@ -81,11 +81,11 @@ void bhv_pokey_body_part_update(void)
 			else if(o->parentObj->oPokeyBottomBodyPartSize < 1.0f && o->oBehParams2ndByte + 1 == o->parentObj->oPokeyNumAliveBodyParts)
 			{
 				approach_f32_ptr(&o->parentObj->oPokeyBottomBodyPartSize, 1.0f, 0.1f * FRAME_RATE_SCALER);
-				obj_scale(o->parentObj->oPokeyBottomBodyPartSize * 3.0f);
+				s_set_scale(o->parentObj->oPokeyBottomBodyPartSize * 3.0f);
 			}
 
 			//! Pausing causes jumps in offset angle
-			offsetAngle = o->oBehParams2ndByte * 0x4000 + (gGlobalTimer / FRAME_RATE_SCALER_INV) * 0x800;
+			offsetAngle = o->oBehParams2ndByte * 0x4000 + (frameCounter / FRAME_RATE_SCALER_INV) * 0x800;
 			o->oPosX    = o->parentObj->oPosX + coss(offsetAngle) * 6.0f;
 			o->oPosZ    = o->parentObj->oPosZ + sins(offsetAngle) * 6.0f;
 
@@ -128,7 +128,7 @@ void bhv_pokey_body_part_update(void)
 			}
 			else if(o->parentObj->oPokeyHeadWasKilled)
 			{
-				obj_become_intangible();
+				s_hitOFF();
 
 				if(--o->oPokeyBodyPartDeathDelayAfterHeadKilled < 0)
 				{
@@ -173,7 +173,7 @@ static void pokey_act_uninitialized(void)
 		{
 			// Spawn body parts at y offsets 480, 360, 240, 120, 0
 			// behavior param 0 = head, 4 = lowest body part
-			bodyPart = spawn_object_relative(i, 0, -i * 120 + 480, 0, o, partModel, sm64::bhv::bhvPokeyBodyPart());
+			bodyPart = s_makeobj_chain(i, 0, -i * 120 + 480, 0, o, partModel, sm64::bhv::bhvPokeyBodyPart());
 
 			if(bodyPart != NULL)
 			{
@@ -203,7 +203,7 @@ static void pokey_act_wander(void)
 
 	if(o->oPokeyNumAliveBodyParts == 0)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 
 	else if(o->oDistanceToMario > 2500.0f && !sm64::config().camera().disableDistanceClip())
@@ -233,7 +233,7 @@ static void pokey_act_wander(void)
 					// is killed, the new part's index is equal to the number
 					// of living body parts
 
-					bodyPart = spawn_object_relative(o->oPokeyNumAliveBodyParts, 0, 0, 0, o, MODEL_POKEY_BODY_PART, sm64::bhv::bhvPokeyBodyPart());
+					bodyPart = s_makeobj_chain(o->oPokeyNumAliveBodyParts, 0, 0, 0, o, MODEL_POKEY_BODY_PART, sm64::bhv::bhvPokeyBodyPart());
 
 					if(bodyPart != NULL)
 					{

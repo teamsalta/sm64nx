@@ -1,5 +1,4 @@
-#ifndef _SPECIAL_PRESET_NAMES_H
-#define _SPECIAL_PRESET_NAMES_H
+#pragma once
 
 enum SpecialPresets {
     special_null_start,
@@ -90,5 +89,5 @@ enum SpecialPresets {
     special_null_end = 0xFF
 };
 
-#endif // _SPECIAL_PRESET_NAMES_H
+
 

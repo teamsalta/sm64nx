@@ -6656,7 +6656,7 @@
 		gsSPEndDisplayList(),
 	};
 
-	// 0x0401C890 - 0x0401C8E8 # Unreferenced, unused like the duplicated cap, same case
+	// 0x0401C890 - 0x0401C8E8 # Unreferenced, size like the duplicated cap, same case
 	const Gfx mario_cap_wings_unused[] = {
 		gsSPDisplayList(mario_cap_wings_unused_intial_dl),
 		gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, mario_texture_wings_half_1),
@@ -6671,7 +6671,7 @@
 		gsSPEndDisplayList(),
 	};
 
-	// 0x0401C8E8 - 0x0401C940 # Unreferenced, unused like the duplicated cap, same case
+	// 0x0401C8E8 - 0x0401C940 # Unreferenced, size like the duplicated cap, same case
 	const Gfx mario_metal_cap_wings_unused[] = {
 		gsSPDisplayList(mario_cap_wings_unused_intial_dl),
 		gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, mario_texture_metal_wings_half_1),

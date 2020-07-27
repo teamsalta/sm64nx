@@ -32,6 +32,7 @@
 #include "sound_init.h"
 #include "engine/surface_collision.h"
 #include "level_table.h"
+#include "game/motor.h"
 
 /**************************************************
  *                    ANIMATIONS                  *
@@ -102,6 +103,27 @@ f32 vec3f_find_ceil(Vec3f pos, f32 height, struct Surface** ceil)
 	return find_ceil(pos[0], height + 80.0f, pos[2], ceil);
 }
 
+static void func_sh_8025574C(void)
+{
+	if(marioWorks->particleFlags & PARTICLE_POUND_TINY_STAR)
+	{
+		SendMotorEvent(5, 80);
+	}
+	else if(marioWorks->particleFlags & PARTICLE_WALL_TINY_STAR)
+	{
+		SendMotorEvent(5, 80);
+	}
+	else if(marioWorks->particleFlags & PARTICLE_PUNCH_TINY_TRIANGLES)
+	{
+		SendMotorEvent(5, 80);
+	}
+
+	if(marioWorks->heldObj && marioWorks->heldObj->behavior == sm64::bhv::bhvBobomb())
+	{
+		ResetMotorPack();
+	}
+}
+
 /**
  * Main function for executing Mario's behavior.
  */
@@ -109,16 +131,16 @@ s32 execute_mario_action(struct Object* o)
 {
 	s32 inLoop = TRUE;
 
-	if(gMarioState->action)
+	if(marioWorks->status)
 	{
-		gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-		gMarioState->mario_reset_bodystate();
-		gMarioState->update_mario_inputs();
-		mario_handle_special_floors(gMarioState);
-		mario_process_interactions(gMarioState);
+		marioWorks->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+		marioWorks->mario_reset_bodystate();
+		marioWorks->update_mario_inputs();
+		mario_handle_special_floors(marioWorks);
+		mario_process_interactions(marioWorks);
 
 		// If Mario is OOB, stop executing actions.
-		if(gMarioState->floor == NULL)
+		if(marioWorks->floor == NULL)
 		{
 			return 0;
 		}
@@ -128,67 +150,64 @@ s32 execute_mario_action(struct Object* o)
 		// if a loop of actions were found, but there has not been a situation found.
 		while(inLoop)
 		{
-			switch(gMarioState->action & ACT_GROUP_MASK)
+			switch(marioWorks->status & ACT_GROUP_MASK)
 			{
 				case ACT_GROUP_STATIONARY:
-					inLoop = gMarioState->mario_execute_stationary_action();
+					inLoop = marioWorks->mario_execute_stationary_action();
 					break;
 
 				case ACT_GROUP_MOVING:
-					inLoop = gMarioState->mario_execute_moving_action();
+					inLoop = marioWorks->mario_execute_moving_action();
 					break;
 
 				case ACT_GROUP_AIRBORNE:
-					inLoop = gMarioState->mario_execute_airborne_action();
+					inLoop = marioWorks->mario_execute_airborne_action();
 					break;
 
 				case ACT_GROUP_SUBMERGED:
-					inLoop = gMarioState->mario_execute_submerged_action();
+					inLoop = marioWorks->mario_execute_submerged_action();
 					break;
 
 				case ACT_GROUP_CUTSCENE:
-					inLoop = gMarioState->mario_execute_cutscene_action();
+					inLoop = marioWorks->mario_execute_cutscene_action();
 					break;
 
 				case ACT_GROUP_AUTOMATIC:
-					inLoop = gMarioState->mario_execute_automatic_action();
+					inLoop = marioWorks->mario_execute_automatic_action();
 					break;
 
 				case ACT_GROUP_OBJECT:
-					inLoop = gMarioState->mario_execute_object_action();
+					inLoop = marioWorks->mario_execute_object_action();
 					break;
 			}
 		}
 
-		gMarioState->sink_mario_in_quicksand();
-		gMarioState->squish_mario_model();
-		gMarioState->set_submerged_cam_preset_and_spawn_bubbles();
-		gMarioState->update_mario_health();
-		gMarioState->update_mario_info_for_cam();
-		gMarioState->mario_update_hitbox_and_cap_model();
+		marioWorks->sink_mario_in_quicksand();
+		marioWorks->squish_mario_model();
+		marioWorks->set_submerged_cam_preset_and_spawn_bubbles();
+		marioWorks->update_mario_health();
+		marioWorks->update_mario_info_for_cam();
+		marioWorks->mario_update_hitbox_and_cap_model();
 
 		// Both of the wind handling portions play wind audio only in
 		// non-Japanese releases.
-		if(gMarioState->floor->type == SURFACE_HORIZONTAL_WIND)
+		if(marioWorks->floor->type == SURFACE_HORIZONTAL_WIND)
 		{
-			func_802ADC20(0, (gMarioState->floor->force << 8));
-#ifndef VERSION_JP
-			play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
-#endif
+			func_802ADC20(0, (marioWorks->floor->force << 8));
+			AudStartSound(SOUND_ENV_WIND2, marioWorks->marioObj->header.gfx.cameraToObject);
 		}
 
-		if(gMarioState->floor->type == SURFACE_VERTICAL_WIND)
+		if(marioWorks->floor->type == SURFACE_VERTICAL_WIND)
 		{
 			func_802ADC20(1, 0);
-#ifndef VERSION_JP
-			play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
-#endif
+			AudStartSound(SOUND_ENV_WIND2, marioWorks->marioObj->header.gfx.cameraToObject);
 		}
 
 		play_infinite_stairs_music();
-		gMarioState->marioObj->oInteractStatus = 0;
+		marioWorks->marioObj->oInteractStatus = 0;
+		func_sh_8025574C();
 
-		return gMarioState->particleFlags;
+		return marioWorks->particleFlags;
 	}
 
 	return 0;

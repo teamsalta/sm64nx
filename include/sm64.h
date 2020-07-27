@@ -418,7 +418,7 @@
  the demo to end. This button cannot
  be pressed normally by a controller.
 */
-#define END_DEMO       (1 << 7)
+#define CONT_EXIT       (1 << 7)
 
 #define VALID_BUTTONS (sm64::hid::A_BUTTON   | sm64::hid::B_BUTTON   | sm64::hid::Z_TRIG     | sm64::hid::START_BUTTON | \
                        sm64::hid::U_JPAD     | sm64::hid::D_JPAD     | sm64::hid::L_JPAD     | sm64::hid::R_JPAD       | \

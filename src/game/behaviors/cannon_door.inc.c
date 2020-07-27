@@ -4,10 +4,10 @@ void bhv_cannon_closed_init(void)
 {
 	struct Object* cannon;
 
-	if(save_file_is_cannon_unlocked() == 1)
+	if(BuGetCannonFlag() == 1)
 	{
 		// If the cannon is open, spawn a cannon and despawn the object.
-		cannon			  = spawn_object(o, MODEL_CANNON_BASE, sm64::bhv::bhvCannon());
+		cannon			  = s_makeobj_nowpos(o, MODEL_CANNON_BASE, sm64::bhv::bhvCannon());
 		cannon->oBehParams2ndByte = o->oBehParams2ndByte;
 		cannon->oPosX		  = o->oHomeX;
 		cannon->oPosY		  = o->oHomeY;
@@ -21,7 +21,7 @@ void bhv_cannon_closed_init(void)
 void CannonTrapDoorOpeningLoop(void)
 {
 	if(o->oTimer == 0)
-		PlaySound2(SOUND_GENERAL_CANNON_UP);
+		objsound(SOUND_GENERAL_CANNON_UP);
 
 	if(o->oTimer < 30 * FRAME_RATE_SCALER_INV)
 	{
@@ -52,7 +52,7 @@ void bhv_cannon_closed_loop(void)
 			o->oVelY	    = 0;
 			o->oDrawingDistance = 4000.0f;
 
-			if(save_file_is_cannon_unlocked() == 1)
+			if(BuGetCannonFlag() == 1)
 				o->oAction = CANNON_TRAP_DOOR_ACT_CAM_ZOOM;
 			break;
 

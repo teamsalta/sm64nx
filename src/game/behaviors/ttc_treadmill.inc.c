@@ -49,7 +49,7 @@ void bhv_ttc_treadmill_update(void)
 	{
 		sMasterTreadmill = o;
 
-		PlaySound(SOUND_ENV_ELEVATOR2);
+		objsound_level(SOUND_ENV_ELEVATOR2);
 
 		if(gTTCSpeedSetting == TTC_SPEED_RANDOM)
 		{

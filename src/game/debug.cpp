@@ -26,7 +26,6 @@
 #include "engine/asset.h"
 #include "player/players.h"
 
-
 #include "engine/geo_layout.h"
 #include "game/shadow.h"
 #include "geo_commands.h"
@@ -46,21 +45,21 @@ namespace sm64
 
 	ExportBhv::ExportBhv(const BehaviorScript* bhv, const char* name)
 	{
-		auto hash    = XXHash64::hash(name, strlen(name), 0);
-		
+		auto hash = XXHash64::hash(name, strlen(name), 0);
+
 		hook::bhv::reg(bhv, hash);
 	}
 
 	ExportMacro::ExportMacro(const MacroObject* macro, const u64 len, const char* name)
 	{
-		auto hash    = sm64::hook::macro::fingerprint(macro);
+		auto hash = sm64::hook::macro::fingerprint(macro);
 
 		hook::macro::reg((const MacroObject*)macro, hash);
 	}
 
 	ExportLevel::ExportLevel(const LevelScript* level, const u64 len, const char* name)
 	{
-		auto hash    = XXHash64::hash(name, strlen(name), 0);
+		auto hash = XXHash64::hash(name, strlen(name), 0);
 
 		hook::level::reg((const LevelCommand*)level, hash);
 	}
@@ -69,7 +68,7 @@ namespace sm64
 
 	static FILE* logHandle()
 	{
-		if (!g_logHandle)
+		if(!g_logHandle)
 		{
 			g_logHandle = fopen("sm64.log", "w");
 		}
@@ -85,7 +84,6 @@ namespace sm64
 
 		fprintf(logHandle(), "%s", printBuffer);
 		fflush(logHandle());
-
 
 		va_end(args);
 	}

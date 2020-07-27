@@ -7,14 +7,14 @@ void bhv_wdw_express_elevator_loop(void)
 
 	if(o->oAction == 0)
 	{
-		if(obj_is_mario_on_platform())
+		if(s_rideon_player())
 			o->oAction++;
 	}
 	else if(o->oAction == 1)
 	{
 		o->oVelY = -20.0f;
 		o->oPosY += o->oVelY * FRAME_RATE_SCALER;
-		PlaySound(SOUND_ENV_ELEVATOR4);
+		objsound_level(SOUND_ENV_ELEVATOR4);
 		if(o->oTimer > 132 * FRAME_RATE_SCALER_INV)
 			o->oAction++;
 	}
@@ -27,13 +27,13 @@ void bhv_wdw_express_elevator_loop(void)
 	{
 		o->oVelY = 10.0f;
 		o->oPosY += o->oVelY * FRAME_RATE_SCALER;
-		PlaySound(SOUND_ENV_ELEVATOR4);
+		objsound_level(SOUND_ENV_ELEVATOR4);
 		if(o->oPosY >= o->oHomeY)
 		{
 			o->oPosY = o->oHomeY;
 			o->oAction++;
 		}
 	}
-	else if(!obj_is_mario_on_platform())
+	else if(!s_rideon_player())
 		o->oAction = 0;
 }

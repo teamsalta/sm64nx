@@ -171,8 +171,8 @@ void bhvToadMessage_loop(void)
 
 void bhvToadMessage_init(void)
 {
-	s32 saveFlags	= save_file_get_flags();
-	s32 starCount	= save_file_get_total_star_count(gCurrSaveFileNum - 1, 0, 24);
+	s32 saveFlags	= BuGetItemFlag();
+	s32 starCount	= BuGetSumStars(activePlayerNo - 1, 0, 24);
 	s32 dialogId	= (gCurrentObject->oBehParams >> 24) & 0xFF;
 	s32 enoughStars = TRUE;
 
@@ -209,13 +209,13 @@ void bhvToadMessage_init(void)
 	}
 	else
 	{
-		mark_object_for_deletion(gCurrentObject);
+		s_remove_obj(gCurrentObject);
 	}
 }
 
 static void bhvUnlockDoorStar_spawn_particle(s16 angleOffset)
 {
-	struct Object* sparkleParticle = spawn_object(gCurrentObject, 0, sm64::bhv::bhvSparkleSpawn());
+	struct Object* sparkleParticle = s_makeobj_nowpos(gCurrentObject, 0, sm64::bhv::bhvSparkleSpawn());
 
 	sparkleParticle->oPosX += 100.0f * sins((gCurrentObject->oUnlockDoorStarTimer * 0x2800) + angleOffset);
 	sparkleParticle->oPosZ += 100.0f * coss((gCurrentObject->oUnlockDoorStarTimer * 0x2800) + angleOffset);
@@ -228,9 +228,9 @@ void bhvUnlockDoorStar_init(void)
 	gCurrentObject->oUnlockDoorStarState  = UNLOCK_DOOR_STAR_RISING;
 	gCurrentObject->oUnlockDoorStarTimer  = 0;
 	gCurrentObject->oUnlockDoorStarYawVel = 0x1000;
-	gCurrentObject->oPosX += 30.0f * sins(gMarioState->faceAngle[1] - 0x4000);
+	gCurrentObject->oPosX += 30.0f * sins(marioWorks->faceAngle[1] - 0x4000);
 	gCurrentObject->oPosY += 160.0f;
-	gCurrentObject->oPosZ += 30.0f * coss(gMarioState->faceAngle[1] - 0x4000);
+	gCurrentObject->oPosZ += 30.0f * coss(marioWorks->faceAngle[1] - 0x4000);
 	gCurrentObject->oMoveAngleYaw = 0x7800;
 	scale_object(gCurrentObject, 0.5f);
 }
@@ -262,9 +262,9 @@ void bhvUnlockDoorStar_loop(void)
 			gCurrentObject->oMoveAngleYaw += gCurrentObject->oUnlockDoorStarYawVel; // Apply yaw velocity
 			if(++gCurrentObject->oUnlockDoorStarTimer == 30 * FRAME_RATE_SCALER_INV)
 			{
-				play_sound(SOUND_MENU_STAR_SOUND,
-					   gCurrentObject->header.gfx.cameraToObject); // Play final sound
-				obj_hide();					       // Hide the object
+				AudStartSound(SOUND_MENU_STAR_SOUND,
+					      gCurrentObject->header.gfx.cameraToObject); // Play final sound
+				s_shape_hide();						  // Hide the object
 				gCurrentObject->oUnlockDoorStarTimer = 0;
 				gCurrentObject->oUnlockDoorStarState++; // Sets state to UNLOCK_DOOR_STAR_SPAWNING_PARTICLES
 			}
@@ -283,7 +283,7 @@ void bhvUnlockDoorStar_loop(void)
 					    // sound doesn't immediately stop.
 			if(gCurrentObject->oUnlockDoorStarTimer++ == 50 * FRAME_RATE_SCALER_INV)
 			{
-				mark_object_for_deletion(gCurrentObject);
+				s_remove_obj(gCurrentObject);
 			}
 			break;
 	}
@@ -291,8 +291,8 @@ void bhvUnlockDoorStar_loop(void)
 	// This means that the code will execute when the star completes a full revolution.
 	if(prevYaw > (s16)gCurrentObject->oMoveAngleYaw)
 	{
-		play_sound(SOUND_GENERAL_SHORT_STAR,
-			   gCurrentObject->header.gfx.cameraToObject); // Play a sound every time the star spins once
+		AudStartSound(SOUND_GENERAL_SHORT_STAR,
+			      gCurrentObject->header.gfx.cameraToObject); // Play a sound every time the star spins once
 	}
 }
 
@@ -304,13 +304,13 @@ static Gfx* make_gfx_mario_alpha(struct GraphNodeGenerated* node, s16 b)
 	if(b == 255)
 	{
 		node->fnNode.node.flags = (node->fnNode.node.flags & 0xFF) | 0x100;
-		sp28			= (Gfx*)alloc_display_list(2 * sizeof(*sp28));
+		sp28			= (Gfx*)AllocDynamic(2 * sizeof(*sp28));
 		sp2C			= sp28;
 	}
 	else
 	{
 		node->fnNode.node.flags = (node->fnNode.node.flags & 0xFF) | 0x500;
-		sp28			= (Gfx*)alloc_display_list(3 * sizeof(*sp28));
+		sp28			= (Gfx*)AllocDynamic(3 * sizeof(*sp28));
 		sp2C			= sp28;
 		gDPSetAlphaCompare(sp2C++, G_AC_DITHER);
 	}
@@ -359,7 +359,7 @@ Gfx* geo_switch_mario_eyes(s32 callContext, struct GraphNode* node, UNUSED Mat4*
 	{
 		if(sp8->eyeState == 0)
 		{
-			sp6 = ((switchCase->numCases * 32 + gAreaUpdateCounter) >> 1) & 0x1F;
+			sp6 = ((switchCase->numCases * 32 + animationCounter) >> 1) & 0x1F;
 			if(sp6 < 7)
 			{
 				switchCase->selectedCase = D_8032CDF0[sp6];
@@ -417,8 +417,8 @@ Gfx* geo_mario_head_rotation(s32 callContext, struct GraphNode* node, UNUSED Mat
 
 		if(camera->mode == CAMERA_MODE_C_UP)
 		{
-			sp20->rotation[0] = gPlayerCameraState->headRotation[1];
-			sp20->rotation[2] = gPlayerCameraState->headRotation[0];
+			sp20->rotation[0] = camPlayerInfo->headRotation[1];
+			sp20->rotation[2] = camPlayerInfo->headRotation[0];
 		}
 		else if(action & 0x20000000)
 		{
@@ -485,10 +485,10 @@ Gfx* geo_mario_hand_foot_scaler(s32 callContext, struct GraphNode* node, UNUSED 
 		sp8->scale = 1.0f;
 		if(asGenerated->parameter == bodyState->punchState >> 6)
 		{
-			if(sMarioAttackAnimCounter != gAreaUpdateCounter && (bodyState->punchState & 0x3F) > 0)
+			if(sMarioAttackAnimCounter != animationCounter && (bodyState->punchState & 0x3F) > 0)
 			{
 				bodyState->punchState -= 1;
-				sMarioAttackAnimCounter = gAreaUpdateCounter;
+				sMarioAttackAnimCounter = animationCounter;
 			}
 			sp8->scale = gMarioAttackScaleAnimation[asGenerated->parameter * 6 + (bodyState->punchState & 0x3F)] / 10.0f;
 		}
@@ -551,11 +551,11 @@ Gfx* geo_mario_rotate_wing_cap_wings(s32 callContext, struct GraphNode* node, UN
 
 		if(gBodyStates[sp8->parameter >> 1].unk07 == 0)
 		{
-			rotX = (coss((gAreaUpdateCounter & 0xF) << 12) + 1.0f) * 4096.0f;
+			rotX = (coss((animationCounter & 0xF) << 12) + 1.0f) * 4096.0f;
 		}
 		else
 		{
-			rotX = (coss((gAreaUpdateCounter & 7) << 13) + 1.0f) * 6144.0f;
+			rotX = (coss((animationCounter & 7) << 13) + 1.0f) * 6144.0f;
 		}
 		if(!(sp8->parameter & 1))
 		{
@@ -573,7 +573,7 @@ Gfx* geo_switch_mario_hand_grab_pos(s32 callContext, struct GraphNode* b, Mat4* 
 {
 	struct GraphNodeHeldObject* sp2C = (struct GraphNodeHeldObject*)b;
 	Mat4* sp28			 = c;
-	struct MarioState* sp24		 = &gMarioStates[sp2C->playerIndex];
+	struct PlayerRecord* sp24	 = &playerWorks[sp2C->playerIndex];
 
 	if(callContext == GEO_CONTEXT_RENDER)
 	{
@@ -584,7 +584,7 @@ Gfx* geo_switch_mario_hand_grab_pos(s32 callContext, struct GraphNode* b, Mat4* 
 			switch(sp24->marioBodyState->grabPos)
 			{
 				case GRAB_POS_LIGHT_OBJ:
-					if(sp24->action & ACT_FLAG_THROWING)
+					if(sp24->status & ACT_FLAG_THROWING)
 					{
 						vec3s_set(sp2C->translation, 50, 0, 0);
 					}
@@ -612,7 +612,7 @@ Gfx* geo_switch_mario_hand_grab_pos(s32 callContext, struct GraphNode* b, Mat4* 
 Gfx* geo_render_mirror_mario(s32 callContext, struct GraphNode* node, UNUSED Mat4* c)
 {
 	f32 sp34;
-	struct Object* sp30 = gMarioStates->marioObj;
+	struct Object* sp30 = playerWorks->marioObj;
 
 	switch(callContext)
 	{
@@ -663,7 +663,7 @@ Gfx* geo_mirror_mario_backface_culling(s32 callContext, struct GraphNode* node, 
 
 	if(callContext == GEO_CONTEXT_RENDER && gCurGraphNodeObject == &D_80339FE0)
 	{
-		sp30 = (Gfx*)alloc_display_list(3 * sizeof(*sp30));
+		sp30 = (Gfx*)AllocDynamic(3 * sizeof(*sp30));
 
 		if(sp34->parameter == 0)
 		{

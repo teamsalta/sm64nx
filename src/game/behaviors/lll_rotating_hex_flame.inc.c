@@ -10,7 +10,7 @@ void bhv_lll_rotating_hex_flame_loop(void)
 
 	o->oPosY = o->parentObj->oPosY + 100.0f;
 	if(o->parentObj->oAction == 3)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }
 
 void func_802BB9F0(s16 a0)
@@ -25,7 +25,7 @@ void func_802BB9F0(s16 a0)
 
 	for(i = 0; i < sp20; i++)
 	{
-		sp2C = spawn_object(o, MODEL_RED_FLAME, sm64::bhv::bhvLllRotatingHexFlame());
+		sp2C = s_makeobj_nowpos(o, MODEL_RED_FLAME, sm64::bhv::bhvLllRotatingHexFlame());
 		sp2C->oLllRotatingHexFlameUnkF4 += sp1C;
 		sp2C->oLllRotatingHexFlameUnkF8 = o->oPosY - 200.0f;
 		sp2C->oLllRotatingHexFlameUnkFC += sp18;
@@ -69,8 +69,8 @@ void (*sRotatingCwFireBarsActions[])(void) = {ActionRotatingCwFireBars0, ActionR
 
 void bhv_lll_rotating_block_fire_bars_loop(void)
 {
-	obj_call_action_function(sRotatingCwFireBarsActions);
+	s_modejmp(sRotatingCwFireBarsActions);
 
 	if(o->oBehParams2ndByte == 0)
-		load_object_collision_model();
+		stMainMoveBG();
 }

@@ -26,7 +26,7 @@ void bhv_donut_platform_spawner_update(void)
 			// dist > 1000 and dist < 2000
 			if(marioSqDist > 1000000.0f && marioSqDist < 4000000.0f)
 			{
-				if(spawn_object_relative(i, sDonutPlatformPositions[i][0], sDonutPlatformPositions[i][1], sDonutPlatformPositions[i][2], o, MODEL_RR_DONUT_PLATFORM, sm64::bhv::bhvDonutPlatform()) != NULL)
+				if(s_makeobj_chain(i, sDonutPlatformPositions[i][0], sDonutPlatformPositions[i][1], sDonutPlatformPositions[i][2], o, MODEL_RR_DONUT_PLATFORM, sm64::bhv::bhvDonutPlatform()) != NULL)
 				{
 					o->oDonutPlatformSpawnerSpawnedPlatforms |= platformFlag;
 				}
@@ -43,12 +43,12 @@ void bhv_donut_platform_update(void)
 
 		if(o->oDistanceToMario > 2500.0f)
 		{
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 		}
 		else
 		{
 			func_802A3C98(150.0f, 1);
-			create_sound_spawner(SOUND_GENERAL_DONUT_PLATFORM_EXPLOSION);
+			obj_remove_sound(SOUND_GENERAL_DONUT_PLATFORM_EXPLOSION);
 		}
 	}
 	else
@@ -75,6 +75,6 @@ void bhv_donut_platform_update(void)
 			obj_move_standard(78);
 		}
 
-		load_object_collision_model();
+		stMainMoveBG();
 	}
 }

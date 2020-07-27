@@ -34,7 +34,7 @@ static void triplet_butterfly_act_init(void)
 		{
 			for(i = 1; i <= 2; i++)
 			{
-				spawn_object_relative(i, 0, 0, 0, o, MODEL_BUTTERFLY, sm64::bhv::bhvTripletButterfly());
+				s_makeobj_chain(i, 0, 0, 0, o, MODEL_BUTTERFLY, sm64::bhv::bhvTripletButterfly());
 			}
 
 			o->oTripletButterflySelectedButterfly = RandomU16() % 3;
@@ -57,7 +57,7 @@ static void triplet_butterfly_act_init(void)
 		o->oMoveAngleYaw	    = (s32)(o->oTripletButterflyBaseYaw + random_linear_offset(0, 0x5555));
 		o->oTripletButterflySpeed   = random_linear_offset(15, 15);
 
-		obj_unhide();
+		s_shape_disp();
 	}
 }
 
@@ -65,7 +65,7 @@ static void triplet_butterfly_act_wander(void)
 {
 	if(o->oDistanceToMario > 1500.0f && !sm64::config().camera().disableDistanceClip())
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{
@@ -112,7 +112,7 @@ static void triplet_butterfly_act_activate(void)
 		{
 			spawn_object_relative_with_scale(0, 0, -40, 0, 1.5f, o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke2());
 			o->oTripletButterflyModel = sTripletButterflyActivationData[o->oTripletButterflyType].model;
-			obj_set_model(o->oTripletButterflyModel);
+			s_change_shape(o->oTripletButterflyModel);
 			obj_set_billboard(o);
 			o->oTripletButterflyScale = 0.0f;
 			o->oHomeY		  = o->oPosY;
@@ -121,8 +121,8 @@ static void triplet_butterfly_act_activate(void)
 		{
 			if(o->oTripletButterflyType != TRIPLET_BUTTERFLY_TYPE_EXPLODES)
 			{
-				spawn_object(o, o->oTripletButterflyModel, sTripletButterflyActivationData[o->oTripletButterflyType].behavior);
-				mark_object_for_deletion(o);
+				s_makeobj_nowpos(o, o->oTripletButterflyModel, sTripletButterflyActivationData[o->oTripletButterflyType].behavior);
+				s_remove_obj(o);
 			}
 			else
 			{
@@ -150,8 +150,8 @@ static void triplet_butterfly_act_explode(void)
 	if(o->oAction == -1 || (o->oMoveFlags & 0x00000200) || o->oTimer >= 158 * FRAME_RATE_SCALER_INV)
 	{
 		o->oPosY += o->oGraphYOffset;
-		spawn_object(o, MODEL_EXPLOSION, sm64::bhv::bhvExplosion());
-		mark_object_for_deletion(o);
+		s_makeobj_nowpos(o, MODEL_EXPLOSION, sm64::bhv::bhvExplosion());
+		s_remove_obj(o);
 	}
 	else
 	{
@@ -197,7 +197,7 @@ void bhv_triplet_butterfly_update(void)
 			break;
 	}
 
-	obj_scale(o->oTripletButterflyScale);
+	s_set_scale(o->oTripletButterflyScale);
 	obj_compute_vel_from_move_pitch(o->oTripletButterflySpeed);
 	obj_move_standard(78);
 }

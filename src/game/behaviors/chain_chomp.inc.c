@@ -33,7 +33,7 @@ void bhv_chain_chomp_chain_part_update(void)
 
 	if(o->parentObj->oAction == CHAIN_CHOMP_ACT_UNLOAD_CHAIN)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else if(o->oBehParams2ndByte != CHAIN_CHOMP_CHAIN_PART_BP_PIVOT)
 	{
@@ -78,17 +78,17 @@ static void chain_chomp_act_uninitialized(void)
 			obj_set_pos_to_home();
 
 			// Spawn the pivot and set to parent
-			if((o->parentObj = spawn_object(o, CHAIN_CHOMP_CHAIN_PART_BP_PIVOT, sm64::bhv::bhvChainChompChainPart())) != NULL)
+			if((o->parentObj = s_makeobj_nowpos(o, CHAIN_CHOMP_CHAIN_PART_BP_PIVOT, sm64::bhv::bhvChainChompChainPart())) != NULL)
 			{
 				// Spawn the non-pivot chain parts, starting from the chain
 				// chomp and moving toward the pivot
 				for(i = 1; i <= 4; i++)
 				{
-					spawn_object_relative(i, 0, 0, 0, o, MODEL_METALLIC_BALL, sm64::bhv::bhvChainChompChainPart());
+					s_makeobj_chain(i, 0, 0, 0, o, MODEL_METALLIC_BALL, sm64::bhv::bhvChainChompChainPart());
 				}
 
 				o->oAction = CHAIN_CHOMP_ACT_MOVE;
-				obj_unhide();
+				s_shape_disp();
 			}
 		}
 	}
@@ -210,7 +210,7 @@ static void chain_chomp_sub_act_turn(void)
 						// the lunging sub-action.
 						if(o->oDistanceToMario < 3000.0f)
 						{
-							PlaySound2(SOUND_GENERAL_CHAIN_CHOMP2);
+							objsound(SOUND_GENERAL_CHAIN_CHOMP2);
 						}
 
 						o->oSubAction				   = CHAIN_CHOMP_SUB_ACT_LUNGE;
@@ -236,7 +236,7 @@ static void chain_chomp_sub_act_turn(void)
 		{
 			if(o->oDistanceToMario < 3000.0f)
 			{
-				PlaySound2(SOUND_GENERAL_CHAIN_CHOMP1);
+				objsound(SOUND_GENERAL_CHAIN_CHOMP1);
 			}
 			o->oForwardVel = 10.0f;
 			o->oVelY       = 20.0f;
@@ -288,7 +288,7 @@ static void chain_chomp_sub_act_lunge(void)
 		}
 
 		o->oChainChompMaxDistBetweenChainParts = o->oChainChompUnk104;
-		if(gGlobalTimer % 2 != 0)
+		if(frameCounter % 2 != 0)
 		{
 			o->oChainChompMaxDistBetweenChainParts = -o->oChainChompUnk104;
 		}
@@ -351,7 +351,7 @@ static void chain_chomp_released_lunge_around(void)
 			{
 				if(o->oDistanceToMario < 3000.0f)
 				{
-					PlaySound2(SOUND_GENERAL_CHAIN_CHOMP1);
+					objsound(SOUND_GENERAL_CHAIN_CHOMP1);
 				}
 				o->oMoveAngleYaw = o->oAngleToMario + RandomSign() * 0x2000;
 				o->oForwardVel	 = 30.0f;
@@ -539,14 +539,14 @@ static void chain_chomp_act_move(void)
  */
 static void chain_chomp_act_unload_chain(void)
 {
-	obj_hide();
+	s_shape_hide();
 	mem_pool_free(gObjectMemoryPool, o->oChainChompSegments);
 
 	o->oAction = CHAIN_CHOMP_ACT_UNINITIALIZED;
 
 	if(o->oChainChompReleaseStatus != CHAIN_CHOMP_NOT_RELEASED)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }
 
@@ -577,16 +577,16 @@ void bhv_wooden_post_update(void)
 	// When ground pounded by mario, drop by -45 + -20
 	if(!o->oWoodenPostMarioPounding)
 	{
-		if((o->oWoodenPostMarioPounding = obj_is_mario_ground_pounding_platform()))
+		if((o->oWoodenPostMarioPounding = s_checkplayer_hipaatack()))
 		{
-			PlaySound2(SOUND_GENERAL_POUND_WOOD_POST);
+			objsound(SOUND_GENERAL_POUND_WOOD_POST);
 			o->oWoodenPostSpeedY = -70.0f;
 		}
 	}
 	else if(approach_f32_ptr(&o->oWoodenPostSpeedY, 0.0f, 25.0f * FRAME_RATE_SCALER))
 	{
 		// Stay still until mario is done ground pounding
-		o->oWoodenPostMarioPounding = obj_is_mario_ground_pounding_platform();
+		o->oWoodenPostMarioPounding = s_checkplayer_hipaatack();
 	}
 	else if((o->oWoodenPostOffsetY += o->oWoodenPostSpeedY * FRAME_RATE_SCALER) < -190.0f)
 	{
@@ -595,7 +595,7 @@ void bhv_wooden_post_update(void)
 		o->oWoodenPostOffsetY = -190.0f;
 		if(o->parentObj != o)
 		{
-			play_puzzle_jingle();
+			Na_NazoClearBgm();
 			o->parentObj->oChainChompReleaseStatus = CHAIN_CHOMP_RELEASED_TRIGGER_CUTSCENE;
 			o->parentObj			       = o;
 		}
@@ -633,7 +633,7 @@ void bhv_wooden_post_update(void)
  */
 void bhv_chain_chomp_gate_init(void)
 {
-	o->parentObj = obj_nearest_object_with_behavior(sm64::bhv::bhvChainChomp());
+	o->parentObj = s_find_obj(sm64::bhv::bhvChainChomp());
 }
 
 /**
@@ -645,8 +645,8 @@ void bhv_chain_chomp_gate_update(void)
 	{
 		func_802A3034(SOUND_GENERAL_WALL_EXPLOSION);
 		set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
-		func_802AA618(0, 0x7F, 200.0f);
-		spawn_triangle_break_particles(30, 0x8A, 3.0f, 4);
-		mark_object_for_deletion(o);
+		s_burneffect(0, 0x7F, 200.0f);
+		s_boxeffect(30, 0x8A, 3.0f, 4);
+		s_remove_obj(o);
 	}
 }

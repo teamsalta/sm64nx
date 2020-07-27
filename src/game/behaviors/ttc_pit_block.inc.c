@@ -5,7 +5,7 @@
  */
 
 /**
- * Collision models. The second one is unused.
+ * Collision models. The second one is size.
  */
 static const void* sTTCPitBlockCollisionModels[] = {
     ttc_seg7_collision_07015754,
@@ -58,7 +58,7 @@ void bhv_ttc_pit_block_update(void)
 	if(o->oTimer > o->oTTCPitBlockWaitTime * FRAME_RATE_SCALER_INV)
 	{
 		// Forward vel and gravity are zero, so this just does posY += velY
-		obj_move_using_fvel_and_gravity();
+		s_optionmove_F();
 
 		if(clamp_f32(&o->oPosY, o->oHomeY, o->oTTCPitBlockPeakY))
 		{

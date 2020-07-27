@@ -25,11 +25,7 @@ struct Note* gNotes;
 struct SequencePlayer gSequencePlayers[SEQUENCE_PLAYERS];
 struct SequenceChannel gSequenceChannels[32];
 
-#ifdef VERSION_JP
-struct SequenceChannelLayer gSequenceLayers[48];
-#else
 struct SequenceChannelLayer gSequenceLayers[52];
-#endif
 
 struct SequenceChannel gSequenceChannelNone;
 struct AudioListItem gLayerFreeList;
@@ -64,12 +60,10 @@ u16 gSequenceCount;
 extern u64 gAudioGlobalsStartMarker;
 extern u64 gAudioGlobalsEndMarker;
 
-
 /*extern u8 gSoundDataADSR[]; // sound_data.ctl
 extern u8 gSoundDataRaw[];  // sound_data.tbl
 extern u8 gMusicData[];	    // sequences.s
 extern u8 gBankSetsData[];  // bank_sets.s*/
-
 
 u8* load(sm64::hook::sound::Id id)
 {
@@ -259,9 +253,7 @@ void* dma_sample_data(uintptr_t devAddr, u32 size, s32 arg2, u8* arg3)
 	dma->ttl	= 2;
 	dma->source	= dmaDevAddr;
 	dma->sizeUnused = transfer;
-#ifndef VERSION_JP
 	osInvalDCache(dma->buffer, transfer);
-#endif
 	gCurrAudioFrameDmaCount++;
 	osPiStartDma(&gCurrAudioFrameDmaIoMesgBufs[gCurrAudioFrameDmaCount - 1], OS_MESG_PRI_NORMAL, OS_READ, dmaDevAddr, dma->buffer, transfer, &gCurrAudioFrameDmaQueue);
 	*arg3 = dmaIndex;
@@ -530,12 +522,12 @@ struct AudioBank* bank_load_immediate(s32 bankId, s32 arg1)
 	auto& bankTbl = gAlTbl->seqArray[bankId];
 	patch_audio_bank(ret, bankTbl.offset, numInstruments, numDrums);
 
-	auto& bankEntry = gCtlEntries[bankId];
+	auto& bankEntry		 = gCtlEntries[bankId];
 	bankEntry.numInstruments = (u8)numInstruments;
-	bankEntry.numDrums	   = (u8)numDrums;
-	bankEntry.instruments	   = ret->instruments;
-	bankEntry.drums	   = ret->drums;
-	gBankLoadStatus[bankId]		   = SOUND_LOAD_STATUS_COMPLETE;
+	bankEntry.numDrums	 = (u8)numDrums;
+	bankEntry.instruments	 = ret->instruments;
+	bankEntry.drums		 = ret->drums;
+	gBankLoadStatus[bankId]	 = SOUND_LOAD_STATUS_COMPLETE;
 	return ret;
 }
 
@@ -919,9 +911,9 @@ void audio_init()
 	// Load header for TBL (assets/sound_data.tbl.s, i.e. raw data)
 	gAlTbl = (ALSeqFile*)buf;
 	audio_dma_copy_immediate((uintptr_t)data, gAlTbl, 0x10);
-	size   = gAlTbl->seqCount * sizeof(ALSeqData) + 4;
-	size   = ALIGN16(size);
-	
+	size = gAlTbl->seqCount * sizeof(ALSeqData) + 4;
+	size = ALIGN16(size);
+
 	gAlTbl = (ALSeqFile*)soundAlloc(&gAudioInitPool, size);
 	audio_dma_copy_immediate((uintptr_t)soundDataRaw(), gAlTbl, size);
 	alSeqFileNew(gAlTbl, soundDataRaw());

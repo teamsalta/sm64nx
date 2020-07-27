@@ -31,7 +31,7 @@ void bhv_bowser_key_unlock_door_loop(void)
 		o->oBowserKeyScale = 1.0f;
 
 	if(o->oTimer > 150 * FRAME_RATE_SCALER_INV)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }
 
 void bhv_bowser_key_course_exit_loop(void)
@@ -63,6 +63,6 @@ void bhv_bowser_key_course_exit_loop(void)
 
 	if(o->oTimer > 138 * FRAME_RATE_SCALER_INV)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }

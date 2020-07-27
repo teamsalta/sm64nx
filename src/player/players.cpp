@@ -40,7 +40,7 @@ namespace sm64
 		else
 		{
 			m_players[playerId].attach(controller);
-			m_size = MAX(playerId+1, m_size);
+			m_size = MAX(playerId + 1, m_size);
 		}
 	}
-}
+} // namespace sm64

@@ -1,7 +1,5 @@
 #include <ultra64.h>
-#ifndef TARGET_N64
 #include <string.h>
-#endif
 
 #include "sm64.h"
 #include "audio/external.h"
@@ -427,7 +425,7 @@ static void level_cmd_load_mio0_texture(void)
 static void level_cmd_init_level(void)
 {
 	LOG_OP();
-	init_graph_node_start(NULL, (struct GraphNodeStart*)&gObjParentGraphNode);
+	init_graph_node_start(NULL, (struct GraphNodeStart*)&strategyGroup);
 	clear_objects();
 	clear_areas();
 	main_pool_push_state();
@@ -439,7 +437,7 @@ static void level_cmd_clear_level(void)
 {
 	sm64::config().camera().unsetLevelLoaded();
 	clear_objects();
-	func_8027A7C4();
+	SnDisposeScene();
 	clear_areas();
 	main_pool_pop_state();
 
@@ -467,7 +465,7 @@ static void level_cmd_free_level_pool(void)
 
 	for(i = 0; i < 8; i++)
 	{
-		if(gAreaData[i].terrainData != NULL)
+		if(sceneList[i].terrainData != NULL)
 		{
 			alloc_surface_pools();
 			break;
@@ -488,17 +486,17 @@ static void level_cmd_begin_area(void)
 		struct GraphNodeRoot* screenArea = (struct GraphNodeRoot*)process_geo_layout(sLevelPool, geoLayoutAddr);
 		struct GraphNodeCamera* node	 = (struct GraphNodeCamera*)screenArea->views[0];
 
-		sCurrAreaIndex		= areaIndex;
-		screenArea->areaIndex	= areaIndex;
-		gAreas[areaIndex].unk04 = (struct GraphNode*)screenArea;
+		sCurrAreaIndex		     = areaIndex;
+		screenArea->areaIndex	     = areaIndex;
+		stageScenes[areaIndex].unk04 = (struct GraphNode*)screenArea;
 
 		if(node != NULL)
 		{
-			gAreas[areaIndex].camera = node->config.camera;
+			stageScenes[areaIndex].camera = node->config.camera;
 		}
 		else
 		{
-			gAreas[areaIndex].camera = NULL;
+			stageScenes[areaIndex].camera = NULL;
 		}
 	}
 
@@ -521,7 +519,7 @@ static void level_cmd_load_model_from_dl(void)
 
 	if(val1 < 256)
 	{
-		gLoadedGraphNodes[val1] = (struct GraphNode*)init_graph_node_display_list(sLevelPool, 0, val2, val3);
+		stageShapes[val1] = (struct GraphNode*)init_graph_node_display_list(sLevelPool, 0, val2, val3);
 	}
 
 	sCurrentCmd = CMD_NEXT;
@@ -535,7 +533,7 @@ static void level_cmd_load_model_from_geo(void)
 
 	if(arg0 < 256)
 	{
-		gLoadedGraphNodes[arg0] = process_geo_layout(sLevelPool, arg1);
+		stageShapes[arg0] = process_geo_layout(sLevelPool, arg1);
 	}
 
 	sCurrentCmd = CMD_NEXT;
@@ -560,7 +558,7 @@ static void level_cmd_23(void)
 	{
 		// GraphNodeScale has a GraphNode at the top. This
 		// is being stored to the array, so cast the pointer.
-		gLoadedGraphNodes[model] = (struct GraphNode*)init_graph_node_scale(sLevelPool, 0, arg0H, arg1, arg2.f);
+		stageShapes[model] = (struct GraphNode*)init_graph_node_scale(sLevelPool, 0, arg0H, arg1, arg2.f);
 	}
 
 	sCurrentCmd = CMD_NEXT;
@@ -569,15 +567,15 @@ static void level_cmd_23(void)
 static void level_cmd_init_mario(void)
 {
 	LOG_OP();
-	vec3s_set(gMarioSpawnInfo->startPos, 0, 0, 0);
-	vec3s_set(gMarioSpawnInfo->startAngle, 0, 0, 0);
+	vec3s_set(marioActor->startPos, 0, 0, 0);
+	vec3s_set(marioActor->startAngle, 0, 0, 0);
 
-	gMarioSpawnInfo->activeAreaIndex = -1;
-	gMarioSpawnInfo->areaIndex	 = 0;
-	gMarioSpawnInfo->behaviorArg	 = CMD_GET(u32, 4);
-	gMarioSpawnInfo->behaviorScript	 = CMD_GET(void*, 8);
-	gMarioSpawnInfo->unk18		 = gLoadedGraphNodes[CMD_GET(u8, 3)];
-	gMarioSpawnInfo->next		 = NULL;
+	marioActor->activeAreaIndex = -1;
+	marioActor->areaIndex	    = 0;
+	marioActor->behaviorArg	    = CMD_GET(u32, 4);
+	marioActor->behaviorScript  = CMD_GET(void*, 8);
+	marioActor->unk18	    = stageShapes[CMD_GET(u8, 3)];
+	marioActor->next	    = NULL;
 
 	sCurrentCmd = CMD_NEXT;
 }
@@ -585,7 +583,7 @@ static void level_cmd_init_mario(void)
 static void level_cmd_place_object(void)
 {
 	LOG_OP();
-	u8 val7 = 1 << (gCurrActNum - 1);
+	u8 val7 = 1 << (activeLevelNo - 1);
 	u16 model;
 	struct SpawnInfo* spawnInfo;
 
@@ -607,10 +605,10 @@ static void level_cmd_place_object(void)
 
 		spawnInfo->behaviorArg	  = CMD_GET(u32, 16);
 		spawnInfo->behaviorScript = CMD_GET(void*, 20);
-		spawnInfo->unk18	  = gLoadedGraphNodes[model];
-		spawnInfo->next		  = gAreas[sCurrAreaIndex].objectSpawnInfos;
+		spawnInfo->unk18	  = stageShapes[model];
+		spawnInfo->next		  = stageScenes[sCurrAreaIndex].objectSpawnInfos;
 
-		gAreas[sCurrAreaIndex].objectSpawnInfos = spawnInfo;
+		stageScenes[sCurrAreaIndex].objectSpawnInfos = spawnInfo;
 	}
 
 	sCurrentCmd = CMD_NEXT;
@@ -630,8 +628,8 @@ static void level_cmd_create_warp_node(void)
 
 		warpNode->object = NULL;
 
-		warpNode->next			 = gAreas[sCurrAreaIndex].warpNodes;
-		gAreas[sCurrAreaIndex].warpNodes = warpNode;
+		warpNode->next			      = stageScenes[sCurrAreaIndex].warpNodes;
+		stageScenes[sCurrAreaIndex].warpNodes = warpNode;
 	}
 
 	sCurrentCmd = CMD_NEXT;
@@ -645,17 +643,17 @@ static void level_cmd_create_instant_warp(void)
 
 	if(sCurrAreaIndex != -1)
 	{
-		if(gAreas[sCurrAreaIndex].instantWarps == NULL)
+		if(stageScenes[sCurrAreaIndex].instantWarps == NULL)
 		{
-			gAreas[sCurrAreaIndex].instantWarps = (InstantWarp*)alloc_only_pool_alloc(sLevelPool, 4 * sizeof(struct InstantWarp));
+			stageScenes[sCurrAreaIndex].instantWarps = (InstantWarp*)alloc_only_pool_alloc(sLevelPool, 4 * sizeof(struct InstantWarp));
 
 			for(i = INSTANT_WARP_INDEX_START; i < INSTANT_WARP_INDEX_STOP; i++)
 			{
-				gAreas[sCurrAreaIndex].instantWarps[i].id = 0;
+				stageScenes[sCurrAreaIndex].instantWarps[i].id = 0;
 			}
 		}
 
-		warp = gAreas[sCurrAreaIndex].instantWarps + CMD_GET(u8, 2);
+		warp = stageScenes[sCurrAreaIndex].instantWarps + CMD_GET(u8, 2);
 
 		warp[0].id   = 1;
 		warp[0].area = CMD_GET(u8, 3);
@@ -673,7 +671,7 @@ static void level_cmd_set_terrain_type(void)
 	LOG_OP();
 	if(sCurrAreaIndex != -1)
 	{
-		gAreas[sCurrAreaIndex].terrainType |= CMD_GET(s16, 2);
+		stageScenes[sCurrAreaIndex].terrainType |= CMD_GET(s16, 2);
 	}
 
 	sCurrentCmd = CMD_NEXT;
@@ -687,17 +685,17 @@ static void level_cmd_create_painting_warp_node(void)
 
 	if(sCurrAreaIndex != -1)
 	{
-		if(gAreas[sCurrAreaIndex].paintingWarpNodes == NULL)
+		if(stageScenes[sCurrAreaIndex].paintingWarpNodes == NULL)
 		{
-			gAreas[sCurrAreaIndex].paintingWarpNodes = (WarpNode*)alloc_only_pool_alloc(sLevelPool, 45 * sizeof(struct WarpNode));
+			stageScenes[sCurrAreaIndex].paintingWarpNodes = (WarpNode*)alloc_only_pool_alloc(sLevelPool, 45 * sizeof(struct WarpNode));
 
 			for(i = 0; i < 45; i++)
 			{
-				gAreas[sCurrAreaIndex].paintingWarpNodes[i].id = 0;
+				stageScenes[sCurrAreaIndex].paintingWarpNodes[i].id = 0;
 			}
 		}
 
-		node = &gAreas[sCurrAreaIndex].paintingWarpNodes[CMD_GET(u8, 2)];
+		node = &stageScenes[sCurrAreaIndex].paintingWarpNodes[CMD_GET(u8, 2)];
 
 		node->id	= 1;
 		node->destLevel = CMD_GET(u8, 3) + CMD_GET(u8, 6);
@@ -715,9 +713,9 @@ static void level_cmd_3A(void)
 
 	if(sCurrAreaIndex != -1)
 	{
-		if((val4 = gAreas[sCurrAreaIndex].unused28) == NULL)
+		if((val4 = stageScenes[sCurrAreaIndex].unused28) == NULL)
 		{
-			val4 = gAreas[sCurrAreaIndex].unused28 = (UnusedArea28*)alloc_only_pool_alloc(sLevelPool, sizeof(struct UnusedArea28));
+			val4 = stageScenes[sCurrAreaIndex].unused28 = (UnusedArea28*)alloc_only_pool_alloc(sLevelPool, sizeof(struct UnusedArea28));
 		}
 
 		val4->unk00 = CMD_GET(s16, 2);
@@ -735,16 +733,16 @@ static void level_cmd_create_whirlpool(void)
 	LOG_OP();
 	struct Whirlpool* whirlpool;
 	s32 index	= CMD_GET(u8, 2);
-	s32 beatBowser2 = (save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) != 0;
+	s32 beatBowser2 = (BuGetItemFlag() & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) != 0;
 
-	if(CMD_GET(u8, 3) == 0 || (CMD_GET(u8, 3) == 1 && !beatBowser2) || (CMD_GET(u8, 3) == 2 && beatBowser2) || (CMD_GET(u8, 3) == 3 && gCurrActNum >= 2))
+	if(CMD_GET(u8, 3) == 0 || (CMD_GET(u8, 3) == 1 && !beatBowser2) || (CMD_GET(u8, 3) == 2 && beatBowser2) || (CMD_GET(u8, 3) == 3 && activeLevelNo >= 2))
 	{
 		if(sCurrAreaIndex != -1 && index < 2)
 		{
-			if((whirlpool = gAreas[sCurrAreaIndex].whirlpools[index]) == NULL)
+			if((whirlpool = stageScenes[sCurrAreaIndex].whirlpools[index]) == NULL)
 			{
-				whirlpool				 = (Whirlpool*)alloc_only_pool_alloc(sLevelPool, sizeof(struct Whirlpool));
-				gAreas[sCurrAreaIndex].whirlpools[index] = whirlpool;
+				whirlpool				      = (Whirlpool*)alloc_only_pool_alloc(sLevelPool, sizeof(struct Whirlpool));
+				stageScenes[sCurrAreaIndex].whirlpools[index] = whirlpool;
 			}
 
 			vec3s_set(whirlpool->pos, CMD_GET(s16, 4), CMD_GET(s16, 6), CMD_GET(s16, 8));
@@ -774,17 +772,13 @@ static void level_cmd_set_terrain_data(void)
 	LOG_OP();
 	if(sCurrAreaIndex != -1)
 	{
-#ifdef TARGET_N64
-		gAreas[sCurrAreaIndex].terrainData = segmented_to_virtual(CMD_GET(void*, 4));
-#else
 		Collision* data;
 		u32 size;
 
-		data				   = (Collision*)segmented_to_virtual(CMD_GET(void*, 4));
-		size				   = get_area_terrain_size(data) * sizeof(Collision);
-		gAreas[sCurrAreaIndex].terrainData = (s16*)alloc_only_pool_alloc(sLevelPool, size);
-		memcpy(gAreas[sCurrAreaIndex].terrainData, data, size);
-#endif
+		data					= (Collision*)segmented_to_virtual(CMD_GET(void*, 4));
+		size					= get_area_terrain_size(data) * sizeof(Collision);
+		stageScenes[sCurrAreaIndex].terrainData = (s16*)alloc_only_pool_alloc(sLevelPool, size);
+		memcpy(stageScenes[sCurrAreaIndex].terrainData, data, size);
 	}
 	sCurrentCmd = CMD_NEXT;
 }
@@ -794,7 +788,7 @@ static void level_cmd_set_rooms(void)
 	LOG_OP();
 	if(sCurrAreaIndex != -1)
 	{
-		gAreas[sCurrAreaIndex].surfaceRooms = (s8*)segmented_to_virtual(CMD_GET(void*, 4));
+		stageScenes[sCurrAreaIndex].surfaceRooms = (s8*)segmented_to_virtual(CMD_GET(void*, 4));
 	}
 	sCurrentCmd = CMD_NEXT;
 }
@@ -804,18 +798,14 @@ static void level_cmd_set_macro_objects(void)
 	LOG_OP();
 	if(sCurrAreaIndex != -1)
 	{
-#ifdef TARGET_N64
-		gAreas[sCurrAreaIndex].macroObjects = segmented_to_virtual(CMD_GET(void*, 4));
-#else
 		const MacroObject* data = sm64::hook::macro::apply(CMD_GET(MacroObject*, 4), sm64::hook::macro::Id::NONE);
 		s32 len			= 0;
 		while(data[len++] != 0x001E)
 		{
 			len += 4;
 		}
-		gAreas[sCurrAreaIndex].macroObjects = (s16*)alloc_only_pool_alloc(sLevelPool, len * sizeof(MacroObject));
-		memcpy(gAreas[sCurrAreaIndex].macroObjects, data, len * sizeof(MacroObject));
-#endif
+		stageScenes[sCurrAreaIndex].macroObjects = (s16*)alloc_only_pool_alloc(sLevelPool, len * sizeof(MacroObject));
+		memcpy(stageScenes[sCurrAreaIndex].macroObjects, data, len * sizeof(MacroObject));
 	}
 	sCurrentCmd = CMD_NEXT;
 }
@@ -826,8 +816,8 @@ static void level_cmd_load_area(void)
 	s16 areaIndex	    = CMD_GET(u8, 2);
 	UNUSED void* unused = (u8*)sCurrentCmd + 4;
 
-	func_80320890();
-	load_area(areaIndex);
+	Na_LevelSeAllStop();
+	SnOpenScene(areaIndex);
 
 	sCurrentCmd = CMD_NEXT;
 }
@@ -835,21 +825,21 @@ static void level_cmd_load_area(void)
 static void level_cmd_2A(void)
 {
 	LOG_OP();
-	func_8027A998();
+	SnCloseScene();
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_set_mario_start_pos(void)
 {
 	LOG_OP();
-	gMarioSpawnInfo->areaIndex = CMD_GET(u8, 2);
+	marioActor->areaIndex = CMD_GET(u8, 2);
 
 #if IS_64_BIT
-	vec3s_set(gMarioSpawnInfo->startPos, CMD_GET(s16, 6), CMD_GET(s16, 8), CMD_GET(s16, 10));
+	vec3s_set(marioActor->startPos, CMD_GET(s16, 6), CMD_GET(s16, 8), CMD_GET(s16, 10));
 #else
-	vec3s_copy(gMarioSpawnInfo->startPos, CMD_GET(Vec3s, 6));
+	vec3s_copy(marioActor->startPos, CMD_GET(Vec3s, 6));
 #endif
-	vec3s_set(gMarioSpawnInfo->startAngle, 0, CMD_GET(s16, 4) * 0x8000 / 180, 0);
+	vec3s_set(marioActor->startAngle, 0, CMD_GET(s16, 4) * 0x8000 / 180, 0);
 	sm64::config().camera().setLevelLoaded();
 
 	sCurrentCmd = CMD_NEXT;
@@ -858,23 +848,23 @@ static void level_cmd_set_mario_start_pos(void)
 static void level_cmd_2C(void)
 {
 	LOG_OP();
-	func_8027AA88();
+	SnExitPlayer();
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_2D(void)
 {
 	LOG_OP();
-	area_update_objects();
+	SnExecuteStrategy();
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_set_transition(void)
 {
 	LOG_OP();
-	if(gCurrentArea != NULL)
+	if(snSceneInfo != NULL)
 	{
-		play_transition(CMD_GET(u8, 2), CMD_GET(u8, 3), CMD_GET(u8, 4), CMD_GET(u8, 5), CMD_GET(u8, 6));
+		SnStartFader(CMD_GET(u8, 2), CMD_GET(u8, 3), CMD_GET(u8, 4), CMD_GET(u8, 5), CMD_GET(u8, 6));
 	}
 	sCurrentCmd = CMD_NEXT;
 }
@@ -892,7 +882,7 @@ static void level_cmd_show_dialog(void)
 	{
 		if(CMD_GET(u8, 2) < 2)
 		{
-			gAreas[sCurrAreaIndex].dialog[CMD_GET(u8, 2)] = CMD_GET(u8, 3);
+			stageScenes[sCurrAreaIndex].dialog[CMD_GET(u8, 2)] = CMD_GET(u8, 3);
 		}
 	}
 	sCurrentCmd = CMD_NEXT;
@@ -903,8 +893,8 @@ static void level_cmd_set_music(void)
 	LOG_OP();
 	if(sCurrAreaIndex != -1)
 	{
-		gAreas[sCurrAreaIndex].musicParam  = CMD_GET(s16, 2);
-		gAreas[sCurrAreaIndex].musicParam2 = CMD_GET(s16, 4);
+		stageScenes[sCurrAreaIndex].musicParam	= CMD_GET(s16, 2);
+		stageScenes[sCurrAreaIndex].musicParam2 = CMD_GET(s16, 4);
 	}
 	sCurrentCmd = CMD_NEXT;
 }
@@ -912,14 +902,14 @@ static void level_cmd_set_music(void)
 static void level_cmd_set_menu_music(void)
 {
 	LOG_OP();
-	set_background_music(0, CMD_GET(s16, 2), 0);
+	AudPlayMusic(0, CMD_GET(s16, 2), 0);
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_38(void)
 {
 	LOG_OP();
-	func_802491FC(CMD_GET(s16, 2));
+	AudStopMusic(CMD_GET(s16, 2));
 	sCurrentCmd = CMD_NEXT;
 }
 
@@ -933,19 +923,19 @@ static void level_cmd_get_or_set_var(void)
 		switch(CMD_GET(u8, 3))
 		{
 			case 0:
-				gCurrSaveFileNum = sRegister;
+				activePlayerNo = sRegister;
 				break;
 			case 1:
-				gCurrCourseNum = sRegister;
+				activeCourseNo = sRegister;
 				break;
 			case 2:
-				gCurrActNum = sRegister;
+				activeLevelNo = sRegister;
 				break;
 			case 3:
-				gCurrLevelNum = sRegister;
+				activeStageNo = sRegister;
 				break;
 			case 4:
-				gCurrAreaIndex = sRegister;
+				activeSceneNo = sRegister;
 				break;
 			case 5:
 				gPressedStart = sRegister;
@@ -957,19 +947,19 @@ static void level_cmd_get_or_set_var(void)
 		switch(CMD_GET(u8, 3))
 		{
 			case 0:
-				sRegister = gCurrSaveFileNum;
+				sRegister = activePlayerNo;
 				break;
 			case 1:
-				sRegister = gCurrCourseNum;
+				sRegister = activeCourseNo;
 				break;
 			case 2:
-				sRegister = gCurrActNum;
+				sRegister = activeLevelNo;
 				break;
 			case 3:
-				sRegister = gCurrLevelNum;
+				sRegister = activeStageNo;
 				break;
 			case 4:
-				sRegister = gCurrAreaIndex;
+				sRegister = activeSceneNo;
 				break;
 			case 5:
 				sRegister = gPressedStart;
@@ -1004,8 +994,8 @@ static void level_cmd_advdemo(void)
 
 static void level_cmd_cleardemoptr(void)
 {
-	gCurrDemoInput = NULL;
-	sCurrentCmd    = CMD_NEXT;
+	autoDemoPtr = NULL;
+	sCurrentCmd = CMD_NEXT;
 }
 
 static void (*LevelScriptJumpTable[])(void) = {
@@ -1085,9 +1075,9 @@ struct LevelCommand* level_script_execute(struct LevelCommand* cmd)
 	}
 
 	init_render_image();
-	render_game();
+	SnDrawScreen();
 	end_master_display_list();
-	alloc_display_list(0);
+	AllocDynamic(0);
 
 	return sCurrentCmd;
 }

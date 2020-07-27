@@ -2,6 +2,6 @@
 
 void bhv_castle_cannon_grate_init(void)
 {
-	if(save_file_get_total_star_count(gCurrSaveFileNum - 1, 0, 24) >= 120)
+	if(BuGetSumStars(activePlayerNo - 1, 0, 24) >= 120)
 		o->activeFlags = 0;
 }

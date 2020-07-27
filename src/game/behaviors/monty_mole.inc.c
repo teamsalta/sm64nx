@@ -222,7 +222,7 @@ static void monty_mole_act_select_hole(void)
 	{
 		minDistToMario = 200.0f;
 	}
-	else if(gMarioStates[0].forwardVel < 8.0f)
+	else if(playerWorks[0].forwardVel < 8.0f)
 	{
 		minDistToMario = 100.0f;
 	}
@@ -234,7 +234,7 @@ static void monty_mole_act_select_hole(void)
 	// Select a hole to pop out of
 	if((o->oMontyMoleCurrentHole = monty_mole_select_available_hole(minDistToMario)) != NULL)
 	{
-		PlaySound2(SOUND_OBJ2_MONTY_MOLE_APPEAR);
+		objsound(SOUND_OBJ2_MONTY_MOLE_APPEAR);
 
 		// Mark hole as unavailable
 		o->oMontyMoleCurrentHole->oMontyMoleHoleCooldown = -1;
@@ -262,8 +262,8 @@ static void monty_mole_act_select_hole(void)
 			monty_mole_spawn_dirt_particles(0, 20);
 		}
 
-		obj_unhide();
-		obj_become_tangible();
+		s_shape_disp();
+		s_hitON();
 	}
 }
 
@@ -296,7 +296,7 @@ static void monty_mole_act_spawn_rock(void)
 
 	if(func_802F92B0(2))
 	{
-		if(o->oBehParams2ndByte != MONTY_MOLE_BP_NO_ROCK && abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x4000 && (rock = spawn_object(o, MODEL_PEBBLE, sm64::bhv::bhvMontyMoleRock())) != NULL)
+		if(o->oBehParams2ndByte != MONTY_MOLE_BP_NO_ROCK && abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x4000 && (rock = s_makeobj_nowpos(o, MODEL_PEBBLE, sm64::bhv::bhvMontyMoleRock())) != NULL)
 		{
 			o->prevObj = rock;
 			o->oAction = MONTY_MOLE_ACT_THROW_ROCK;
@@ -329,7 +329,7 @@ static void monty_mole_act_throw_rock(void)
 {
 	if(func_802F92EC(8, 10))
 	{
-		PlaySound2(SOUND_OBJ_MONTY_MOLE_ATTACK);
+		objsound(SOUND_OBJ_MONTY_MOLE_ATTACK);
 		o->prevObj = NULL;
 	}
 
@@ -372,7 +372,7 @@ static void monty_mole_hide_in_hole(void)
 	//  action. If no hole is available (e.g. because mario is too far away),
 	//  the game will crash because of the line above that accesses
 	//  oMontyMoleCurrentHole.
-	obj_become_intangible();
+	s_hitOFF();
 }
 
 /**
@@ -384,7 +384,7 @@ static void monty_mole_act_hide(void)
 
 	if(o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND)
 	{
-		obj_hide();
+		s_shape_hide();
 		monty_mole_hide_in_hole();
 	}
 	else
@@ -474,8 +474,8 @@ void bhv_monty_mole_update(void)
 			{
 				if(sMontyMoleKillStreak == 7)
 				{
-					play_puzzle_jingle();
-					spawn_object(o, MODEL_1UP, sm64::bhv::bhv1upWalking());
+					Na_NazoClearBgm();
+					s_makeobj_nowpos(o, MODEL_1UP, sm64::bhv::bhv1upWalking());
 				}
 			}
 			else
@@ -540,7 +540,7 @@ static void monty_mole_rock_act_move(void)
 	if(o->oMoveFlags & (OBJ_MOVE_MASK_ON_GROUND | OBJ_MOVE_ENTERED_WATER))
 	{
 		obj_spawn_particles(&sMontyMoleRockBreakParticles);
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 
 	obj_move_standard(78);

@@ -581,10 +581,9 @@ void alloc_surface_pools(void)
 	sSurfacePool	 = (Surface*)main_pool_alloc(sSurfacePoolSize * sizeof(struct Surface), MEMORY_POOL_LEFT);
 
 	gCCMEnteredSlide = 0;
-	reset_red_coins_collected();
+	iwaStageInit();
 }
 
-#ifndef TARGET_N64
 /**
  * Get the size of the terrain data, to get the correct size when copying later.
  */
@@ -635,13 +634,12 @@ u32 get_area_terrain_size(s16* data)
 
 	return data - startPos;
 }
-#endif
 
 /**
  * Process the level file, loading in vertices, surfaces, some objects, and environmental
  * boxes (water, gas, JRB fog).
  */
-void load_area_terrain(s16 index, s16* data, s8* surfaceRooms, s16* macroObjects)
+void mcInitBGCheck(s16 index, s16* data, s8* surfaceRooms, s16* macroObjects)
 {
 	s16 terrainLoadType;
 	s16* vertexData;
@@ -850,7 +848,7 @@ static void load_object_surfaces(s16** data, s16* vertexData)
 /**
  * Transform an object's vertices, reload them, and render the object.
  */
-void load_object_collision_model(void)
+void stMainMoveBG(void)
 {
 	UNUSED s32 unused;
 	s16 vertexData[600];

@@ -62,7 +62,7 @@ static struct BowserPuzzlePiece sBowserPuzzlePieces[] = {{MODEL_LLL_BOWSER_PIECE
  */
 void bhv_lll_bowser_puzzle_spawn_piece(s16 model, const BehaviorScript* behavior, f32 xOffset, f32 zOffset, s8 initialAction, s8* actionList)
 {
-	struct Object* puzzlePiece = spawn_object(o, model, behavior);
+	struct Object* puzzlePiece = s_makeobj_nowpos(o, model, behavior);
 	puzzlePiece->oPosX += xOffset;
 	puzzlePiece->oPosY += 50.0f;
 	puzzlePiece->oPosZ += zOffset;
@@ -106,7 +106,7 @@ void bhv_lll_bowser_puzzle_loop(void)
 			{
 				// Spawn 5 coins.
 				for(i = 0; i < 5; i++)
-					sp28 = spawn_object(o, MODEL_YELLOW_COIN, sm64::bhv::bhvSingleCoinGetsSpawned());
+					sp28 = s_makeobj_nowpos(o, MODEL_YELLOW_COIN, sm64::bhv::bhvSingleCoinGetsSpawned());
 
 				// Reset completion flags (even though they never get checked again).
 				o->oBowserPuzzleCompletionFlags = 0;
@@ -186,7 +186,7 @@ void bhv_lll_bowser_puzzle_piece_move(f32 xOffset, f32 zOffset, s32 duration, UN
 	{
 		// On frame 20, play the shifting sound.
 		if(o->oTimer == 20 * FRAME_RATE_SCALER_INV)
-			PlaySound2(SOUND_OBJ2_BOWSER_PUZZLE_PIECE_MOVE);
+			objsound(SOUND_OBJ2_BOWSER_PUZZLE_PIECE_MOVE);
 
 		// For the number of frames specified by duration, move the piece.
 		if(o->oTimer < (duration + 20) * FRAME_RATE_SCALER_INV)
@@ -246,7 +246,7 @@ void bhv_lll_bowser_puzzle_piece_loop(void)
 {
 	bhv_lll_bowser_puzzle_piece_update();
 
-	obj_call_action_function(sBowserPuzzlePieceActions);
+	s_modejmp(sBowserPuzzlePieceActions);
 
 	o->oPosX = o->oBowserPuzzlePieceOffsetX + o->oHomeX;
 	o->oPosY = o->oBowserPuzzlePieceOffsetY + o->oHomeY;

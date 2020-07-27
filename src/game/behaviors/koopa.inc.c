@@ -74,7 +74,7 @@ void bhv_koopa_init(void)
 		o->oKoopaMovementType = KOOPA_BP_NORMAL;
 		o->oKoopaAgility      = 1.6f / 3.0f;
 		o->oDrawingDistance   = 1500.0f;
-		obj_scale(0.8f);
+		s_set_scale(0.8f);
 		o->oGravity = -6.4f / 3.0f;
 	}
 	else if(o->oKoopaMovementType >= KOOPA_BP_KOOPA_THE_QUICK_BASE)
@@ -82,7 +82,7 @@ void bhv_koopa_init(void)
 		// Koopa the Quick. Race index is 0 for BoB and 1 for THI
 		o->oKoopaTheQuickRaceIndex = o->oKoopaMovementType - KOOPA_BP_KOOPA_THE_QUICK_BASE;
 		o->oKoopaAgility	   = 4.0f;
-		obj_scale(3.0f);
+		s_set_scale(3.0f);
 	}
 	else
 	{
@@ -301,7 +301,7 @@ void shelled_koopa_attack_handler(s32 attackType)
 {
 	if(o->header.gfx.scale[0] > 0.8f)
 	{
-		PlaySound2(SOUND_OBJ_KOOPA_DAMAGE);
+		objsound(SOUND_OBJ_KOOPA_DAMAGE);
 
 		o->oKoopaMovementType = KOOPA_BP_UNSHELLED;
 		o->oAction	      = KOOPA_UNSHELLED_ACT_LYING;
@@ -313,13 +313,13 @@ void shelled_koopa_attack_handler(s32 attackType)
 			o->oMoveAngleYaw = angle_to_object(gMarioObject, o);
 		}
 
-		obj_set_model(MODEL_KOOPA_WITHOUT_SHELL);
-		spawn_object(o, MODEL_KOOPA_SHELL, sm64::bhv::bhvKoopaShell());
+		s_change_shape(MODEL_KOOPA_WITHOUT_SHELL);
+		s_makeobj_nowpos(o, MODEL_KOOPA_SHELL, sm64::bhv::bhvKoopaShell());
 
 		//! Because bob-ombs/corkboxes come after koopa in processing order,
 		//  they can interact with the koopa on the same frame that this
 		//  happens. This causes the koopa to die immediately.
-		obj_become_intangible();
+		s_hitOFF();
 	}
 	else
 	{
@@ -455,7 +455,7 @@ static void koopa_unshelled_act_dive(void)
 
 	if(o->oTimer > 10 * FRAME_RATE_SCALER_INV)
 	{
-		obj_become_tangible();
+		s_hitON();
 	}
 
 	if(o->oTimer > 10 * FRAME_RATE_SCALER_INV)
@@ -476,8 +476,8 @@ static void koopa_unshelled_act_dive(void)
 			o->oAction	      = KOOPA_SHELLED_ACT_LYING;
 			o->oForwardVel *= 0.5f;
 
-			obj_set_model(MODEL_KOOPA_WITH_SHELL);
-			mark_object_for_deletion(shell);
+			s_change_shape(MODEL_KOOPA_WITH_SHELL);
+			s_remove_obj(shell);
 			goto end;
 		}
 	}
@@ -550,14 +550,14 @@ s32 obj_begin_race(s32 noTimer)
 {
 	if(o->oTimer == 50 * FRAME_RATE_SCALER_INV)
 	{
-		PlaySound2(SOUND_GENERAL_RACE_GUN_SHOT);
+		objsound(SOUND_GENERAL_RACE_GUN_SHOT);
 
 		if(!noTimer)
 		{
-			play_music(0, SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE), 0);
+			Na_MusicStart(0, SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE), 0);
 
-			level_control_timer(TIMER_CONTROL_SHOW);
-			level_control_timer(TIMER_CONTROL_START);
+			GmStopWatch(TIMER_CONTROL_SHOW);
+			GmStopWatch(TIMER_CONTROL_START);
 
 			o->parentObj->oKoopaRaceEndpointRaceBegun = TRUE;
 		}
@@ -612,7 +612,7 @@ static void koopa_the_quick_act_show_init_text(void)
 		o->oAction	     = KOOPA_THE_QUICK_ACT_RACE;
 		o->oForwardVel	     = 0.0f;
 
-		o->parentObj		= obj_nearest_object_with_behavior(sm64::bhv::bhvKoopaRaceEndpoint());
+		o->parentObj		= s_find_obj(sm64::bhv::bhvKoopaRaceEndpoint());
 		o->oPathedStartWaypoint = o->oPathedPrevWaypoint = (Waypoint*)segmented_to_virtual(sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].path);
 
 		o->oKoopaTurningAwayFromWall = FALSE;
@@ -640,7 +640,7 @@ static s32 koopa_the_quick_detect_bowling_ball(void)
 	ball = obj_find_nearest_object_with_behavior(sm64::bhv::bhvBowlingBall(), &distToBall);
 	if(ball != NULL)
 	{
-		angleToBall	       = obj_turn_toward_object(o, ball, O_MOVE_ANGLE_YAW_INDEX, 0);
+		angleToBall	       = s_chase_obj_angle(o, ball, O_MOVE_ANGLE_YAW_INDEX, 0);
 		ballSpeedInKoopaRunDir = ball->oForwardVel * coss(ball->oMoveAngleYaw - o->oMoveAngleYaw);
 
 		if(abs_angle_diff(o->oMoveAngleYaw, angleToBall) < 0x4000)
@@ -699,7 +699,7 @@ static void koopa_the_quick_act_race(void)
 	if(obj_begin_race(FALSE))
 	{
 		// Hitbox is slightly larger while racing
-		obj_push_mario_away_from_cylinder(180.0f, 300.0f);
+		s_player_slideout_RH(180.0f, 300.0f);
 
 		if(obj_follow_path(0) == PATH_REACHED_END)
 		{
@@ -869,7 +869,7 @@ static void koopa_the_quick_act_after_race(void)
 	}
 	else if(o->parentObj->oKoopaRaceEndpointRaceStatus != 0)
 	{
-		create_star(sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].starPos[0], sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].starPos[1], sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].starPos[2]);
+		s_enemyset_star(sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].starPos[0], sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].starPos[1], sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].starPos[2]);
 
 		o->parentObj->oKoopaRaceEndpointRaceStatus = 0;
 	}
@@ -914,7 +914,7 @@ static void koopa_the_quick_update(void)
 		}
 	}
 
-	obj_push_mario_away_from_cylinder(140.0f, 300.0f);
+	s_player_slideout_RH(140.0f, 300.0f);
 	obj_move_standard(-78);
 }
 
@@ -968,11 +968,11 @@ void bhv_koopa_race_endpoint_update(void)
 		if(o->oKoopaRaceEndpointKoopaFinished || o->oDistanceToMario < 400.0f)
 		{
 			o->oKoopaRaceEndpointRaceEnded = TRUE;
-			level_control_timer(TIMER_CONTROL_STOP);
+			GmStopWatch(TIMER_CONTROL_STOP);
 
 			if(!o->oKoopaRaceEndpointKoopaFinished)
 			{
-				play_race_fanfare();
+				Na_RaceFanfareBgm();
 				if(gMarioShotFromCannon)
 				{
 					o->oKoopaRaceEndpointRaceStatus = -1;

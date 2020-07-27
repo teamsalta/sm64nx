@@ -9,7 +9,7 @@ void func_802BCF78(void)
 {
 	if(o->oDistanceToMario < 3000.0f)
 	{
-		ShakeScreen(SHAKE_POS_SMALL);
+		s_call_Viewshake(SHAKE_POS_SMALL);
 	}
 }
 
@@ -40,11 +40,7 @@ void func_802BCFC4(f32 speed, f32 a1, s16 pitch, s16 roll) // 0x18 0x1c 0x22 0x2
 	if(o->oTimer == 7 * FRAME_RATE_SCALER_INV)
 	{
 		o->oAction = func_802A32E0();
-#ifndef VERSION_JP
-		PlaySound2(SOUND_GENERAL_UNK46);
-#else
-		PlaySound2(SOUND_GENERAL_UNK46_LOWPRIO);
-#endif
+		objsound(SOUND_GENERAL_UNK46);
 	}
 }
 
@@ -104,6 +100,6 @@ void (*sToxBoxActions[])(void) = {ActionToxBox0, ActionToxBox1, ActionToxBox2, A
 
 void bhv_tox_box_loop(void)
 {
-	obj_call_action_function(sToxBoxActions);
-	load_object_collision_model();
+	s_modejmp(sToxBoxActions);
+	stMainMoveBG();
 }

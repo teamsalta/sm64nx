@@ -26,11 +26,9 @@ static char gLevelSelect_StageNamesText[64][16] = {
 #undef STUB_LEVEL
 #undef DEFINE_LEVEL
 
-static u16 gDemoCountdown = 0;
-#ifndef VERSION_JP
+static u16 gDemoCountdown    = 0;
 static s16 D_U_801A7C34	     = 1;
 static s16 gameOverNotPlayed = 1;
-#endif
 
 // run the demo timer on the PRESS START screen.
 // this function will return a non-0 timer once
@@ -39,9 +37,9 @@ static s16 gameOverNotPlayed = 1;
 
 // don't shift this function from being the first function in the segment.
 // the level scripts assume this function is the first, so it cant be moved.
-int run_press_start_demo_timer(s32 timer)
+static int CheckAutoDemo(s32 timer)
 {
-	gCurrDemoInput = NULL;
+	autoDemoPtr = NULL;
 
 	if(timer == 0)
 	{
@@ -53,7 +51,7 @@ int run_press_start_demo_timer(s32 timer)
 				// player is idle on PRESS START screen.
 
 				// start the mario demo animation for the demo list.
-				func_80278AD4(&gDemo, gDemoInputListID);
+				ReadPartialData(&gDemo, gDemoInputListID);
 
 				// if the next demo sequence ID is the count limit, reset it back to
 				// the first sequence.
@@ -63,10 +61,10 @@ int run_press_start_demo_timer(s32 timer)
 				}
 
 				// add 1 (+4) to the pointer to skip the demoID.
-				gCurrDemoInput	 = ((struct DemoInput*)gDemo.targetAnim) + 1;
-				timer		 = (s8)((struct DemoInput*)gDemo.targetAnim)->timer * FRAME_RATE_SCALER_INV;
-				gCurrSaveFileNum = 1;
-				gCurrActNum	 = 1;
+				autoDemoPtr    = ((struct DemoInput*)gDemo.targetAnim) + 1;
+				timer	       = (s8)((struct DemoInput*)gDemo.targetAnim)->timer * FRAME_RATE_SCALER_INV;
+				activePlayerNo = 1;
+				activeLevelNo  = 1;
 			}
 		}
 		else
@@ -83,10 +81,10 @@ extern int gPressedStart;
 
 int start_demo(int timer)
 {
-	gCurrDemoInput = NULL;
-	gPressedStart  = 0;
+	autoDemoPtr   = NULL;
+	gPressedStart = 0;
 	// start the mario demo animation for the demo list.
-	func_80278AD4(&gDemo, gDemoInputListID_2);
+	ReadPartialData(&gDemo, gDemoInputListID_2);
 
 	// if the next demo sequence ID is the count limit, reset it back to
 	// the first sequence.
@@ -96,12 +94,12 @@ int start_demo(int timer)
 		gDemoInputListID_2 = 0;
 	}
 
-	gCurrDemoInput = ((struct DemoInput*)gDemo.targetAnim) + 1; // add 1 (+4) to the pointer to skip the demoID.
-	gCurrDemoInput->timer *= FRAME_RATE_SCALER_INV;
+	autoDemoPtr = ((struct DemoInput*)gDemo.targetAnim) + 1; // add 1 (+4) to the pointer to skip the demoID.
+	autoDemoPtr->timer *= FRAME_RATE_SCALER_INV;
 
-	timer		 = (s8)((struct DemoInput*)gDemo.targetAnim)->timer * FRAME_RATE_SCALER_INV; // TODO: see if making timer s8 matches
-	gCurrSaveFileNum = 1;
-	gCurrActNum	 = 6;
+	timer	       = (s8)((struct DemoInput*)gDemo.targetAnim)->timer * FRAME_RATE_SCALER_INV; // TODO: see if making timer s8 matches
+	activePlayerNo = 1;
+	activeLevelNo  = 6;
 	return timer;
 }
 
@@ -110,64 +108,64 @@ int start_demo(int timer)
 // or the level select to be exited if start or the quit combo is
 // pressed.
 
-s16 level_select_input_loop(void)
+s16 DoDebugSelect(void)
 {
 	s32 stageChanged = FALSE;
 
 	// perform the ID updates per each button press.
 	if(sm64::player(0).controller().buttonPressed & sm64::hid::A_BUTTON)
 	{
-		++gCurrLevelNum, stageChanged = TRUE;
+		++activeStageNo, stageChanged = TRUE;
 	}
 
 	if(sm64::player(0).controller().buttonPressed & sm64::hid::B_BUTTON)
 	{
-		--gCurrLevelNum, stageChanged = TRUE;
+		--activeStageNo, stageChanged = TRUE;
 	}
 
 	if(sm64::player(0).controller().buttonPressed & sm64::hid::U_JPAD)
 	{
-		--gCurrLevelNum, stageChanged = TRUE;
+		--activeStageNo, stageChanged = TRUE;
 	}
 
 	if(sm64::player(0).controller().buttonPressed & sm64::hid::D_JPAD)
 	{
-		++gCurrLevelNum, stageChanged = TRUE;
+		++activeStageNo, stageChanged = TRUE;
 	}
 
 	if(sm64::player(0).controller().buttonPressed & sm64::hid::L_JPAD)
 	{
-		gCurrLevelNum -= 10, stageChanged = TRUE;
+		activeStageNo -= 10, stageChanged = TRUE;
 	}
 
 	if(sm64::player(0).controller().buttonPressed & sm64::hid::R_JPAD)
 	{
-		gCurrLevelNum += 10, stageChanged = TRUE;
+		activeStageNo += 10, stageChanged = TRUE;
 	}
 
 	// if the stage was changed, play the sound for changing a stage.
 	if(stageChanged)
 	{
-		play_sound(SOUND_GENERAL_LEVEL_SELECT_CHANGE, gDefaultSoundArgs);
+		AudStartSound(SOUND_GENERAL_LEVEL_SELECT_CHANGE, gDefaultSoundArgs);
 	}
 
 	// TODO: enum counts for the stage lists
-	if(gCurrLevelNum > LEVEL_MAX)
+	if(activeStageNo > LEVEL_MAX)
 	{
-		gCurrLevelNum = LEVEL_MIN; // exceeded max. set to min.
+		activeStageNo = LEVEL_MIN; // exceeded max. set to min.
 	}
 
-	if(gCurrLevelNum < LEVEL_MIN)
+	if(activeStageNo < LEVEL_MIN)
 	{
-		gCurrLevelNum = LEVEL_MAX; // exceeded min. set to max.
+		activeStageNo = LEVEL_MAX; // exceeded min. set to max.
 	}
 
-	gCurrSaveFileNum = 4; // file 4 is used for level select tests
-	gCurrActNum	 = 6;
-	print_text_centered(160, 80, "SELECT STAGE");
-	print_text_centered(160, 30, "PRESS START BUTTON");
-	print_text_fmt_int(40, 60, "%2d", gCurrLevelNum);
-	print_text(80, 60, gLevelSelect_StageNamesText[gCurrLevelNum - 1]); // print stage name
+	activePlayerNo = 4; // file 4 is used for level select tests
+	activeLevelNo  = 6;
+	dcprintf(160, 80, "SELECT STAGE");
+	dcprintf(160, 30, "PRESS START BUTTON");
+	dprintf(40, 60, "%2d", activeStageNo);
+	dmprintf(80, 60, gLevelSelect_StageNamesText[activeStageNo - 1]); // print stage name
 
 #define QUIT_LEVEL_SELECT_COMBO (sm64::hid::Z_TRIG | sm64::hid::START_BUTTON | sm64::hid::L_CBUTTONS | sm64::hid::R_CBUTTONS)
 
@@ -180,19 +178,19 @@ s16 level_select_input_loop(void)
 		{
 			return -1;
 		}
-		play_sound(SOUND_MENU_STAR_SOUND, gDefaultSoundArgs);
-		return gCurrLevelNum;
+		AudStartSound(SOUND_MENU_STAR_SOUND, gDefaultSoundArgs);
+		return activeStageNo;
 	}
 	return 0;
 }
 
-int func_8016F444(void)
+int DoGmOverSelect(void)
 {
 	s32 sp1C = 0;
 
 	if(gameOverNotPlayed == 1)
 	{
-		play_sound(SOUND_MARIO_GAME_OVER, gDefaultSoundArgs);
+		AudStartSound(SOUND_MARIO_GAME_OVER, gDefaultSoundArgs);
 		gameOverNotPlayed = 0;
 	}
 
@@ -200,18 +198,18 @@ int func_8016F444(void)
 
 	if(sm64::player(0).controller().buttonPressed & sm64::hid::START_BUTTON)
 	{
-		play_sound(SOUND_MENU_STAR_SOUND, gDefaultSoundArgs);
+		AudStartSound(SOUND_MENU_STAR_SOUND, gDefaultSoundArgs);
 		sp1C = 100;
 
 		gameOverNotPlayed = 1;
 	}
-	return run_press_start_demo_timer(sp1C);
+	return CheckAutoDemo(sp1C);
 }
 
-int func_8016F4BC(void)
+int DoNintendoLogo(void)
 {
-	set_background_music(0, SEQ_SOUND_PLAYER, 0);
-	play_sound(SOUND_MENU_COIN_ITS_A_ME_MARIO, gDefaultSoundArgs);
+	AudPlayMusic(0, SEQ_SOUND_PLAYER, 0);
+	AudStartSound(SOUND_MENU_COIN_ITS_A_ME_MARIO, gDefaultSoundArgs);
 	return 1;
 }
 
@@ -222,14 +220,14 @@ s32 LevelProc_8016F508(s16 arg1, s32 arg2)
 	switch(arg1)
 	{
 		case 0: // play into "its me mario" sound
-			retVar = func_8016F4BC();
+			retVar = DoNintendoLogo();
 			break;
 		case 2:
-			retVar = func_8016F444();
+			retVar = DoGmOverSelect();
 			break;
-		//case 1:
+		// case 1:
 		case 3:
-			retVar = level_select_input_loop();
+			retVar = DoDebugSelect();
 			break; // useless break needed to match
 	}
 	return retVar;

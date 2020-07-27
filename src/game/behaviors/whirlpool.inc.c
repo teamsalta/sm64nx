@@ -22,7 +22,7 @@ void bhv_whirlpool_init(void)
 
 void func_802E70A8(void)
 {
-	set_object_hitbox(o, &sWhirlpoolHitbox);
+	s_set_hitparam(o, &sWhirlpoolHitbox);
 }
 
 void func_802E70DC(void)
@@ -64,7 +64,7 @@ void bhv_whirlpool_loop(void)
 		gEnvFxBubbleConfig[ENVFX_STATE_PARTICLECOUNT] = 0;
 	}
 
-	PlaySound(SOUND_ENV_WATER);
+	objsound_level(SOUND_ENV_WATER);
 
 	func_802E70A8();
 }
@@ -83,5 +83,5 @@ void bhv_jet_stream_loop(void)
 		gEnvFxBubbleConfig[ENVFX_STATE_PARTICLECOUNT] = 0;
 	}
 
-	PlaySound(SOUND_ENV_WATER);
+	objsound_level(SOUND_ENV_WATER);
 }

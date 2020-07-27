@@ -16,10 +16,10 @@ void bhv_hidden_blue_coin_loop(void)
 		case HIDDEN_BLUE_COIN_ACT_INACTIVE:
 			// Become invisible and intangible
 			obj_disable_rendering();
-			obj_become_intangible();
+			s_hitOFF();
 
 			// Set action to HIDDEN_BLUE_COIN_ACT_WAITING after the blue coin switch is found.
-			o->oHiddenBlueCoinSwitch = obj_nearest_object_with_behavior(sm64::bhv::bhvBlueCoinSwitch());
+			o->oHiddenBlueCoinSwitch = s_find_obj(sm64::bhv::bhvBlueCoinSwitch());
 
 			if(o->oHiddenBlueCoinSwitch != NULL)
 			{
@@ -40,20 +40,20 @@ void bhv_hidden_blue_coin_loop(void)
 		case HIDDEN_BLUE_COIN_ACT_ACTIVE:
 			// Become tangible
 			obj_enable_rendering();
-			obj_become_tangible();
+			s_hitON();
 
 			// Delete the coin once collected
 			if(o->oInteractStatus & INT_STATUS_INTERACTED)
 			{
-				spawn_object(o, MODEL_SPARKLES, sm64::bhv::bhvGoldenCoinSparkles());
-				mark_object_for_deletion(o);
+				s_makeobj_nowpos(o, MODEL_SPARKLES, sm64::bhv::bhvGoldenCoinSparkles());
+				s_remove_obj(o);
 			}
 
 			// After 200 frames of waiting and 20 2-frame blinks (for 240 frames total),
 			// delete the object.
 			if(obj_wait_then_blink(200 * FRAME_RATE_SCALER_INV, 20))
 			{
-				mark_object_for_deletion(o);
+				s_remove_obj(o);
 			}
 
 			break;
@@ -68,7 +68,7 @@ void bhv_hidden_blue_coin_loop(void)
 void bhv_blue_coin_switch_loop(void)
 {
 	// The switch's model is 1/3 size.
-	obj_scale(3.0f);
+	s_set_scale(3.0f);
 
 	switch(o->oAction)
 	{
@@ -77,7 +77,7 @@ void bhv_blue_coin_switch_loop(void)
 			// recede and get ready to start ticking.
 			if(gMarioObject->platform == o)
 			{
-				if(gMarioStates->action == ACT_GROUND_POUND_LAND)
+				if(playerWorks->status == ACT_GROUND_POUND_LAND)
 				{
 					// Set to BLUE_COIN_SWITCH_ACT_RECEDING
 					o->oAction++;
@@ -87,12 +87,12 @@ void bhv_blue_coin_switch_loop(void)
 					// Set gravity to 0 so it doesn't accelerate when receding.
 					o->oGravity = 0.0f;
 
-					PlaySound2(SOUND_GENERAL_SWITCH_DOOR_OPEN);
+					objsound(SOUND_GENERAL_SWITCH_DOOR_OPEN);
 				}
 			}
 
 			// Have collision
-			load_object_collision_model();
+			stMainMoveBG();
 
 			break;
 		case BLUE_COIN_SWITCH_ACT_RECEDING:
@@ -101,7 +101,7 @@ void bhv_blue_coin_switch_loop(void)
 			// and recedes at 20 units/frame, which means it will fully recede after 5 frames.
 			if(o->oTimer > 5 * FRAME_RATE_SCALER_INV)
 			{
-				obj_hide();
+				s_shape_hide();
 
 				// Set to BLUE_COIN_SWITCH_ACT_TICKING
 				o->oAction++;
@@ -109,15 +109,15 @@ void bhv_blue_coin_switch_loop(void)
 				o->oPosY = gMarioObject->oPosY - 40.0f;
 
 				// Spawn particles. There's a function that calls this same function
-				// with the same arguments, func_802A3004, why didn't they just call that?
-				func_802AA618(0, 0, 46.0f);
+				// with the same arguments, s_kemuri, why didn't they just call that?
+				s_burneffect(0, 0, 46.0f);
 			}
 			else
 			{
 				// Have collision while receding
-				load_object_collision_model();
+				stMainMoveBG();
 				// Recede
-				obj_move_using_fvel_and_gravity();
+				s_optionmove_F();
 			}
 
 			break;
@@ -125,18 +125,18 @@ void bhv_blue_coin_switch_loop(void)
 			// Tick faster when the blue coins start blinking
 			if(o->oTimer < 200 * FRAME_RATE_SCALER_INV)
 			{
-				play_sound(SOUND_GENERAL2_SWITCH_TICK_FAST, gDefaultSoundArgs);
+				AudStartSound(SOUND_GENERAL2_SWITCH_TICK_FAST, gDefaultSoundArgs);
 			}
 			else
 			{
-				play_sound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gDefaultSoundArgs);
+				AudStartSound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gDefaultSoundArgs);
 			}
 
 			// Delete the switch (which stops the sound) after the last coin is collected,
 			// or after the coins unload after the 240-frame timer expires.
-			if(obj_nearest_object_with_behavior(sm64::bhv::bhvHiddenBlueCoin()) == NULL || o->oTimer > 240 * FRAME_RATE_SCALER_INV)
+			if(s_find_obj(sm64::bhv::bhvHiddenBlueCoin()) == NULL || o->oTimer > 240 * FRAME_RATE_SCALER_INV)
 			{
-				mark_object_for_deletion(o);
+				s_remove_obj(o);
 			}
 
 			break;

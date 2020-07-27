@@ -15,6 +15,6 @@ void bhv_sparkle_spawn_loop(void)
 	}
 	if(o->oTimer > 1 * FRAME_RATE_SCALER_INV)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }

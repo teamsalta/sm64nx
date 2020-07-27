@@ -32,7 +32,7 @@ void bhv_giant_pole_loop(void)
 
 	if(o->oTimer == 0)
 	{
-		topBall = spawn_object(o, MODEL_YELLOW_SPHERE, sm64::bhv::bhvYellowBall());
+		topBall = s_makeobj_nowpos(o, MODEL_YELLOW_SPHERE, sm64::bhv::bhvYellowBall());
 		topBall->oPosY += (o->hitboxHeight + 50.0f);
 	}
 	BehClimbDetectLoop();

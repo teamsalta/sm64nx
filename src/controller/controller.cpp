@@ -6,36 +6,53 @@ namespace sm64::hid
 {
 	State::State()
 	{
-		mouse_x = 0;
-		mouse_y = 0;
+		mouse_x	      = 0;
+		mouse_y	      = 0;
 		mouse_delta_x = 0;
 		mouse_delta_y = 0;
-		mouse_wheel = 0;
-		has_mouse = false;
+		mouse_wheel   = 0;
+		has_mouse     = false;
 
 		reset();
 	}
 
 	void State::reset()
 	{
-		button = 0;
-		stick_x = 0;
-		stick_y = 0;
-		errnum = 0;
+		button	  = 0;
+		stick_x	  = 0;
+		stick_y	  = 0;
+		errnum	  = 0;
 		r_stick_x = 0;
 		r_stick_y = 0;
 
-		//mouse_x = 0;
-		//mouse_y = 0;
+		// mouse_x = 0;
+		// mouse_y = 0;
 		mouse_delta_x = 0;
 		mouse_delta_y = 0;
-		//mouse_wheel = 0;
-		mouse_l = 0;
-		mouse_r = 0;
+		// mouse_wheel = 0;
+		mouse_l	  = 0;
+		mouse_r	  = 0;
 		has_mouse = false;
 	}
 
-	Controller::Controller(bool isLocal) : rawStickX(0), 	rawStickY(0),	stickX(0),	stickY(0),	stickMag(0),	buttonDown(0),	buttonPressed(0),	r_rawStickX(0),	r_rawStickY(0),	r_stickX(0),	r_stickY(0),	r_stickMag(0), m_isLocal(isLocal), m_state()
+	Controller::Controller(bool isLocal) :
+	    rawStickX(0), rawStickY(0), stickX(0), stickY(0), stickMag(0), buttonDown(0), buttonPressed(0), r_rawStickX(0), r_rawStickY(0), r_stickX(0), r_stickY(0), r_stickMag(0), m_isLocal(isLocal), m_state(), m_motorEnabled(false)
+	{
+	}
+
+	void Controller::SendMotorEvent(short time, short level)
+	{
+	}
+
+	void Controller::SendMotorDecay(short level)
+	{
+	}
+
+	void Controller::ResetMotorPack()
+	{
+	}
+
+	void Controller::SendMotorVib(int level)
 	{
 	}
 
@@ -84,17 +101,17 @@ namespace sm64::hid
 
 	void Controller::resolveInputs()
 	{
-		rawStickX = m_state.stick_x;
-		rawStickY = m_state.stick_y;
-		r_rawStickX = m_state.r_stick_x;
-		r_rawStickY = m_state.r_stick_y;
+		rawStickX     = m_state.stick_x;
+		rawStickY     = m_state.stick_y;
+		r_rawStickX   = m_state.r_stick_x;
+		r_rawStickY   = m_state.r_stick_y;
 		buttonPressed = m_state.button & (m_state.button ^ buttonDown);
 		// 0.5x A presses are a good meme
 		buttonDown = m_state.button;
 
-		if (sm64::config().game().mirror())
+		if(sm64::config().game().mirror())
 		{
-			rawStickX = -rawStickX;
+			rawStickX   = -rawStickX;
 			r_rawStickX = -r_rawStickX;
 		}
 
@@ -207,4 +224,4 @@ namespace sm64::hid
 		return m_state.mouse_r;
 	}
 #endif
-}
+} // namespace sm64::hid

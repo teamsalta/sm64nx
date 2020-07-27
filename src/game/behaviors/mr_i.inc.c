@@ -10,47 +10,47 @@ void bhv_piranha_particle_loop(void)
 		o->oForwardVel	 = 20.0f + 20.0f * RandomFloat();
 		o->oMoveAngleYaw = RandomU16();
 	}
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 }
 
 void ActionMrIParticle0(void)
 {
-	obj_scale(3.0f);
+	s_set_scale(3.0f);
 	o->oForwardVel = 20.0f;
 	obj_update_floor_and_walls();
 	if(0x8000 & o->oInteractStatus)
 		o->oAction = 1;
 	else if((o->oTimer >= 101 * FRAME_RATE_SCALER_INV) || (0x200 & o->oMoveFlags) || (8 & (s16)o->activeFlags))
 	{
-		mark_object_for_deletion(o);
-		func_802A3004();
+		s_remove_obj(o);
+		s_kemuri();
 	}
 }
 
 void ActionMrIParticle1(void)
 {
 	s32 i;
-	mark_object_for_deletion(o);
+	s_remove_obj(o);
 	for(i = 0; i < 10; i++)
-		spawn_object(o, MODEL_PURPLE_MARBLE, sm64::bhv::bhvPurpleParticle());
+		s_makeobj_nowpos(o, MODEL_PURPLE_MARBLE, sm64::bhv::bhvPurpleParticle());
 }
 
 void (*sMrIParticleActions[])(void) = {ActionMrIParticle0, ActionMrIParticle1};
 
 void bhv_mr_i_particle_loop(void)
 {
-	obj_call_action_function(sMrIParticleActions);
+	s_modejmp(sMrIParticleActions);
 }
 
 void func_802A525C(void)
 {
 	struct Object* particle;
 	f32 sp18 = o->header.gfx.scale[1];
-	particle = spawn_object(o, MODEL_PURPLE_MARBLE, sm64::bhv::bhvMrIParticle());
+	particle = s_makeobj_nowpos(o, MODEL_PURPLE_MARBLE, sm64::bhv::bhvMrIParticle());
 	particle->oPosY += 50.0f * sp18 * FRAME_RATE_SCALER;
 	particle->oPosX += sins(o->oMoveAngleYaw) * 90.0f * sp18 * FRAME_RATE_SCALER;
 	particle->oPosZ += coss(o->oMoveAngleYaw) * 90.0f * sp18 * FRAME_RATE_SCALER;
-	PlaySound2(SOUND_OBJ_MRI_SHOOT);
+	objsound(SOUND_OBJ_MRI_SHOOT);
 }
 
 void bhv_mr_i_body_loop(void)
@@ -81,7 +81,7 @@ void bhv_mr_i_body_loop(void)
 	}
 	if(!o->parentObj->activeFlags)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }
 
@@ -110,20 +110,20 @@ void ActionMrI3(void)
 		o->oMoveAngleYaw += (sp34 * coss(0x4000 * sp2C)) / FRAME_RATE_SCALER_INV;
 
 		if(sp36 < 0 && o->oMoveAngleYaw >= 0)
-			PlaySound2(SOUND_OBJ2_MRI_SPINNING);
+			objsound(SOUND_OBJ2_MRI_SPINNING);
 		o->oMoveAnglePitch = (1.0 - coss(0x4000 * sp2C)) * -0x4000;
 		obj_shake_y(4.0f);
 	}
 	else if(o->oTimer < 96 * FRAME_RATE_SCALER_INV)
 	{
 		if(o->oTimer == 64 * FRAME_RATE_SCALER_INV)
-			PlaySound2(SOUND_OBJ_MRI_DEATH);
+			objsound(SOUND_OBJ_MRI_DEATH);
 		sp30 = (f32)((o->oTimer / FRAME_RATE_SCALER_INV) - 63) / 32;
 		o->oMoveAngleYaw += (sp34 * coss(0x4000 * sp2C)) / FRAME_RATE_SCALER_INV;
 		o->oMoveAnglePitch = (1.0 - coss(0x4000 * sp2C)) * -0x4000;
 		obj_shake_y((s32)((1.0f - sp30) * 4)); // trucating the f32?
 		sp20 = coss(0x4000 * sp30) * 0.4 + 0.6;
-		obj_scale(sp20 * sp1C);
+		s_set_scale(sp20 * sp1C);
 	}
 	else if(o->oTimer < 104 * FRAME_RATE_SCALER_INV)
 	{
@@ -133,14 +133,14 @@ void ActionMrI3(void)
 	{
 		if(o->oTimer == 104 * FRAME_RATE_SCALER_INV)
 		{
-			obj_become_intangible();
-			func_802A3004();
+			s_hitOFF();
+			s_kemuri();
 			o->oMrISize = sp1C * 0.6;
 			if(o->oBehParams2ndByte)
 			{
 				o->oPosY += 100.0f * FRAME_RATE_SCALER;
-				create_star(1370, 2000.0f, -320.0f);
-				mark_object_for_deletion(o);
+				s_enemyset_star(1370, 2000.0f, -320.0f);
+				s_remove_obj(o);
 			}
 			else
 				obj_spawn_loot_blue_coin();
@@ -148,10 +148,10 @@ void ActionMrI3(void)
 		o->oMrISize -= 0.2 * sp1C * FRAME_RATE_SCALER;
 		if(o->oMrISize < 0)
 			o->oMrISize = 0;
-		obj_scale(o->oMrISize);
+		s_set_scale(o->oMrISize);
 	}
 	else
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }
 
 void ActionMrI2()
@@ -177,8 +177,8 @@ void ActionMrI2()
 		o->oMrIUnk104 = 0;
 	}
 
-	obj_turn_toward_object(o, gMarioObject, 0x10, 0x800 / FRAME_RATE_SCALER_INV);
-	obj_turn_toward_object(o, gMarioObject, 0x0F, 0x400 / FRAME_RATE_SCALER_INV);
+	s_chase_obj_angle(o, gMarioObject, 0x10, 0x800 / FRAME_RATE_SCALER_INV);
+	s_chase_obj_angle(o, gMarioObject, 0x0F, 0x400 / FRAME_RATE_SCALER_INV);
 
 	yawVelocity = (yawStart - (s16)(o->oMoveAngleYaw)) * FRAME_RATE_SCALER_INV;
 
@@ -269,7 +269,7 @@ void ActionMrI1(void)
 	sp1A = abs_angle_diff(o->oMoveAngleYaw, gMarioObject->oFaceAngleYaw);
 	if(o->oTimer == 0)
 	{
-		obj_become_tangible();
+		s_hitON();
 		o->oMoveAnglePitch = 0;
 		o->oMrIUnk104	   = 30;
 		o->oMrIUnk108	   = RandomFloat() * 20.0f;
@@ -302,14 +302,8 @@ void ActionMrI1(void)
 
 void ActionMrI0(void)
 {
-#ifndef VERSION_JP
 	set_object_angle(o, 0, 0, 0);
-#else
-	o->oMoveAnglePitch = 0;
-	o->oMoveAngleYaw   = 0;
-	o->oMoveAngleRoll  = 0;
-#endif
-	obj_scale(o->oBehParams2ndByte + 1);
+	s_set_scale(o->oBehParams2ndByte + 1);
 	if(o->oTimer == 0)
 	{
 		obj_set_pos_to_home();
@@ -337,8 +331,8 @@ struct ObjectHitbox sMrIHitbox = {
 
 void bhv_mr_i_loop(void)
 {
-	set_object_hitbox(o, &sMrIHitbox);
-	obj_call_action_function(sMrIActions);
+	s_set_hitparam(o, &sMrIHitbox);
+	s_modejmp(sMrIActions);
 
 	if(o->oAction != 3)
 	{

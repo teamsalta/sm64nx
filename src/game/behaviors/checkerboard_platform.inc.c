@@ -27,7 +27,7 @@ void bhv_checkerboard_elevator_group_init(void)
 		else
 			sp38 = D_8032F754[sp34].unk0;
 
-		sp2C				  = spawn_object_relative(i, 0, i * sp3C, sp38, o, MODEL_CHECKERBOARD_PLATFORM, sm64::bhv::bhvCheckerboardPlatformSub());
+		sp2C				  = s_makeobj_chain(i, 0, i * sp3C, sp38, o, MODEL_CHECKERBOARD_PLATFORM, sm64::bhv::bhvCheckerboardPlatformSub());
 		sp2C->oCheckerBoardPlatformUnk1AC = D_8032F754[sp34].unk2;
 		func_802B8F7C(sp2C->header.gfx.scale, D_8032F754[sp34].unk1);
 	}
@@ -62,7 +62,7 @@ void bhv_checkerboard_platform_loop(void)
 	f32 sp24		      = o->oCheckerBoardPlatformUnk1AC;
 	o->oCheckerBoardPlatformUnkF8 = 0;
 	if(o->oDistanceToMario < 1000.0f)
-		PlaySound(SOUND_ENV_ELEVATOR4);
+		objsound_level(SOUND_ENV_ELEVATOR4);
 	switch(o->oAction)
 	{
 		case 0:
@@ -96,9 +96,9 @@ void bhv_checkerboard_platform_loop(void)
 	{
 		o->oAngleVelPitch = 0;
 		o->oFaceAnglePitch &= ~0x7FFF;
-		obj_move_using_fvel_and_gravity();
+		s_optionmove_F();
 	}
 	else
-		obj_move_using_fvel_and_gravity();
-	load_object_collision_model();
+		s_optionmove_F();
+	stMainMoveBG();
 }

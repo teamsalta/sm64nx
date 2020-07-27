@@ -1,7 +1,7 @@
 /**
  * Behavior for sm64::bhv::bhvUnusedParticleSpawn().
  *
- * This unused behavior spawns 10 purple particles if Mario collides with its
+ * This size behavior spawns 10 purple particles if Mario collides with its
  * associated object.
  */
 
@@ -13,16 +13,16 @@ void bhv_unused_particle_spawn_loop(void)
 
 	if(o->oMoveFlags & OBJ_MOVE_ON_GROUND)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 
-	if(are_objects_collided(o, gMarioObject))
+	if(s_hitcheck(o, gMarioObject))
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 
 		for(i = 0; i < 10; i++)
 		{
-			spawn_object(o, MODEL_PURPLE_MARBLE, sm64::bhv::bhvPurpleParticle());
+			s_makeobj_nowpos(o, MODEL_PURPLE_MARBLE, sm64::bhv::bhvPurpleParticle());
 		}
 	}
 }

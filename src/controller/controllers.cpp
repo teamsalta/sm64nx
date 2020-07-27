@@ -17,14 +17,12 @@ namespace sm64::hid
 		return *g_controllers;
 	}
 
-
 	Driver::Driver()
 	{
 	}
 
 	Driver::~Driver()
 	{
-
 	}
 
 	const u64 Driver::size() const
@@ -60,7 +58,7 @@ namespace sm64::hid
 		m_drivers.push_back(new SDL());
 
 #ifdef ENABLE_MOUSE
-			m_drivers.push_back(new Keyboard());
+		m_drivers.push_back(new Keyboard());
 #endif
 		m_drivers.push_back(new Tas());
 	}
@@ -101,4 +99,4 @@ namespace sm64::hid
 			}
 		}
 	}
-}
+} // namespace sm64::hid

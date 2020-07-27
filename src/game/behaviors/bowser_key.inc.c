@@ -14,7 +14,7 @@ struct ObjectHitbox sBowserKeyHitbox = {
 
 void bhv_bowser_key_loop(void)
 {
-	obj_scale(0.5f);
+	s_set_scale(0.5f);
 
 	if(o->oAngleVelYaw > 0x400)
 		o->oAngleVelYaw -= 0x100 / FRAME_RATE_SCALER_INV;
@@ -29,26 +29,22 @@ void bhv_bowser_key_loop(void)
 			o->oVelY = 70.0f;
 
 		spawn_sparkle_particles(3, 200, 80, -60);
-		spawn_object(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
+		s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
 		obj_update_floor_and_walls();
 		obj_move_standard(78);
 
 		if(o->oMoveFlags & OBJ_MOVE_ON_GROUND)
 			o->oAction++;
 		else if(o->oMoveFlags & OBJ_MOVE_LANDED)
-#ifndef VERSION_JP
-			PlaySound2(SOUND_GENERAL_UNKNOWN3_2);
-#else
-			PlaySound2(SOUND_GENERAL_UNKNOWN3_LOWPRIO);
-#endif
+			objsound(SOUND_GENERAL_UNKNOWN3_2);
 	}
 	else
 	{
-		set_object_hitbox(o, &sBowserKeyHitbox);
+		s_set_hitparam(o, &sBowserKeyHitbox);
 
 		if(o->oInteractStatus & INT_STATUS_INTERACTED)
 		{
-			mark_obj_for_deletion(o);
+			RemoveShape(o);
 			o->oInteractStatus = 0;
 		}
 	}

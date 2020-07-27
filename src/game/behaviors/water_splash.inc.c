@@ -34,19 +34,19 @@ void bhv_water_drops_loop(void)
 		if(waterLevel > o->oPosY)
 		{
 			try_to_spawn_object(0, 1.0f, o, MODEL_SPOT_ON_GROUND, sm64::bhv::bhvWaterSurfaceWhiteWave());
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 		}
 		else if(o->oTimer > 20 * FRAME_RATE_SCALER_INV)
-			mark_object_for_deletion(o);
+			s_remove_obj(o);
 	}
 	if(waterLevel < -10000.0f)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }
 
 void bhv_surface_waves_loop(void)
 {
 	copy_object_pos(o, gMarioObject);
-	o->oPosY = gMarioStates->waterLevel + 5;
+	o->oPosY = playerWorks->waterLevel + 5;
 	if(!(gMarioObject->oMarioParticleFlags & 0x80))
 	{
 		gMarioObject->oActiveParticleFlags &= 0xFF7F;
@@ -56,7 +56,7 @@ void bhv_surface_waves_loop(void)
 
 void bhv_water_surface_white_wave_init(void)
 {
-	obj_scale(RandomFloat() + 1.5);
+	s_set_scale(RandomFloat() + 1.5);
 }
 
 void bhv_object_bubble_ripples_init(void)
@@ -80,8 +80,8 @@ void bhv_wave_trail_loop(void)
 {
 	f32 sp1C = find_water_level(o->oPosX, o->oPosZ);
 	if(o->oTimer == 0)
-		if(gGlobalTimer & 1)
-			mark_object_for_deletion(o);
+		if(frameCounter & 1)
+			s_remove_obj(o);
 	o->oPosY = sp1C + 5.0f;
 	if(o->oTimer == 0)
 		o->oWaveTrailUnkF8 = o->header.gfx.scale[0];

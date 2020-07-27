@@ -14,7 +14,7 @@ static struct ObjectHitbox sCapHitbox = {
 
 s32 func_802F0904(void)
 {
-	set_object_hitbox(o, &sCapHitbox);
+	s_set_hitparam(o, &sCapHitbox);
 	if(o->oInteractStatus & INT_STATUS_INTERACTED)
 	{
 		o->activeFlags	   = 0;
@@ -29,7 +29,7 @@ void func_802F0978(void)
 {
 	if(o->oTimer > 300 * FRAME_RATE_SCALER_INV)
 	{
-		obj_flicker_and_disappear(o, 300 * FRAME_RATE_SCALER_INV);
+		iwa_TimerRemove(o, 300 * FRAME_RATE_SCALER_INV);
 	}
 }
 
@@ -135,7 +135,7 @@ void func_802F0E0C(void)
 	s16 sp1E;
 
 	o->oFaceAngleYaw += o->oForwardVel * 128.0f * FRAME_RATE_SCALER;
-	sp1E = object_step();
+	sp1E = ObjMoveEvent();
 	if(sp1E & 0x01)
 	{
 		func_802F09C0();
@@ -159,13 +159,13 @@ void bhv_wing_vanish_cap_loop(void)
 			break;
 
 		default:
-			object_step();
+			ObjMoveEvent();
 			func_802F0B68();
 			break;
 	}
 
 	if(o->oTimer > 20 * FRAME_RATE_SCALER_INV)
-		obj_become_tangible();
+		s_hitON();
 
 	func_802F0978();
 	func_802F0904();
@@ -184,7 +184,7 @@ void func_802F0FE0(void)
 	s16 sp1E;
 
 	o->oFaceAngleYaw += o->oForwardVel * 128.0f * FRAME_RATE_SCALER;
-	sp1E = object_step();
+	sp1E = ObjMoveEvent();
 	if(sp1E & 0x01)
 		func_802F09C0();
 }
@@ -198,13 +198,13 @@ void bhv_metal_cap_loop(void)
 			break;
 
 		default:
-			object_step();
+			ObjMoveEvent();
 			func_802F0B68();
 			break;
 	}
 
 	if(o->oTimer > 20 * FRAME_RATE_SCALER_INV)
-		obj_become_tangible();
+		s_hitON();
 
 	func_802F0904();
 	func_802F0978();
@@ -217,29 +217,29 @@ void bhv_normal_cap_init(void)
 	o->oBuoyancy = 0.9f;
 	o->oOpacity  = 0xFF;
 
-	save_file_set_cap_pos(o->oPosX, o->oPosY, o->oPosZ);
+	BuSetHatPosition(o->oPosX, o->oPosY, o->oPosZ);
 }
 
 void func_802F1190(void)
 {
-	save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
+	BuClrItemFlag(SAVE_FLAG_CAP_ON_GROUND);
 
-	switch(gCurrCourseNum)
+	switch(activeCourseNo)
 	{
 		case COURSE_SSL:
-			save_file_set_flags(SAVE_FLAG_CAP_ON_KLEPTO);
+			BuSetItemFlag(SAVE_FLAG_CAP_ON_KLEPTO);
 			break;
 
 		case COURSE_SL:
-			save_file_set_flags(SAVE_FLAG_CAP_ON_MR_BLIZZARD);
+			BuSetItemFlag(SAVE_FLAG_CAP_ON_MR_BLIZZARD);
 			break;
 
 		case COURSE_TTM:
-			save_file_set_flags(SAVE_FLAG_CAP_ON_UKIKI);
+			BuSetItemFlag(SAVE_FLAG_CAP_ON_UKIKI);
 			break;
 
 		default:
-			save_file_set_flags(SAVE_FLAG_CAP_ON_KLEPTO);
+			BuSetItemFlag(SAVE_FLAG_CAP_ON_KLEPTO);
 			break;
 	}
 }
@@ -251,7 +251,7 @@ void func_802F1234(void)
 	o->oFaceAngleYaw += o->oForwardVel * 128.0f * FRAME_RATE_SCALER;
 	o->oFaceAnglePitch += o->oForwardVel * 80.0f * FRAME_RATE_SCALER;
 
-	sp1E = object_step();
+	sp1E = ObjMoveEvent();
 	if(sp1E & 0x01)
 	{
 		func_802F09C0();
@@ -277,19 +277,19 @@ void bhv_normal_cap_loop(void)
 			break;
 
 		default:
-			object_step();
+			ObjMoveEvent();
 			func_802F0B68();
 			break;
 	}
 
 	if((s32)o->oForwardVel != 0)
-		save_file_set_cap_pos(o->oPosX, o->oPosY, o->oPosZ);
+		BuSetHatPosition(o->oPosX, o->oPosY, o->oPosZ);
 
 	if(o->activeFlags == 0)
 		func_802F1190();
 
 	if(func_802F0904() == 1)
-		save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
+		BuClrItemFlag(SAVE_FLAG_CAP_ON_GROUND);
 }
 
 void bhv_vanish_cap_init(void)

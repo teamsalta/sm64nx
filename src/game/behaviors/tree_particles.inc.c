@@ -11,13 +11,13 @@ void bhv_tree_snow_or_leaf_loop(void)
 		o->oTreeSnowOrLeafUnkFC = RandomFloat() * 0x400 + 0x600;
 	}
 	if(o->oPosY < o->oFloorHeight)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	if(o->oFloorHeight < -11000.0f)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	if(o->oTimer > 100 * FRAME_RATE_SCALER_INV)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	if(gPrevFrameObjectCount > 212)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	o->oFaceAnglePitch += o->oAngleVelPitch / FRAME_RATE_SCALER_INV;
 	o->oFaceAngleRoll += o->oAngleVelRoll / FRAME_RATE_SCALER_INV;
 	o->oVelY += -3.0f * FRAME_RATE_SCALER;
@@ -45,7 +45,7 @@ void bhv_snow_leaf_particle_spawn_init(void)
 	f32 scale;
 	UNUSED s32 unused2;
 	gMarioObject->oActiveParticleFlags &= ~0x2000;
-	if(gCurrLevelNum == LEVEL_CCM || gCurrLevelNum == LEVEL_SL)
+	if(activeStageNo == LEVEL_CCM || activeStageNo == LEVEL_SL)
 		isSnow = 1;
 	else
 		isSnow = 0;
@@ -53,7 +53,7 @@ void bhv_snow_leaf_particle_spawn_init(void)
 	{
 		if(RandomFloat() < 0.5)
 		{
-			obj   = spawn_object(o, MODEL_WHITE_PARTICLE_DL, sm64::bhv::bhvTreeSnow());
+			obj   = s_makeobj_nowpos(o, MODEL_WHITE_PARTICLE_DL, sm64::bhv::bhvTreeSnow());
 			scale = RandomFloat();
 			scale_object_xyz(obj, scale, scale, scale);
 			obj->oMoveAngleYaw = RandomU16();
@@ -65,7 +65,7 @@ void bhv_snow_leaf_particle_spawn_init(void)
 	{
 		if(RandomFloat() < 0.3)
 		{
-			obj   = spawn_object(o, MODEL_LEAVES, sm64::bhv::bhvTreeLeaf());
+			obj   = s_makeobj_nowpos(o, MODEL_LEAVES, sm64::bhv::bhvTreeLeaf());
 			scale = RandomFloat() * 3.0f;
 			scale_object_xyz(obj, scale, scale, scale);
 			obj->oMoveAngleYaw   = RandomU16();

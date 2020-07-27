@@ -34,7 +34,7 @@ void bhv_seesaw_platform_update(void)
 
 	if(absf(o->oSeesawPlatformPitchVel) > 10.0f)
 	{
-		PlaySound(SOUND_ENV_BOAT_ROCKING1);
+		objsound_level(SOUND_ENV_BOAT_ROCKING1);
 	}
 
 	if(gMarioObject->platform == o)

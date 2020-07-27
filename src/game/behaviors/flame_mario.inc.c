@@ -33,16 +33,16 @@ void bhv_black_smoke_mario_loop(void)
 
 void bhv_flame_mario_loop(void)
 {
-	obj_scale(2.0f);
+	s_set_scale(2.0f);
 	if(o->oTimer != 0)
 		if(o->oTimer % (2 * FRAME_RATE_SCALER_INV) == 0)
-			spawn_object(o, MODEL_BURN_SMOKE, sm64::bhv::bhvBlackSmokeMario());
+			s_makeobj_nowpos(o, MODEL_BURN_SMOKE, sm64::bhv::bhvBlackSmokeMario());
 	gMarioObject->prevObj = o; // weird?
 	set_object_parent_relative_pos(o, 40, -120, 0);
 	if(!(gMarioObject->oMarioParticleFlags & 0x800))
 	{
 		o->parentObj->oActiveParticleFlags &= ~0x800;
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 		gMarioObject->prevObj = NULL;
 	}
 }

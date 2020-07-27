@@ -6,7 +6,7 @@ void bhv_bubble_cannon_barrel_loop(void)
 
 	if(o->parentObj->oAction == 2)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 	else
 	{
@@ -31,7 +31,7 @@ void bhv_bubble_cannon_barrel_loop(void)
 				{
 					o->oForwardVel = 35.0f;
 
-					val04 = spawn_object(o, MODEL_WATER_BOMB, sm64::bhv::bhvWaterBomb());
+					val04 = s_makeobj_nowpos(o, MODEL_WATER_BOMB, sm64::bhv::bhvWaterBomb());
 					if(val04 != NULL)
 					{
 						val04->oForwardVel	   = -100.0f;
@@ -53,8 +53,8 @@ void water_bomb_cannon_act_0(void)
 {
 	if(o->oDistanceToMario < 2000.0f && !sm64::config().camera().disableDistanceClip())
 	{
-		spawn_object(o, MODEL_CANNON_BARREL, sm64::bhv::bhvCannonBarrelBubbles());
-		obj_unhide();
+		s_makeobj_nowpos(o, MODEL_CANNON_BARREL, sm64::bhv::bhvCannonBarrelBubbles());
+		s_shape_disp();
 
 		o->oAction	   = 1;
 		o->oMoveAnglePitch = o->oWaterCannonUnkFC = 0x1C00;
@@ -86,7 +86,7 @@ void water_bomb_cannon_act_1(void)
 				}
 				else
 				{
-					PlaySound2(SOUND_OBJ_CANNON4);
+					objsound(SOUND_OBJ_CANNON4);
 					o->oWaterCannonUnkF4  = 70;
 					o->oWaterCannonUnkFC  = 0x1000 + 0x400 * (RandomU16() & 0x3);
 					o->oWaterCannonUnk100 = -0x2000 + o->oMoveAngleYaw + 0x1000 * (RandomU16() % 5);
@@ -99,13 +99,13 @@ void water_bomb_cannon_act_1(void)
 
 void water_bomb_cannon_act_2(void)
 {
-	obj_hide();
+	s_shape_hide();
 	o->oAction = 0;
 }
 
 void bhv_water_bomb_cannon_loop(void)
 {
-	obj_push_mario_away_from_cylinder(220.0f, 300.0f);
+	s_player_slideout_RH(220.0f, 300.0f);
 
 	switch(o->oAction)
 	{

@@ -3,7 +3,7 @@
 
 void bhv_water_air_bubble_init(void)
 {
-	obj_scale(4.0f);
+	s_set_scale(4.0f);
 }
 
 // Fields 0xF4 & 0xF8 seem to be angles for bubble and cannon
@@ -16,15 +16,15 @@ void bhv_water_air_bubble_loop(void)
 	o->oWaterObjScaleCounterX += 0x400 / FRAME_RATE_SCALER_INV;
 	if(o->oTimer < 30 * FRAME_RATE_SCALER_INV)
 	{
-		obj_become_intangible();
+		s_hitOFF();
 		o->oPosY += 3.0f * FRAME_RATE_SCALER;
 	}
 	else
 	{
-		obj_become_tangible();
+		s_hitON();
 		obj_forward_vel_approach_upward(2.0f, 10.0f * FRAME_RATE_SCALER);
 		o->oMoveAngleYaw = angle_to_object(o, gMarioObject);
-		obj_move_using_fvel_and_gravity();
+		s_optionmove_F();
 	}
 
 	o->oPosX += (RandomFloat() * 4.0f - 2.0f) * FRAME_RATE_SCALER;
@@ -32,26 +32,26 @@ void bhv_water_air_bubble_loop(void)
 
 	if(o->oInteractStatus & INT_STATUS_INTERACTED || o->oTimer > 200 * FRAME_RATE_SCALER_INV)
 	{
-		PlaySound2(SOUND_GENERAL_QUIET_BUBBLE);
-		mark_object_for_deletion(o);
+		objsound(SOUND_GENERAL_QUIET_BUBBLE);
+		s_remove_obj(o);
 		for(i = 0; i < 30; i++)
-			spawn_object(o, MODEL_BUBBLE, sm64::bhv::bhvBubbleMaybe());
+			s_makeobj_nowpos(o, MODEL_BUBBLE, sm64::bhv::bhvBubbleMaybe());
 	}
 	if(find_water_level(o->oPosX, o->oPosZ) < o->oPosY)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	o->oInteractStatus = 0;
 }
 
 void bhv_bubble_wave_init(void)
 {
-	o->oWaterObjAnimSpeedX  = 0x800 + (s32)(RandomFloat() * 2048.0f);
+	o->oWaterObjAnimSpeedX = 0x800 + (s32)(RandomFloat() * 2048.0f);
 	o->oWaterObjAnimSpeedY = 0x800 + (s32)(RandomFloat() * 2048.0f);
-	PlaySound2(SOUND_GENERAL_QUIET_BUBBLE);
+	objsound(SOUND_GENERAL_QUIET_BUBBLE);
 }
 
 void Unknown802A7E48(void)
 {
-	obj_scale(RandomFloat() + 1.0);
+	s_set_scale(RandomFloat() + 1.0);
 }
 
 void bhv_bubble_maybe_loop(void)
@@ -68,7 +68,7 @@ void bhv_bubble_maybe_loop(void)
 
 void bhv_small_water_wave_loop(void)
 {
-	f32 waterLevel	       = find_water_level(o->oPosX, o->oPosZ);
+	f32 waterLevel = find_water_level(o->oPosX, o->oPosZ);
 
 	o->header.gfx.scale[0] = sins(o->oWaterObjScaleCounterX) * 0.2 + 1.0;
 	o->oWaterObjScaleCounterX += o->oWaterObjAnimSpeedX / FRAME_RATE_SCALER_INV;
@@ -82,13 +82,13 @@ void bhv_small_water_wave_loop(void)
 		o->oPosY += 5.0f * FRAME_RATE_SCALER;
 		if(gFreeObjectList.next != NULL)
 		{
-			spawn_object(o, MODEL_SPOT_ON_GROUND, sm64::bhv::bhvWaterSurfaceWhiteWave2());
+			s_makeobj_nowpos(o, MODEL_SPOT_ON_GROUND, sm64::bhv::bhvWaterSurfaceWhiteWave2());
 		}
 	}
 
 	if(o->oInteractStatus & INT_STATUS_INTERACTED)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 	}
 }
 
@@ -103,7 +103,7 @@ void func_802A81C4(void)
 void bhv_particle_init(void)
 {
 	scale_object_xyz(o, 2.0f, 2.0f, 1.0f);
-	o->oWaterObjAnimSpeedX  = 0x800 + (s32)(RandomFloat() * 2048.0f);
+	o->oWaterObjAnimSpeedX = 0x800 + (s32)(RandomFloat() * 2048.0f);
 	o->oWaterObjAnimSpeedY = 0x800 + (s32)(RandomFloat() * 2048.0f);
 	translate_object_xyz_random(o, 100.0f);
 }
@@ -116,7 +116,7 @@ void bhv_particle_loop()
 	func_802A81C4();
 	if(o->oPosY > sp24 && o->oTimer)
 	{
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 		try_to_spawn_object(5, 0, o, MODEL_SPOT_ON_GROUND, sm64::bhv::bhvWaterSurfaceWhiteWave2());
 	}
 }
@@ -131,13 +131,13 @@ void bhv_small_bubbles_loop(void)
 void bhv_fish_group_loop(void)
 {
 	if(gMarioCurrentRoom == 15 || gMarioCurrentRoom == 7)
-		if(gGlobalTimer & 1)
-			spawn_object(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvSmallParticleBubbles());
+		if(frameCounter & 1)
+			s_makeobj_nowpos(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvSmallParticleBubbles());
 }
 
 void bhv_water_waves_init(void)
 {
 	s32 sp1C;
 	for(sp1C = 0; sp1C < 3; sp1C++)
-		spawn_object(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvSmallParticle());
+		s_makeobj_nowpos(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvSmallParticle());
 }

@@ -14,7 +14,7 @@ void ActionBirdChirpChirp0(void)
 	{
 		for(i = 0; i < sp18; i++)
 		{
-			spawn_object(o, MODEL_BUB, sm64::bhv::bhvBub());
+			s_makeobj_nowpos(o, MODEL_BUB, sm64::bhv::bhvBub());
 		}
 
 		o->oAction = 1;
@@ -41,7 +41,7 @@ void (*sBirdChirpChirpActions[])(void) = {ActionBirdChirpChirp0, ActionBirdChirp
 
 void bhv_bird_chirp_chirp_loop(void)
 {
-	obj_call_action_function(sBirdChirpChirpActions);
+	s_modejmp(sBirdChirpChirpActions);
 }
 
 void func_802C0240(s32 a0)
@@ -101,12 +101,12 @@ void ActionCheepCheep2(void)
 	if(o->oTimer < 20 * FRAME_RATE_SCALER_INV)
 	{
 		if(o->oInteractStatus & INT_STATUS_INTERACTED)
-			spawn_object(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvSmallParticleSnow());
+			s_makeobj_nowpos(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvSmallParticleSnow());
 	}
 	else
 		o->oInteractStatus = 0;
 	if(o->oTimer == 0)
-		PlaySound2(SOUND_GENERAL_MOVING_WATER);
+		objsound(SOUND_GENERAL_MOVING_WATER);
 	if(o->oForwardVel == 0.0f)
 		o->oForwardVel = 6.0f;
 	dy = o->oPosY - gMarioObject->oPosY;
@@ -140,8 +140,8 @@ void bhv_cheep_cheep_loop(void)
 	o->oCheepCheepUnkF8  = gMarioObject->oPosY + o->oCheepCheepUnkFC;
 	o->oWallHitboxRadius = 30.0f;
 	obj_update_floor_and_walls();
-	obj_call_action_function(sCheepCheepActions);
-	obj_move_using_fvel_and_gravity();
+	s_modejmp(sCheepCheepActions);
+	s_optionmove_F();
 	if(o->parentObj->oAction == 2)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 }

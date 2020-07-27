@@ -5,7 +5,7 @@ void func_802ADC20(s16 pitch, s16 yaw)
 	s32 i;
 	for(i = 0; i < 3; i++)
 	{
-		struct Object* wind   = spawn_object(o, MODEL_MIST, sm64::bhv::bhvWind());
+		struct Object* wind   = s_makeobj_nowpos(o, MODEL_MIST, sm64::bhv::bhvWind());
 		wind->oMoveAngleYaw   = yaw;
 		wind->oMoveAnglePitch = pitch;
 	}
@@ -37,12 +37,12 @@ void bhv_wind_loop(void)
 			o->oForwardVel	 = 10.0f;
 		}
 		obj_set_billboard(o);
-		obj_scale(sp28);
+		s_set_scale(sp28);
 	}
 	if(o->oTimer > 8 * FRAME_RATE_SCALER_INV)
-		mark_object_for_deletion(o);
+		s_remove_obj(o);
 
 	o->oFaceAnglePitch += 4000.0f + 2000.0f * RandomFloat() * FRAME_RATE_SCALER;
 	o->oFaceAngleYaw += 4000.0f + 2000.0f * RandomFloat() * FRAME_RATE_SCALER;
-	obj_move_using_fvel_and_gravity();
+	s_optionmove_F();
 }

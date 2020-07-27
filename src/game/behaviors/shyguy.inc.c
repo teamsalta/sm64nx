@@ -99,7 +99,7 @@ void bhv_shyguy_triplet_spawner_update(void)
 					dx = 500.0f * coss(angle);
 					dz = 500.0f * sins(angle);
 
-					spawn_object_relative((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_SIZE_MASK) | (shyguyFlag >> 6), dx, 0, dz, o, MODEL_GOOMBA, sm64::bhv::bhvShyGuy());
+					s_makeobj_chain((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_SIZE_MASK) | (shyguyFlag >> 6), dx, 0, dz, o, MODEL_GOOMBA, sm64::bhv::bhvShyGuy());
 				}
 			}
 
@@ -124,7 +124,7 @@ void bhv_shyguy_init(void)
 	o->oGoombaScale = sShyGuyProperties[o->oGoombaSize].scale;
 	o->oDeathSound	= sShyGuyProperties[o->oGoombaSize].deathSound;
 
-	set_object_hitbox(o, &sShyGuyHitbox);
+	s_set_hitparam(o, &sShyGuyHitbox);
 
 	o->oDrawingDistance   = sShyGuyProperties[o->oGoombaSize].drawDistance;
 	o->oDamageOrCoinValue = sShyGuyProperties[o->oGoombaSize].damage;
@@ -138,7 +138,7 @@ void bhv_shyguy_init(void)
  */
 static void shyguy_begin_jump(void)
 {
-	PlaySound2(SOUND_OBJ_GOOMBA_ALERT);
+	objsound(SOUND_OBJ_GOOMBA_ALERT);
 	o->oAction     = GOOMBA_ACT_JUMP;
 	o->oForwardVel = 0.0f;
 	o->oVelY       = 50.0f / 3.0f * o->oGoombaScale;
@@ -164,7 +164,7 @@ static void shyguy_act_fire()
 	static const u64 fireBallCount = 3;
 	static const u64 interval      = 1;
 
-	PlaySound2(SOUND_OBJ_FLAME_BLOWN);
+	objsound(SOUND_OBJ_FLAME_BLOWN);
 	if(o->oTimer % (interval * FRAME_RATE_SCALER_INV) == 0)
 	{
 		obj_spit_bouncing_fire(0, 0, 0, 5.0f / 2, MODEL_RED_FLAME_SHADOW, 20.0f * 2, 15.0f * 2, 0x1000 * 2);
@@ -354,11 +354,11 @@ void bhv_shyguy_update(void)
 		{
 			if(o->parentObj->oAction == GOOMBA_TRIPLET_SPAWNER_ACT_UNLOADED)
 			{
-				mark_object_for_deletion(o);
+				s_remove_obj(o);
 			}
 		}
 
-		obj_scale(o->oGoombaScale);
+		s_set_scale(o->oGoombaScale);
 		obj_update_blinking(&o->oGoombaBlinkTimer, 30, 50, 5);
 		obj_update_floor_and_walls();
 

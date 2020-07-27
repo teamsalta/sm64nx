@@ -33,4 +33,4 @@ namespace sm64
 		}
 		m_controller.resolveInputs();
 	}
-}
+} // namespace sm64

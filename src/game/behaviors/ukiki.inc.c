@@ -35,7 +35,7 @@ s32 is_hat_ukiki_and_mario_has_hat(void)
 {
 	if(o->oBehParams2ndByte == UKIKI_HAT)
 	{
-		if(does_mario_have_hat(gMarioState))
+		if(does_mario_have_hat(marioWorks))
 		{
 			return TRUE;
 		}
@@ -243,7 +243,7 @@ void ukiki_act_wait_to_respawn(void)
 }
 
 /**
- * A seemgingly stubbed unused action.
+ * A seemgingly stubbed size action.
  *
  * Perhaps an early attempt at the UKIKI_SUB_ACT_CAGE_WAIT_FOR_MARIO
  * part of the ukiki_act_go_to_cage action.
@@ -359,7 +359,7 @@ void ukiki_act_run(void)
 void ukiki_act_jump(void)
 {
 	o->oForwardVel = 10.0f;
-	obj_become_intangible();
+	s_hitOFF();
 
 	if(o->oSubAction == 0)
 	{
@@ -377,7 +377,7 @@ void ukiki_act_jump(void)
 	{
 		o->oForwardVel = 0.0f;
 		set_obj_animation_and_sound_state(UKIKI_ANIM_LAND);
-		obj_become_tangible();
+		s_hitON();
 
 		if(func_8029F788())
 		{
@@ -404,17 +404,17 @@ void ukiki_act_go_to_cage(void)
 	struct Object* obj;
 	f32 latDistToCage = 0.0f;
 	s16 yawToCage	  = 0;
-	obj		  = obj_nearest_object_with_behavior(sm64::bhv::bhvUkikiCageChild());
+	obj		  = s_find_obj(sm64::bhv::bhvUkikiCageChild());
 
 	// Ultimately is checking the cage, as it points to the parent
 	// of a dummy child object of the cage.
 	if(obj != NULL)
 	{
-		latDistToCage = lateral_dist_between_objects(o, obj->parentObj);
+		latDistToCage = s_distanceXZ_obj2obj(o, obj->parentObj);
 		yawToCage     = angle_to_object(o, obj->parentObj);
 	}
 
-	obj_become_intangible();
+	s_hitOFF();
 	o->oFlags |= OBJ_FLAG_ACTIVE_FROM_AFAR;
 
 	// Switch goes from 0-7 in order.
@@ -484,7 +484,7 @@ void ukiki_act_go_to_cage(void)
 
 			if(o->oMoveFlags & OBJ_MOVE_LANDED)
 			{
-				play_puzzle_jingle();
+				Na_NazoClearBgm();
 				set_obj_animation_and_sound_state(UKIKI_ANIM_JUMP_CLAP);
 				o->oSubAction++;
 				o->oUkikiCageSpinTimer		     = 32 * FRAME_RATE_SCALER_INV;
@@ -507,7 +507,7 @@ void ukiki_act_go_to_cage(void)
 		case UKIKI_SUB_ACT_CAGE_DESPAWN:
 			if(o->oPosY < -1300.0f)
 			{
-				mark_object_for_deletion(o);
+				s_remove_obj(o);
 			}
 			break;
 	}
@@ -550,7 +550,7 @@ void ukiki_free_loop(void)
 	s32 steepSlopeAngleDegrees;
 
 	obj_update_floor_and_walls();
-	obj_call_action_function(sUkikiActions);
+	s_modejmp(sUkikiActions);
 
 	if(o->oAction == UKIKI_ACT_GO_TO_CAGE || o->oAction == UKIKI_ACT_RETURN_HOME)
 	{
@@ -574,11 +574,11 @@ void ukiki_free_loop(void)
  * Unused function for timing ukiki's blinking.
  * Image still present in Ukiki's actor graphics.
  *
- * Possibly unused so AnimState could be used for wearing a hat?
+ * Possibly size so AnimState could be used for wearing a hat?
  */
 static void ukiki_blink_timer(void)
 {
-	if((gGlobalTimer / FRAME_RATE_SCALER_INV) % 50 < 7)
+	if((frameCounter / FRAME_RATE_SCALER_INV) % 50 < 7)
 	{
 		o->oAnimState = UKIKI_ANIM_STATE_EYE_CLOSED;
 	}
@@ -600,7 +600,7 @@ void cage_ukiki_held_loop(void)
 			case UKIKI_TEXT_DEFAULT:
 				if(set_mario_npc_dialog(2) == 2)
 				{
-					create_dialog_box_with_response(DIALOG_079);
+					CallMessageYesNo(DIALOG_079);
 					o->oUkikiTextState = UKIKI_TEXT_CAGE_TEXTBOX;
 				}
 				break;
@@ -697,7 +697,7 @@ void bhv_ukiki_init(void)
 {
 	if(o->oBehParams2ndByte == UKIKI_HAT)
 	{
-		if(save_file_get_flags() & SAVE_FLAG_CAP_ON_UKIKI)
+		if(BuGetItemFlag() & SAVE_FLAG_CAP_ON_UKIKI)
 		{
 			o->oUkikiTextState = UKIKI_TEXT_HAS_HAT;
 			o->oUkikiHasHat |= UKIKI_HAT_ON;

@@ -41,10 +41,10 @@ static void handle_merry_go_round_music(void)
 		}
 
 		// All floors in the merry-go-round's enclosure have surface type 0x1A.
-		// The obj_is_mario_on_platform check is redundant since the merry-go-round
+		// The s_rideon_player check is redundant since the merry-go-round
 		// has surface type 0x1A, so Mario cannot be on the merry-go-round
 		// without being on a floor with surface type 0x1A (SURFACE_MGR_MUSIC).
-		if(obj_is_mario_on_platform() || marioFloorType == SURFACE_MGR_MUSIC)
+		if(s_rideon_player() || marioFloorType == SURFACE_MGR_MUSIC)
 		{
 			// If Mario is in the merry-go-round's enclosure, play only the merry-go-round music.
 			play_secondary_music(SEQ_EVENT_MERRY_GO_ROUND, 0, 78, 50);
@@ -70,7 +70,7 @@ static void handle_merry_go_round_music(void)
 		}
 		else
 		{
-			PlaySound(SOUND_ENV_MERRY_GO_ROUND_CREAKING);
+			objsound_level(SOUND_ENV_MERRY_GO_ROUND_CREAKING);
 		}
 	}
 }
@@ -92,7 +92,7 @@ void bhv_merry_go_round_loop(void)
 	}
 	else
 	{
-		play_sound(SOUND_AIR_HOWLING_WIND, gDefaultSoundArgs);
+		AudStartSound(SOUND_AIR_HOWLING_WIND, gDefaultSoundArgs);
 
 		if(
 		    // There are objects outside BBH, such as corkboxes.
