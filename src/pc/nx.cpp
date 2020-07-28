@@ -32,9 +32,9 @@ void initialize()
 
 	accountInitialize(AccountServiceType_Application);
 
-	if(appletSetCpuBoostMode(ApmCpuBoostMode_Type1))
+	/*if(appletSetCpuBoostMode(ApmCpuBoostMode_Type2))
 	{
-	}
+	}*/
 }
 
 #ifndef BUILD_NRO

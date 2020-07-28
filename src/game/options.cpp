@@ -4,6 +4,7 @@
 #include "xxhash64.h"
 #include "game/area.h"
 #include "game/ingame_menu.h"
+#include "level_table.h"
 
 #ifdef __SWITCH__
 #include "pc/nx.h"
@@ -267,7 +268,17 @@ namespace sm64
 
 		bool Game::noStarExit() const
 		{
-			return m_noStarExit;
+			if (!m_noStarExit)
+			{
+				return false;
+			}
+
+			if (activeStageNo == LEVEL_BOWSER_1 || activeStageNo == LEVEL_BOWSER_2 || activeStageNo == LEVEL_BOWSER_3)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		bool& Game::setNoStarExit()
@@ -283,6 +294,16 @@ namespace sm64
 		Camera::Camera() : m_distanceScaler(1.0f), m_yawReturnScaler(1.0f), m_disableDistanceClip(false), m_useClassicCamera(false), m_mousexInvert(false), m_mouseyInvert(false), m_mousexScaler(1.0f), m_mouseyScaler(1.0f)
 		{
 			memset(junk, 0, sizeof(junk));
+		}
+
+		const bool Camera::disableDistanceClip() const
+		{
+			if (activeStageNo == LEVEL_WF)
+			{
+				return false;
+			}
+
+			return levelLoaded() && m_disableDistanceClip;
 		}
 
 		static u64 g_levelLoaded = 0;

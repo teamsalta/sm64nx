@@ -29,10 +29,8 @@ namespace sm64
 				return m_yawReturnScaler;
 			}
 
-			const bool disableDistanceClip() const
-			{
-				return levelLoaded() && m_disableDistanceClip;
-			}
+			const bool disableDistanceClip() const;
+
 			bool& setDisableDistanceClip()
 			{
 				return m_disableDistanceClip;

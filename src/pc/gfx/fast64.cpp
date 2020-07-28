@@ -2317,7 +2317,7 @@ namespace sm64::gfx
 					gfx_sp_tri1(C1(16, 8) / 2, C1(8, 8) / 2, C1(0, 8) / 2);
 					break;
 				case G_VTX:
-					gfx_sp_vertex(C0(12, 8), C0(1, 7) - C0(12, 8), (const Vtx*)cmd->words.w1, false);
+					gfx_sp_vertex(C0(12, 8), C0(1, 7) - C0(12, 8), (const Vtx*)cmd->words.w1, true);
 					break;
 				case G_MTX:
 					gfx_sp_matrix(C0(0, 8) ^ G_MTX_PUSH, (const u32*)(cmd->words.w1));
@@ -2336,7 +2336,7 @@ namespace sm64::gfx
 				}
 				break;
 				case G_VTX_BUF:
-					gfx_sp_vertex(g_vtx_buf_size, g_vtx_buf_dest, (const Vtx*)cmd->words.w1, false);
+					gfx_sp_vertex(g_vtx_buf_size, g_vtx_buf_dest, (const Vtx*)cmd->words.w1, true);
 
 					break;
 				case G_MOVEMEM:

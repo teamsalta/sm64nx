@@ -35,6 +35,9 @@ def sizeIndex(fmt):
 textureData = {}	
 totalSize = 0
 
+minSize = None
+maxSize = None
+
 try:
 	with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'assetmap.json'), 'r') as f:
 		assetMap = json.load(f)
@@ -124,6 +127,35 @@ class Asset:
 		self.width = width
 		self.height = height
 		self.type = type
+		
+def adjustSize(width, height, src):
+	ratio = width / height
+	owidth = width
+	oheight = height
+	if minSize is not None and min(width, height) < minSize:
+		if width < height:
+			width = minSize
+			height = width * ratio
+		else:
+			height = minSize
+			width = height / ratio
+			
+	if maxSize is not None and max(width, height) > maxSize:
+		
+		if width > height:
+			width = maxSize
+			height = width / ratio
+		else:
+			height = maxSize
+			width = height * ratio
+
+		width = int(width)
+		height = int(height)
+		
+		if width % 8 != 0 or height % 8 != 0:
+			print('warning resizing %d, %d ->  %d, %d: %s' %(owidth, oheight, width, height, src))
+			
+	return [int(width), int(height)]
 
 def addTexture(src, scale, base):
 	global totalSize
@@ -143,14 +175,13 @@ def addTexture(src, scale, base):
 	
 	im = Image.open(src)
 	originalWidth, originalHeight = im.size
-	width = originalWidth
-	height = originalHeight
+	
+	width, height = adjustSize(originalWidth, originalHeight, src)
 
 	im = im.convert("RGBA")
 	
-	if scale > 1:
-		width = width // scale;
-		height = height // scale;
+	if scale > 1 or width != originalWidth or height != originalHeight:		
+		width, height = adjustSize(width // scale, height // scale, src)
 		im = im.resize((width, height))
 
 	pBits = im.tobytes("raw", "RGBA")
@@ -199,10 +230,18 @@ parser.add_argument('--source', '-s', help='source directory containing files to
 parser.add_argument('--basedir', '-b', default='.', help='base directory for searching for files')
 parser.add_argument('--extract', '-e', help='file to unpack, use --output to specify directory')
 parser.add_argument('--scale', type=int, default=1, help='texture resolution divisor.  2 means half quality, 1 is original quality')
+parser.add_argument('--min-size', type=int, help='minimum texture resolution')
+parser.add_argument('--max-size', type=int, help='maximum texture resolution')
 parser.add_argument('--usepaths', action="store_true", help='export textures using filename paths')
 args = parser.parse_args()
 
 magic = (0xE8B675681037DE12).to_bytes(8, byteorder='little')
+
+if args.min_size is not None:
+	minSize = args.min_size
+	
+if args.max_size is not None:
+	maxSize = args.max_size
 
 if args.source:
 	if args.source.endswith('.json'):
