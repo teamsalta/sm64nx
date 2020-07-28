@@ -544,7 +544,7 @@ namespace sm64::menu
 
 			if (sm64::player(0).isRebindMode())
 			{
-				static hud::String pressKey = "PRESS KEY TO BIND";
+				static hud::String pressKey = std::string("PRESS KEY TO BIND");
 
 				ContCursorEvent(MENU_SCROLL_VERTICAL, &m_index, 1, m_items.size());
 
