@@ -108,6 +108,8 @@ namespace sm64::hid
 		virtual void ResetMotorPack();
 		virtual void SendMotorVib(int level);
 
+		virtual bool updateRebind(int input);
+
 		protected:
 		State m_state;
 		bool m_isLocal;

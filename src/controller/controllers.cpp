@@ -39,6 +39,18 @@ namespace sm64::hid
 		return *m_controllers[index];
 	}
 
+	bool Driver::updateRebind(int input)
+	{
+		bool result = 0;
+		for (auto& controller : m_controllers)
+		{
+			controller->state().reset();
+			result |= controller->updateRebind(input);
+			controller->resolveInputs();
+		}
+		return result;
+	}
+
 	void Driver::update()
 	{
 		for(auto& controller : m_controllers)
@@ -53,7 +65,7 @@ namespace sm64::hid
 	{
 	}
 
-	Controllers::Controllers()
+	Controllers::Controllers() : m_rebindInput(0)
 	{
 		m_drivers.push_back(new SDL());
 
@@ -81,9 +93,26 @@ namespace sm64::hid
 
 	void Controllers::update()
 	{
-		for(auto& driver : m_drivers)
+		if (isRebindMode())
 		{
-			driver->update();
+			bool result = 0;
+
+			for (auto& driver : m_drivers)
+			{
+				result |= driver->updateRebind(m_rebindInput);
+			}
+
+			if (result)
+			{
+				m_rebindInput = 0;
+			}
+		}
+		else
+		{
+			for (auto& driver : m_drivers)
+			{
+				driver->update();
+			}
 		}
 	}
 
@@ -98,5 +127,15 @@ namespace sm64::hid
 				found += driver->size();
 			}
 		}
+	}
+
+	void Controllers::rebind(int input)
+	{
+		m_rebindInput = input;
+	}
+
+	bool Controllers::isRebindMode() const
+	{
+		return m_rebindInput > 0;
 	}
 } // namespace sm64::hid

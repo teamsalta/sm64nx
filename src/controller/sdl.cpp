@@ -100,7 +100,6 @@ namespace sm64::hid
 
 #ifndef __SWITCH__
 				loadKeyBindings();
-				saveKeyBindings();
 #endif
 			}
 
@@ -305,6 +304,65 @@ namespace sm64::hid
 				return convertToByte(value, g_rstickY_peak);
 			}
 
+			bool canRebind(SDL_GameControllerButton button, int input)
+			{
+				if (m_keyBindings.count(button) == 0)
+				{
+					return true;
+				}
+
+				auto replacingInput = m_keyBindings[button];
+				u64 count = 0;
+
+				if (replacingInput != START_BUTTON && replacingInput != A_BUTTON && replacingInput != B_BUTTON)
+				{
+					return true;
+				}
+
+				if (replacingInput == input)
+				{
+					return true;
+				}
+
+				for (auto i : m_keyBindings)
+				{
+					if (i.second == replacingInput)
+					{
+						count++;
+					}
+				}
+
+				if (count == 1)
+				{
+					return false;
+				}
+				return count != 1;
+			}
+
+			bool updateRebind(int input) override
+			{
+				u8 state[SDL_CONTROLLER_BUTTON_MAX];
+
+				for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++)
+				{
+					bool newState = SDL_GameControllerGetButton(m_context, (SDL_GameControllerButton)i);
+					state[i] = (m_buttonState[i] ^ newState) & newState;
+					m_buttonState[i] = newState;
+				}
+
+				for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++)
+				{
+					if (state[i] && canRebind((SDL_GameControllerButton)i, input))
+					{
+						m_keyBindings[(SDL_GameControllerButton)i] = input;
+						saveKeyBindings();
+						return true;
+					}
+				}
+
+				return false;
+			}
+
 			void update() override
 			{
 				if(!init_ok || !m_context)
@@ -320,9 +378,14 @@ namespace sm64::hid
 					m_context = NULL;
 				}
 
+				for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++)
+				{
+					m_buttonState[i] = SDL_GameControllerGetButton(m_context, (SDL_GameControllerButton)i);
+				}
+
 				for (const auto& i : m_keyBindings)
 				{
-					if (SDL_GameControllerGetButton(m_context, i.first))
+					if (m_buttonState[i.first])
 					{
 						m_state.button |= i.second;
 					}
@@ -394,6 +457,7 @@ namespace sm64::hid
 			SDL_GameController* m_context;
 			SDL_Haptic* m_haptic;
 			std::unordered_map<SDL_GameControllerButton, int> m_keyBindings;
+			u8 m_buttonState[SDL_CONTROLLER_BUTTON_MAX];
 		};
 	} // namespace controller
 	SDL::SDL()

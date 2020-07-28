@@ -1,4 +1,5 @@
 #pragma once
+#include "controller/controllers.h"
 
 extern void iwaStageInit()
 {
@@ -308,6 +309,10 @@ namespace sm64::menu::item
 
 		virtual void click()
 		{
+			if (m_onChange)
+			{
+				m_onChange(0);
+			}
 		}
 
 		const char* title() const
@@ -508,6 +513,61 @@ namespace sm64::menu
 		{
 			print_hud_colorful_str(std::string("CHEATS"), DIALOG_TITLE_X, DIALOG_TITLE_Y);
 			Dialog::render(x, y, yIndex);
+		}
+	};
+
+	template<int input>
+	void rebindCallback(u64 value)
+	{
+		sm64::player(0).rebind(input);
+	}
+
+	class Rebind : public Dialog
+	{
+	public:
+		Rebind() : Dialog("REBIND")
+		{
+			m_items.push_back(new sm64::menu::item::Base("A BUTTON", rebindCallback<hid::A_BUTTON>));
+			m_items.push_back(new sm64::menu::item::Base("B BUTTON", rebindCallback<hid::B_BUTTON>));
+			m_items.push_back(new sm64::menu::item::Base("Z TRIG", rebindCallback<hid::Z_TRIG>));
+			m_items.push_back(new sm64::menu::item::Base("U CBUTTONS", rebindCallback<hid::U_CBUTTONS>));
+			m_items.push_back(new sm64::menu::item::Base("L CBUTTONS", rebindCallback<hid::L_CBUTTONS>));
+			m_items.push_back(new sm64::menu::item::Base("D CBUTTONS", rebindCallback<hid::D_CBUTTONS>));
+			m_items.push_back(new sm64::menu::item::Base("R CBUTTONS",  rebindCallback<hid::R_CBUTTONS>));
+			m_items.push_back(new sm64::menu::item::Base("R TRIG", rebindCallback<hid::R_TRIG>));
+			m_items.push_back(new sm64::menu::item::Base("START BUTTON", rebindCallback<hid::START_BUTTON>));
+		}
+
+		void render(const s16 x, const s16 y, const s16 yIndex = 15) override
+		{
+			print_hud_colorful_str(std::string("REBIND"), DIALOG_TITLE_X, DIALOG_TITLE_Y);
+
+			if (sm64::player(0).isRebindMode())
+			{
+				static hud::String pressKey = "PRESS KEY TO BIND";
+
+				ContCursorEvent(MENU_SCROLL_VERTICAL, &m_index, 1, m_items.size());
+
+				gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+				gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, font_alpha);
+
+				Draw8bitFont(x + 10, y - 30, pressKey.buffer());
+
+				DrawPauseScore();
+
+				// Draw8bitFont(x + 10, y - 33, textCameraAngleR);
+				gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+
+				iTranslate(MENU_MTX_PUSH, x - X_VAL8, (y - ((m_index - 1) * yIndex)) - Y_VAL8, 0);
+
+				gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, font_alpha);
+				gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+				gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+			}
+			else
+			{
+				Dialog::render(x, y, yIndex);
+			}
 		}
 	};
 
@@ -797,7 +857,7 @@ s8 subMenu		     = 0;
 
 static std::vector<sm64::menu::Dialog*>& menus()
 {
-	static std::vector<sm64::menu::Dialog*> sMenus = {new sm64::menu::Game(), new sm64::menu::Camera(), new sm64::menu::Mods(), new sm64::menu::Cheats(), new sm64::menu::Credits()};
+	static std::vector<sm64::menu::Dialog*> sMenus = {new sm64::menu::Game(), new sm64::menu::Camera(), new sm64::menu::Mods(), new sm64::menu::Cheats(), new sm64::menu::Rebind(), new sm64::menu::Credits()};
 	return sMenus;
 }
 

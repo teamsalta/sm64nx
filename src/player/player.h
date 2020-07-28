@@ -24,8 +24,12 @@ namespace sm64
 			return m_controller;
 		}
 
+		void rebind(int input);
+		bool isRebindMode() const;
+
 		protected:
 		std::vector<std::shared_ptr<hid::Controller>> m_controllers;
 		hid::Controller m_controller;
+		int m_rebindInput;
 	};
 } // namespace sm64

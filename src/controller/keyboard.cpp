@@ -84,6 +84,7 @@ namespace sm64::hid
 		public:
 			Keyboard() : Controller()
 			{
+				memset(m_lastKeyState, 0, sizeof(m_lastKeyState));
 				m_keyBindings[SDL_SCANCODE_W] = STICK_X_UP;
 				m_keyBindings[SDL_SCANCODE_A] = STICK_X_LEFT;
 				m_keyBindings[SDL_SCANCODE_S] = STICK_X_DOWN;
@@ -91,16 +92,18 @@ namespace sm64::hid
 				m_keyBindings[SDL_SCANCODE_SPACE] = A_BUTTON;
 				m_keyBindings[SDL_SCANCODE_F] = B_BUTTON;
 				m_keyBindings[SDL_SCANCODE_LSHIFT] = Z_TRIG;
+				m_keyBindings[SDL_SCANCODE_C] = Z_TRIG;
 				m_keyBindings[SDL_SCANCODE_UP] = U_CBUTTONS;
 				m_keyBindings[SDL_SCANCODE_LEFT] = L_CBUTTONS;
 				m_keyBindings[SDL_SCANCODE_DOWN] = D_CBUTTONS;
 				m_keyBindings[SDL_SCANCODE_RIGHT] = R_CBUTTONS;
 				m_keyBindings[SDL_SCANCODE_V] = R_TRIG;
+				m_keyBindings[SDL_SCANCODE_RSHIFT] = R_TRIG;
 				m_keyBindings[SDL_SCANCODE_RETURN] = START_BUTTON;
+				m_keyBindings[SDL_SCANCODE_ESCAPE] = START_BUTTON;
 
 #ifndef __SWITCH__
 				loadKeyBindings();
-				saveKeyBindings();
 #endif
 			}
 
@@ -167,6 +170,15 @@ namespace sm64::hid
 				}
 			}
 
+			void clearRebindMode()
+			{
+			}
+
+			void resetRebinds()
+			{
+			}
+
+
 			bool hasMouse() const
 			{
 				return true;
@@ -206,6 +218,52 @@ namespace sm64::hid
 			void enableMouse()
 			{
 				this->state().has_mouse = true;
+			}
+
+			bool canRebind(SDL_Scancode scancode, int input)
+			{
+				if (m_keyBindings.count(scancode) == 0)
+				{
+					return true;
+				}
+
+				auto replacingInput = m_keyBindings[scancode];
+				u64 count = 0;
+
+				for (auto i : m_keyBindings)
+				{
+					if (i.second == replacingInput)
+					{
+						count++;
+					}
+				}
+
+				return count != 1;
+			}
+
+			bool updateRebind(int input) override
+			{
+				int count = 0;
+				auto state = SDL_GetKeyboardState(&count);
+				u64 changed = 0;
+
+				for (int i = 0; i < MIN(MAX_KEY_STATE, count); i++)
+				{
+					m_lastKeyState[i] = (state[i] ^ m_lastKeyState[i]) & state[i];
+				}
+
+				for (int i = 0; i < MIN(MAX_KEY_STATE, count); i++)
+				{
+					if (m_lastKeyState[i] && canRebind((SDL_Scancode)i, input))
+					{
+  						m_keyBindings[(SDL_Scancode)i] = input;
+						changed++;
+						saveKeyBindings();
+					}
+				}
+
+				memcpy(m_lastKeyState, state, MIN(MAX_KEY_STATE, count));
+				return changed != 0;
 			}
 
 			void update()
@@ -267,10 +325,12 @@ namespace sm64::hid
 				m_state.mouse_x += m_state.mouse_delta_x * 4;
 				m_state.mouse_y += m_state.mouse_delta_y * 4;
 #endif
+				memcpy(m_lastKeyState, state, MIN(MAX_KEY_STATE, count));
 			}
 
 			protected:
 				std::unordered_map<SDL_Scancode, int> m_keyBindings;
+				u8 m_lastKeyState[MAX_KEY_STATE];
 		};
 	} // namespace controller
 

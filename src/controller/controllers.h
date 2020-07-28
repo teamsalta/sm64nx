@@ -9,12 +9,13 @@ namespace sm64::hid
 {
 	class Driver
 	{
-		public:
+	public:
 		Driver();
 		virtual ~Driver();
 		virtual const u64 size() const;
 		virtual Controller& controller(const u64 index);
 		virtual void update();
+		virtual bool updateRebind(int input);
 		virtual void scan(class Controllers* controllers);
 		virtual bool defaultOnly()
 		{
@@ -26,25 +27,28 @@ namespace sm64::hid
 			return m_controllers;
 		}
 
-		protected:
+	protected:
 		std::vector<std::shared_ptr<Controller>> m_controllers;
 	};
 
 	class Controllers
 	{
-		public:
+	public:
 		Controllers();
 		virtual ~Controllers();
 		const u64 size() const;
 		void update();
 		void scan();
+		bool isRebindMode() const;
+		void rebind(int input);
 		std::vector<class Driver*>& drivers()
 		{
 			return m_drivers;
 		}
 
-		protected:
+	protected:
 		std::vector<class Driver*> m_drivers;
+		int m_rebindInput;
 	};
 
 	Controllers& controllers();

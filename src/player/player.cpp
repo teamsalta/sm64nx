@@ -2,7 +2,7 @@
 
 namespace sm64
 {
-	Player::Player()
+	Player::Player() : m_rebindInput(0)
 	{
 	}
 
@@ -24,13 +24,45 @@ namespace sm64
 	{
 		m_controller.state().reset();
 
-		for(auto& controller : m_controllers)
+		if (isRebindMode())
 		{
-			controller->state().reset();
-			controller->update();
+			bool result = 0;
 
-			m_controller.merge(*controller);
+			for (auto& controller : m_controllers)
+			{
+				result |= controller->updateRebind(m_rebindInput);
+			}
+
+			if (result)
+			{
+				m_rebindInput = -10;
+			}
+		}
+		else if (m_rebindInput < 0)
+		{
+			m_rebindInput++;
+		}
+		else
+		{
+
+			for (auto& controller : m_controllers)
+			{
+				controller->state().reset();
+				controller->update();
+
+				m_controller.merge(*controller);
+			}
 		}
 		m_controller.resolveInputs();
+	}
+
+	void Player::rebind(int input)
+	{
+		m_rebindInput = input;
+	}
+
+	bool Player::isRebindMode() const
+	{
+		return m_rebindInput > 0;
 	}
 } // namespace sm64

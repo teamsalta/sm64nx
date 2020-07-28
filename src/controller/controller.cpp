@@ -224,4 +224,10 @@ namespace sm64::hid
 		return m_state.mouse_r;
 	}
 #endif
+
+	bool Controller::updateRebind(int input)
+	{
+		return false;
+	}
+
 } // namespace sm64::hid

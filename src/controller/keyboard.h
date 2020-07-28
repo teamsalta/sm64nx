@@ -1,6 +1,8 @@
 #pragma once
 #include "controllers.h"
 
+#define MAX_KEY_STATE (16*1024)
+
 namespace sm64::hid
 {
 	class Keyboard : public Driver
@@ -16,5 +18,6 @@ namespace sm64::hid
 		}
 
 		protected:
+			
 	};
 } // namespace sm64::hid
