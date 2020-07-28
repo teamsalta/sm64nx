@@ -8,6 +8,13 @@
 
 #include <SDL2/SDL.h>
 #include "sdl.h"
+#include <unordered_map>
+#include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/prettywriter.h"
+#include <rapidjson/istreamwrapper.h>
+#include <fstream>
+#include "game/debug.h"
 
 #ifndef __SWITCH__
 #define DEADZONE 20
@@ -31,23 +38,138 @@ static int g_rstickY_peak = INITIAL_PEAK;
 extern struct Object* gMarioObject;
 #endif
 
+bool saveJson(rapidjson::Document& doc, const std::string& jsonFilePath);
+
 namespace sm64::hid
 {
 	static bool g_haptics = false;
 
 	namespace controller
 	{
+		static const char* getInputName(int input)
+		{
+			switch (input)
+			{
+			case A_BUTTON: return "A_BUTTON";
+			case B_BUTTON: return "B_BUTTON";
+			case Z_TRIG: return "Z_TRIG";
+			case U_CBUTTONS: return "U_CBUTTONS";
+			case L_CBUTTONS: return "L_CBUTTONS";
+			case D_CBUTTONS: return "D_CBUTTONS";
+			case R_CBUTTONS: return "R_CBUTTONS";
+			case R_TRIG: return "R_TRIG";
+			case START_BUTTON: return "START_BUTTON";
+			}
+			return "";
+		}
+
+		static int getInputValue(const std::string& input)
+		{
+			if (input == "A_BUTTON") return A_BUTTON;
+			if (input == "B_BUTTON") return B_BUTTON;
+			if (input == "Z_TRIG") return Z_TRIG;
+			if (input == "U_CBUTTONS") return U_CBUTTONS;
+			if (input == "L_CBUTTONS") return L_CBUTTONS;
+			if (input == "D_CBUTTONS") return D_CBUTTONS;
+			if (input == "R_CBUTTONS") return R_CBUTTONS;
+			if (input == "R_TRIG") return R_TRIG;
+			if (input == "START_BUTTON") return START_BUTTON;
+
+			return 0;
+		}
+
 		class SDL : public Controller
 		{
 			public:
 			SDL(SDL_GameController* controller) : Controller(), m_context(controller), m_haptic(nullptr)
 			{
 				m_motorEnabled = initHaptics();
+
+				m_keyBindings[SDL_CONTROLLER_BUTTON_START] = START_BUTTON;
+				m_keyBindings[SDL_CONTROLLER_BUTTON_LEFTSHOULDER] = Z_TRIG;
+				m_keyBindings[SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] = R_TRIG;
+				m_keyBindings[SDL_CONTROLLER_BUTTON_A] = A_BUTTON;
+				m_keyBindings[SDL_CONTROLLER_BUTTON_X] = B_BUTTON;
+				m_keyBindings[SDL_CONTROLLER_BUTTON_B] = A_BUTTON;
+				m_keyBindings[SDL_CONTROLLER_BUTTON_Y] = B_BUTTON;
+				m_keyBindings[SDL_CONTROLLER_BUTTON_DPAD_LEFT] = L_CBUTTONS;
+				m_keyBindings[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = R_CBUTTONS;
+				m_keyBindings[SDL_CONTROLLER_BUTTON_DPAD_UP] = U_CBUTTONS;
+				m_keyBindings[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = D_CBUTTONS;
+				
+
+#ifndef __SWITCH__
+				loadKeyBindings();
+				saveKeyBindings();
+#endif
 			}
 
 			virtual ~SDL()
 			{
 				closeHaptics();
+			}
+
+			void loadKeyBindings()
+			{
+				try
+				{
+					std::ifstream ifs("gamepad1.bindings.json", std::ifstream::in);
+
+
+					if (ifs.is_open())
+					{
+						rapidjson::IStreamWrapper isw(ifs);
+						rapidjson::Document d;
+						d.ParseStream(isw);
+
+						if (d.IsObject())
+						{
+							for (auto itr = d.MemberBegin(); itr != d.MemberEnd(); ++itr)
+							{
+								if (itr->name.IsString() && itr->value.IsString())
+								{
+									auto key = SDL_GameControllerGetButtonFromString(itr->name.GetString());
+									auto value = getInputValue(itr->value.GetString());
+
+									if (key != SDL_CONTROLLER_BUTTON_INVALID && value)
+									{
+										m_keyBindings[key] = value;
+									}
+									else
+									{
+										sm64::log("could not bind key: \"%s\" -> \"%s\"\n", itr->value.GetString(), itr->name.GetString());
+									}
+								}
+							}
+						}
+					}
+				}
+				catch (...)
+				{
+				}
+			}
+
+			void saveKeyBindings()
+			{
+				try
+				{
+					rapidjson::Document d;
+					d.SetObject();
+
+					rapidjson::Document::AllocatorType& allocator = d.GetAllocator();
+
+					for (const auto i : m_keyBindings)
+					{
+						rapidjson::Value value(getInputName(i.second), allocator);
+						rapidjson::Value key(SDL_GameControllerGetStringForButton(i.first), allocator);
+						d.AddMember(key, value, allocator);
+					}
+
+					saveJson(d, "gamepad1.bindings.json");
+				}
+				catch (...)
+				{
+				}
 			}
 
 			bool initHaptics()
@@ -198,33 +320,13 @@ namespace sm64::hid
 					m_context = NULL;
 				}
 
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_START))
-					m_state.button |= START_BUTTON;
-
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_LEFTSHOULDER))
-					m_state.button |= Z_TRIG;
-
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER))
-					m_state.button |= R_TRIG;
-
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_A))
-					m_state.button |= A_BUTTON;
-
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_X))
-					m_state.button |= B_BUTTON;
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_B))
-					m_state.button |= A_BUTTON;
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_Y))
-					m_state.button |= B_BUTTON;
-
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_DPAD_LEFT))
-					m_state.button |= L_CBUTTONS;
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_DPAD_RIGHT))
-					m_state.button |= R_CBUTTONS;
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_DPAD_UP))
-					m_state.button |= U_CBUTTONS;
-				if(SDL_GameControllerGetButton(m_context, SDL_CONTROLLER_BUTTON_DPAD_DOWN))
-					m_state.button |= D_CBUTTONS;
+				for (const auto& i : m_keyBindings)
+				{
+					if (SDL_GameControllerGetButton(m_context, i.first))
+					{
+						m_state.button |= i.second;
+					}
+				}
 
 				if(sm64::config().camera().useClassicCamera())
 				{
@@ -291,6 +393,7 @@ namespace sm64::hid
 			protected:
 			SDL_GameController* m_context;
 			SDL_Haptic* m_haptic;
+			std::unordered_map<SDL_GameControllerButton, int> m_keyBindings;
 		};
 	} // namespace controller
 	SDL::SDL()

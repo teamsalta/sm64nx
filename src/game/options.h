@@ -188,7 +188,7 @@ namespace sm64
 
 			bool noStarExit() const;
 			bool& setNoStarExit();
-			bool& paceFrames();
+			bool& disableFramePacing();
 
 			protected:
 			u8 m_overclock;

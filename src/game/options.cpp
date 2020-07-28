@@ -286,7 +286,7 @@ namespace sm64
 			return m_noStarExit;
 		}
 
-		bool& Game::paceFrames()
+		bool& Game::disableFramePacing()
 		{
 			return m_paceFrames;
 		}

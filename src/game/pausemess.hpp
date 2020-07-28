@@ -566,7 +566,7 @@ namespace sm64::menu
 			m_items.push_back(new sm64::menu::item::Bool("FULL SCREEN", &sm64::config().game().fullscreen(), [](bool value) { sm64::gfx::set_fullscreen(value); }));
 #endif
 			m_items.push_back(new sm64::menu::item::Bool("NO STAR EXIT", &sm64::config().game().setNoStarExit()));
-			m_items.push_back(new sm64::menu::item::Bool("FRAME PACING", &sm64::config().game().paceFrames()));
+			m_items.push_back(new sm64::menu::item::Bool("NO FRAME PACING", &sm64::config().game().disableFramePacing()));
 			m_items.push_back(new sm64::menu::item::Bool("MIRROR MODE", &sm64::config().game().setMirror()));
 			m_items.push_back(new sm64::menu::item::Bool("DISABLE SOUND", &sm64::config().game().disableSound()));
 		}

@@ -2550,7 +2550,7 @@ namespace sm64::gfx
 
 		while(1)
 		{
-			if (sm64::config().game().paceFrames())
+			if (!sm64::config().game().disableFramePacing())
 			{
 				run_paced_loop();
 			}
