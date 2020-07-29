@@ -786,7 +786,7 @@ void PlayerRecord::set_steep_jump_action()
 		f32 y = sins(faceAngleTemp) * this->forwardVel;
 		f32 x = coss(faceAngleTemp) * this->forwardVel * 0.75f;
 
-		this->forwardVel   = sqrtf(y * y + x * x);
+		this->forwardVel   = sqrtf(y * y + x * x) * sm64::config().cheats().speed();
 		this->faceAngle[1] = atan2s(x, y) + angleTemp;
 	}
 
@@ -834,7 +834,7 @@ u32 PlayerRecord::set_mario_action_airborne(u32 action, u32 actionArg)
 
 		case ACT_BACKFLIP:
 			this->marioObj->header.gfx.unk38.animID = -1;
-			this->forwardVel			= -16.0f;
+			this->forwardVel			= -16.0f * sm64::config().cheats().speed();
 			set_mario_y_vel_based_on_fspeed(62.0f, 0.0f);
 			break;
 
@@ -857,7 +857,7 @@ u32 PlayerRecord::set_mario_action_airborne(u32 action, u32 actionArg)
 
 		case ACT_BURNING_JUMP:
 			this->vel[1]	 = 31.5f;
-			this->forwardVel = 8.0f;
+			this->forwardVel = 8.0f * sm64::config().cheats().speed();
 			break;
 
 		case ACT_RIDING_SHELL_JUMP:
@@ -874,16 +874,16 @@ u32 PlayerRecord::set_mario_action_airborne(u32 action, u32 actionArg)
 		case ACT_WALL_KICK_AIR:
 		case ACT_TOP_OF_POLE_JUMP:
 			set_mario_y_vel_based_on_fspeed(62.0f, 0.0f);
-			if(this->forwardVel < 24.0f)
+			if(this->forwardVel < 24.0f * sm64::config().cheats().speed())
 			{
-				this->forwardVel = 24.0f;
+				this->forwardVel = 24.0f * sm64::config().cheats().speed();
 			}
 			this->wallKickTimer = 0;
 			break;
 
 		case ACT_SIDE_FLIP:
 			set_mario_y_vel_based_on_fspeed(62.0f, 0.0f);
-			this->forwardVel   = 8.0f;
+			this->forwardVel   = 8.0f * sm64::config().cheats().speed();
 			this->faceAngle[1] = this->intendedYaw;
 			break;
 
@@ -902,9 +902,9 @@ u32 PlayerRecord::set_mario_action_airborne(u32 action, u32 actionArg)
 			break;
 
 		case ACT_DIVE:
-			if((fowardVel = this->forwardVel + 15.0f) > 48.0f)
+			if((fowardVel = this->forwardVel + 15.0f * sm64::config().cheats().speed()) > 48.0f * sm64::config().cheats().speed())
 			{
-				fowardVel = 48.0f;
+				fowardVel = 48.0f * sm64::config().cheats().speed();
 			}
 			mario_set_forward_vel(fowardVel);
 			break;
@@ -916,17 +916,17 @@ u32 PlayerRecord::set_mario_action_airborne(u32 action, u32 actionArg)
 
 			//! (BLJ's) This properly handles long jumps from getting forward speed with
 			//  too much velocity, but misses backwards longs allowing high negative speeds.
-			if((this->forwardVel *= 1.5f) > 48.0f)
+			if((this->forwardVel *= 1.5f) > 48.0f * sm64::config().cheats().speed())
 			{
-				this->forwardVel = 48.0f;
+				this->forwardVel = 48.0f * sm64::config().cheats().speed();
 			}
 			break;
 
 		case ACT_SLIDE_KICK:
 			this->vel[1] = 12.0f;
-			if(this->forwardVel < 32.0f)
+			if(this->forwardVel < 32.0f * sm64::config().cheats().speed())
 			{
-				this->forwardVel = 32.0f;
+				this->forwardVel = 32.0f * sm64::config().cheats().speed();
 			}
 			break;
 
@@ -1396,7 +1396,7 @@ void PlayerRecord::update_mario_button_inputs()
  */
 void PlayerRecord::update_mario_joystick_inputs()
 {
-	f32 mag = ((controller->stickMag / 64.0f) * (controller->stickMag / 64.0f)) * 64.0f;
+	f32 mag = ((controller->stickMag / 64.0f) * (controller->stickMag / 64.0f)) * 64.0f * sm64::config().cheats().speed();
 
 	if(this->squishTimer == 0)
 	{

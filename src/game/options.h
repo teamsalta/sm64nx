@@ -133,6 +133,11 @@ namespace sm64
 				return m_bowserAimAssist;
 			}
 
+			float& speed()
+			{
+				return m_speed;
+			}
+
 			protected:
 			bool m_invincible;
 			bool m_moonJump;
@@ -141,8 +146,9 @@ namespace sm64
 			bool m_quadrupleJump;
 			u8 padding[3];
 			float m_bowserAimAssist;
+			float m_speed;
 
-			u8 junk[0x40 - (5 + 7)];
+			u8 junk[0x40 - (5 + 7 + 4)];
 		};
 
 		static_assert(sizeof(Cheats) == 0x40, "Cheats size incorrect");

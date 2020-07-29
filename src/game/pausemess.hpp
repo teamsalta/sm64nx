@@ -1,6 +1,8 @@
 #pragma once
 #include "controller/controllers.h"
 
+void initiateWarp(u16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3);
+
 extern void iwaStageInit()
 {
 	gRedCoinsCollected = 0;
@@ -501,8 +503,14 @@ namespace sm64::menu
 		public:
 		Cheats() : Dialog("CHEATS")
 		{
+			if (sm64::config().cheats().speed() < 1.0f)
+			{
+				sm64::config().cheats().speed() = 1.0f;
+			}
+
 			m_items.push_back(new sm64::menu::item::Bool("UNLIMITED LIVES", &sm64::config().cheats().unlimitedLives()));
 			m_items.push_back(new sm64::menu::item::Bool("INVINCIBLE", &sm64::config().cheats().invincible()));
+			m_items.push_back(new sm64::menu::item::EnumFloat("SPEED", { 1.0f, 2.0f, 3.0f }, &sm64::config().cheats().speed()));
 			m_items.push_back(new sm64::menu::item::Bool("MOON JUMP", &sm64::config().cheats().moonJump()));
 			m_items.push_back(new sm64::menu::item::Bool("SUPER JUMP", &sm64::config().cheats().superJump()));
 			m_items.push_back(new sm64::menu::item::Bool("QUADRUPLE JUMP", &sm64::config().cheats().quadrupleJump()));
@@ -515,6 +523,8 @@ namespace sm64::menu
 			Dialog::render(x, y, yIndex);
 		}
 	};
+
+	
 
 	template<int input>
 	void rebindCallback(u64 value)
@@ -544,7 +554,7 @@ namespace sm64::menu
 
 			if (sm64::player(0).isRebindMode())
 			{
-				static hud::String pressKey = std::string("PRESS KEY TO BIND");
+				static hud::String pressKey =std::string("PRESS KEY TO BIND");
 
 				ContCursorEvent(MENU_SCROLL_VERTICAL, &m_index, 1, m_items.size());
 
@@ -568,6 +578,31 @@ namespace sm64::menu
 			{
 				Dialog::render(x, y, yIndex);
 			}
+		}
+	};
+
+
+	template<int input, int course>
+	void levelSelectCallback(u64 value)
+	{
+		initiateWarp(input, 0x01, 0x0A, 0);
+	}
+
+	class LevelSelect : public Dialog
+	{
+	public:
+		LevelSelect() : Dialog("LEVEL SELECT")
+		{
+			m_items.push_back(new sm64::menu::item::Base("BOBOMB BATTLEFIELD", levelSelectCallback<LEVEL_BOB, COURSE_BOB>));
+			m_items.push_back(new sm64::menu::item::Base("SNOWMANS LAND", levelSelectCallback<LEVEL_SL, COURSE_SL>));
+			m_items.push_back(new sm64::menu::item::Base("WHOMPS FORTRESS", levelSelectCallback<LEVEL_WF, COURSE_SL>));
+		}
+
+		void render(const s16 x, const s16 y, const s16 yIndex = 15) override
+		{
+			print_hud_colorful_str(std::string("LEVEL SELECT"), DIALOG_TITLE_X, DIALOG_TITLE_Y);
+
+			Dialog::render(x, y, yIndex);
 		}
 	};
 
@@ -857,7 +892,7 @@ s8 subMenu		     = 0;
 
 static std::vector<sm64::menu::Dialog*>& menus()
 {
-	static std::vector<sm64::menu::Dialog*> sMenus = {new sm64::menu::Game(), new sm64::menu::Camera(), new sm64::menu::Mods(), new sm64::menu::Cheats(), new sm64::menu::Rebind(), new sm64::menu::Credits()};
+	static std::vector<sm64::menu::Dialog*> sMenus = {new sm64::menu::Game(), new sm64::menu::Camera(), new sm64::menu::Mods(), new sm64::menu::Cheats(), new sm64::menu::Rebind(), /*new sm64::menu::LevelSelect(),*/ new sm64::menu::Credits()};
 	return sMenus;
 }
 

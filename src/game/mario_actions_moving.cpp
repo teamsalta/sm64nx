@@ -534,11 +534,11 @@ void PlayerRecord::update_walking_speed()
 
 	if(floor != NULL && floor->type == SURFACE_SLOW)
 	{
-		maxTargetSpeed = 24.0f;
+		maxTargetSpeed = 24.0f * sm64::config().cheats().speed();
 	}
 	else
 	{
-		maxTargetSpeed = 32.0f;
+		maxTargetSpeed = 32.0f * sm64::config().cheats().speed();
 	}
 
 	targetSpeed = intendedMag < maxTargetSpeed ? intendedMag : maxTargetSpeed;
@@ -554,16 +554,21 @@ void PlayerRecord::update_walking_speed()
 	}
 	else if(forwardVel <= targetSpeed)
 	{
-		forwardVel += (1.1f - forwardVel / 43.0f) * FRAME_RATE_SCALER;
+		float vel = ((1.1f * sm64::config().cheats().speed()) - forwardVel / (43.0f * sm64::config().cheats().speed())) * FRAME_RATE_SCALER;
+
+		if (vel > 0.0f)
+		{
+			forwardVel += vel;
+		}
 	}
 	else if(floor->normal.y >= 0.95f)
 	{
 		forwardVel -= 1.0f * FRAME_RATE_SCALER;
 	}
 
-	if(forwardVel > 48.0f)
+	if(forwardVel > 48.0f * sm64::config().cheats().speed())
 	{
-		forwardVel = 48.0f;
+		forwardVel = 48.0f * sm64::config().cheats().speed();
 	}
 
 	faceAngle[1] = intendedYaw - approach_s32((s16)(intendedYaw - faceAngle[1]), 0, 0x800 / FRAME_RATE_SCALER_INV, 0x800 / FRAME_RATE_SCALER_INV);
@@ -831,9 +836,9 @@ void PlayerRecord::func_802659E8(Vec3f startPos)
 	//! (Speed Crash) If a wall is after moving 16384 distance, this crashes.
 	s32 val04 = (s32)(movedDistance * 2.0f * 0x10000);
 
-	if(forwardVel > 6.0f)
+	if(forwardVel > 6.0f * sm64::config().cheats().speed())
 	{
-		mario_set_forward_vel(6.0f);
+		mario_set_forward_vel(6.0f * sm64::config().cheats().speed());
 	}
 
 	if(wall != NULL)

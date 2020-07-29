@@ -571,6 +571,10 @@ static void SetPlayerEntrant(s16 destLevel, s16 destArea, s16 destWarpNode, s32 
 	playerEntry.arg	     = arg3;
 }
 
+void initiateWarp(u16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3)
+{
+}
+
 // From Surface 0xD3 to 0xFC
 #define PAINTING_WARP_INDEX_START 0x00 // Value greater than or equal to Surface 0xD3
 #define PAINTING_WARP_INDEX_FA 0x2A    // THI Huge Painting index left

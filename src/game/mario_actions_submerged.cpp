@@ -258,7 +258,7 @@ void PlayerRecord::stationary_slow_down()
 	this->angleVel[0] = 0;
 	this->angleVel[1] = 0;
 
-	this->forwardVel = approach_f32(this->forwardVel, 0.0f, 1.0f * FRAME_RATE_SCALER, 1.0f * FRAME_RATE_SCALER);
+	this->forwardVel = approach_f32(this->forwardVel, 0.0f, 1.0f * sm64::config().cheats().speed() * FRAME_RATE_SCALER, 1.0f * FRAME_RATE_SCALER);
 	this->vel[1]	 = approach_f32(this->vel[1], buoyancy, 2.0f * FRAME_RATE_SCALER, 1.0f * FRAME_RATE_SCALER);
 
 	this->faceAngle[0] = approach_s32(this->faceAngle[0], 0, 0x200 / FRAME_RATE_SCALER_INV, 0x200 / FRAME_RATE_SCALER_INV);
@@ -271,7 +271,7 @@ void PlayerRecord::stationary_slow_down()
 void PlayerRecord::update_swimming_speed(f32 decelThreshold)
 {
 	f32 buoyancy = get_buoyancy();
-	f32 maxSpeed = 28.0f;
+	f32 maxSpeed = 28.0f * sm64::config().cheats().speed();
 
 	if(this->status & ACT_FLAG_STATIONARY)
 	{
@@ -629,7 +629,7 @@ s32 PlayerRecord::act_breaststroke()
 {
 	if(this->actionArg == 0)
 	{
-		sSwimStrength = MIN_SWIM_STRENGTH;
+		sSwimStrength = MIN_SWIM_STRENGTH * sm64::config().cheats().speed();
 	}
 
 	if(this->flags & MARIO_METAL_CAP)
@@ -654,12 +654,12 @@ s32 PlayerRecord::act_breaststroke()
 
 	if(this->actionTimer < 6 * FRAME_RATE_SCALER_INV)
 	{
-		this->forwardVel += 0.5f * FRAME_RATE_SCALER;
+		this->forwardVel += 0.5f * FRAME_RATE_SCALER * sm64::config().cheats().speed();
 	}
 
 	if(this->actionTimer >= 9 * FRAME_RATE_SCALER_INV)
 	{
-		this->forwardVel += 1.5f * FRAME_RATE_SCALER;
+		this->forwardVel += 1.5f * FRAME_RATE_SCALER * sm64::config().cheats().speed();
 	}
 
 	if(this->actionTimer >= 2 * FRAME_RATE_SCALER_INV)
@@ -675,13 +675,13 @@ s32 PlayerRecord::act_breaststroke()
 			anim_reset();
 			this->actionState = 0;
 			this->actionTimer = 1;
-			sSwimStrength	  = MIN_SWIM_STRENGTH;
+			sSwimStrength	  = MIN_SWIM_STRENGTH * sm64::config().cheats().speed();
 		}
 	}
 
 	if(this->actionTimer == 1 /** FRAME_RATE_SCALER_INV*/)
 	{
-		AudStartSound(sSwimStrength == MIN_SWIM_STRENGTH ? SOUND_ACTION_SWIM : SOUND_ACTION_SWIM_FAST, this->marioObj->header.gfx.cameraToObject);
+		AudStartSound(sSwimStrength == MIN_SWIM_STRENGTH * sm64::config().cheats().speed() ? SOUND_ACTION_SWIM : SOUND_ACTION_SWIM_FAST, this->marioObj->header.gfx.cameraToObject);
 		func_8027107C();
 	}
 
@@ -717,14 +717,14 @@ s32 PlayerRecord::act_swimming_end()
 	{
 		if(this->actionTimer == 7 * FRAME_RATE_SCALER_INV && sSwimStrength < 280)
 		{
-			sSwimStrength += 10;
+			sSwimStrength += 10 * sm64::config().cheats().speed();
 		}
 		return ChangePlayerStatus(ACT_BREASTSTROKE, 1);
 	}
 
 	if(this->actionTimer >= 7 * FRAME_RATE_SCALER_INV)
 	{
-		sSwimStrength = MIN_SWIM_STRENGTH;
+		sSwimStrength = MIN_SWIM_STRENGTH * sm64::config().cheats().speed();
 	}
 
 	this->actionTimer++;
@@ -757,11 +757,11 @@ s32 PlayerRecord::act_flutter_kick()
 		return ChangePlayerStatus(ACT_SWIMMING_END, 0);
 	}
 
-	this->forwardVel  = approach_f32(this->forwardVel, 12.0f, 0.1f * FRAME_RATE_SCALER, 0.15f * FRAME_RATE_SCALER);
+	this->forwardVel  = approach_f32(this->forwardVel, 12.0f, 0.1f * FRAME_RATE_SCALER * sm64::config().cheats().speed(), 0.15f * FRAME_RATE_SCALER);
 	this->actionTimer = 1;
-	sSwimStrength	  = MIN_SWIM_STRENGTH;
+	sSwimStrength	  = MIN_SWIM_STRENGTH * sm64::config().cheats().speed();
 
-	if(this->forwardVel < 14.0f)
+	if(this->forwardVel < 14.0f * sm64::config().cheats().speed())
 	{
 		func_802713A8();
 		set_mario_animation(MARIO_ANIM_FLUTTERKICK);

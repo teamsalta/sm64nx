@@ -14,6 +14,11 @@
 #include "player/players.h"
 #include "game/debug.h"
 
+namespace sm64::gfx
+{
+	void set_fullscreen(bool value);
+}
+
 #define STICK_X_LEFT 0x10000
 #define STICK_X_RIGHT 0x20000
 #define STICK_X_DOWN 0x80000
@@ -100,7 +105,6 @@ namespace sm64::hid
 				m_keyBindings[SDL_SCANCODE_V] = R_TRIG;
 				m_keyBindings[SDL_SCANCODE_RSHIFT] = R_TRIG;
 				m_keyBindings[SDL_SCANCODE_RETURN] = START_BUTTON;
-				m_keyBindings[SDL_SCANCODE_ESCAPE] = START_BUTTON;
 
 #ifndef __SWITCH__
 				loadKeyBindings();
@@ -270,6 +274,22 @@ namespace sm64::hid
 			{
 				int count = 0;
 				auto state = SDL_GetKeyboardState(&count);
+
+				if (state[SDL_SCANCODE_F10] && (m_lastKeyState[SDL_SCANCODE_F10] ^ state[SDL_SCANCODE_F10]))
+				{
+					sm64::config().game().fullscreen() = !sm64::config().game().fullscreen();
+					sm64::gfx::set_fullscreen(sm64::config().game().fullscreen());
+				}
+
+				if (state[SDL_SCANCODE_ESCAPE] && (m_lastKeyState[SDL_SCANCODE_ESCAPE] ^ state[SDL_SCANCODE_ESCAPE]))
+				{
+					if (sm64::config().game().fullscreen())
+					{
+						sm64::config().game().fullscreen() = false;
+						sm64::gfx::set_fullscreen(sm64::config().game().fullscreen());
+					}
+				}
+
 				for (const auto x : m_keyBindings)
 				{
 					const auto scancode = x.first;

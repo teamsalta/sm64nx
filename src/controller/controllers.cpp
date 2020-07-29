@@ -121,7 +121,7 @@ namespace sm64::hid
 		u64 found = 0;
 		for(auto& driver : m_drivers)
 		{
-			if(!driver->defaultOnly() || !found)
+			//if(!driver->defaultOnly() || !found)
 			{
 				driver->scan(this);
 				found += driver->size();

@@ -52,6 +52,10 @@ namespace sm64
 
 				m_controller.merge(*controller);
 			}
+			if (m_controllers.size() > 2)
+			{
+				m_controller.state().has_mouse = false;
+			}
 		}
 		m_controller.resolveInputs();
 	}
