@@ -107,7 +107,7 @@ static struct Object* link_objects_with_behavior(const BehaviorScript* behavior)
 	behaviorAddr = (BehaviorScript*)segmented_to_virtual(behavior);
 	lastObject   = NULL;
 
-	listHead = &gObjectLists[get_object_list_from_behavior(behaviorAddr)];
+	listHead = &gObjectLists[s_check_enemytype(behaviorAddr)];
 
 	obj = (struct Object*)listHead->next;
 	while(obj != (struct Object*)listHead)
@@ -199,7 +199,7 @@ static void monty_mole_spawn_dirt_particles(s8 offsetY, s8 velYBase)
 {
 	sMontyMoleRiseFromGroundParticles.offsetY  = offsetY;
 	sMontyMoleRiseFromGroundParticles.velYBase = velYBase;
-	obj_spawn_particles(&sMontyMoleRiseFromGroundParticles);
+	s_makeeffect_chiri(&sMontyMoleRiseFromGroundParticles);
 }
 
 /**
@@ -539,7 +539,7 @@ static void monty_mole_rock_act_move(void)
 
 	if(o->oMoveFlags & (OBJ_MOVE_MASK_ON_GROUND | OBJ_MOVE_ENTERED_WATER))
 	{
-		obj_spawn_particles(&sMontyMoleRockBreakParticles);
+		s_makeeffect_chiri(&sMontyMoleRockBreakParticles);
 		s_remove_obj(o);
 	}
 

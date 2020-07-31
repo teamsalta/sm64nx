@@ -46,37 +46,8 @@ namespace sm64::hid
 
 	namespace controller
 	{
-		static const char* getInputName(int input)
-		{
-			switch (input)
-			{
-			case A_BUTTON: return "A_BUTTON";
-			case B_BUTTON: return "B_BUTTON";
-			case Z_TRIG: return "Z_TRIG";
-			case U_CBUTTONS: return "U_CBUTTONS";
-			case L_CBUTTONS: return "L_CBUTTONS";
-			case D_CBUTTONS: return "D_CBUTTONS";
-			case R_CBUTTONS: return "R_CBUTTONS";
-			case R_TRIG: return "R_TRIG";
-			case START_BUTTON: return "START_BUTTON";
-			}
-			return "";
-		}
-
-		static int getInputValue(const std::string& input)
-		{
-			if (input == "A_BUTTON") return A_BUTTON;
-			if (input == "B_BUTTON") return B_BUTTON;
-			if (input == "Z_TRIG") return Z_TRIG;
-			if (input == "U_CBUTTONS") return U_CBUTTONS;
-			if (input == "L_CBUTTONS") return L_CBUTTONS;
-			if (input == "D_CBUTTONS") return D_CBUTTONS;
-			if (input == "R_CBUTTONS") return R_CBUTTONS;
-			if (input == "R_TRIG") return R_TRIG;
-			if (input == "START_BUTTON") return START_BUTTON;
-
-			return 0;
-		}
+		const char* getInputName(int input);
+		int getInputValue(const std::string& input);
 
 		class SDL : public Controller
 		{
@@ -365,11 +336,12 @@ namespace sm64::hid
 
 			void update() override
 			{
-				if(!init_ok || !m_context)
+				if(!init_ok || !m_context || hid::isTasPlaying())
 				{
 					return;
 				}
 
+				bool walk = false;
 				SDL_GameControllerUpdate();
 
 				if(m_context != NULL && !SDL_GameControllerGetAttached(m_context))
@@ -387,7 +359,19 @@ namespace sm64::hid
 				{
 					if (m_buttonState[i.first])
 					{
-						m_state.button |= i.second;
+						if (i.second > 0xFFFF)
+						{
+							switch (i.second)
+							{
+							case WALK_BUTTON:
+								walk = true;
+								break;
+							}
+						}
+						else
+						{
+							m_state.button |= i.second;
+						}
 					}
 				}
 
@@ -435,6 +419,12 @@ namespace sm64::hid
 				m_state.stick_y	  = invert(stickLeftY());
 				m_state.r_stick_x = stickRightX();
 				m_state.r_stick_y = stickRightY();
+
+				if (walk)
+				{
+					m_state.stick_x *= 0.25f;
+					m_state.stick_y *= 0.25f;
+				}
 
 				uint32_t magnitude_sq = (uint32_t)(m_state.stick_x * m_state.stick_x) + (uint32_t)(m_state.stick_y * m_state.stick_y);
 

@@ -306,7 +306,7 @@ void mario_grab_used_object(struct PlayerRecord* m)
 	if(m->heldObj == NULL)
 	{
 		m->heldObj = m->usedObj;
-		set_object_held_state(m->heldObj, sm64::bhv::bhvCarrySomething3());
+		s_modechange(m->heldObj, sm64::bhv::bhvCarrySomething3());
 	}
 }
 
@@ -319,7 +319,7 @@ void mario_drop_held_object(struct PlayerRecord* m)
 			stop_shell_music();
 		}
 
-		set_object_held_state(m->heldObj, sm64::bhv::bhvCarrySomething4());
+		s_modechange(m->heldObj, sm64::bhv::bhvCarrySomething4());
 
 		m->heldObj->oPosX = m->marioBodyState->unk18[0];
 		m->heldObj->oPosY = m->pos[1];
@@ -340,7 +340,7 @@ void mario_throw_held_object(struct PlayerRecord* m)
 			stop_shell_music();
 		}
 
-		set_object_held_state(m->heldObj, sm64::bhv::bhvCarrySomething5());
+		s_modechange(m->heldObj, sm64::bhv::bhvCarrySomething5());
 
 		m->heldObj->oPosX = m->marioBodyState->unk18[0] + 32.0f * sins(m->faceAngle[1]);
 		m->heldObj->oPosY = m->marioBodyState->unk18[1];
@@ -582,7 +582,7 @@ void bounce_off_object(struct PlayerRecord* m, struct Object* o, f32 velY)
 void hit_object_from_below(struct PlayerRecord* m, UNUSED struct Object* o)
 {
 	m->vel[1] = 0.0f;
-	set_camera_shake_from_hit(SHAKE_HIT_FROM_BELOW);
+	Vieweffect(SHAKE_HIT_FROM_BELOW);
 }
 
 static u32 unused_determine_knockback_action(struct PlayerRecord* m)
@@ -763,7 +763,7 @@ void bounce_back_from_attack(struct PlayerRecord* m, u32 interaction)
 			m->mario_set_forward_vel(-48.0f);
 		}
 
-		set_camera_shake_from_hit(SHAKE_ATTACK);
+		Vieweffect(SHAKE_ATTACK);
 		m->particleFlags |= 0x00040000;
 	}
 
@@ -813,7 +813,7 @@ u32 take_damage_from_interact_object(struct PlayerRecord* m)
 
 	m->hurtCounter += damage * 4;
 
-	set_camera_shake_from_hit(shake);
+	Vieweffect(shake);
 	SendMotorEvent(5, 80);
 	return damage;
 }

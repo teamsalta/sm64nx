@@ -2,7 +2,7 @@
 
 void bhv_black_smoke_upward_loop(void)
 {
-	spawn_object_with_scale(o, MODEL_BURN_SMOKE, sm64::bhv::bhvBlackSmokeBowser(), o->header.gfx.scale[0]);
+	s_makeobj_nowpos_scale(o, MODEL_BURN_SMOKE, sm64::bhv::bhvBlackSmokeBowser(), o->header.gfx.scale[0]);
 }
 
 void bhv_black_smoke_bowser_loop(void)
@@ -22,7 +22,7 @@ void bhv_black_smoke_mario_loop(void)
 {
 	if(o->oTimer == 0)
 	{
-		obj_set_pos_relative(gMarioObject, 0, 0, -30.0f);
+		s_posoffset_mother(gMarioObject, 0, 0, -30.0f);
 		o->oForwardVel	 = Randomf() * 2 + 0.5;
 		o->oMoveAngleYaw = (gMarioObject->oMoveAngleYaw + 0x7000) + Randomf() * 8192.0f;
 		o->oVelY	 = 8;
@@ -38,7 +38,7 @@ void bhv_flame_mario_loop(void)
 		if(o->oTimer % (2 * FRAME_RATE_SCALER_INV) == 0)
 			s_makeobj_nowpos(o, MODEL_BURN_SMOKE, sm64::bhv::bhvBlackSmokeMario());
 	gMarioObject->prevObj = o; // weird?
-	set_object_parent_relative_pos(o, 40, -120, 0);
+	s_set_skeleton(o, 40, -120, 0);
 	if(!(gMarioObject->oMarioParticleFlags & 0x800))
 	{
 		o->parentObj->oActiveParticleFlags &= ~0x800;

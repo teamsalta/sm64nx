@@ -144,7 +144,7 @@ static s32 beh_cmd_spawn_child(void)
 	u32 model		       = (u32)gBehCommand[1];
 	const BehaviorScript* behavior = (const BehaviorScript*)gBehCommand[2];
 
-	struct Object* child = spawn_object_at_origin(gCurrentObject, 0, model, behavior);
+	struct Object* child = s_makeobj(gCurrentObject, 0, model, behavior);
 
 	s_copy_worldXYZ_angleXYZ(child, gCurrentObject);
 
@@ -157,7 +157,7 @@ static s32 beh_cmd_spawn_obj(void)
 	u32 model		       = (u32)gBehCommand[1];
 	const BehaviorScript* behavior = (const BehaviorScript*)gBehCommand[2];
 
-	struct Object* object = spawn_object_at_origin(gCurrentObject, 0, model, behavior);
+	struct Object* object = s_makeobj(gCurrentObject, 0, model, behavior);
 
 	s_copy_worldXYZ_angleXYZ(object, gCurrentObject);
 
@@ -173,7 +173,7 @@ static s32 beh_cmd_spawn_child_with_param(void)
 	u32 model		       = (u32)gBehCommand[1];
 	const BehaviorScript* behavior = (const BehaviorScript*)gBehCommand[2];
 
-	struct Object* child = spawn_object_at_origin(gCurrentObject, 0, model, behavior);
+	struct Object* child = s_makeobj(gCurrentObject, 0, model, behavior);
 
 	s_copy_worldXYZ_angleXYZ(child, gCurrentObject);
 
@@ -638,15 +638,15 @@ static s32 Behavior24(void)
 
 static s32 beh_cmd_begin(void)
 {
-	if(obj_has_behavior(sm64::bhv::bhvHauntedChair()))
+	if(s_check_pathname(sm64::bhv::bhvHauntedChair()))
 	{
-		bhv_init_room();
+		s_areastage_init();
 	}
-	if(obj_has_behavior(sm64::bhv::bhvMadPiano()))
+	if(s_check_pathname(sm64::bhv::bhvMadPiano()))
 	{
-		bhv_init_room();
+		s_areastage_init();
 	}
-	if(obj_has_behavior(sm64::bhv::bhvMessagePanel()))
+	if(s_check_pathname(sm64::bhv::bhvMessagePanel()))
 	{
 		gCurrentObject->oCollisionDistance = 150.0f;
 	}
@@ -749,7 +749,7 @@ static s32 beh_cmd_bit_clear_int32(void)
 static s32 beh_cmd_spawn_water_splash(void)
 {
 	struct WaterSplashParams* arg0 = (struct WaterSplashParams*)gBehCommand[1];
-	spawn_water_splash(gCurrentObject, arg0);
+	s_makeobj_initdata(gCurrentObject, arg0);
 	gBehCommand += 2;
 	return BEH_CONTINUE;
 }
@@ -844,7 +844,7 @@ void cur_object_exec_behavior(void)
 
 	if(flagsLo & OBJ_FLAG_COMPUTE_DIST_TO_MARIO)
 	{
-		gCurrentObject->oDistanceToMario = dist_between_objects(gCurrentObject, gMarioObject);
+		gCurrentObject->oDistanceToMario = s_distance_obj2obj(gCurrentObject, gMarioObject);
 		distanceFromMario		 = gCurrentObject->oDistanceToMario;
 	}
 	else
@@ -854,7 +854,7 @@ void cur_object_exec_behavior(void)
 
 	if(flagsLo & OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO)
 	{
-		gCurrentObject->oAngleToMario = angle_to_object(gCurrentObject, gMarioObject);
+		gCurrentObject->oAngleToMario = s_calc_targetangle(gCurrentObject, gMarioObject);
 	}
 
 	if(gCurrentObject->oAction != gCurrentObject->oPrevAction)
@@ -886,7 +886,7 @@ void cur_object_exec_behavior(void)
 
 	if(flagsLo & OBJ_FLAG_0010)
 	{
-		obj_set_facing_to_move_angles(gCurrentObject);
+		s_copy_animeangle(gCurrentObject);
 	}
 
 	if(flagsLo & OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW)
@@ -896,22 +896,22 @@ void cur_object_exec_behavior(void)
 
 	if(flagsLo & OBJ_FLAG_MOVE_XZ_USING_FVEL)
 	{
-		obj_move_xz_using_fvel_and_yaw();
+		s_calc_FspeedON();
 	}
 
 	if(flagsLo & OBJ_FLAG_MOVE_Y_WITH_TERMINAL_VEL)
 	{
-		obj_move_y_with_terminal_vel();
+		s_calc_YspeedON();
 	}
 
 	if(flagsLo & OBJ_FLAG_TRANSFORM_RELATIVE_TO_PARENT)
 	{
-		build_object_transform_relative_to_parent(gCurrentObject);
+		s_calc_relative(gCurrentObject);
 	}
 
 	if(flagsLo & OBJ_FLAG_0800)
 	{
-		func_802A2270(gCurrentObject);
+		s_set_objmatrix(gCurrentObject);
 	}
 
 	if(flagsLo & OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)
@@ -921,7 +921,7 @@ void cur_object_exec_behavior(void)
 
 	if(gCurrentObject->oRoom != -1)
 	{
-		obj_enable_rendering_if_mario_in_room();
+		s_areastage_main();
 	}
 	else if((flagsLo & OBJ_FLAG_COMPUTE_DIST_TO_MARIO) && gCurrentObject->collisionData == NULL)
 	{

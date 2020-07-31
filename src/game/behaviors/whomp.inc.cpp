@@ -11,8 +11,8 @@ void func_802C61CC(void)
 	}
 	else
 	{
-		sp28 = obj_check_anim_frame_in_range(0, 3);
-		sp28 |= obj_check_anim_frame_in_range(23, 3);
+		sp28 = s_check_animenumber_speed(0, 3);
+		sp28 |= s_check_animenumber_speed(23, 3);
 	}
 	if(sp28)
 		objsound(SOUND_OBJ_POUNDING1);
@@ -20,8 +20,8 @@ void func_802C61CC(void)
 
 void ActionWhomp0(void)
 {
-	func_8029ED98(0, 1.0f);
-	obj_set_pos_to_home();
+	s_set_skelanime_speed(0, 1.0f);
+	s_copy_initpos();
 	if(o->oBehParams2ndByte != 0)
 	{
 		gSecondCameraFocus = o;
@@ -35,11 +35,11 @@ void ActionWhomp0(void)
 			}
 			else
 			{
-				obj_set_pos_to_home();
+				s_copy_initpos();
 				o->oHealth = 3;
 			}
 		}
-		else if(obj_update_dialog_with_cutscene(2, 1, CUTSCENE_DIALOG, DIALOG_114))
+		else if(s_call_talkdemo(2, 1, CUTSCENE_DIALOG, DIALOG_114))
 			o->oAction = 2;
 	}
 	else if(o->oDistanceToMario < 500.0f)
@@ -52,7 +52,7 @@ void ActionWhomp7(void)
 	if(o->oSubAction == 0)
 	{
 		o->oForwardVel = 0.0f;
-		func_8029ED98(0, 1.0f);
+		s_set_skelanime_speed(0, 1.0f);
 		if(o->oTimer > 31 * FRAME_RATE_SCALER_INV)
 			o->oSubAction++;
 		else
@@ -73,12 +73,12 @@ void ActionWhomp1(void)
 	f32 sp20;
 	f32 sp1C;
 	sp26 = s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw);
-	sp20 = obj_lateral_dist_to_home();
+	sp20 = s_calc_enemyscope();
 	if(activeStageNo == LEVEL_BITS)
 		sp1C = 200.0f;
 	else
 		sp1C = 700.0f;
-	func_8029ED98(0, 1.0f);
+	s_set_skelanime_speed(0, 1.0f);
 	o->oForwardVel = 3.0f;
 	if(sp20 > sp1C)
 		o->oAction = 7;
@@ -87,7 +87,7 @@ void ActionWhomp1(void)
 		if(o->oDistanceToMario < 1500.0f)
 		{
 			o->oForwardVel = 9.0f;
-			func_8029ED98(0, 3.0f);
+			s_set_skelanime_speed(0, 3.0f);
 		}
 		if(o->oDistanceToMario < 300.0f)
 			o->oAction = 3;
@@ -98,7 +98,7 @@ void ActionWhomp1(void)
 void ActionWhomp2(void)
 {
 	s16 sp1E;
-	func_8029ED98(0, 1.0f);
+	s_set_skelanime_speed(0, 1.0f);
 	o->oForwardVel = 3.0f;
 	s_chase_angleY(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
 	if(o->oTimer > 30 * FRAME_RATE_SCALER_INV)
@@ -109,7 +109,7 @@ void ActionWhomp2(void)
 			if(o->oDistanceToMario < 1500.0f)
 			{
 				o->oForwardVel = 9.0f;
-				func_8029ED98(0, 3.0f);
+				s_set_skelanime_speed(0, 3.0f);
 			}
 			if(o->oDistanceToMario < 300.0f)
 				o->oAction = 3;
@@ -126,7 +126,7 @@ void ActionWhomp2(void)
 void ActionWhomp3(void)
 {
 	o->oForwardVel = 0.0f;
-	func_8029ED98(1, 1.0f);
+	s_set_skelanime_speed(1, 1.0f);
 	if(s_check_animeend())
 		o->oAction = 4;
 }
@@ -215,12 +215,12 @@ void func_802C6B28(void)
 			if(s_checkplayer_hipaatack())
 			{
 				o->oNumLootCoins = 5;
-				spawn_object_loot_yellow_coins(o, 5, 20.0f);
+				s_makecoin(o, 5, 20.0f);
 				o->oAction = 8;
 			}
 			else
 			{
-				obj_spawn_loot_coin_at_mario_pos();
+				s_makecoin_playerpos();
 				o->oSubAction++;
 			}
 		}
@@ -267,9 +267,9 @@ void ActionWhomp8(void)
 {
 	if(o->oBehParams2ndByte != 0)
 	{
-		if(obj_update_dialog_with_cutscene(2, 2, CUTSCENE_DIALOG, DIALOG_115))
+		if(s_call_talkdemo(2, 2, CUTSCENE_DIALOG, DIALOG_115))
 		{
-			set_object_angle(o, 0, 0, 0);
+			s_set_angle(o, 0, 0, 0);
 			s_shape_hide();
 			s_hitOFF();
 			s_burneffect(0, 0, 200.0f);
@@ -311,9 +311,9 @@ void bhv_whomp_loop(void)
 		if(!sm64::config().camera().disableDistanceClip())
 		{
 			if(o->oBehParams2ndByte != 0)
-				obj_hide_if_mario_far_away_y(2000.0f);
+				s_erase_height(2000.0f);
 			else
-				obj_hide_if_mario_far_away_y(1000.0f);
+				s_erase_height(1000.0f);
 		}
 		stMainMoveBG();
 	}

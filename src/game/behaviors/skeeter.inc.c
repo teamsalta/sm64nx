@@ -83,12 +83,12 @@ static void skeeter_act_lunge(void)
 
 		if(o->oMoveFlags & 0x00000200)
 		{
-			o->oMoveAngleYaw = obj_reflect_move_angle_off_wall();
+			o->oMoveAngleYaw = s_wall_rebound();
 			o->oForwardVel *= 0.3f;
 			o->oFlags &= ~0x00000008;
 		}
 
-		if(obj_forward_vel_approach(0.0f, 0.8f * FRAME_RATE_SCALER) && func_8029F828())
+		if(obj_forward_vel_approach(0.0f, 0.8f * FRAME_RATE_SCALER) && s_check_animeend_2())
 		{
 			o->oMoveAngleYaw = o->oFaceAngleYaw;
 
@@ -121,7 +121,7 @@ static void skeeter_act_walk(void)
 		obj_forward_vel_approach(o->oSkeeterUnkFC, 0.4f * FRAME_RATE_SCALER);
 		sp24 = 0.12f * o->oForwardVel;
 
-		func_8029ED98(2, sp24);
+		s_set_skelanime_speed(2, sp24);
 		func_802F9378(3, 13, SOUND_OBJ_SKEETER_WALK);
 
 		if(o->oSkeeterUnkF8 != 0)

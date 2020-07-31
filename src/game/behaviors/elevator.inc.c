@@ -81,7 +81,7 @@ void ActionElevator4()
 		s_call_Viewshake(SHAKE_POS_SMALL);
 		objsound(SOUND_GENERAL_METAL_POUND);
 	}
-	if(!mario_is_in_air_action() && !s_rideon_player())
+	if(!s_check_playerjump() && !s_rideon_player())
 		o->oAction = 1;
 }
 
@@ -93,7 +93,7 @@ void ActionElevator3() // nearly identical to action 2
 		s_call_Viewshake(SHAKE_POS_SMALL);
 		objsound(SOUND_GENERAL_METAL_POUND);
 	}
-	if(!mario_is_in_air_action() && !s_rideon_player())
+	if(!s_check_playerjump() && !s_rideon_player())
 		o->oAction = 0;
 }
 
@@ -105,7 +105,7 @@ void bhv_elevator_init(void)
 		o->oElevatorUnkF4  = D_8032F38C[o->oBehParams2ndByte * 3];
 		o->oElevatorUnkF8  = o->oHomeY;
 		o->oElevatorUnkFC  = (o->oElevatorUnkF4 + o->oElevatorUnkF8) / 2.0f;
-		o->oElevatorUnk100 = obj_has_behavior(sm64::bhv::bhvRrElevatorPlatform());
+		o->oElevatorUnk100 = s_check_pathname(sm64::bhv::bhvRrElevatorPlatform());
 	}
 	else
 	{

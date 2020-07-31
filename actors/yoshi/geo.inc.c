@@ -12,7 +12,7 @@ const GeoLayout yoshi_geo[] = {
                GEO_OPEN_NODE(),
                   GEO_ANIMATED_PART(LAYER_OPAQUE, 222, 0, 0, NULL),
                   GEO_OPEN_NODE(),
-                     GEO_SWITCH_CASE(2, geo_switch_anim_state),
+                     GEO_SWITCH_CASE(2, ControlShapeAnime),
                      GEO_OPEN_NODE(),
                         GEO_DISPLAY_LIST(LAYER_OPAQUE, yoshi_seg5_dl_0501D970),
                         GEO_DISPLAY_LIST(LAYER_OPAQUE, yoshi_seg5_dl_0501D998),

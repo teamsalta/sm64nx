@@ -100,7 +100,7 @@ void bhv_tilting_inverted_pyramid_loop(void)
 		dist[0] = gMarioObject->oPosX - o->oPosX;
 		dist[1] = gMarioObject->oPosY - o->oPosY;
 		dist[2] = gMarioObject->oPosZ - o->oPosZ;
-		linear_mtxf_mul_vec3f(*transform, posBeforeRotation, dist);
+		stRotatePoint(*transform, posBeforeRotation, dist);
 
 		dx = gMarioObject->oPosX - o->oPosX;
 		dy = 500.0f;
@@ -146,7 +146,7 @@ void bhv_tilting_inverted_pyramid_loop(void)
 	// If Mario is on the platform, adjust his position for the platform tilt.
 	if(marioOnPlatform != FALSE)
 	{
-		linear_mtxf_mul_vec3f(*transform, posAfterRotation, dist);
+		stRotatePoint(*transform, posAfterRotation, dist);
 		mx += posAfterRotation[0] - posBeforeRotation[0];
 		my += posAfterRotation[1] - posBeforeRotation[1];
 		mz += posAfterRotation[2] - posBeforeRotation[2];

@@ -2,7 +2,7 @@
 const GeoLayout pokey_head_geo[] = {
    GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x96, 50),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(2, geo_switch_anim_state),
+      GEO_SWITCH_CASE(2, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_ALPHA, pokey_seg5_dl_050127D8),
          GEO_DISPLAY_LIST(LAYER_ALPHA, pokey_seg5_dl_05012808),

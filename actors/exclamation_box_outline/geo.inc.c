@@ -4,7 +4,7 @@ const GeoLayout exclamation_box_outline_geo[] = {
    GEO_OPEN_NODE(),
       GEO_SHADOW(SHADOW_SQUARE_PERMANENT, 0xB4, 70),
       GEO_OPEN_NODE(),
-         GEO_SWITCH_CASE(4, geo_switch_anim_state),
+         GEO_SWITCH_CASE(4, ControlShapeAnime),
          GEO_OPEN_NODE(),
             GEO_DISPLAY_LIST(LAYER_TRANSPARENT, exclamation_box_outline_seg8_dl_08024F88),
             GEO_DISPLAY_LIST(LAYER_TRANSPARENT, exclamation_box_outline_seg8_dl_08024FA8),

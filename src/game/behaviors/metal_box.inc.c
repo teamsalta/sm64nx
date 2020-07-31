@@ -19,7 +19,7 @@ s32 func_802B0C54(f32 a0, f32 a1)
 	f32 floorHeight;
 	f32 sp18    = o->oPosZ + coss(o->oMoveAngleYaw) * a1;
 	floorHeight = mcBGGroundCheck(sp20, o->oPosY, sp18, &sp24);
-	if(absf(floorHeight - o->oPosY) < a0) // abs
+	if(s_abs_f(floorHeight - o->oPosY) < a0) // abs
 		return 1;
 	else
 		return 0;
@@ -33,7 +33,7 @@ void bhv_pushable_loop(void)
 	o->oForwardVel = 0.0f;
 	if(s_hitcheck(o, gMarioObject) && playerWorks->flags & 0x80000000)
 	{
-		sp1C = angle_to_object(o, gMarioObject);
+		sp1C = s_calc_targetangle(o, gMarioObject);
 		if(s_calc_dangle(sp1C, gMarioObject->oMoveAngleYaw) > 0x4000)
 		{
 			o->oMoveAngleYaw = (s16)((gMarioObject->oMoveAngleYaw + 0x2000) & 0xc000);

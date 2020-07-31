@@ -28,5 +28,5 @@ void bhv_end_birds_2_loop(void)
 			break;
 	}
 
-	func_802A2A38();
+	s_3Dmove();
 }

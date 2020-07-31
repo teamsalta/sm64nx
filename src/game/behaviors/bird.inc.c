@@ -77,7 +77,7 @@ static void bird_act_fly(void)
 		// fly towards the bird's spawner bird.
 		if(o->oBehParams2ndByte != BIRD_BP_SPAWNED)
 		{
-			distance = obj_lateral_dist_to_home();
+			distance = s_calc_enemyscope();
 
 			// The spawner bird will start with its downwards (positive) pitch
 			// and will continuously decrease its pitch (i.e. make itself face more upwards)
@@ -85,7 +85,7 @@ static void bird_act_fly(void)
 			// This is done by making its target pitch the arctangent of its distance
 			// to its home and its position - 10,000 (which is always negative).
 			o->oBirdTargetPitch = atan2s(distance, o->oPosY - 10000.0f);
-			o->oBirdTargetYaw   = obj_angle_to_home();
+			o->oBirdTargetYaw   = s_calc_returnangle();
 		}
 		else
 		{
@@ -93,10 +93,10 @@ static void bird_act_fly(void)
 
 			// The bird's target pitch will face directly to its spawner bird.
 			o->oBirdTargetPitch = atan2s(distance, o->oPosY - o->parentObj->oPosY);
-			o->oBirdTargetYaw   = angle_to_object(o, o->parentObj);
+			o->oBirdTargetYaw   = s_calc_targetangle(o, o->parentObj);
 
 			// The bird goes faster the farther it is from its spawner bird so it can catch up.
-			o->oBirdSpeed = 0.04f * dist_between_objects(o, o->parentObj) + 20.0f;
+			o->oBirdSpeed = 0.04f * s_distance_obj2obj(o, o->parentObj) + 20.0f;
 		}
 
 		// Approach to match the bird's target yaw and pitch.

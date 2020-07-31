@@ -27,7 +27,7 @@ void bhv_rotating_clock_arm_loop(void)
 		if(marioSurface != NULL && (marioSurface->type == SURFACE_TTC_PAINTING_1 || marioSurface->type == SURFACE_TTC_PAINTING_2 || marioSurface->type == SURFACE_TTC_PAINTING_3))
 		{
 			// And this is the minute hand...
-			if(obj_has_behavior(sm64::bhv::bhvClockMinuteHand()))
+			if(s_check_pathname(sm64::bhv::bhvClockMinuteHand()))
 			{
 				// Set Tick Tick Clock's speed based on the angle of the hand.
 				// The angle actually counting down from 0xFFFF to 0 so
@@ -55,6 +55,6 @@ void bhv_rotating_clock_arm_loop(void)
 	// Only rotate the hands until Mario enters the painting.
 	if(o->oAction < 2)
 	{
-		obj_rotate_face_angle_using_vel();
+		s_move_animeangle();
 	}
 }

@@ -85,8 +85,8 @@ void ActionCheepCheep1(void)
 		if(dy > 300.0f)
 			o->oPosY = o->oPosY - 1.0f;
 	}
-	if(800.0f < obj_lateral_dist_from_mario_to_home())
-		o->oAngleToMario = obj_angle_to_home();
+	if(800.0f < s_calc_playerscope())
+		o->oAngleToMario = s_calc_returnangle();
 	s_chase_angleY(o->oAngleToMario, 0x100 / FRAME_RATE_SCALER_INV);
 	if(o->oDistanceToMario < 200.0f)
 		if(o->oCheepCheepUnk108 < 0.5)
@@ -125,8 +125,8 @@ void ActionCheepCheep2(void)
 		if(dy > 300.0f)
 			o->oPosY -= 1.0f;
 	}
-	if(obj_lateral_dist_from_mario_to_home() > 800.0f)
-		o->oAngleToMario = obj_angle_to_home();
+	if(s_calc_playerscope() > 800.0f)
+		o->oAngleToMario = s_calc_returnangle();
 	s_chase_angleY(o->oAngleToMario + 0x8000, 0x400 / FRAME_RATE_SCALER_INV);
 	if(o->oTimer > 200 * FRAME_RATE_SCALER_INV && o->oDistanceToMario > 600.0f)
 		o->oAction = 1;

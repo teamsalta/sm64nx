@@ -5,7 +5,7 @@ struct Struct8032FE4C movementList[] = {{60, 0, 6.0f, 1.0f}, {30, 3, 0.0f, 1.0f}
 s32 turnAround(void)
 {
 	o->oForwardVel = 0.0f;
-	func_8029ED98(0, 1.0f);
+	s_set_skelanime_speed(0, 1.0f);
 	o->oAngleVelYaw = 0x400;
 
 	o->oMoveAngleYaw += o->oAngleVelYaw / FRAME_RATE_SCALER_INV;
@@ -69,7 +69,7 @@ void bhv_walking_penguin_loop(void)
 			{
 				o->oForwardVel = movementList[o->oWalkingPenguinMoveIndex].forwardSpeed;
 
-				func_8029ED98(movementList[o->oWalkingPenguinMoveIndex].unk1, movementList[o->oWalkingPenguinMoveIndex].animRate);
+				s_set_skelanime_speed(movementList[o->oWalkingPenguinMoveIndex].unk1, movementList[o->oWalkingPenguinMoveIndex].animRate);
 			}
 			break;
 		case 1:
@@ -78,7 +78,7 @@ void bhv_walking_penguin_loop(void)
 			break;
 		case 2:
 			o->oForwardVel = 12.0f;
-			func_8029ED98(0, 2.0f);
+			s_set_skelanime_speed(0, 2.0f);
 
 			if(o->oPosX > 1700.0f)
 				o->oAction++;
@@ -92,12 +92,12 @@ void bhv_walking_penguin_loop(void)
 
 	if(sm64::config().camera().disableDistanceClip())
 	{
-		if(absf(o->oPosY - gMarioObject->oPosY) < 1000.0f)
+		if(s_abs_f(o->oPosY - gMarioObject->oPosY) < 1000.0f)
 		{
 			play_penguin_walking_sound(1);
 		}
 	}
-	else if(!obj_hide_if_mario_far_away_y(1000.0f))
+	else if(!s_erase_height(1000.0f))
 	{
 		play_penguin_walking_sound(1);
 	}

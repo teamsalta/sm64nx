@@ -23,7 +23,7 @@ void bhv_water_air_bubble_loop(void)
 	{
 		s_hitON();
 		obj_forward_vel_approach_upward(2.0f, 10.0f * FRAME_RATE_SCALER);
-		o->oMoveAngleYaw = angle_to_object(o, gMarioObject);
+		o->oMoveAngleYaw = s_calc_targetangle(o, gMarioObject);
 		s_optionmove_F();
 	}
 
@@ -102,29 +102,29 @@ void func_802A81C4(void)
 
 void bhv_particle_init(void)
 {
-	scale_object_xyz(o, 2.0f, 2.0f, 1.0f);
+	stSetScale(o, 2.0f, 2.0f, 1.0f);
 	o->oWaterObjAnimSpeedX = 0x800 + (s32)(Randomf() * 2048.0f);
 	o->oWaterObjAnimSpeedY = 0x800 + (s32)(Randomf() * 2048.0f);
-	translate_object_xyz_random(o, 100.0f);
+	s_random_XYZ_offset(o, 100.0f);
 }
 
 void bhv_particle_loop()
 {
 	f32 sp24 = find_water_level(o->oPosX, o->oPosZ);
 	o->oPosY += 5.0f * FRAME_RATE_SCALER;
-	translate_object_xz_random(o, 4.0f);
+	s_random_XZ_offset(o, 4.0f);
 	func_802A81C4();
 	if(o->oPosY > sp24 && o->oTimer)
 	{
 		s_remove_obj(o);
-		try_to_spawn_object(5, 0, o, MODEL_SPOT_ON_GROUND, sm64::bhv::bhvWaterSurfaceWhiteWave2());
+		s_makeobj_effect(5, 0, o, MODEL_SPOT_ON_GROUND, sm64::bhv::bhvWaterSurfaceWhiteWave2());
 	}
 }
 
 void bhv_small_bubbles_loop(void)
 {
 	o->oPosY += 5.0f * FRAME_RATE_SCALER;
-	translate_object_xz_random(o, 4.0f);
+	s_random_XZ_offset(o, 4.0f);
 	func_802A81C4();
 }
 

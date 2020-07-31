@@ -28,7 +28,7 @@ void bhv_bouncing_fireball_flame_loop(void)
 
 			if(o->oBouncingFireBallFlameDuration)
 			{
-				auto aMario = angle_to_object(gCurrentObject, gMarioObject);
+				auto aMario = s_calc_targetangle(gCurrentObject, gMarioObject);
 				s16 dist    = s_calc_dangle(aMario, o->oMoveAngleYaw);
 
 				if(dist < DEGREES(45.0f))
@@ -69,11 +69,11 @@ void bhv_bouncing_fireball_loop(void)
 		case 1:
 			sp2C = s_makeobj_nowpos(o, MODEL_RED_FLAME, sm64::bhv::bhvBouncingFireballFlame());
 			sp28 = (10 * FRAME_RATE_SCALER_INV - o->oTimer) * 0.5 * FRAME_RATE_SCALER;
-			scale_object_xyz(sp2C, sp28, sp28, sp28);
+			stSetScale(sp2C, sp28, sp28, sp28);
 
 			if(o->oTimer == 0)
 			{
-				make_object_tangible(sp2C);
+				s_hitON_obj(sp2C);
 			}
 
 			if(o->oTimer > 10 * FRAME_RATE_SCALER_INV)

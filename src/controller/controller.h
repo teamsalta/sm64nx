@@ -33,7 +33,12 @@ namespace sm64::hid
 		U_CBUTTONS   = CONT_E,
 		L_CBUTTONS   = CONT_C,
 		R_CBUTTONS   = CONT_F,
-		D_CBUTTONS   = CONT_D
+		D_CBUTTONS   = CONT_D,
+		STICK_X_LEFT = 0x10000,
+		STICK_X_RIGHT = 0x20000,
+		STICK_X_DOWN = 0x80000,
+		STICK_X_UP = 0x40000,
+		WALK_BUTTON	 = 0x100000
 	};
 
 	class State
@@ -51,11 +56,6 @@ namespace sm64::hid
 
 		s64 mouse_x;
 		s64 mouse_y;
-		int mouse_delta_x;
-		int mouse_delta_y;
-		s64 mouse_wheel;
-		u8 mouse_l;
-		u8 mouse_r;
 		bool has_mouse;
 	};
 
@@ -75,15 +75,9 @@ namespace sm64::hid
 		float r_stickY;	  // [-64, 64] positive is up
 		float r_stickMag; // distance from center [0, 64]
 
-#ifdef ENABLE_MOUSE
+
 		s64 mouse_x() const;
 		s64 mouse_y() const;
-		int mouse_delta_x() const;
-		int mouse_delta_y() const;
-		s64 mouse_wheel() const;
-		u8 mouse_l() const;
-		u8 mouse_r() const;
-#endif
 
 		Controller(bool isLocal = true);
 		virtual void update();
@@ -98,10 +92,7 @@ namespace sm64::hid
 		}
 
 		virtual void merge(const Controller& controller);
-		virtual bool hasMouse() const
-		{
-			return m_state.has_mouse;
-		}
+		virtual bool hasMouse() const;
 
 		virtual void SendMotorEvent(short time, short level);
 		virtual void SendMotorDecay(short level);
@@ -115,4 +106,6 @@ namespace sm64::hid
 		bool m_isLocal;
 		bool m_motorEnabled;
 	};
+
+	bool isTasPlaying();
 } // namespace sm64::hid

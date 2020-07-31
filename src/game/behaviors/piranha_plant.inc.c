@@ -83,8 +83,8 @@ void piranha_plant_act_sleeping(void)
 
 	s_set_skelanimeNo(8);
 
-	obj_set_hitbox_radius_and_height(250.0f, 200.0f);
-	obj_set_hurtbox_radius_and_height(150.0f, 100.0f);
+	s_sethitbox(250.0f, 200.0f);
+	s_setdamagebox(150.0f, 100.0f);
 
 #if BUGFIX_PIRANHA_PLANT_SLEEP_DAMAGE
 	/**
@@ -202,7 +202,7 @@ void piranha_plant_act_shrink_and_die(void)
 	else
 	{
 		o->oPiranhaPlantScale = 0.0f;
-		obj_spawn_loot_blue_coin();
+		s_make_bluecoin();
 		o->oAction = PIRANHA_PLANT_ACT_WAIT_TO_RESPAWN;
 	}
 
@@ -277,8 +277,8 @@ void piranha_plant_act_biting(void)
 
 	s_set_skelanimeNo(0);
 
-	obj_set_hitbox_radius_and_height(150.0f, 100.0f);
-	obj_set_hurtbox_radius_and_height(150.0f, 100.0f);
+	s_sethitbox(150.0f, 100.0f);
+	s_setdamagebox(150.0f, 100.0f);
 
 	// Play a bite sound effect on certain frames.
 	if(s_check_chartable(frame, sPiranhaPlantBiteSoundFrames))
@@ -287,7 +287,7 @@ void piranha_plant_act_biting(void)
 	}
 
 	// Move to face the player.
-	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 
 	if(o->oDistanceToMario > 500.0f)
 		if(s_check_animeend())

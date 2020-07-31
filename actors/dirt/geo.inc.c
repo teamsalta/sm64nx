@@ -2,7 +2,7 @@
 const GeoLayout dirt_animation_geo[] = {
    GEO_CULLING_RADIUS(300),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(6, geo_switch_anim_state),
+      GEO_SWITCH_CASE(6, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_OPAQUE, dirt_seg3_dl_0302C378),
          GEO_DISPLAY_LIST(LAYER_OPAQUE, dirt_seg3_dl_0302C3B0),
@@ -20,7 +20,7 @@ const GeoLayout dirt_animation_geo[] = {
 const GeoLayout cartoon_star_geo[] = {
    GEO_CULLING_RADIUS(300),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(5, geo_switch_anim_state),
+      GEO_SWITCH_CASE(5, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_OPAQUE, dirt_seg3_dl_0302C298),
          GEO_DISPLAY_LIST(LAYER_OPAQUE, dirt_seg3_dl_0302C2B8),

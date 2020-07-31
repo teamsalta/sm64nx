@@ -755,10 +755,10 @@ static void transform_object_vertices(s16** data, s16* vertexData)
 	if(gCurrentObject->header.gfx.throwMatrix == NULL)
 	{
 		gCurrentObject->header.gfx.throwMatrix = objectTransform;
-		build_object_transform_from_pos_and_angle(gCurrentObject, O_POS_INDEX, O_FACE_ANGLE_INDEX);
+		s_create_matrix(gCurrentObject, O_POS_INDEX, O_FACE_ANGLE_INDEX);
 	}
 
-	apply_object_scale_to_matrix(gCurrentObject, m, *objectTransform);
+	s_copy_scale_matrix(gCurrentObject, m, *objectTransform);
 
 	// Go through all vertices, rotating and translating them to transform the object.
 	while(numVertices--)
@@ -861,7 +861,7 @@ void stMainMoveBG(void)
 	// If the distance hasn't been updated, update it now.
 	if(gCurrentObject->oDistanceToMario == 19000.0f)
 	{
-		marioDist = dist_between_objects(gCurrentObject, gMarioObject);
+		marioDist = s_distance_obj2obj(gCurrentObject, gMarioObject);
 	}
 
 	// If the object collision is supposed to be loaded more than the

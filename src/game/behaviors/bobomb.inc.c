@@ -68,7 +68,7 @@ void CheckBobombInteractions(void)
 		o->oInteractStatus = 0;
 	}
 
-	if(attack_collided_non_mario_object(o) == 1)
+	if(s_fire_hitcheck(o) == 1)
 		o->oAction = BOBOMB_ACT_EXPLODE;
 }
 
@@ -194,8 +194,8 @@ void BobombFreeLoop(void)
 void BobombHeldLoop(void)
 {
 	o->header.gfx.node.flags |= 0x10; /* bit 4 */
-	SetObjAnimation(1);
-	obj_set_pos_relative(gMarioObject, 0, 60.0f, 100.0);
+	stSetSkelAnimeNumber(1);
+	s_posoffset_mother(gMarioObject, 0, 60.0f, 100.0);
 
 	o->oBobombFuseLit = 1;
 	if(o->oBobombFuseTimer >= FUSE_TIMER)
@@ -211,10 +211,10 @@ void BobombHeldLoop(void)
 
 void BobombDroppedLoop(void)
 {
-	obj_get_dropped();
+	s_mode_drop();
 
 	o->header.gfx.node.flags &= ~0x10; /* bit 4 = 0 */
-	SetObjAnimation(0);
+	stSetSkelAnimeNumber(0);
 
 	o->oHeldState = 0;
 	o->oAction    = BOBOMB_ACT_PATROL;
@@ -222,7 +222,7 @@ void BobombDroppedLoop(void)
 
 void BobombThrownLoop(void)
 {
-	obj_enable_rendering_2();
+	s_throw_object();
 
 	o->header.gfx.node.flags &= ~0x10; /* bit 4 = 0 */
 	o->oHeldState = 0;
@@ -231,7 +231,7 @@ void BobombThrownLoop(void)
 	o->oVelY       = 20.0;
 
 	// const float frameSkips = 4.0f;
-	// obj_set_pos_relative(gMarioObject, 0.0f, 60.0f, 100.0f - (frameSkips / FRAME_RATE_SCALER * o->oForwardVel));
+	// s_posoffset_mother(gMarioObject, 0.0f, 60.0f, 100.0f - (frameSkips / FRAME_RATE_SCALER * o->oForwardVel));
 
 	o->oAction = BOBOMB_ACT_LAUNCHED;
 }
@@ -340,7 +340,7 @@ void BobombBuddyIdleLoop(void)
 		objsound(SOUND_OBJ_BOBOMB_WALK);
 
 	if(o->oDistanceToMario < 1000.0f)
-		o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x140 / FRAME_RATE_SCALER_INV);
+		o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x140 / FRAME_RATE_SCALER_INV);
 
 	if(o->oInteractStatus == INT_STATUS_INTERACTED)
 		o->oAction = BOBOMB_BUDDY_ACT_TURN_TO_TALK;
@@ -435,7 +435,7 @@ void BobombBuddyTurnToTalkLoop(void)
 	if((sp1e == 5) || (sp1e == 16))
 		objsound(SOUND_OBJ_BOBOMB_WALK);
 
-	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x1000 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x1000 / FRAME_RATE_SCALER_INV);
 	if((s16)o->oMoveAngleYaw == (s16)o->oAngleToMario)
 		o->oAction = BOBOMB_BUDDY_ACT_TALK;
 

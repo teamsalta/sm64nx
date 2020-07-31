@@ -22,7 +22,7 @@ void bhv_racing_penguin_init(void)
 
 static void racing_penguin_act_wait_for_mario(void)
 {
-	if(o->oTimer > o->oRacingPenguinInitTextCooldown * FRAME_RATE_SCALER_INV && o->oPosY - gMarioObject->oPosY <= 0.0f && obj_is_mario_in_range_and_ready_to_speak(400.0f, 400.0f))
+	if(o->oTimer > o->oRacingPenguinInitTextCooldown * FRAME_RATE_SCALER_INV && o->oPosY - gMarioObject->oPosY <= 0.0f && s_hitcheck_message(400.0f, 400.0f))
 	{
 		o->oAction = RACING_PENGUIN_ACT_SHOW_INIT_TEXT;
 	}
@@ -72,7 +72,7 @@ static void racing_penguin_act_race(void)
 	f32 targetSpeed;
 	f32 minSpeed;
 
-	if(obj_follow_path(0) == PATH_REACHED_END)
+	if(s_road_move(0) == PATH_REACHED_END)
 	{
 		o->oRacingPenguinReachedBottom = TRUE;
 		o->oAction		       = RACING_PENGUIN_ACT_FINISH_RACE;
@@ -105,13 +105,13 @@ static void racing_penguin_act_race(void)
 		s_set_skelanimeNo(1);
 		s_chase_angleY(o->oPathedTargetYaw, (s32)(15.0f * FRAME_RATE_SCALER * o->oForwardVel));
 
-		if(func_8029F828() && (o->oMoveFlags & 0x00000003))
+		if(s_check_animeend_2() && (o->oMoveFlags & 0x00000003))
 		{
 			s_makeobj_chain_scale(0, 0, -100, 0, 4.0f, o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke2());
 		}
 	}
 
-	if(mario_is_in_air_action())
+	if(s_check_playerjump())
 	{
 		if(o->oTimer > 60 * FRAME_RATE_SCALER_INV)
 		{
@@ -131,7 +131,7 @@ static void racing_penguin_act_finish_race(void)
 		if(o->oTimer > 5 * FRAME_RATE_SCALER_INV && (o->oMoveFlags & 0x00000200))
 		{
 			objsound(SOUND_OBJ_POUNDING_LOUD);
-			set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
+			Viewshaking(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 			o->oForwardVel = 0.0f;
 		}
 	}
@@ -152,7 +152,7 @@ static void racing_penguin_act_show_final_text(void)
 			s_set_skelanimeNo(3);
 			o->oForwardVel = 0.0f;
 
-			if(obj_is_mario_in_range_and_ready_to_speak(400.0f, 400.0f))
+			if(s_hitcheck_message(400.0f, 400.0f))
 			{
 				if(o->oRacingPenguinMarioWon)
 				{
@@ -183,7 +183,7 @@ static void racing_penguin_act_show_final_text(void)
 	}
 	else if(o->oRacingPenguinFinalTextbox > 0)
 	{
-		if((textResult = obj_update_dialog_with_cutscene(2, 1, CUTSCENE_DIALOG, o->oRacingPenguinFinalTextbox)) != 0)
+		if((textResult = s_call_talkdemo(2, 1, CUTSCENE_DIALOG, o->oRacingPenguinFinalTextbox)) != 0)
 		{
 			o->oRacingPenguinFinalTextbox = -1;
 			o->oTimer		      = 0;
@@ -191,7 +191,7 @@ static void racing_penguin_act_show_final_text(void)
 	}
 	else if(o->oRacingPenguinMarioWon)
 	{
-		obj_spawn_star_at_y_offset(-7339.0f, -5700.0f, -6774.0f, 200.0f);
+		sv2_enemyset_star(-7339.0f, -5700.0f, -6774.0f, 200.0f);
 		o->oRacingPenguinMarioWon = FALSE;
 	}
 }

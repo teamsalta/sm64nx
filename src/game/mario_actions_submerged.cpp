@@ -1076,7 +1076,7 @@ s32 PlayerRecord::act_water_shocked()
 {
 	play_sound_if_no_flag(SOUND_MARIO_WAAAOOOW, MARIO_ACTION_SOUND_PLAYED);
 	AudStartSound(SOUND_MOVING_SHOCKED, this->marioObj->header.gfx.cameraToObject);
-	set_camera_shake_from_hit(SHAKE_SHOCK);
+	Vieweffect(SHAKE_SHOCK);
 
 	if(set_mario_animation(MARIO_ANIM_SHOCKED) == 0)
 	{

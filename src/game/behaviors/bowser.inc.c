@@ -905,7 +905,7 @@ void s_kopa_superjumpstart()
 				o->oDragStrength = 0.0f;
 				if(o->oBowserDistToCentre < 2500.0f)
 				{
-					if(absf(o->oFloorHeight - o->oHomeY) < 100.0f)
+					if(s_abs_f(o->oFloorHeight - o->oHomeY) < 100.0f)
 						s_chase_speed(&o->oForwardVel, 0, -5.0f * FRAME_RATE_SCALER);
 					else
 						obj_forward_vel_approach_upward(150.0f, 2.0f * FRAME_RATE_SCALER);
@@ -1366,7 +1366,7 @@ static void kopa_throw() // thrown
 	if(align)
 	{
 		s16 distance = 0;
-		Object* bomb = obj_find_nearest_yaw_angle_object_with_behavior(sm64::bhv::bhvBowserBomb(), &distance);
+		Object* bomb = s_get_effectobj(sm64::bhv::bhvBowserBomb(), &distance);
 
 		if(bomb && distance < align)
 		{
@@ -1496,9 +1496,9 @@ Gfx* KopaProc1(s32 run, UNUSED struct GraphNode* node, Mat4 mtx)
 		sp1C = (struct Object*)gCurGraphNodeObject;
 		if(sp1C->prevObj != NULL)
 		{
-			create_transformation_from_matrices(sp20, mtx, *(Mat4*)gCurGraphNodeCamera->matrixPtr);
-			obj_update_pos_from_parent_transformation(sp20, sp1C->prevObj);
-			obj_set_gfx_pos_from_pos(sp1C->prevObj);
+			s_calc_skeleton_glbmtx(sp20, mtx, *(Mat4*)gCurGraphNodeCamera->matrixPtr);
+			s_calc_skeleton_glbpos(sp20, sp1C->prevObj);
+			s_copy_worldXYZmappos(sp1C->prevObj);
 		}
 	}
 	return NULL;
@@ -1642,7 +1642,7 @@ Gfx* Geo18_802B7D44(s32 a0, struct GraphNode* node, UNUSED s32 a2)
 void ActionFallingBowserPlatform0()
 {
 	o->oPlatformUnkF8 = s_find_obj(sm64::bhv::bhvBowser());
-	set_object_collision_data(o, D_8032F698[o->oBehParams2ndByte].unk0);
+	s_set_shapeinfo(o, D_8032F698[o->oBehParams2ndByte].unk0);
 	if(o->oPlatformUnkF8 != 0)
 		o->oAction = 1;
 }
@@ -1741,7 +1741,7 @@ void bhv_falling_bowser_platform_loop()
 void func_802B7A58()
 {
 	s_remove_obj(o);
-	spawn_object_with_scale(o, MODEL_NONE, sm64::bhv::bhvBlackSmokeUpward(), 1.0f);
+	s_makeobj_nowpos_scale(o, MODEL_NONE, sm64::bhv::bhvBlackSmokeUpward(), 1.0f);
 	if(Randomf() < 0.1)
 		s_makeobj_nowpos(o, MODEL_YELLOW_COIN, sm64::bhv::bhvTemporaryYellowCoin());
 }
@@ -1806,7 +1806,7 @@ void bhv_flame_bowser_loop()
 		if(o->oMoveFlags & 1)
 		{
 			o->oAction++;
-			if(obj_has_behavior(sm64::bhv::bhvFlameLargeBurningOut()))
+			if(s_check_pathname(sm64::bhv::bhvFlameLargeBurningOut()))
 				o->oFlameScale = 8.0f;
 			else
 				o->oFlameScale = Randomf() * 2 + 6.0f;
@@ -1834,7 +1834,7 @@ void bhv_flame_bowser_loop()
 void bhv_flame_moving_forward_growing_init()
 {
 	o->oForwardVel = 30.0f;
-	translate_object_xz_random(o, 80.0f);
+	s_random_XZ_offset(o, 80.0f);
 	o->oAnimState  = (s32)(Randomf() * 10.0f);
 	o->oFlameScale = 3.0f;
 }
@@ -1848,8 +1848,8 @@ void bhv_flame_moving_forward_growing_loop()
 	s_set_scale(o->oFlameScale);
 	if(o->oMoveAnglePitch > 0x800)
 		o->oMoveAnglePitch -= 0x200 / FRAME_RATE_SCALER_INV;
-	func_802A2A38();
-	obj_update_floor_height();
+	s_3Dmove();
+	s_groundcheck();
 	if(o->oFlameScale > 30.0f)
 		s_remove_obj(o);
 	if(o->oPosY < o->oFloorHeight)
@@ -1896,7 +1896,7 @@ void bhv_flame_floating_landing_loop()
 
 void bhv_blue_bowser_flame_init()
 {
-	translate_object_xz_random(o, 80.0f);
+	s_random_XZ_offset(o, 80.0f);
 	o->oAnimState  = (s32)(Randomf() * 10.0f);
 	o->oVelY       = 7.0f;
 	o->oForwardVel = 35.0f;
@@ -1968,7 +1968,7 @@ void bhv_blue_flames_group_loop()
 
 	if(o->oTimer == 0)
 	{
-		o->oMoveAngleYaw   = angle_to_object(o, gMarioObject);
+		o->oMoveAngleYaw   = s_calc_targetangle(o, gMarioObject);
 		o->oBlueFlameUnkF8 = 5.0f;
 	}
 

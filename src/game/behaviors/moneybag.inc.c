@@ -29,7 +29,7 @@ void bhv_moneybag_init(void)
 	o->oGravity  = 3.0f;
 	o->oFriction = 1.0f;
 	o->oBuoyancy = 2.0f;
-	SetObjAnimation(0);
+	stSetSkelAnimeNumber(0);
 	o->oOpacity = 0;
 }
 
@@ -63,7 +63,7 @@ void MoneybagJump(s8 collisionFlags)
 	switch(o->oMoneybagJumpState)
 	{
 		case MONEYBAG_JUMP_PREPARE:
-			SetObjAnimation(1);
+			stSetSkelAnimeNumber(1);
 			if(animFrame == 5)
 			{
 				o->oForwardVel = 20.0f;
@@ -78,7 +78,7 @@ void MoneybagJump(s8 collisionFlags)
 			break;
 
 		case MONEYBAG_JUMP_JUMP:
-			SetObjAnimation(2);
+			stSetSkelAnimeNumber(2);
 
 			if((collisionFlags & 1) == 1) /* bit 0 */
 			{
@@ -89,14 +89,14 @@ void MoneybagJump(s8 collisionFlags)
 			break;
 
 		case MONEYBAG_JUMP_JUMP_AND_BOUNCE:
-			SetObjAnimation(3);
+			stSetSkelAnimeNumber(3);
 
 			if(s_check_animeend() == 1)
 				o->oMoneybagJumpState = MONEYBAG_JUMP_LANDING;
 			break;
 
 		case MONEYBAG_JUMP_WALK_AROUND:
-			SetObjAnimation(4);
+			stSetSkelAnimeNumber(4);
 			o->oForwardVel = 10.0f;
 
 			if(o->oTimer >= 61 * FRAME_RATE_SCALER_INV)
@@ -108,7 +108,7 @@ void MoneybagJump(s8 collisionFlags)
 			break;
 
 		case MONEYBAG_JUMP_WALK_HOME:
-			SetObjAnimation(4);
+			stSetSkelAnimeNumber(4);
 			o->oForwardVel = 5.0f;
 			break;
 	}
@@ -146,7 +146,7 @@ void MoneybagReturnHomeLoop(void)
 	f32 sp28	 = o->oHomeX - o->oPosX;
 	f32 sp24	 = o->oHomeZ - o->oPosZ;
 	s16 sp22	 = atan2s(sp24, sp28);
-	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, sp22, 0x800 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, sp22, 0x800 / FRAME_RATE_SCALER_INV);
 
 	collisionFlags = ObjMoveEvent();
 	if(((collisionFlags & OBJ_COL_FLAGS_LANDED) == OBJ_COL_FLAGS_LANDED) && (o->oMoneybagJumpState == MONEYBAG_JUMP_LANDING))
@@ -159,7 +159,7 @@ void MoneybagReturnHomeLoop(void)
 	{
 		s_makeobj_nowpos(o, MODEL_YELLOW_COIN, sm64::bhv::bhvMoneybagHidden());
 		objsound(SOUND_GENERAL_VANISH_SFX);
-		SetObjAnimation(0);
+		stSetSkelAnimeNumber(0);
 		o->oAction	      = MONEYBAG_ACT_DISAPPEAR;
 		o->oMoneybagJumpState = MONEYBAG_JUMP_LANDING;
 	}

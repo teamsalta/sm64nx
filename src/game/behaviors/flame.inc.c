@@ -30,7 +30,7 @@ void bhv_small_piranha_flame_loop(void)
 
 		obj_compute_vel_from_move_pitch(o->oSmallPiranhaFlameStartSpeed);
 		s_enemymove(-78);
-		spawn_object_with_scale(o, o->oSmallPiranhaFlameModel, sm64::bhv::bhvSmallPiranhaFlame(), 0.4f * o->header.gfx.scale[0]);
+		s_makeobj_nowpos_scale(o, o->oSmallPiranhaFlameModel, sm64::bhv::bhvSmallPiranhaFlame(), 0.4f * o->header.gfx.scale[0]);
 
 		if(o->oTimer > o->oSmallPiranhaFlameUnk100)
 		{

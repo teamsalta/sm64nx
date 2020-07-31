@@ -2,7 +2,7 @@
 
 void bhv_tree_snow_or_leaf_loop(void)
 {
-	obj_update_floor_height();
+	s_groundcheck();
 	if(o->oTimer == 0)
 	{
 		o->oAngleVelPitch	= (Randomf() - 0.5) * 0x1000;
@@ -55,7 +55,7 @@ void bhv_snow_leaf_particle_spawn_init(void)
 		{
 			obj   = s_makeobj_nowpos(o, MODEL_WHITE_PARTICLE_DL, sm64::bhv::bhvTreeSnow());
 			scale = Randomf();
-			scale_object_xyz(obj, scale, scale, scale);
+			stSetScale(obj, scale, scale, scale);
 			obj->oMoveAngleYaw = RandomU16();
 			obj->oForwardVel   = Randomf() * 5.0f;
 			obj->oVelY	   = Randomf() * 15.0f;
@@ -67,7 +67,7 @@ void bhv_snow_leaf_particle_spawn_init(void)
 		{
 			obj   = s_makeobj_nowpos(o, MODEL_LEAVES, sm64::bhv::bhvTreeLeaf());
 			scale = Randomf() * 3.0f;
-			scale_object_xyz(obj, scale, scale, scale);
+			stSetScale(obj, scale, scale, scale);
 			obj->oMoveAngleYaw   = RandomU16();
 			obj->oForwardVel     = Randomf() * 5.0f + 5.0f;
 			obj->oVelY	     = Randomf() * 15.0f;

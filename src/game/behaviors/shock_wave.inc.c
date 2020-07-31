@@ -20,7 +20,7 @@ void bhv_bowser_shock_wave_loop(void)
 	if(o->oOpacity <= 0)
 		s_remove_obj(o);
 
-	if(o->oTimer < expires * FRAME_RATE_SCALER_INV && mario_is_in_air_action() == 0)
+	if(o->oTimer < expires * FRAME_RATE_SCALER_INV && s_check_playerjump() == 0)
 	{
 		sp2C = o->oBowserShockWaveUnkF4 * D_8032F420[0];
 		sp28 = o->oBowserShockWaveUnkF4 * D_8032F420[1];

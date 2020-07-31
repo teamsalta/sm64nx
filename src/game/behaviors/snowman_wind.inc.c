@@ -12,8 +12,8 @@ void bhv_snowman_wind_blowing_loop(void)
 	{
 		o->oDistanceToMario = 0;
 		func_802B8F7C(pos, &o->oPosX);
-		set_object_pos(o, 1100, 3328, 1164);
-		if(func_802A3FF8(1000.0f, 30.0f, 0x7FFF))
+		s_set_world(o, 1100, 3328, 1164);
+		if(s_hitcheck_message_entry(1000.0f, 30.0f, 0x7FFF))
 			o->oSubAction++;
 		func_802B8F7C(&o->oPosX, pos);
 	}
@@ -22,7 +22,7 @@ void bhv_snowman_wind_blowing_loop(void)
 		if(s_call_enemydemo(2, 2, DIALOG_153, 0))
 			o->oSubAction++;
 	}
-	else if(o->oDistanceToMario < 1500.0f && absf(gMarioObject->oPosY - o->oHomeY) < 500.0f)
+	else if(o->oDistanceToMario < 1500.0f && s_abs_f(gMarioObject->oPosY - o->oHomeY) < 500.0f)
 	{
 		if((sp32 = o->oAngleToMario - o->oSnowmanWindBlowingUnkF4) > 0)
 		{

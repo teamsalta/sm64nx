@@ -54,7 +54,7 @@ void bhv_star_spawn_init(void)
 	else
 		cutscene_object(CUTSCENE_RED_COIN_STAR_SPAWN, o);
 
-	set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
+	s_begin_enemydemo(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 	o->activeFlags |= 0x20;
 	s_hitOFF();
 }
@@ -110,7 +110,7 @@ void bhv_star_spawn_loop(void)
 			if(o->oTimer == 20 * FRAME_RATE_SCALER_INV)
 			{
 				gObjCutsceneDone = TRUE;
-				clear_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
+				s_end_enemydemo(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 				o->activeFlags &= ~0x20;
 			}
 
@@ -144,7 +144,7 @@ void s_enemyset_star(f32 sp20, f32 sp24, f32 sp28)
 
 void func_802F1B84(f32 sp20, f32 sp24, f32 sp28)
 {
-	struct Object* sp1C;
+	Object* sp1C = 0;
 	sp1C			= func_802F1A50(sp1C, sp20, sp24, sp28);
 	sp1C->oBehParams2ndByte = 1;
 }

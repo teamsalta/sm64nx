@@ -22,14 +22,14 @@ void bhv_ukiki_cage_star_loop(void)
 			// Initialization to see if the star is collected (blue) or not (yellow).
 			if(o->oTimer == 0)
 			{
-				if(func_802A377C(1) & BuGetStarFlag(activePlayerNo - 1, activeCourseNo - 1))
+				if(s_index_bit(1) & BuGetStarFlag(activePlayerNo - 1, activeCourseNo - 1))
 				{
 					s_change_shape(MODEL_TRANSPARENT_STAR);
 				}
 			}
 
-			copy_object_pos(o, o->parentObj);
-			copy_object_behavior_params(o, o->parentObj);
+			s_copy_worldXYZ(o, o->parentObj);
+			s_copy_actorcode(o, o->parentObj);
 
 			// When they cage hides itself, spawn particles and the star.
 			if(o->parentObj->oAction == UKIKI_CAGE_ACT_HIDE)

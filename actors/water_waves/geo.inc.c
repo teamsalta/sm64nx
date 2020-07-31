@@ -1,6 +1,6 @@
 // 0x17000124
 const GeoLayout water_waves_surface_geo[] = {
-   GEO_SWITCH_CASE(6, geo_switch_anim_state),
+   GEO_SWITCH_CASE(6, ControlShapeAnime),
    GEO_OPEN_NODE(),
       GEO_DISPLAY_LIST(LAYER_TRANSPARENT, water_waves_seg4_dl_040273F0),
       GEO_DISPLAY_LIST(LAYER_TRANSPARENT, water_waves_seg4_dl_04027408),
@@ -14,7 +14,7 @@ const GeoLayout water_waves_surface_geo[] = {
 
 // 0x17000168
 const GeoLayout water_waves_geo[] = {
-   GEO_SWITCH_CASE(8, geo_switch_anim_state),
+   GEO_SWITCH_CASE(8, ControlShapeAnime),
    GEO_OPEN_NODE(),
       GEO_DISPLAY_LIST(LAYER_TRANSPARENT, water_waves_seg4_dl_040273F0),
       GEO_DISPLAY_LIST(LAYER_TRANSPARENT, water_waves_seg4_dl_04027408),

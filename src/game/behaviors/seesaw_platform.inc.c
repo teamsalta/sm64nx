@@ -32,7 +32,7 @@ void bhv_seesaw_platform_update(void)
 {
 	o->oFaceAnglePitch += (s32)(o->oSeesawPlatformPitchVel * FRAME_RATE_SCALER);
 
-	if(absf(o->oSeesawPlatformPitchVel) > 10.0f)
+	if(s_abs_f(o->oSeesawPlatformPitchVel) > 10.0f)
 	{
 		objsound_level(SOUND_ENV_BOAT_ROCKING1);
 	}

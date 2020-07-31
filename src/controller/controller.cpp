@@ -1,6 +1,15 @@
 #include "sm64.h"
 #include "game/options.h"
 #include "controller.h"
+#include <ctime>
+#include <fstream>
+#include <filesystem>
+
+#ifdef __SWITCH__
+#define TAS_DIR "sdmc:/switch/sm64/tas"
+#else
+#define TAS_DIR "tas"
+#endif
 
 namespace sm64::hid
 {
@@ -8,9 +17,6 @@ namespace sm64::hid
 	{
 		mouse_x	      = 0;
 		mouse_y	      = 0;
-		mouse_delta_x = 0;
-		mouse_delta_y = 0;
-		mouse_wheel   = 0;
 		has_mouse     = false;
 
 		reset();
@@ -24,14 +30,6 @@ namespace sm64::hid
 		errnum	  = 0;
 		r_stick_x = 0;
 		r_stick_y = 0;
-
-		// mouse_x = 0;
-		// mouse_y = 0;
-		mouse_delta_x = 0;
-		mouse_delta_y = 0;
-		// mouse_wheel = 0;
-		mouse_l	  = 0;
-		mouse_r	  = 0;
 		has_mouse = false;
 	}
 
@@ -88,19 +86,61 @@ namespace sm64::hid
 		{
 			m_state.mouse_x = controller.m_state.mouse_x;
 			m_state.mouse_y = controller.m_state.mouse_y;
-
-			m_state.mouse_l = controller.m_state.mouse_l;
-			m_state.mouse_r = controller.m_state.mouse_r;
-
-			m_state.mouse_delta_x = controller.m_state.mouse_delta_x;
-			m_state.mouse_delta_y = controller.m_state.mouse_delta_y;
 		}
 
 		m_state.has_mouse |= controller.m_state.has_mouse;
 	}
 
+	bool Controller::hasMouse() const
+	{
+		return m_state.has_mouse;
+	}
+
+	static std::string getTasFileName()
+	{
+
+		std::error_code error;
+		std::filesystem::create_directory(TAS_DIR, error);
+
+		time_t now = time(0);
+		tm* ltm = localtime(&now);
+
+		if (!ltm)
+		{
+			return TAS_DIR"/record.tas";
+		}
+
+		char buf[64] = { 0 };
+		sprintf(buf, TAS_DIR"/%04d.%02d.%02d-%04d.tas", ltm->tm_year, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour * 60 + ltm->tm_min);
+		return buf;
+	}
+
+	static std::ofstream* g_tas = nullptr;
+
+	static std::ofstream& stream()
+	{
+		if (!g_tas)
+		{
+			auto name = getTasFileName();
+			g_tas = new std::ofstream(name, std::ifstream::binary);
+			g_tas->write((const char*)&config(), sizeof(config()));
+		}
+
+		return *g_tas;
+	}
+
 	void Controller::resolveInputs()
 	{
+		if (!hid::isTasPlaying() && config().game().recordTas())
+		{
+			stream().write((const char*)&m_state, sizeof(m_state));
+
+			if (m_state.button)
+			{
+				int y = 0;
+			}
+		}
+
 		rawStickX     = m_state.stick_x;
 		rawStickY     = m_state.stick_y;
 		r_rawStickX   = m_state.r_stick_x;
@@ -188,7 +228,6 @@ namespace sm64::hid
 		}
 	}
 
-#ifdef ENABLE_MOUSE
 	s64 Controller::mouse_x() const
 	{
 		return m_state.mouse_x * (sm64::config().camera().mousexInvert() ? -1 : 1) * sm64::config().camera().mousexScaler();
@@ -198,32 +237,6 @@ namespace sm64::hid
 	{
 		return m_state.mouse_y * (sm64::config().camera().mouseyInvert() ? -1 : 1) * sm64::config().camera().mouseyScaler();
 	}
-
-	int Controller::mouse_delta_x() const
-	{
-		return m_state.mouse_delta_x;
-	}
-
-	int Controller::mouse_delta_y() const
-	{
-		return m_state.mouse_delta_y;
-	}
-
-	s64 Controller::mouse_wheel() const
-	{
-		return m_state.mouse_wheel;
-	}
-
-	u8 Controller::mouse_l() const
-	{
-		return m_state.mouse_l;
-	}
-
-	u8 Controller::mouse_r() const
-	{
-		return m_state.mouse_r;
-	}
-#endif
 
 	bool Controller::updateRebind(int input)
 	{

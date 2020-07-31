@@ -64,7 +64,7 @@ void unagi_act_1_4(s32 arg0)
 	}
 	else
 	{
-		if(func_8029F828())
+		if(s_check_animeend_2())
 		{
 			if(o->oAction != arg0 && (o->oPathedPrevWaypointFlags & 0xFF) >= 7)
 			{
@@ -82,18 +82,18 @@ void unagi_act_1_4(s32 arg0)
 		objsound(SOUND_GENERAL_MOVING_WATER);
 	}
 
-	if(obj_follow_path(0) == -1)
+	if(s_road_move(0) == -1)
 	{
 		o->oAction = arg0;
 	}
 
-	o->oMoveAnglePitch = o->oFaceAnglePitch = approach_s16_symmetric(o->oMoveAnglePitch, o->oPathedTargetPitch, 50 / FRAME_RATE_SCALER_INV);
+	o->oMoveAnglePitch = o->oFaceAnglePitch = s_chase_angle(o->oMoveAnglePitch, o->oPathedTargetPitch, 50 / FRAME_RATE_SCALER_INV);
 
 	s_chase_angleY(o->oPathedTargetYaw, 120 / FRAME_RATE_SCALER_INV);
 	obj_roll_to_match_yaw_turn(o->oPathedTargetYaw, 0x2000, 100 / FRAME_RATE_SCALER_INV);
 
 	obj_forward_vel_approach(10.0f, 0.2f * FRAME_RATE_SCALER);
-	func_802A2A38();
+	s_3Dmove();
 }
 
 void unagi_act_2(void)
@@ -101,7 +101,7 @@ void unagi_act_2(void)
 	o->oPathedPrevWaypoint	    = o->oPathedStartWaypoint;
 	o->oPathedPrevWaypointFlags = 0;
 
-	obj_set_pos_to_home();
+	s_copy_initpos();
 
 	o->oMoveAnglePitch = o->oFaceAnglePitch = 0;
 	o->oMoveAngleYaw = o->oFaceAngleYaw = o->oUnagiUnk1B0;
@@ -151,7 +151,7 @@ void unagi_act_3(void)
 		else if(o->oUnagiUnk110 == 0.0f)
 		{
 			s_set_skelanimeNo(0);
-			if(func_8029F828())
+			if(s_check_animeend_2())
 			{
 				if(o->oUnagiUnk1AC < 1000.0f)
 				{

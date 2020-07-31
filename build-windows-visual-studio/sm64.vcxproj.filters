@@ -1236,6 +1236,12 @@
     <ClCompile Include="..\src\game\motor.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\engine\duktape.c">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\script.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\engine\behavior_script.h">

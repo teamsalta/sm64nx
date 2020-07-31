@@ -72,10 +72,10 @@ static void chain_chomp_act_uninitialized(void)
 			o->oChainChompSegments = segments;
 			for(i = 0; i <= 4; i++)
 			{
-				chain_segment_init(&segments[i]);
+				s_clear_delayrecord(&segments[i]);
 			}
 
-			obj_set_pos_to_home();
+			s_copy_initpos();
 
 			// Spawn the pivot and set to parent
 			if((o->parentObj = s_makeobj_nowpos(o, CHAIN_CHOMP_CHAIN_PART_BP_PIVOT, sm64::bhv::bhvChainChompChainPart())) != NULL)
@@ -203,7 +203,7 @@ static void chain_chomp_sub_act_turn(void)
 				auto accel = o->header.gfx.unk38.animFrameAccelAssist;
 				if(o->header.gfx.unk38.animFrameAccelAssist >> 16 == 0)
 				{
-					func_8029F6F0();
+					s_wait_anime();
 					if(o->oTimer > 40 * FRAME_RATE_SCALER_INV)
 					{
 						// Increase the maximum distance from the pivot and enter
@@ -296,7 +296,7 @@ static void chain_chomp_sub_act_lunge(void)
 
 	if(o->oTimer < 30 * FRAME_RATE_SCALER_INV)
 	{
-		func_8029F6F0();
+		s_wait_anime();
 	}
 }
 
@@ -362,8 +362,8 @@ static void chain_chomp_released_lunge_around(void)
 				o->oChainChompReleaseStatus = CHAIN_CHOMP_RELEASED_BREAK_GATE;
 				o->oHomeX		    = 1450.0f;
 				o->oHomeZ		    = 562.0f;
-				o->oMoveAngleYaw	    = obj_angle_to_home();
-				o->oForwardVel		    = obj_lateral_dist_to_home() / 8.0f;
+				o->oMoveAngleYaw	    = s_calc_returnangle();
+				o->oForwardVel		    = s_calc_enemyscope() / 8.0f;
 				o->oVelY		    = 50.0f;
 			}
 		}
@@ -386,7 +386,7 @@ static void chain_chomp_released_break_gate(void)
 		if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
 		{
 			o->oChainChompHitGate = TRUE;
-			o->oMoveAngleYaw      = obj_reflect_move_angle_off_wall();
+			o->oMoveAngleYaw      = s_wall_rebound();
 			o->oForwardVel *= 0.4f;
 		}
 	}
@@ -395,8 +395,8 @@ static void chain_chomp_released_break_gate(void)
 		o->oChainChompReleaseStatus = CHAIN_CHOMP_RELEASED_JUMP_AWAY;
 		o->oHomeX		    = 3288.0f;
 		o->oHomeZ		    = -1770.0f;
-		o->oMoveAngleYaw	    = obj_angle_to_home();
-		o->oForwardVel		    = obj_lateral_dist_to_home() / 50.0f;
+		o->oMoveAngleYaw	    = s_calc_returnangle();
+		o->oForwardVel		    = s_calc_enemyscope() / 50.0f;
 		o->oVelY		    = 120.0f;
 	}
 }
@@ -617,9 +617,9 @@ void bhv_wooden_post_update(void)
 			// When mario runs around the post 3 times within 200 frames, spawn
 			// coins
 			o->oWoodenPostTotalMarioAngle += (s16)(o->oAngleToMario - o->oWoodenPostPrevAngleToMario);
-			if(absi(o->oWoodenPostTotalMarioAngle) > 0x30000 && o->oTimer < 200 * FRAME_RATE_SCALER_INV)
+			if(s_abs_d(o->oWoodenPostTotalMarioAngle) > 0x30000 && o->oTimer < 200 * FRAME_RATE_SCALER_INV)
 			{
-				spawn_object_loot_yellow_coins(o, 5, 20.0f);
+				s_makecoin(o, 5, 20.0f);
 				set_object_respawn_info_bits(o, 1);
 			}
 		}
@@ -643,8 +643,8 @@ void bhv_chain_chomp_gate_update(void)
 {
 	if(o->parentObj->oChainChompHitGate)
 	{
-		func_802A3034(SOUND_GENERAL_WALL_EXPLOSION);
-		set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
+		s_kemuri_sound(SOUND_GENERAL_WALL_EXPLOSION);
+		Viewshaking(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 		s_burneffect(0, 0x7F, 200.0f);
 		s_boxeffect(30, 0x8A, 3.0f, 4);
 		s_remove_obj(o);

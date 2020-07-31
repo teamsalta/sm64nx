@@ -123,7 +123,7 @@ static void enemy_lakitu_sub_act_no_spiny(void)
 			o->prevObj     = spiny;
 			spiny->oAction = SPINY_ACT_HELD_BY_LAKITU;
 
-			func_8029EE20(spiny, (Animation**)spiny_egg_seg5_anims_050157E4, 0);
+			s_set_skeletonobj(spiny, (Animation**)spiny_egg_seg5_anims_050157E4, 0);
 
 			o->oEnemyLakituNumSpinies += 1;
 			o->oSubAction		     = ENEMY_LAKITU_SUB_ACT_HOLD_SPINY;
@@ -182,7 +182,7 @@ static void enemy_lakitu_act_main(void)
 	enemy_lakitu_update_speed_and_angle();
 	if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
 	{
-		o->oMoveAngleYaw = obj_reflect_move_angle_off_wall();
+		o->oMoveAngleYaw = s_wall_rebound();
 	}
 
 	obj_update_blinking(&o->oEnemyLakituBlinkTimer, 20, 40, 4);

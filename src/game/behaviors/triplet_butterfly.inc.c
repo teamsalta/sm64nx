@@ -72,7 +72,7 @@ static void triplet_butterfly_act_wander(void)
 		approach_f32_ptr(&o->oTripletButterflySpeed, 8.0f, 0.5f * FRAME_RATE_SCALER);
 		if(o->oTimer < 60 * FRAME_RATE_SCALER_INV)
 		{
-			o->oTripletButterflyTargetYaw = obj_angle_to_home();
+			o->oTripletButterflyTargetYaw = s_calc_returnangle();
 		}
 		else
 		{
@@ -113,7 +113,7 @@ static void triplet_butterfly_act_activate(void)
 			s_makeobj_chain_scale(0, 0, -40, 0, 1.5f, o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke2());
 			o->oTripletButterflyModel = sTripletButterflyActivationData[o->oTripletButterflyType].model;
 			s_change_shape(o->oTripletButterflyModel);
-			obj_set_billboard(o);
+			s_softspritemodeON(o);
 			o->oTripletButterflyScale = 0.0f;
 			o->oHomeY		  = o->oPosY;
 		}

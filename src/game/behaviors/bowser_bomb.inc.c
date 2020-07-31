@@ -13,7 +13,7 @@ void bhv_bowser_bomb_loop(void)
 	{
 		s_makeobj_nowpos(o, MODEL_BOWSER_FLAMES, sm64::bhv::bhvBowserBombExplosion());
 		obj_remove_sound(SOUND_GENERAL_BOWSER_BOMB_EXPLOSION);
-		set_camera_shake_from_point(SHAKE_POS_LARGE, o->oPosX, o->oPosY, o->oPosZ);
+		Viewshaking(SHAKE_POS_LARGE, o->oPosX, o->oPosY, o->oPosZ);
 		o->activeFlags = 0;
 	}
 

@@ -55,8 +55,8 @@ enum UnlockDoorStarStates
 
 static s8 D_8032CDF0[7]		       = {0x01, 0x02, 0x01, 0x00, 0x01, 0x02, 0x01};
 static s8 gMarioAttackScaleAnimation[] = {0x0a, 0x0c, 0x10, 0x18, 0x0a, 0x0a, 0x0a, 0x0e, 0x14, 0x1e, 0x0a, 0x0a, 0x0a, 0x10, 0x14, 0x1a, 0x1a, 0x14, 0x00, 0x00};
-struct GraphNodeObject D_80339FE0;
-struct MarioBodyState gBodyStates[2]; // 2nd is never accessed in practice, most likely Luigi related
+GraphNodeObject D_80339FE0;
+MarioBodyState gBodyStates[2]; // 2nd is never accessed in practice, most likely Luigi related
 
 // This whole file is weirdly organized. It has to be the same file due
 // to rodata boundries and function aligns, which means the programmer
@@ -105,7 +105,7 @@ static void bhvToadMessage_opaque(void)
 
 static void bhvToadMessage_talking(void)
 {
-	if(obj_update_dialog_with_cutscene(3, 1, CUTSCENE_DIALOG, gCurrentObject->oToadMessageDialogId) != 0)
+	if(s_call_talkdemo(3, 1, CUTSCENE_DIALOG, gCurrentObject->oToadMessageDialogId) != 0)
 	{
 		gCurrentObject->oToadMessageRecentlyTalked = 1;
 		gCurrentObject->oToadMessageState	   = TOAD_MESSAGE_FADING;
@@ -232,7 +232,7 @@ void bhvUnlockDoorStar_init(void)
 	gCurrentObject->oPosY += 160.0f;
 	gCurrentObject->oPosZ += 30.0f * coss(marioWorks->faceAngle[1] - 0x4000);
 	gCurrentObject->oMoveAngleYaw = 0x7800;
-	scale_object(gCurrentObject, 0.5f);
+	s_scale(gCurrentObject, 0.5f);
 }
 
 void bhvUnlockDoorStar_loop(void)
@@ -251,7 +251,7 @@ void bhvUnlockDoorStar_loop(void)
 		case UNLOCK_DOOR_STAR_RISING:
 			gCurrentObject->oPosY += 3.4f;									       // Raise the star up in the air
 			gCurrentObject->oMoveAngleYaw += gCurrentObject->oUnlockDoorStarYawVel;				       // Apply yaw velocity
-			scale_object(gCurrentObject, gCurrentObject->oUnlockDoorStarTimer / 50.0f * FRAME_RATE_SCALER + 0.5f); // Scale the star to be bigger
+			s_scale(gCurrentObject, gCurrentObject->oUnlockDoorStarTimer / 50.0f * FRAME_RATE_SCALER + 0.5f); // Scale the star to be bigger
 			if(++gCurrentObject->oUnlockDoorStarTimer == 30 * FRAME_RATE_SCALER_INV)
 			{
 				gCurrentObject->oUnlockDoorStarTimer = 0;

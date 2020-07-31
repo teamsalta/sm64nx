@@ -11,8 +11,8 @@ void bhv_punch_tiny_triangle_loop(void)
 	{
 		sp1E			   = o->oMoveAngleYaw;
 		o->oCollisionParticleUnkF4 = 1.28f;
-		obj_set_pos_relative(gMarioObject, 0.0f, 60.0f, 100.0f);
-		o->oMoveAngleYaw = sp1E; // does obj_set_pos_relative modify currentObject?
+		s_posoffset_mother(gMarioObject, 0.0f, 60.0f, 100.0f);
+		o->oMoveAngleYaw = sp1E; // does s_posoffset_mother modify currentObject?
 	}
 	s_optionmove_F();
 	o->oAnimState = 5;
@@ -43,7 +43,7 @@ void bhv_wall_tiny_star_particle_loop(void)
 	{
 		sp1E			   = o->oMoveAngleYaw;
 		o->oCollisionParticleUnkF4 = 0.28f;
-		obj_set_pos_relative(gMarioObject, 0.0f, 30.0f, 110.0f);
+		s_posoffset_mother(gMarioObject, 0.0f, 30.0f, 110.0f);
 		o->oMoveAngleYaw = sp1E;
 	}
 	s_optionmove_F();

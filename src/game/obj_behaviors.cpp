@@ -612,7 +612,7 @@ s32 obj_return_home_if_safe(struct Object* obj, f32 homeX, f32 y, f32 homeZ, s32
 	}
 	else
 	{
-		obj->oMoveAngleYaw = approach_s16_symmetric(obj->oMoveAngleYaw, angleTowardsHome, 320 / FRAME_RATE_SCALER_INV);
+		obj->oMoveAngleYaw = s_chase_angle(obj->oMoveAngleYaw, angleTowardsHome, 320 / FRAME_RATE_SCALER_INV);
 	}
 
 	return FALSE;
@@ -635,7 +635,7 @@ void obj_return_and_displace_home(struct Object* obj, f32 homeX, UNUSED f32 home
 	homeDistX	   = obj->oHomeX - obj->oPosX;
 	homeDistZ	   = obj->oHomeZ - obj->oPosZ;
 	angleToNewHome	   = atan2s(homeDistZ, homeDistX);
-	obj->oMoveAngleYaw = approach_s16_symmetric(obj->oMoveAngleYaw, angleToNewHome, 320 / FRAME_RATE_SCALER_INV);
+	obj->oMoveAngleYaw = s_chase_angle(obj->oMoveAngleYaw, angleToNewHome, 320 / FRAME_RATE_SCALER_INV);
 }
 
 /**

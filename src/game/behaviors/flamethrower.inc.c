@@ -7,7 +7,7 @@ void bhv_flamethrower_flame_loop(void)
 	if(o->oTimer == 0)
 	{
 		o->oAnimState = (s32)(Randomf() * 10.0f);
-		translate_object_xyz_random(o, 10.0f);
+		s_random_XYZ_offset(o, 10.0f);
 	}
 	if(o->oBehParams2ndByte == 2)
 		size = o->oTimer * FRAME_RATE_SCALER * (o->oForwardVel - 6.0f) / 100.0 + 2.0;
@@ -19,7 +19,7 @@ void bhv_flamethrower_flame_loop(void)
 		o->hitboxHeight	    = 200.0f;
 		o->hitboxDownOffset = 150.0f;
 		o->oVelY	    = -28.0f;
-		obj_update_floor_height();
+		s_groundcheck();
 		if(o->oPosY - 25.0f * size < o->oFloorHeight)
 		{
 			o->oVelY = 0;

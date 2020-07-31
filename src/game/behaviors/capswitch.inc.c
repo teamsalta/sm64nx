@@ -47,7 +47,7 @@ void bikkuri_on(void)
 	}
 	else
 	{
-		sp1C = obj_update_dialog_with_cutscene(1, 0x0C, CUTSCENE_CAP_SWITCH_PRESS, 0);
+		sp1C = s_call_talkdemo(1, 0x0C, CUTSCENE_CAP_SWITCH_PRESS, 0);
 		if(sp1C)
 			o->oAction = 3;
 	}
@@ -74,9 +74,9 @@ Gfx* Geo18_802A719C(s32 run, UNUSED struct GraphNode* node, Mat4 mtx)
 		sp1C = (struct Object*)gCurGraphNodeObject;
 		if(sp1C->prevObj != NULL)
 		{
-			create_transformation_from_matrices(sp20, mtx, *(Mat4*)gCurGraphNodeCamera->matrixPtr);
-			obj_update_pos_from_parent_transformation(sp20, sp1C->prevObj);
-			obj_set_gfx_pos_from_pos(sp1C->prevObj);
+			s_calc_skeleton_glbmtx(sp20, mtx, *(Mat4*)gCurGraphNodeCamera->matrixPtr);
+			s_calc_skeleton_glbpos(sp20, sp1C->prevObj);
+			s_copy_worldXYZmappos(sp1C->prevObj);
 		}
 	}
 	return NULL;

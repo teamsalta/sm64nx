@@ -143,6 +143,16 @@ namespace sm64
 			if(f)
 			{
 				result = _load(f, this);
+
+				if (cheats().speed() < 1.0)
+				{
+					cheats().speed() = 1.0f;
+				}
+				else if (cheats().speed() > 3.0)
+				{
+					cheats().speed() = 3.0f;
+				}
+
 				fclose(f);
 			}
 #if defined(__SWITCH__) && !defined(BUILD_NRO)
@@ -291,7 +301,17 @@ namespace sm64
 			return m_paceFrames;
 		}
 
-		Camera::Camera() : m_distanceScaler(1.0f), m_yawReturnScaler(1.0f), m_disableDistanceClip(false), m_useClassicCamera(false), m_mousexInvert(false), m_mouseyInvert(false), m_mousexScaler(1.0f), m_mouseyScaler(1.0f)
+		bool& Game::recordTas()
+		{
+			return m_recordTas;
+		}
+
+		bool& Game::forceMouse()
+		{
+			return m_forceMouse;
+		}
+
+		Camera::Camera() : m_distanceScaler(1.0f), m_yawReturnScaler(1.0f), m_disableDistanceClip(false), m_useClassicCamera(false), m_mousexInvert(false), m_mouseyInvert(false), m_mousexScaler(4.0f), m_mouseyScaler(4.0f)
 		{
 			memset(junk, 0, sizeof(junk));
 		}

@@ -177,7 +177,7 @@ static void pokey_act_uninitialized(void)
 
 			if(bodyPart != NULL)
 			{
-				scale_object(bodyPart, 3.0f);
+				s_scale(bodyPart, 3.0f);
 			}
 
 			partModel = MODEL_POKEY_BODY_PART;
@@ -241,7 +241,7 @@ static void pokey_act_wander(void)
 						o->oPokeyNumAliveBodyParts += 1;
 						o->oPokeyBottomBodyPartSize = 0.0f;
 
-						scale_object(bodyPart, 0.0f);
+						s_scale(bodyPart, 0.0f);
 					}
 
 					o->oTimer = 0;
@@ -324,7 +324,7 @@ static void pokey_act_wander(void)
 static void pokey_act_unload_parts(void)
 {
 	o->oAction = POKEY_ACT_UNINITIALIZED;
-	obj_set_pos_to_home();
+	s_copy_initpos();
 }
 
 /**

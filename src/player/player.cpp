@@ -1,4 +1,5 @@
 #include "player.h"
+#include "game/options.h"
 
 namespace sm64
 {
@@ -44,7 +45,6 @@ namespace sm64
 		}
 		else
 		{
-
 			for (auto& controller : m_controllers)
 			{
 				controller->state().reset();
@@ -52,7 +52,7 @@ namespace sm64
 
 				m_controller.merge(*controller);
 			}
-			if (m_controllers.size() > 2)
+			if (m_controllers.size() > 2 && !config().game().forceMouse())
 			{
 				m_controller.state().has_mouse = false;
 			}

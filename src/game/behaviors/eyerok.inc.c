@@ -86,7 +86,7 @@ static void eyerok_boss_act_wake_up(void)
 
 static void eyerok_boss_act_show_intro_text(void)
 {
-	if(obj_update_dialog_with_cutscene(2, 0, CUTSCENE_DIALOG, DIALOG_117))
+	if(s_call_talkdemo(2, 0, CUTSCENE_DIALOG, DIALOG_117))
 	{
 		o->oAction = EYEROK_BOSS_ACT_FIGHT;
 	}
@@ -165,7 +165,7 @@ static void eyerok_boss_act_die(void)
 {
 	if(o->oTimer == 60 * FRAME_RATE_SCALER_INV)
 	{
-		if(obj_update_dialog_with_cutscene(2, 0, CUTSCENE_DIALOG, DIALOG_118))
+		if(s_call_talkdemo(2, 0, CUTSCENE_DIALOG, DIALOG_118))
 		{
 			s_enemyset_star(0.0f, -900.0f, -3700.0f);
 		}
@@ -238,7 +238,7 @@ static s32 eyerok_hand_check_attacked(void)
 static void func_8030DBA8(void)
 {
 	objsound(SOUND_OBJ_POUNDING_LOUD);
-	set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
+	Viewshaking(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 	func_802ADA94();
 }
 
@@ -255,7 +255,7 @@ static void eyerok_hand_act_sleep(void)
 		else
 		{
 			approach_f32_ptr(&o->oPosX, o->oHomeX, 15.0f * FRAME_RATE_SCALER);
-			o->oPosY = o->oHomeY + (200 * o->oBehParams2ndByte + 400) * sins((s16)(absf(o->oPosX - o->oHomeX) / 724.0f * 0x8000));
+			o->oPosY = o->oHomeY + (200 * o->oBehParams2ndByte + 400) * sins((s16)(s_abs_f(o->oPosX - o->oHomeX) / 724.0f * 0x8000));
 			obj_face_yaw_approach(o->oMoveAngleYaw, 400 / FRAME_RATE_SCALER_INV);
 		}
 	}
@@ -270,7 +270,7 @@ static void eyerok_hand_act_sleep(void)
 			o->collisionData = segmented_to_virtual(&ssl_seg7_collision_07028370);
 		}
 
-		func_8029F6F0();
+		s_wait_anime();
 		o->oPosX = o->oHomeX + 724.0f * o->oBehParams2ndByte;
 	}
 }
@@ -461,7 +461,7 @@ static void eyerok_hand_act_die(void)
 	if(func_802F92B0(1))
 	{
 		o->parentObj->oEyerokBossUnk1AC = 0;
-		func_802A3C98(150.0f, 1);
+		s_burn_remove(150.0f, 1);
 		obj_remove_sound(SOUND_OBJ2_EYEROK_SOUND_LONG);
 	}
 
@@ -474,8 +474,8 @@ static void eyerok_hand_act_die(void)
 
 static void eyerok_hand_act_retreat(void)
 {
-	f32 distToHome	= obj_lateral_dist_to_home();
-	s16 angleToHome = obj_angle_to_home();
+	f32 distToHome	= s_calc_enemyscope();
+	s16 angleToHome = s_calc_returnangle();
 
 	if((distToHome -= 40.0f) < 0.0f)
 	{
@@ -501,7 +501,7 @@ static void eyerok_hand_act_retreat(void)
 
 static void eyerok_hand_act_target_mario(void)
 {
-	if(func_8030D284(400) != 0 || o->oPosZ - gMarioObject->oPosZ > 0.0f || o->oPosZ - o->parentObj->oPosZ > 1700.0f || absf(o->oPosX - o->parentObj->oPosX) > 900.0f || (o->oMoveFlags & 0x00000200))
+	if(func_8030D284(400) != 0 || o->oPosZ - gMarioObject->oPosZ > 0.0f || o->oPosZ - o->parentObj->oPosZ > 1700.0f || s_abs_f(o->oPosX - o->parentObj->oPosX) > 900.0f || (o->oMoveFlags & 0x00000200))
 	{
 		o->oForwardVel = 0.0f;
 		if(approach_f32_ptr(&o->oPosY, o->oHomeY + 300.0f, 20.0f * FRAME_RATE_SCALER))
@@ -639,7 +639,7 @@ static void eyerok_hand_act_double_pound(void)
 			}
 			else
 			{
-				o->oForwardVel = 30.0f * absf(o->parentObj->oEyerokBossUnk108);
+				o->oForwardVel = 30.0f * s_abs_f(o->parentObj->oEyerokBossUnk108);
 				o->oVelY       = 100.0f;
 				o->oMoveFlags  = 0;
 			}

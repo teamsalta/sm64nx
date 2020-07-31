@@ -322,7 +322,7 @@ void bhv_goomba_update(void)
 		{
 			animSpeed = 1.0f;
 		}
-		func_8029ED98(0, animSpeed);
+		s_set_skelanime_speed(0, animSpeed);
 
 		switch(o->oAction)
 		{

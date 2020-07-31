@@ -30,7 +30,7 @@ void bhv_grand_star_loop(void)
 	{
 		if(o->oTimer == 0)
 		{
-			set_object_angle(o, 0, 0, 0);
+			s_set_angle(o, 0, 0, 0);
 			o->oAngleVelYaw = 0x400;
 			objsound(SOUND_GENERAL2_STAR_APPEARS);
 		}

@@ -26,7 +26,7 @@ void bhv_thi_tiny_island_top_loop(void)
 				if(playerWorks->status == ACT_GROUND_POUND_LAND)
 				{
 					o->oAction++;
-					obj_spawn_particles(&D_8032F134);
+					s_makeeffect_chiri(&D_8032F134);
 					s_boxeffect(20, 138, 0.3f, 3);
 					objsound(SOUND_GENERAL_ACTIVATE_CAP_SWITCH);
 					s_shape_hide();

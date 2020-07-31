@@ -34,7 +34,7 @@ void func_802F4DB4(void)
 {
 	s16 sp1E = ObjMoveEvent();
 
-	attack_collided_non_mario_object(o);
+	s_fire_hitcheck(o);
 	if(sp1E == 1)
 		objsound(SOUND_GENERAL_BOX_LANDING_2);
 
@@ -105,8 +105,8 @@ void breakable_box_small_idle_loop(void)
 void breakable_box_small_get_dropped(void)
 {
 	s_hitON();
-	obj_enable_rendering();
-	obj_get_dropped();
+	s_shapeON();
+	s_mode_drop();
 	o->header.gfx.node.flags &= ~0x10;
 	o->oHeldState				 = 0;
 	o->oBreakableBoxSmallReleased		 = 1;
@@ -116,8 +116,8 @@ void breakable_box_small_get_dropped(void)
 void breakable_box_small_get_thrown(void)
 {
 	s_hitON();
-	obj_enable_rendering_2();
-	obj_enable_rendering();
+	s_throw_object();
+	s_shapeON();
 	o->header.gfx.node.flags &= ~0x10;
 	o->oHeldState = 0;
 	o->oFlags &= ~0x08;
@@ -137,7 +137,7 @@ void bhv_breakable_box_small_loop(void)
 			break;
 
 		case 1:
-			obj_disable_rendering();
+			s_shapeOFF();
 			s_hitOFF();
 			break;
 

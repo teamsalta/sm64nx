@@ -2,7 +2,7 @@
 const GeoLayout bowser_flames_geo[] = {
    GEO_NODE_START(),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(14, geo_switch_anim_state),
+      GEO_SWITCH_CASE(14, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_TRANSPARENT, flame_seg6_dl_0601C108),
          GEO_DISPLAY_LIST(LAYER_TRANSPARENT, flame_seg6_dl_0601C1A8),

@@ -237,7 +237,7 @@ static struct Object* allocate_object(struct ObjectNode* objList)
 	if(obj == NULL)
 	{
 		// Look for an unimportant object to kick out.
-		struct Object* unimportantObj = find_unimportant_object();
+		struct Object* unimportantObj = s_count_effect();
 
 		// If no unimportant object exists, then the object pool is exhausted.
 		if(unimportantObj == NULL)

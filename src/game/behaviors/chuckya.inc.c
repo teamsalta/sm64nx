@@ -7,7 +7,7 @@ void func_802A8D18(f32 sp28, f32 sp2C, s32 sp30)
 		case 0:
 			break;
 		case 1:
-			func_802A2008(gMarioObject, o);
+			s_copy_mapwork(gMarioObject, o);
 			break;
 		case 2:
 			gMarioObject->oInteractStatus |= (sp30 + INT_STATUS_MARIO_UNK2);
@@ -37,21 +37,21 @@ s32 Unknown802A8EC8(s32 sp20, f32 sp24, f32 sp28, s32 sp2C)
 	s32 sp1C = 0;
 	if(o->oChuckyaUnkF8 != 4)
 	{
-		if(sp24 < obj_lateral_dist_from_mario_to_home())
+		if(sp24 < s_calc_playerscope())
 		{
-			if(obj_lateral_dist_to_home() < 200.0f)
+			if(s_calc_enemyscope() < 200.0f)
 				sp1C = 0;
 			else
 			{
 				sp1C		 = 1;
-				o->oAngleToMario = obj_angle_to_home();
+				o->oAngleToMario = s_calc_returnangle();
 			}
 		}
 		else if(o->oDistanceToMario > sp28)
 		{
 			if((frameCounter / FRAME_RATE_SCALER_INV) % (s16)sp2C == 0)
 			{
-				o->oAngleToMario = angle_to_object(o, gMarioObject);
+				o->oAngleToMario = s_calc_targetangle(o, gMarioObject);
 			}
 
 			sp1C = 2;
@@ -101,12 +101,12 @@ void ActionChuckya0(void)
 	s32 sp28;
 	if(o->oTimer == 0)
 		o->oChuckyaUnkFC = 0;
-	o->oAngleToMario = angle_to_object(o, gMarioObject);
+	o->oAngleToMario = s_calc_targetangle(o, gMarioObject);
 	switch(sp28 = o->oSubAction)
 	{
 		case 0:
 			o->oForwardVel = 0;
-			if(obj_lateral_dist_from_mario_to_home() < 2000.0f)
+			if(s_calc_playerscope() < 2000.0f)
 			{
 				s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 
@@ -122,7 +122,7 @@ void ActionChuckya0(void)
 			if(s_calc_dangle(o->oMoveAngleYaw, o->oAngleToMario) > 0x4000)
 				o->oSubAction = 2;
 
-			if(obj_lateral_dist_from_mario_to_home() > 2000.0f)
+			if(s_calc_playerscope() > 2000.0f)
 				o->oSubAction = 3;
 
 			break;
@@ -133,15 +133,15 @@ void ActionChuckya0(void)
 				o->oSubAction = 0;
 			break;
 		case 3:
-			if(obj_lateral_dist_to_home() < 500.0f)
+			if(s_calc_enemyscope() < 500.0f)
 				o->oForwardVel = 0;
 			else
 			{
 				lerp(&o->oForwardVel, 10.0f, 4.0f * FRAME_RATE_SCALER);
-				o->oAngleToMario = obj_angle_to_home();
+				o->oAngleToMario = s_calc_returnangle();
 				s_chase_angleY(o->oAngleToMario, 0x800 / FRAME_RATE_SCALER_INV);
 			}
-			if(obj_lateral_dist_from_mario_to_home() < 1900.0f)
+			if(s_calc_playerscope() < 1900.0f)
 				o->oSubAction = 0;
 			break;
 	}
@@ -168,7 +168,7 @@ void ActionChuckya1(void)
 	{
 		if(o->oSubAction == 1)
 		{
-			o->oChuckyaUnk100 += player_performed_grab_escape_action();
+			o->oChuckyaUnk100 += key_gacha();
 
 			if(o->oChuckyaUnk100 > 10)
 			{
@@ -217,8 +217,8 @@ void ActionChuckya2(void)
 	if(o->oMoveFlags & (0x200 | 0x40 | 0x20 | 0x10 | 0x8 | 0x1))
 	{
 		s_remove_obj(o);
-		spawn_object_loot_yellow_coins(o, 5, 20.0f);
-		func_802A3034(SOUND_OBJ_CHUCKYA_DEATH);
+		s_makecoin(o, 5, 20.0f);
+		s_kemuri_sound(SOUND_OBJ_CHUCKYA_DEATH);
 	}
 }
 

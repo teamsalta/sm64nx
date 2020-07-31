@@ -151,12 +151,12 @@ static s16 obj_get_pitch_from_vel(void)
  */
 static s32 obj_update_race_proposition_dialog(s16 dialogID)
 {
-	s32 dialogResponse = obj_update_dialog_with_cutscene(2, DIALOG_UNK2_FLAG_0 | DIALOG_UNK2_LEAVE_TIME_STOP_ENABLED, CUTSCENE_RACE_DIALOG, dialogID);
+	s32 dialogResponse = s_call_talkdemo(2, DIALOG_UNK2_FLAG_0 | DIALOG_UNK2_LEAVE_TIME_STOP_ENABLED, CUTSCENE_RACE_DIALOG, dialogID);
 
 	if(dialogResponse == 2)
 	{
 		CtrlPlayerDialog(0);
-		disable_time_stop_including_mario();
+		s_demoend();
 	}
 
 	return dialogResponse;
@@ -382,7 +382,7 @@ static void obj_rotate_yaw_and_bounce_off_walls(s16 targetYaw, s16 turnAmount)
 {
 	if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
 	{
-		targetYaw = obj_reflect_move_angle_off_wall();
+		targetYaw = s_wall_rebound();
 	}
 	s_chase_angleY(targetYaw, turnAmount);
 }
@@ -454,7 +454,7 @@ static s32 func_802F92EC(s32 arg0, s32 arg1)
 
 static s32 func_802F932C(s32 arg0)
 {
-	if(func_8029F828())
+	if(s_check_animeend_2())
 	{
 		s_set_skelanimeNo(arg0);
 		return TRUE;
@@ -471,7 +471,7 @@ static s32 func_802F9378(s8 arg0, s8 arg1, u32 sound)
 		val04 = 1;
 	}
 
-	if(obj_check_anim_frame_in_range(arg0, val04) || obj_check_anim_frame_in_range(arg1, val04))
+	if(s_check_animenumber_speed(arg0, val04) || s_check_animenumber_speed(arg1, val04))
 	{
 		objsound(sound);
 		return TRUE;
@@ -520,7 +520,7 @@ static s32 obj_y_vel_approach(f32 target, f32 delta)
 
 static s32 obj_move_pitch_approach(s16 target, s16 delta)
 {
-	o->oMoveAnglePitch = approach_s16_symmetric(o->oMoveAnglePitch, target, delta);
+	o->oMoveAnglePitch = s_chase_angle(o->oMoveAnglePitch, target, delta);
 
 	if((s16)o->oMoveAnglePitch == target)
 	{
@@ -532,7 +532,7 @@ static s32 obj_move_pitch_approach(s16 target, s16 delta)
 
 static s32 obj_face_pitch_approach(s16 targetPitch, s16 deltaPitch)
 {
-	o->oFaceAnglePitch = approach_s16_symmetric(o->oFaceAnglePitch, targetPitch, deltaPitch);
+	o->oFaceAnglePitch = s_chase_angle(o->oFaceAnglePitch, targetPitch, deltaPitch);
 
 	if((s16)o->oFaceAnglePitch == targetPitch)
 	{
@@ -544,7 +544,7 @@ static s32 obj_face_pitch_approach(s16 targetPitch, s16 deltaPitch)
 
 static s32 obj_face_yaw_approach(s16 targetYaw, s16 deltaYaw)
 {
-	o->oFaceAngleYaw = approach_s16_symmetric(o->oFaceAngleYaw, targetYaw, deltaYaw);
+	o->oFaceAngleYaw = s_chase_angle(o->oFaceAngleYaw, targetYaw, deltaYaw);
 
 	if((s16)o->oFaceAngleYaw == targetYaw)
 	{
@@ -556,7 +556,7 @@ static s32 obj_face_yaw_approach(s16 targetYaw, s16 deltaYaw)
 
 static s32 obj_face_roll_approach(s16 targetRoll, s16 deltaRoll)
 {
-	o->oFaceAngleRoll = approach_s16_symmetric(o->oFaceAngleRoll, targetRoll, deltaRoll);
+	o->oFaceAngleRoll = s_chase_angle(o->oFaceAngleRoll, targetRoll, deltaRoll);
 
 	if((s16)o->oFaceAngleRoll == targetRoll)
 	{
@@ -571,12 +571,12 @@ static s32 obj_smooth_turn(s16* angleVel, s32* angle, s16 targetAngle, f32 targe
 	s16 currentSpeed;
 	s16 currentAngle = (s16)(*angle);
 
-	*angleVel = approach_s16_symmetric(*angleVel, (targetAngle - currentAngle) * targetSpeedProportion, accel);
+	*angleVel = s_chase_angle(*angleVel, (targetAngle - currentAngle) * targetSpeedProportion, accel);
 
-	currentSpeed = absi(*angleVel);
+	currentSpeed = s_abs_d(*angleVel);
 	clamp_s16(&currentSpeed, minSpeed, maxSpeed);
 
-	*angle = approach_s16_symmetric(*angle, targetAngle, currentSpeed);
+	*angle = s_chase_angle(*angle, targetAngle, currentSpeed);
 	return (s16)(*angle) == targetAngle;
 }
 
@@ -739,7 +739,7 @@ static s32 obj_bounce_off_walls_edges_objects(s32* targetYaw)
 {
 	if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
 	{
-		*targetYaw = obj_reflect_move_angle_off_wall();
+		*targetYaw = s_wall_rebound();
 	}
 	else if(o->oMoveFlags & OBJ_MOVE_HIT_EDGE)
 	{
@@ -773,11 +773,11 @@ static void obj_die_if_health_non_positive(void)
 	{
 		if(o->oDeathSound == 0)
 		{
-			func_802A3034(SOUND_OBJ_DEFAULT_DEATH);
+			s_kemuri_sound(SOUND_OBJ_DEFAULT_DEATH);
 		}
 		else if(o->oDeathSound > 0)
 		{
-			func_802A3034(o->oDeathSound);
+			s_kemuri_sound(o->oDeathSound);
 		}
 		else
 		{
@@ -790,10 +790,10 @@ static void obj_die_if_health_non_positive(void)
 		}
 		else
 		{
-			spawn_object_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+			s_makecoin(o, o->oNumLootCoins, 20.0f);
 		}
 		// This doesn't do anything
-		spawn_object_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+		s_makecoin(o, o->oNumLootCoins, 20.0f);
 
 		if(o->oHealth < 0)
 		{
@@ -832,7 +832,7 @@ static void obj_set_knockback_action(s32 attackType)
 	}
 
 	o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
-	o->oMoveAngleYaw = angle_to_object(gMarioObject, o);
+	o->oMoveAngleYaw = s_calc_targetangle(gMarioObject, o);
 }
 
 static void obj_set_squished_action(void)
@@ -1171,7 +1171,7 @@ void obj_spit_bouncing_fire(s16 relativePosX, s16 relativePosY, s16 relativePosZ
 		obj->oSmallPiranhaFlameModel	    = model;
 		obj->oBouncingFireBallFlameDuration = 3000;
 
-		make_object_tangible(obj);
+		s_hitON_obj(obj);
 
 		/*obj->oSmallPiranhaFlameStartSpeed = startSpeed;
 		obj->oSmallPiranhaFlameEndSpeed = endSpeed;

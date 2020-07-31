@@ -9,7 +9,7 @@ namespace sm64
 	class Players
 	{
 		public:
-		static const u32 MAX_PLAYERS = 8;
+		static const u32 MAX_PLAYERS = 1;
 
 		Players();
 		const u64 size() const;

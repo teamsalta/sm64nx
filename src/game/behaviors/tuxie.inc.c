@@ -5,7 +5,7 @@ s32 func_802BE2E8(s16 a0, s16 a1, s32 a2)
 	f32 sp1C;
 	if((sp1C = o->header.gfx.unk38.animAccel / (f32)0x10000) == 0)
 		sp1C = 1.0f;
-	if(obj_check_anim_frame_in_range(a0, sp1C) || obj_check_anim_frame_in_range(a1, sp1C))
+	if(s_check_animenumber_speed(a0, sp1C) || s_check_animenumber_speed(a1, sp1C))
 	{
 		objsound(a2);
 		return 1;
@@ -32,13 +32,13 @@ void ActionTuxiesMother2(void)
 	UNUSED s32 unused;
 	struct Object* sp1C = s_search_nearobject(sm64::bhv::bhvSmallPenguin(), &sp24);
 	UNUSED s32 unused2;
-	if(obj_find_nearby_held_actor(sm64::bhv::bhvUnused20E0(), 1000.0f) != NULL)
+	if(s_search_catch_enemy(sm64::bhv::bhvUnused20E0(), 1000.0f) != NULL)
 	{
 		if(o->oSubAction == 0)
 		{
 			s_set_skelanimeNo(0);
 			o->oForwardVel = 10.0f;
-			if(800.0f < obj_lateral_dist_from_mario_to_home())
+			if(800.0f < s_calc_playerscope())
 				o->oSubAction = 1;
 			s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 		}
@@ -46,7 +46,7 @@ void ActionTuxiesMother2(void)
 		{
 			o->oForwardVel = 0.0f;
 			s_set_skelanimeNo(3);
-			if(obj_lateral_dist_from_mario_to_home() < 700.0f)
+			if(s_calc_playerscope() < 700.0f)
 				o->oSubAction = 0;
 		}
 	}
@@ -80,7 +80,7 @@ void ActionTuxiesMother1(void)
 					dialogID = DIALOG_058;
 				else
 					dialogID = DIALOG_059;
-				if(obj_update_dialog_with_cutscene(2, 1, CUTSCENE_DIALOG, dialogID))
+				if(s_call_talkdemo(2, 1, CUTSCENE_DIALOG, dialogID))
 				{
 					if(dialogID == DIALOG_058)
 						o->oSubAction = 1;
@@ -104,8 +104,8 @@ void ActionTuxiesMother1(void)
 				// which has no effect as o->prevObj->oUnknownUnk88 is always 0
 				// or 1, which is not affected by the bitwise AND.
 				o->prevObj->OBJECT_FIELD_S32(o->oInteractionSubtype) &= ~INT_SUBTYPE_DROP_IMMEDIATELY;
-				set_object_behavior(o->prevObj, sm64::bhv::bhvUnused20E0());
-				obj_spawn_star_at_y_offset(3167.0f, -4300.0f, 5108.0f, 200.0f);
+				s_rename_pathname(o->prevObj, sm64::bhv::bhvUnused20E0());
+				sv2_enemyset_star(3167.0f, -4300.0f, 5108.0f, 200.0f);
 				o->oAction = 2;
 			}
 			break;
@@ -114,7 +114,7 @@ void ActionTuxiesMother1(void)
 			{
 				//! Same bug as above
 				o->prevObj->OBJECT_FIELD_S32(o->oInteractionSubtype) &= ~INT_SUBTYPE_DROP_IMMEDIATELY;
-				set_object_behavior(o->prevObj, sm64::bhv::bhvPenguinBaby());
+				s_rename_pathname(o->prevObj, sm64::bhv::bhvPenguinBaby());
 				o->oAction = 2;
 			}
 			break;
@@ -143,12 +143,12 @@ void ActionTuxiesMother0(void)
 		switch(o->oSubAction)
 		{
 			case 0:
-				if(obj_is_mario_in_range_and_ready_to_speak(300.0f, 100.0f))
+				if(s_hitcheck_message(300.0f, 100.0f))
 					if(sp2C == 0)
 						o->oSubAction++;
 				break;
 			case 1:
-				if(obj_update_dialog_with_cutscene(2, 1, CUTSCENE_DIALOG, DIALOG_057))
+				if(s_call_talkdemo(2, 1, CUTSCENE_DIALOG, DIALOG_057))
 					o->oSubAction++;
 				break;
 			case 2:
@@ -175,7 +175,7 @@ void bhv_tuxies_mother_loop(void)
 
 void func_802BEA58(void)
 {
-	if(mario_is_dive_sliding())
+	if(s_check_playercatch())
 	{
 		o->oSmallPenguinUnk100 = o->oAction;
 		o->oAction	       = 3;
@@ -186,7 +186,7 @@ void ActionSmallPenguin2(void)
 {
 	s32 sp1C = 0;
 	if(o->oTimer == 0)
-		if(obj_dist_to_nearest_object_with_behavior(sm64::bhv::bhvTuxiesMother()) < 1000.0f)
+		if(s_distance_nearobj(sm64::bhv::bhvTuxiesMother()) < 1000.0f)
 			sp1C = 1;
 	s_set_skelanimeNo(0);
 	o->oForwardVel = o->oSmallPenguinUnk104 + 3.0f;
@@ -218,7 +218,7 @@ void ActionSmallPenguin3(void)
 			objsound(SOUND_OBJ_BABY_PENGUIN_DIVE);
 		s_set_skelanimeNo(1);
 		if(o->oTimer > 25 * FRAME_RATE_SCALER_INV)
-			if(!mario_is_dive_sliding())
+			if(!s_check_playercatch())
 				o->oAction = 4;
 	}
 }
@@ -246,7 +246,7 @@ void ActionSmallPenguin0(void)
 		o->oSmallPenguinUnk108 = Randomf() * 100.0f;
 		o->oSmallPenguinUnk104 = Randomf();
 		o->oForwardVel	       = 0.0f;
-		if(obj_dist_to_nearest_object_with_behavior(sm64::bhv::bhvTuxiesMother()) < 1000.0f)
+		if(s_distance_nearobj(sm64::bhv::bhvTuxiesMother()) < 1000.0f)
 			sp1C = 1;
 	}
 	if(o->oDistanceToMario < 1000.0f && o->oSmallPenguinUnk108 + 600.0f < o->oDistanceToMario)
@@ -255,8 +255,8 @@ void ActionSmallPenguin0(void)
 		o->oAction = 2;
 	if(sp1C)
 		o->oAction = 5;
-	if(obj_mario_far_away())
-		obj_set_pos_to_home();
+	if(s_enemy_areaout())
+		s_copy_initpos();
 }
 
 void ActionSmallPenguin5(void)
@@ -270,8 +270,8 @@ void ActionSmallPenguin5(void)
 			o->oForwardVel = 2.0f;
 		else
 			o->oForwardVel = 0.0f;
-		sp24 = dist_between_objects(o, sp1C);
-		sp22 = angle_to_object(o, sp1C);
+		sp24 = s_distance_obj2obj(o, sp1C);
+		sp22 = s_calc_targetangle(o, sp1C);
 		if(sp24 > 200.0f)
 			s_chase_angleY(sp22, 0x400 / FRAME_RATE_SCALER_INV);
 		else
@@ -305,9 +305,9 @@ void bhv_small_penguin_loop(void)
 			break;
 		case HELD_HELD:
 			s_mode_catch(0, 0);
-			if(obj_has_behavior(sm64::bhv::bhvPenguinBaby()))
-				set_object_behavior(o, sm64::bhv::bhvSmallPenguin());
-			copy_object_pos(o, gMarioObject);
+			if(s_check_pathname(sm64::bhv::bhvPenguinBaby()))
+				s_rename_pathname(o, sm64::bhv::bhvSmallPenguin());
+			s_copy_worldXYZ(o, gMarioObject);
 			if(frameCounter % (30 * FRAME_RATE_SCALER_INV) == 0)
 				AudStartSound(SOUND_OBJ2_BABY_PENGUIN_YELL, gMarioObject->header.gfx.cameraToObject);
 			break;
@@ -315,7 +315,7 @@ void bhv_small_penguin_loop(void)
 			s_mode_throw(0, 0, 0);
 			break;
 		case HELD_DROPPED:
-			obj_get_dropped();
+			s_mode_drop();
 			break;
 	}
 }

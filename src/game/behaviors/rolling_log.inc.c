@@ -112,7 +112,7 @@ void func_802F2820(void)
 		o->oRollingLogUnkF4 = 0;
 		o->oAction	    = 2;
 		objsound(SOUND_GENERAL_BIG_POUND);
-		set_camera_shake_from_point(SHAKE_POS_LARGE, o->oPosX, o->oPosY, o->oPosZ);
+		Viewshaking(SHAKE_POS_LARGE, o->oPosX, o->oPosY, o->oPosZ);
 	}
 }
 

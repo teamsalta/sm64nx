@@ -8,7 +8,7 @@ const GeoLayout ukiki_geo[] = {
          GEO_OPEN_NODE(),
             GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 99, -11, NULL),
             GEO_OPEN_NODE(),
-               GEO_SWITCH_CASE(4, geo_switch_anim_state),
+               GEO_SWITCH_CASE(4, ControlShapeAnime),
                GEO_OPEN_NODE(),
                   GEO_NODE_START(),
                   GEO_OPEN_NODE(),

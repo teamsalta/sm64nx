@@ -46,7 +46,7 @@ void update_mario_platform(void)
 	marioZ	    = gMarioObject->oPosZ;
 	floorHeight = mcBGGroundCheck(marioX, marioY, marioZ, &floor);
 
-	if(absf(marioY - floorHeight) < 4.0f)
+	if(s_abs_f(marioY - floorHeight) < 4.0f)
 	{
 		awayFromFloor = 0;
 	}
@@ -154,14 +154,14 @@ void matrix_offset(u32 isMario, struct Object* platform)
 		rotation[2] = (s16)platform->oFaceAngleRoll - rotation[2];
 
 		mtxf_rotate_zxy_and_translate(displaceMatrix, currentObjectOffset, rotation);
-		linear_mtxf_transpose_mul_vec3f(displaceMatrix, relativeOffset, currentObjectOffset);
+		stBackPoint(displaceMatrix, relativeOffset, currentObjectOffset);
 
 		rotation[0] = platform->oFaceAnglePitch;
 		rotation[1] = platform->oFaceAngleYaw;
 		rotation[2] = platform->oFaceAngleRoll;
 
 		mtxf_rotate_zxy_and_translate(displaceMatrix, currentObjectOffset, rotation);
-		linear_mtxf_mul_vec3f(displaceMatrix, newObjectOffset, relativeOffset);
+		stRotatePoint(displaceMatrix, newObjectOffset, relativeOffset);
 
 		x = platformPosX + newObjectOffset[0];
 		y = platformPosY + newObjectOffset[1];

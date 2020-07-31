@@ -41,7 +41,7 @@ void bhv_ttc_treadmill_init(void)
 }
 
 /**
- * Update function for bhvTTCTreadmill. It calls obj_compute_vel_xz afterward.
+ * Update function for bhvTTCTreadmill. It calls s_calcobj_speedF afterward.
  */
 void bhv_ttc_treadmill_update(void)
 {

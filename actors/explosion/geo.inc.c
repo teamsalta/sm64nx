@@ -2,7 +2,7 @@
 const GeoLayout explosion_geo[] = {
    GEO_NODE_START(),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(9, geo_switch_anim_state),
+      GEO_SWITCH_CASE(9, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_TRANSPARENT, explosion_seg3_dl_03004298),
          GEO_DISPLAY_LIST(LAYER_TRANSPARENT, explosion_seg3_dl_03004298),

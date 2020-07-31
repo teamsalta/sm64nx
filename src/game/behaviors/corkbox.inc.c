@@ -10,7 +10,7 @@ void bhv_bobomb_bully_death_smoke_init(void)
 
 void bhv_bobomb_explosion_bubble_init(void)
 {
-	scale_object_xyz(o, 2.0f, 2.0f, 1.0f);
+	stSetScale(o, 2.0f, 2.0f, 1.0f);
 
 	o->oBobombExpBubGfxExpRateX = (s32)(Randomf() * 2048.0f) + 0x800;
 	o->oBobombExpBubGfxExpRateY = (s32)(Randomf() * 2048.0f) + 0x800;

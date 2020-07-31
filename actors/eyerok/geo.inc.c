@@ -70,7 +70,7 @@ const GeoLayout eyerok_geo_0002AC[] = {
          GEO_CLOSE_NODE(),
          GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, eyerok_seg5_dl_0500C908),
          GEO_OPEN_NODE(),
-            GEO_SWITCH_CASE(4, geo_switch_anim_state),
+            GEO_SWITCH_CASE(4, ControlShapeAnime),
             GEO_OPEN_NODE(),
                GEO_DISPLAY_LIST(LAYER_ALPHA, eyerok_seg5_dl_0500C9B8),
                GEO_DISPLAY_LIST(LAYER_ALPHA, eyerok_seg5_dl_0500CA50),

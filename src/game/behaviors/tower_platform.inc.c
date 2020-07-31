@@ -75,7 +75,7 @@ void bhv_wf_sliding_tower_platform_loop(void)
 			o->oForwardVel = o->oPlatformCurrentVel;
 			break;
 	}
-	obj_compute_vel_xz();
+	s_calcobj_speedF();
 
 	o->oPosX += o->oVelX * FRAME_RATE_SCALER;
 	o->oPosZ += o->oVelZ * FRAME_RATE_SCALER;
@@ -128,7 +128,7 @@ void func_802AFAFC(void)
 void bhv_tower_platform_group_loop(void)
 {
 	f32 marioY	    = gMarioObject->oPosY;
-	o->oDistanceToMario = dist_between_objects(o, gMarioObject);
+	o->oDistanceToMario = s_distance_obj2obj(o, gMarioObject);
 	switch(o->oAction)
 	{
 		case 0:

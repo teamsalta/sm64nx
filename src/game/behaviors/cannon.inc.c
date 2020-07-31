@@ -17,13 +17,13 @@ void ActionOpenedCannon0(void)
 		o->oMoveAngleYaw   = (s16)(o->oBehParams2ndByte << 8);
 		o->oCannonUnkF4	   = 0;
 		o->oCannonUnk10C   = 0;
-		obj_enable_rendering();
+		s_shapeON();
 		s_hitON();
 	}
 	if(o->oDistanceToMario < 500.0f)
 	{
 		s_hitON();
-		obj_enable_rendering();
+		s_shapeON();
 		if(o->oInteractStatus & INT_STATUS_INTERACTED && (!(o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB))) // bob-omb explodes when it gets into a cannon
 		{
 			o->oAction	 = 4;
@@ -36,7 +36,7 @@ void ActionOpenedCannon0(void)
 	else
 	{
 		s_hitOFF();
-		obj_disable_rendering();
+		s_shapeOFF();
 		o->oCannonUnk10C = 0;
 	}
 }
@@ -116,7 +116,7 @@ void ActionOpenedCannon1(void)
 {
 	UNUSED s32 unused;
 	s_hitOFF();
-	obj_disable_rendering();
+	s_shapeOFF();
 	o->oCannonUnk10C     = 0;
 	gMarioShotFromCannon = 1;
 }
@@ -150,11 +150,11 @@ void bhv_cannon_barrel_loop(void)
 	struct Object* parent = o->parentObj;
 	if(parent->header.gfx.node.flags & GRAPH_RENDER_ACTIVE)
 	{
-		obj_enable_rendering();
-		copy_object_pos(o, o->parentObj);
+		s_shapeON();
+		s_copy_worldXYZ(o, o->parentObj);
 		o->oMoveAngleYaw   = o->parentObj->oMoveAngleYaw;
 		o->oFaceAnglePitch = o->parentObj->oMoveAnglePitch;
 	}
 	else
-		obj_disable_rendering();
+		s_shapeOFF();
 }

@@ -93,7 +93,7 @@ void bhv_wiggler_body_part_update(void)
 		//  the floor
 		o->oPosY += -30.0f * FRAME_RATE_SCALER;
 
-		obj_update_floor_height();
+		s_groundcheck();
 		if(o->oFloorHeight > o->oPosY) // TODO: Check ineq swap
 		{
 			o->oPosY = o->oFloorHeight;
@@ -103,10 +103,10 @@ void bhv_wiggler_body_part_update(void)
 	segment->posY = o->oPosY;
 
 	// Inherit walking animation speed from wiggler
-	func_8029ED98(0, o->parentObj->oWigglerWalkAnimSpeed);
+	s_set_skelanime_speed(0, o->parentObj->oWigglerWalkAnimSpeed);
 	if(o->parentObj->oWigglerWalkAnimSpeed == 0.0f)
 	{
-		func_8029F6F0();
+		s_wait_anime();
 	}
 
 	if(o->parentObj->oAction == WIGGLER_ACT_SHRINK)
@@ -138,7 +138,7 @@ static void wiggler_init_segments(void)
 		o->oWigglerSegments = segments;
 		for(i = 0; i <= 3; i++)
 		{
-			chain_segment_init(&segments[i]);
+			s_clear_delayrecord(&segments[i]);
 
 			segments[i].posX = o->oPosX;
 			segments[i].posY = o->oPosY;
@@ -156,7 +156,7 @@ static void wiggler_init_segments(void)
 			bodyPart = s_makeobj_chain(i, 0, 0, 0, o, MODEL_WIGGLER_BODY, sm64::bhv::bhvWigglerBody());
 			if(bodyPart != NULL)
 			{
-				func_8029EE20(bodyPart, (Animation**)wiggler_seg5_anims_0500C874, 0);
+				s_set_skeletonobj(bodyPart, (Animation**)wiggler_seg5_anims_0500C874, 0);
 				bodyPart->header.gfx.unk38.setFrameRaw((23 * i) % 26 - 1);
 			}
 		}
@@ -241,7 +241,7 @@ static void wiggler_act_walk(void)
 
 		// If Mario is positioned below the wiggler, assume he entered through the
 		// lower cave entrance, so don't display text.
-		if(gMarioObject->oPosY < o->oPosY || obj_update_dialog_with_cutscene(2, 0, CUTSCENE_DIALOG, DIALOG_150) != 0)
+		if(gMarioObject->oPosY < o->oPosY || s_call_talkdemo(2, 0, CUTSCENE_DIALOG, DIALOG_150) != 0)
 		{
 			o->oWigglerTextStatus = WIGGLER_TEXT_STATUS_COMPLETED_DIALOG;
 		}
@@ -343,7 +343,7 @@ static void wiggler_act_jumped_on(void)
 	{
 		if(o->oTimer > 30 * FRAME_RATE_SCALER_INV)
 		{
-			if(obj_update_dialog_with_cutscene(2, 0, CUTSCENE_DIALOG, attackText[o->oHealth - 2]) != 0)
+			if(s_call_talkdemo(2, 0, CUTSCENE_DIALOG, attackText[o->oHealth - 2]) != 0)
 			{
 				// Because we don't want the wiggler to disappear after being
 				// defeated, we leave its health at 1
@@ -484,14 +484,14 @@ void bhv_wiggler_update(void)
 			treat_far_home_as_mario(1200.0f);
 
 			// Walking animation and sound
-			func_8029ED98(0, o->oWigglerWalkAnimSpeed);
+			s_set_skelanime_speed(0, o->oWigglerWalkAnimSpeed);
 			if(o->oWigglerWalkAnimSpeed != 0.0f)
 			{
 				func_802F9378(0, 13, o->oHealth >= 4 ? SOUND_OBJ_WIGGLER_LOW_PITCH : SOUND_OBJ_WIGGLER_HIGH_PITCH);
 			}
 			else
 			{
-				func_8029F6F0();
+				s_wait_anime();
 			}
 
 			s_enemybgcheck();

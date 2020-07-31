@@ -3,6 +3,7 @@
 #include "keyboard.h"
 #include "sdl.h"
 #include <stdexcept>
+#include "game/options.h"
 
 namespace sm64::hid
 {

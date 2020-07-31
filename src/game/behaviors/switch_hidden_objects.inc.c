@@ -41,7 +41,7 @@ void func_802B0F54(void)
 
 	if(o->oAction == 0)
 	{
-		obj_disable_rendering();
+		s_shapeOFF();
 		s_hitOFF();
 
 		if(o->oTimer == 0)
@@ -59,7 +59,7 @@ void func_802B0F54(void)
 			if(purpleSwitch->oAction == PURPLE_SWITCH_TICKING)
 			{
 				o->oAction++;
-				obj_enable_rendering();
+				s_shapeON();
 				s_shape_disp();
 			}
 		}
@@ -68,7 +68,7 @@ void func_802B0F54(void)
 	{
 		s_hitON();
 
-		if(obj_wait_then_blink(360 * FRAME_RATE_SCALER_INV, 20))
+		if(s_flash_shape(360 * FRAME_RATE_SCALER_INV, 20))
 		{
 			o->oAction = 0;
 		}
@@ -85,7 +85,7 @@ void func_802B0F54(void)
 	else
 	{
 		s_hitOFF();
-		obj_disable_rendering();
+		s_shapeOFF();
 		o->oInteractStatus = 0;
 		if((purpleSwitch = o->oPurpleSwitch) != NULL)
 		{
@@ -99,11 +99,11 @@ void func_802B1138(void)
 {
 	struct Object* purpleSwitch;
 
-	set_object_collision_data(o, wdw_seg7_collision_07018528);
+	s_set_shapeinfo(o, wdw_seg7_collision_07018528);
 
 	if(o->oAction == 0)
 	{
-		obj_disable_rendering();
+		s_shapeOFF();
 		s_hitOFF();
 
 		if(o->oPurpleSwitch == NULL)
@@ -116,7 +116,7 @@ void func_802B1138(void)
 			if(purpleSwitch->oAction == 2)
 			{
 				o->oAction++;
-				obj_enable_rendering();
+				s_shapeON();
 				s_shape_disp();
 			}
 		}
@@ -125,7 +125,7 @@ void func_802B1138(void)
 	{
 		s_hitON();
 
-		if(obj_wait_then_blink(360 * FRAME_RATE_SCALER_INV, 20))
+		if(s_flash_shape(360 * FRAME_RATE_SCALER_INV, 20))
 		{
 			o->oAction = 0;
 		}

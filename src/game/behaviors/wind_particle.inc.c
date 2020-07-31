@@ -22,10 +22,10 @@ void bhv_white_wind_particle_loop(void)
 	if(o->oTimer == 0)
 	{
 		o->oWhiteWindParticleUnkF4 = s_find_obj(sm64::bhv::bhvWalkingPenguin());
-		translate_object_xyz_random(o, 100.0f);
+		s_random_XYZ_offset(o, 100.0f);
 		o->oForwardVel = coss(o->oMoveAnglePitch) * 100.0f;
 		o->oVelY       = sins(o->oMoveAnglePitch) * -100.0f;
-		o->oMoveAngleYaw += random_f32_around_zero(o->oBehParams2ndByte * 500 / FRAME_RATE_SCALER_INV);
+		o->oMoveAngleYaw += s_random_f(o->oBehParams2ndByte * 500 / FRAME_RATE_SCALER_INV);
 		o->oOpacity = 100;
 	}
 	s_optionmove_F();

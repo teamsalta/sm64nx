@@ -176,7 +176,7 @@ const GeoLayout castle_geo_001858[] = {
          GEO_OPEN_NODE(),
             GEO_CAMERA(4, 0, 2000, 6000, 0, 0, 0, geo_camera_main),
             GEO_OPEN_NODE(),
-               GEO_SWITCH_CASE(11, geo_switch_area),
+               GEO_SWITCH_CASE(11, ControlSwitchMap),
                GEO_OPEN_NODE(),
                   GEO_BRANCH(1, castle_geo_001560), // 0x0E001560
                   GEO_BRANCH(1, castle_geo_001578), // 0x0E001578

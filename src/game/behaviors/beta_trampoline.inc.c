@@ -22,7 +22,7 @@ void bhv_beta_trampoline_spring_loop(void)
 
 	// Update to be 75 units under the trampoline top
 	s_copy_worldXYZ_angleXYZ(o, o->parentObj);
-	copy_object_graph_y_offset(o, o->parentObj);
+	s_copy_animeposY(o, o->parentObj);
 	o->oPosY -= 75.0f;
 
 	// If the trampoline top is above its original position,
@@ -46,7 +46,7 @@ void bhv_beta_trampoline_spring_loop(void)
 	}
 
 	// Scale the spring
-	scale_object_xyz(o, 1.0f, yScale, 1.0f);
+	stSetScale(o, 1.0f, yScale, 1.0f);
 }
 
 /**

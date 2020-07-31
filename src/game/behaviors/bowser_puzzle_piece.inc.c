@@ -151,7 +151,7 @@ void bhv_lll_bowser_puzzle_piece_update(void)
 	if(o->oBowserPuzzlePieceContinuePerformingAction == 0)
 	{
 		// Start doing the next action.
-		obj_change_action(*nextAction);
+		s_set_newmode(*nextAction);
 
 		// Advance the pointer to the next action.
 		nextAction++;
@@ -197,7 +197,7 @@ void bhv_lll_bowser_puzzle_piece_move(f32 xOffset, f32 zOffset, s32 duration, UN
 		else
 		{
 			// This doesn't actually accomplish anything since
-			//   obj_change_action is going to be called before the
+			//   s_set_newmode is going to be called before the
 			//   next action is performed anyway.
 			o->oAction = 2;
 

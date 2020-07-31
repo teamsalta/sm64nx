@@ -98,7 +98,7 @@ s32 PlayerRecord::check_fall_damage(u32 hardFallAction)
 			if(fallHeight > 3000.0f)
 			{
 				this->hurtCounter += (this->flags & MARIO_CAP_ON_HEAD) ? 16 : 24;
-				set_camera_shake_from_hit(SHAKE_FALL_DAMAGE);
+				Vieweffect(SHAKE_FALL_DAMAGE);
 				AudStartSound(SOUND_MARIO_ATTACKED, this->marioObj->header.gfx.cameraToObject);
 				SendMotorEvent(5, 80);
 				return this->drop_and_set_mario_action(hardFallAction, 4);
@@ -107,7 +107,7 @@ s32 PlayerRecord::check_fall_damage(u32 hardFallAction)
 			{
 				this->hurtCounter += (this->flags & MARIO_CAP_ON_HEAD) ? 8 : 12;
 				this->squishTimer = 30 * FRAME_RATE_SCALER_INV;
-				set_camera_shake_from_hit(SHAKE_FALL_DAMAGE);
+				Vieweffect(SHAKE_FALL_DAMAGE);
 				AudStartSound(SOUND_MARIO_ATTACKED, this->marioObj->header.gfx.cameraToObject);
 				SendMotorEvent(5, 80);
 			}
@@ -1126,7 +1126,7 @@ s32 PlayerRecord::act_ground_pound()
 					this->ChangePlayerStatus(ACT_GROUND_POUND_LAND, 0);
 				}
 			}
-			set_camera_shake_from_hit(SHAKE_GROUND_POUND);
+			Vieweffect(SHAKE_GROUND_POUND);
 		}
 		else if(stepResult == AIR_STEP_HIT_WALL)
 		{

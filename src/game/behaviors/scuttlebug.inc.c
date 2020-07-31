@@ -32,7 +32,7 @@ void bhv_scuttlebug_loop(void)
 	UNUSED s32 unused;
 	f32 sp18;
 	s_enemybgcheck();
-	if(o->oSubAction != 0 && obj_set_hitbox_and_die_if_attacked(&sScuttlebugHitbox, SOUND_OBJ_DYING_ENEMY1, o->oScuttlebugUnkF4))
+	if(o->oSubAction != 0 && s_hit_remove_enemy(&sScuttlebugHitbox, SOUND_OBJ_DYING_ENEMY1, o->oScuttlebugUnkF4))
 		o->oSubAction = 3;
 	if(o->oSubAction != 1)
 		o->oScuttlebugUnkF8 = 0;
@@ -51,14 +51,14 @@ void bhv_scuttlebug_loop(void)
 			break;
 		case 1:
 			o->oForwardVel = 5.0f;
-			if(obj_lateral_dist_from_mario_to_home() > 1000.0f)
-				o->oAngleToMario = obj_angle_to_home();
+			if(s_calc_playerscope() > 1000.0f)
+				o->oAngleToMario = s_calc_returnangle();
 			else
 			{
 				if(o->oScuttlebugUnkF8 == 0)
 				{
 					o->oScuttlebugUnkFC = 0;
-					o->oAngleToMario    = angle_to_object(o, gMarioObject);
+					o->oAngleToMario    = s_calc_targetangle(o, gMarioObject);
 					if(s_calc_dangle(o->oAngleToMario, o->oMoveAngleYaw) < 0x800)
 					{
 						o->oScuttlebugUnkF8 = 1;
@@ -115,12 +115,12 @@ void bhv_scuttlebug_loop(void)
 		sp18 = 1.0f;
 	else
 		sp18 = 3.0f;
-	func_8029ED98(0, sp18);
+	s_set_skelanime_speed(0, sp18);
 	if(o->oMoveFlags & 3)
 		func_802BE2E8(1, 23, SOUND_OBJ2_SCUTTLEBUG_WALK);
 	if(o->parentObj != o)
 	{
-		if(obj_is_hidden(o))
+		if(s_check_shapehide(o))
 			s_remove_obj(o);
 		if(o->activeFlags == 0)
 			o->parentObj->oScuttlebugSpawnerUnk88 = 1;

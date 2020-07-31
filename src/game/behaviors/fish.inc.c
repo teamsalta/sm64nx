@@ -44,8 +44,8 @@ void ActionFish0(void)
 			{
 				sp28			= s_makeobj_nowpos(o, model, sm64::bhv::bhvFishGroup2());
 				sp28->oBehParams2ndByte = o->oBehParams2ndByte;
-				func_8029EE20(sp28, (struct Animation**)sp2C, 0);
-				translate_object_xyz_random(sp28, 700.0f);
+				s_set_skeletonobj(sp28, (struct Animation**)sp2C, 0);
+				s_random_XYZ_offset(sp28, 700.0f);
 			}
 			o->oAction = 1;
 		}
@@ -76,7 +76,7 @@ void func_802BF59C(s32 a0)
 	f32 sp1C = o->parentObj->oPosY;
 	if(activeStageNo == LEVEL_SA)
 	{
-		if(500.0f < absf(o->oPosY - o->oFishGroupUnkF8))
+		if(500.0f < s_abs_f(o->oPosY - o->oFishGroupUnkF8))
 			a0 = 10;
 		o->oPosY = approach_f32_symmetric(o->oPosY, o->oFishGroupUnkF8, a0 * FRAME_RATE_SCALER);
 	}
@@ -88,9 +88,9 @@ void ActionFishGroup1(void)
 {
 	f32 sp1C = o->oPosY - gMarioObject->oPosY;
 	if(o->oTimer < 10 * FRAME_RATE_SCALER_INV)
-		func_8029ED98(0, 2.0f);
+		s_set_skelanime_speed(0, 2.0f);
 	else
-		func_8029ED98(0, 1.0f);
+		s_set_skelanime_speed(0, 1.0f);
 	if(o->oTimer == 0)
 	{
 		o->oForwardVel = Randomf() * 2 + 3.0f;
@@ -139,9 +139,9 @@ void ActionFishGroup2(void)
 		objsound(SOUND_GENERAL_MOVING_WATER);
 	}
 	if(o->oTimer < LEVEL_SA * FRAME_RATE_SCALER_INV)
-		func_8029ED98(0, 4.0f);
+		s_set_skelanime_speed(0, 4.0f);
 	else
-		func_8029ED98(0, 1.0f);
+		s_set_skelanime_speed(0, 1.0f);
 	if(o->oForwardVel < o->oFishGroupUnk108)
 		o->oForwardVel = o->oForwardVel + 0.5;
 	o->oFishGroupUnkF8 = gMarioObject->oPosY + o->oFishGroupUnkFC;
@@ -167,7 +167,7 @@ void ActionFishGroup2(void)
 
 void ActionFishGroup0(void)
 {
-	func_8029ED98(0, 1.0f);
+	s_set_skelanime_speed(0, 1.0f);
 	o->header.gfx.unk38.setFrame(Randomf() * 28.0f);
 	o->oFishGroupUnk10C = Randomf() * 300.0f;
 	s_set_scale(Randomf() * 0.4 + 0.8);
@@ -184,7 +184,7 @@ void bhv_fish_group_2_loop(void) // TODO rename
 	if(activeStageNo == LEVEL_SA)
 		o->oFishGroupUnkF4 = 0.0f;
 	o->oWallHitboxRadius = 30.0f;
-	obj_resolve_wall_collisions();
+	s_wallcheck();
 	if(activeStageNo != LEVEL_UNKNOWN_32)
 	{
 		if(o->oFishGroupUnkF4 < -10000.0f)

@@ -58,10 +58,10 @@ void bhv_mr_i_body_loop(void)
 	s_copy_worldXYZ_angleXYZ(o, o->parentObj);
 	if(!(8 & o->activeFlags))
 	{
-		copy_object_scale(o, o->parentObj);
-		set_object_parent_relative_pos(o, 0, 0, o->header.gfx.scale[1] * 100.0f);
-		build_object_transform_from_pos_and_angle(o, 44, 15);
-		translate_object_local(o, 6, 44);
+		s_copy_scale(o, o->parentObj);
+		s_set_skeleton(o, 0, 0, o->header.gfx.scale[1] * 100.0f);
+		s_create_matrix(o, 44, 15);
+		s_rotate_vertex(o, 6, 44);
 		o->oFaceAnglePitch = o->oMoveAnglePitch;
 		o->oGraphYOffset   = o->header.gfx.scale[1] * 100.f;
 	}
@@ -112,7 +112,7 @@ void ActionMrI3(void)
 		if(sp36 < 0 && o->oMoveAngleYaw >= 0)
 			objsound(SOUND_OBJ2_MRI_SPINNING);
 		o->oMoveAnglePitch = (1.0 - coss(0x4000 * sp2C)) * -0x4000;
-		obj_shake_y(4.0f);
+		s_effect_updown(4.0f);
 	}
 	else if(o->oTimer < 96 * FRAME_RATE_SCALER_INV)
 	{
@@ -121,7 +121,7 @@ void ActionMrI3(void)
 		sp30 = (f32)((o->oTimer / FRAME_RATE_SCALER_INV) - 63) / 32;
 		o->oMoveAngleYaw += (sp34 * coss(0x4000 * sp2C)) / FRAME_RATE_SCALER_INV;
 		o->oMoveAnglePitch = (1.0 - coss(0x4000 * sp2C)) * -0x4000;
-		obj_shake_y((s32)((1.0f - sp30) * 4)); // trucating the f32?
+		s_effect_updown((s32)((1.0f - sp30) * 4)); // trucating the f32?
 		sp20 = coss(0x4000 * sp30) * 0.4 + 0.6;
 		s_set_scale(sp20 * sp1C);
 	}
@@ -143,7 +143,7 @@ void ActionMrI3(void)
 				s_remove_obj(o);
 			}
 			else
-				obj_spawn_loot_blue_coin();
+				s_make_bluecoin();
 		}
 		o->oMrISize -= 0.2 * sp1C * FRAME_RATE_SCALER;
 		if(o->oMrISize < 0)
@@ -264,7 +264,7 @@ void ActionMrI1(void)
 	s16 sp1E;
 	s16 sp1C;
 	s16 sp1A;
-	sp1E = angle_to_object(o, gMarioObject);
+	sp1E = s_calc_targetangle(o, gMarioObject);
 	sp1C = s_calc_dangle(o->oMoveAngleYaw, sp1E);
 	sp1A = s_calc_dangle(o->oMoveAngleYaw, gMarioObject->oFaceAngleYaw);
 	if(o->oTimer == 0)
@@ -302,11 +302,11 @@ void ActionMrI1(void)
 
 void ActionMrI0(void)
 {
-	set_object_angle(o, 0, 0, 0);
+	s_set_angle(o, 0, 0, 0);
 	s_set_scale(o->oBehParams2ndByte + 1);
 	if(o->oTimer == 0)
 	{
-		obj_set_pos_to_home();
+		s_copy_initpos();
 	}
 
 	if(o->oDistanceToMario < 1500.0f)

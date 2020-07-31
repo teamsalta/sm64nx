@@ -104,7 +104,7 @@ static void water_bomb_spawn_explode_particles(s8 offsetY, s8 forwardVelRange, s
 	sWaterBombExplodeParticles.offsetY	   = offsetY;
 	sWaterBombExplodeParticles.forwardVelRange = forwardVelRange;
 	sWaterBombExplodeParticles.velYBase	   = velYBase;
-	obj_spawn_particles(&sWaterBombExplodeParticles);
+	s_makeeffect_chiri(&sWaterBombExplodeParticles);
 }
 
 /**
@@ -133,7 +133,7 @@ static void water_bomb_act_drop(void)
 	if((o->oInteractStatus & INT_STATUS_INTERACTED) || (o->oMoveFlags & OBJ_MOVE_ENTERED_WATER))
 	{
 		obj_remove_sound(SOUND_OBJ_DIVING_IN_WATER);
-		set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
+		Viewshaking(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 		o->oAction = WATER_BOMB_ACT_EXPLODE;
 	}
 	else if(o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND)
@@ -152,7 +152,7 @@ static void water_bomb_act_drop(void)
 				obj_remove_sound(SOUND_OBJ_DIVING_IN_WATER);
 			}
 
-			set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
+			Viewshaking(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 
 			// Move toward mario
 			o->oMoveAngleYaw	  = o->oAngleToMario;
@@ -222,7 +222,7 @@ static void water_bomb_act_shot_from_cannon(void)
 			{
 				water_bomb_spawn_explode_particles(-20, 10, 30);
 			}
-			obj_spawn_particles(&sWaterBombCannonParticle);
+			s_makeeffect_chiri(&sWaterBombCannonParticle);
 		}
 
 		if(o->header.gfx.scale[1] > 1.2f)
@@ -231,7 +231,7 @@ static void water_bomb_act_shot_from_cannon(void)
 		}
 
 		o->header.gfx.scale[0] = o->header.gfx.scale[2] = 2.0f - o->header.gfx.scale[1];
-		func_802A2A38();
+		s_3Dmove();
 	}
 }
 
@@ -283,8 +283,8 @@ void bhv_water_bomb_shadow_update(void)
 			bombHeight = 500.0f;
 		}
 
-		copy_object_pos(o, o->parentObj);
+		s_copy_worldXYZ(o, o->parentObj);
 		o->oPosY = o->parentObj->oFloorHeight + bombHeight;
-		copy_object_scale(o, o->parentObj);
+		s_copy_scale(o, o->parentObj);
 	}
 }

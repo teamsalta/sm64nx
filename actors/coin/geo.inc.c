@@ -2,7 +2,7 @@
 const GeoLayout yellow_coin_geo[] = {
    GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0xB4, 50),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(16, geo_switch_anim_state),
+      GEO_SWITCH_CASE(16, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_03007800),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_03007800),
@@ -29,7 +29,7 @@ const GeoLayout yellow_coin_geo[] = {
 const GeoLayout yellow_coin_no_shadow_geo[] = {
    GEO_NODE_START(),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(16, geo_switch_anim_state),
+      GEO_SWITCH_CASE(16, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_03007800),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_03007800),
@@ -56,7 +56,7 @@ const GeoLayout yellow_coin_no_shadow_geo[] = {
 const GeoLayout blue_coin_geo[] = {
    GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0xB4, 80),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(16, geo_switch_anim_state),
+      GEO_SWITCH_CASE(16, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_030078A0),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_030078A0),
@@ -83,7 +83,7 @@ const GeoLayout blue_coin_geo[] = {
 const GeoLayout blue_coin_no_shadow_geo[] = {
    GEO_NODE_START(),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(16, geo_switch_anim_state),
+      GEO_SWITCH_CASE(16, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_030078A0),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_030078A0),
@@ -110,7 +110,7 @@ const GeoLayout blue_coin_no_shadow_geo[] = {
 const GeoLayout red_coin_geo[] = {
    GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0xB4, 80),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(16, geo_switch_anim_state),
+      GEO_SWITCH_CASE(16, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_03007940),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_03007940),
@@ -137,7 +137,7 @@ const GeoLayout red_coin_geo[] = {
 const GeoLayout red_coin_no_shadow_geo[] = {
    GEO_NODE_START(),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(16, geo_switch_anim_state),
+      GEO_SWITCH_CASE(16, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_03007940),
          GEO_DISPLAY_LIST(LAYER_ALPHA, coin_seg3_dl_03007940),

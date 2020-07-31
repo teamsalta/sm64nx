@@ -29,7 +29,7 @@ static void cloud_act_spawn_parts(void)
 
 		if(cloudPart != NULL)
 		{
-			obj_set_billboard(cloudPart);
+			s_softspritemodeON(cloudPart);
 		}
 	}
 
@@ -181,7 +181,7 @@ static void cloud_act_unload(void)
 	{
 		o->oAction = CLOUD_ACT_FWOOSH_HIDDEN;
 		s_shape_hide();
-		obj_set_pos_to_home();
+		s_copy_initpos();
 	}
 }
 

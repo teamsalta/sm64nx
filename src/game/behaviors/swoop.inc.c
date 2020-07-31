@@ -46,7 +46,7 @@ static void swoop_act_idle(void)
  */
 static void swoop_act_move(void)
 {
-	func_8029ED98(0, 2.0f);
+	s_set_skelanime_speed(0, 2.0f);
 	if(s_check_animeend())
 	{
 		objsound(SOUND_OBJ_UNKNOWN6);
@@ -61,11 +61,11 @@ static void swoop_act_move(void)
 			o->oVelY       = -10.0f;
 		}
 	}
-	else if(obj_mario_far_away())
+	else if(s_enemy_areaout())
 	{
 		// If mario far away, reset
 		o->oAction = SWOOP_ACT_IDLE;
-		obj_set_pos_to_home();
+		s_copy_initpos();
 		o->header.gfx.scale[0] = o->oForwardVel = o->oVelY = 0.0f;
 		o->oFaceAngleRoll				   = 0;
 	}
@@ -95,7 +95,7 @@ static void swoop_act_move(void)
 		else if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
 		{
 			// Bounce off a wall and don't bounce again for 30 frames.
-			o->oSwoopTargetYaw     = obj_reflect_move_angle_off_wall();
+			o->oSwoopTargetYaw     = s_wall_rebound();
 			o->oSwoopBonkCountdown = 30;
 		}
 

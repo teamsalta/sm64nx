@@ -29,7 +29,7 @@ void bhv_boo_init(void)
 
 static s32 boo_should_be_stopped(void)
 {
-	if(obj_has_behavior(sm64::bhv::bhvMerryGoRoundBigBoo()) || obj_has_behavior(sm64::bhv::bhvMerryGoRoundBoo()))
+	if(s_check_pathname(sm64::bhv::bhvMerryGoRoundBigBoo()) || s_check_pathname(sm64::bhv::bhvMerryGoRoundBoo()))
 	{
 		if(gMarioOnMerryGoRound == FALSE)
 		{
@@ -63,7 +63,7 @@ static s32 boo_should_be_active(void)
 {
 	f32 activationRadius;
 
-	if(obj_has_behavior(sm64::bhv::bhvBalconyBigBoo()))
+	if(s_check_pathname(sm64::bhv::bhvBalconyBigBoo()))
 	{
 		activationRadius = 5000.0f;
 	}
@@ -72,7 +72,7 @@ static s32 boo_should_be_active(void)
 		activationRadius = 1500.0f;
 	}
 
-	if(obj_has_behavior(sm64::bhv::bhvMerryGoRoundBigBoo()) || obj_has_behavior(sm64::bhv::bhvMerryGoRoundBoo()))
+	if(s_check_pathname(sm64::bhv::bhvMerryGoRoundBigBoo()) || s_check_pathname(sm64::bhv::bhvMerryGoRoundBoo()))
 	{
 		if(gMarioOnMerryGoRound == TRUE)
 		{
@@ -148,7 +148,7 @@ static void boo_approach_target_opacity_and_update_scale(void)
 	}
 
 	scale = (o->oOpacity / 255.0f * 0.4 + 0.6) * o->oBooBaseScale;
-	scale_object(o, scale); // why no s_set_scale? was s_set_scale written later?
+	s_scale(o, scale); // why no s_set_scale? was s_set_scale written later?
 }
 
 static void boo_oscillate(s32 ignoreOpacity)
@@ -337,7 +337,7 @@ static s32 boo_update_during_death(void)
 			{
 				parentBigBoo = o->oBooParentBigBoo;
 
-				if(!obj_has_behavior(sm64::bhv::bhvBoo()))
+				if(!s_check_pathname(sm64::bhv::bhvBoo()))
 				{
 					parentBigBoo->oBigBooNumMinionBoosKilled++;
 				}
@@ -405,9 +405,9 @@ static void boo_chase_mario(f32 a0, s16 a1, f32 a2)
 	{
 		o->oInteractType = 0x8000;
 
-		if(obj_lateral_dist_from_mario_to_home() > 1500.0f)
+		if(s_calc_playerscope() > 1500.0f)
 		{
-			sp1A = obj_angle_to_home();
+			sp1A = s_calc_returnangle();
 		}
 		else
 		{
@@ -417,16 +417,16 @@ static void boo_chase_mario(f32 a0, s16 a1, f32 a2)
 		s_chase_angleY(sp1A, a1 / FRAME_RATE_SCALER_INV);
 		o->oVelY = 0.0f;
 
-		if(mario_is_in_air_action() == 0)
+		if(s_check_playerjump() == 0)
 		{
 			sp1C = o->oPosY - gMarioObject->oPosY;
 			if(a0 < sp1C && sp1C < 500.0f)
 			{
-				o->oVelY = func_802A0BF4(o->oPosY, gMarioObject->oPosY + 50.0f, 10.f, 2.0f);
+				o->oVelY = s_chase_set_speedY(o->oPosY, gMarioObject->oPosY + 50.0f, 10.f, 2.0f);
 			}
 		}
 
-		func_8029F684(10.0f - o->oBooNegatedAggressiveness, a2);
+		s_chase_playerspeed(10.0f - o->oBooNegatedAggressiveness, a2);
 
 		if(o->oForwardVel != 0.0f)
 		{
@@ -452,7 +452,7 @@ static void ActionBoo0(void)
 		o->oRoom = 10;
 	}
 
-	obj_set_pos_to_home();
+	s_copy_initpos();
 	o->oMoveAngleYaw = o->oBooInitialMoveYaw;
 	boo_stop();
 
@@ -544,7 +544,7 @@ static void ActionBoo3(void)
 		else
 		{
 			o->oAction = 4;
-			obj_disable();
+			s_allOFF();
 		}
 	}
 }
@@ -587,7 +587,7 @@ void bhv_boo_loop(void)
 	s_enemymove(78);
 	boo_approach_target_opacity_and_update_scale();
 
-	if(object_has_behavior(o->parentObj, sm64::bhv::bhvMerryGoRoundBooManager()))
+	if(s_test_pathname(o->parentObj, sm64::bhv::bhvMerryGoRoundBooManager()))
 	{
 		if(o->activeFlags == 0)
 		{
@@ -600,7 +600,7 @@ void bhv_boo_loop(void)
 
 static void ActionBooGivingStar0(void)
 {
-	if(obj_has_behavior(sm64::bhv::bhvBalconyBigBoo()))
+	if(s_check_pathname(sm64::bhv::bhvBalconyBigBoo()))
 	{
 		obj_set_secondary_camera_focus();
 		// number of killed boos set > 5 so that boo always loads
@@ -614,7 +614,7 @@ static void ActionBooGivingStar0(void)
 	{
 		o->oAction = 1;
 
-		obj_set_pos_to_home();
+		s_copy_initpos();
 		o->oMoveAngleYaw = o->oBooInitialMoveYaw;
 
 		s_shape_disp();
@@ -661,7 +661,7 @@ static void ActionBooGivingStar1(void)
 	attackStatus = boo_get_attack_status();
 
 	// redundant; this check is in boo_should_be_stopped
-	if(obj_has_behavior(sm64::bhv::bhvMerryGoRoundBigBoo()))
+	if(s_check_pathname(sm64::bhv::bhvMerryGoRoundBigBoo()))
 	{
 		if(gMarioOnMerryGoRound == FALSE)
 		{
@@ -732,11 +732,11 @@ static void ActionBooGivingStar3(void)
 	{
 		if(boo_update_during_death())
 		{
-			obj_disable();
+			s_allOFF();
 
 			o->oAction = 4;
 
-			set_object_angle(o, 0, 0, 0);
+			s_set_angle(o, 0, 0, 0);
 
 			if(o->oBehParams2ndByte == 0)
 			{
@@ -773,11 +773,11 @@ static void ActionBooGivingStar4(void)
 
 	if(o->oBehParams2ndByte == 0)
 	{
-		set_object_pos(o, 973, 0, 626);
+		s_set_world(o, 973, 0, 626);
 
 		if(o->oTimer > 60 * FRAME_RATE_SCALER_INV && o->oDistanceToMario < 600.0f)
 		{
-			set_object_pos(o, 973, 0, 717);
+			s_set_world(o, 973, 0, 717);
 
 			s_makeobj_chain(0, 0, 0, 0, o, MODEL_BBH_STAIRCASE_STEP, sm64::bhv::bhvBooBossSpawnedBridge());
 			s_makeobj_chain(1, 0, 0, -200, o, MODEL_BBH_STAIRCASE_STEP, sm64::bhv::bhvBooBossSpawnedBridge());
@@ -918,7 +918,7 @@ void bhv_merry_go_round_boo_manager_loop(void)
 				if(o->oMerryGoRoundBooManagerNumBoosKilled > 4)
 				{
 					struct Object* boo = s_makeobj_nowpos(o, MODEL_BOO, sm64::bhv::bhvMerryGoRoundBigBoo());
-					copy_object_behavior_params(boo, o);
+					s_copy_actorcode(boo, o);
 
 					o->oAction = 2;
 
@@ -946,7 +946,7 @@ void obj_set_secondary_camera_focus(void)
 
 void bhv_animated_texture_loop(void)
 {
-	func_802A3470();
+	s_debug_position();
 }
 
 void bhv_boo_in_castle_loop(void)
@@ -996,7 +996,7 @@ void bhv_boo_in_castle_loop(void)
 		o->oHomeX = -1000.0f;
 		o->oHomeZ = -9000.0f;
 
-		targetAngle = obj_angle_to_home();
+		targetAngle = s_calc_returnangle();
 
 		if(o->oPosZ < -5000.0f)
 		{
@@ -1018,7 +1018,7 @@ void bhv_boo_in_castle_loop(void)
 
 	o->oVelY = 0.0f;
 
-	targetAngle = obj_angle_to_home();
+	targetAngle = s_calc_returnangle();
 
 	s_chase_angleY(targetAngle, 0x5A8 / FRAME_RATE_SCALER_INV);
 	boo_oscillate(TRUE);
@@ -1065,7 +1065,7 @@ void bhv_boo_boss_spawned_bridge_loop(void)
 				objsound(SOUND_GENERAL_UNKNOWN4_LOWPRIO);
 			}
 
-			if(func_802A362C(o->oTimer))
+			if(s_gatan(o->oTimer))
 			{
 				o->oAction++;
 			}

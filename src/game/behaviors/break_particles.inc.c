@@ -12,7 +12,7 @@ void s_boxeffect(s16 numTris, s16 triModel, f32 triSize, s16 triAnimState)
 		triangle->oMoveAngleYaw	  = RandomU16();
 		triangle->oFaceAngleYaw	  = triangle->oMoveAngleYaw;
 		triangle->oFaceAnglePitch = RandomU16();
-		triangle->oVelY		  = random_f32_around_zero(50.0f);
+		triangle->oVelY		  = s_random_f(50.0f);
 		if(triModel == 138 || triModel == 56)
 		{
 			triangle->oAngleVelPitch = 0xF00;
@@ -24,6 +24,6 @@ void s_boxeffect(s16 numTris, s16 triModel, f32 triSize, s16 triAnimState)
 			triangle->oAngleVelPitch = 0x80 * (s32)(Randomf() + 50.0f);
 			triangle->oForwardVel	 = 30.0f;
 		}
-		scale_object(triangle, triSize);
+		s_scale(triangle, triSize);
 	}
 }

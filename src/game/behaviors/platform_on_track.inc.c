@@ -42,7 +42,7 @@ static void platform_on_track_mario_not_on_platform(void)
 	if(!((u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_DONT_DISAPPEAR))
 	{
 		// Once oTimer reaches 150, blink 40 times
-		if(obj_wait_then_blink(150 * FRAME_RATE_SCALER_INV, 40))
+		if(s_flash_shape(150 * FRAME_RATE_SCALER_INV, 40))
 		{
 			platform_on_track_reset();
 			o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
@@ -267,7 +267,7 @@ static void platform_on_track_act_pause_briefly(void)
  */
 static void platform_on_track_act_fall(void)
 {
-	obj_move_using_vel_and_gravity();
+	s_optionmove_XZ();
 
 	if(gMarioObject->platform != o)
 	{

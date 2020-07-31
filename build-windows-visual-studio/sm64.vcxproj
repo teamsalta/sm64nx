@@ -485,6 +485,7 @@
     <ClCompile Include="..\src\controller\tas.cpp" />
     <ClCompile Include="..\src\engine\asset.cpp" />
     <ClCompile Include="..\src\engine\behavior_script.cpp" />
+    <ClCompile Include="..\src\engine\duktape.c" />
     <ClCompile Include="..\src\engine\geo_layout.cpp" />
     <ClCompile Include="..\src\engine\graph_node.cpp" />
     <ClCompile Include="..\src\engine\graph_node_manager.cpp" />
@@ -496,6 +497,7 @@
     <ClCompile Include="..\src\engine\hook_texture.cpp" />
     <ClCompile Include="..\src\engine\level_script.cpp" />
     <ClCompile Include="..\src\engine\math_util.cpp" />
+    <ClCompile Include="..\src\engine\script.cpp" />
     <ClCompile Include="..\src\engine\surface_collision.cpp" />
     <ClCompile Include="..\src\engine\surface_load.cpp" />
     <ClCompile Include="..\src\engine\time.cpp" />

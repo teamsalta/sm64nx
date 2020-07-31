@@ -32,4 +32,5 @@ namespace sm64
 		hid::Controller m_controller;
 		int m_rebindInput;
 	};
+
 } // namespace sm64

@@ -2,7 +2,7 @@
 const GeoLayout number_geo[] = {
    GEO_NODE_START(),
    GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(10, geo_switch_anim_state),
+      GEO_SWITCH_CASE(10, ControlShapeAnime),
       GEO_OPEN_NODE(),
          GEO_DISPLAY_LIST(LAYER_ALPHA, dl_billboard_num_0),
          GEO_DISPLAY_LIST(LAYER_ALPHA, dl_billboard_num_1),

@@ -158,14 +158,14 @@ static void klepto_change_target(void)
 		newTarget = RandomU16() % 3;
 	}
 
-	o->oKleptoUnkF8	       = 400 * absi(newTarget - o->oKleptoTargetNumber);
+	o->oKleptoUnkF8	       = 400 * s_abs_d(newTarget - o->oKleptoTargetNumber);
 	o->oKleptoTargetNumber = newTarget;
 
 	o->oHomeX = sKleptoTargetPositions[o->oKleptoTargetNumber][0];
 	o->oHomeY = sKleptoTargetPositions[o->oKleptoTargetNumber][1] + o->oKleptoUnkF8;
 	o->oHomeZ = sKleptoTargetPositions[o->oKleptoTargetNumber][2];
 
-	o->oKleptoUnkFC = obj_lateral_dist_to_home() / 2.0f;
+	o->oKleptoUnkFC = s_calc_enemyscope() / 2.0f;
 }
 
 static void klepto_circle_target(f32 radius, f32 targetSpeed)
@@ -248,7 +248,7 @@ static void klepto_act_turn_toward_mario(void)
 {
 	klepto_target_mario();
 
-	if(func_8030F158() && func_8029F828() && o->oKleptoDistanceToTarget > 800.0f && s_calc_dangle(o->oAngleToMario, o->oFaceAngleYaw) < 0x800 && o->oKleptoPitch < 0x400)
+	if(func_8030F158() && s_check_animeend_2() && o->oKleptoDistanceToTarget > 800.0f && s_calc_dangle(o->oAngleToMario, o->oFaceAngleYaw) < 0x800 && o->oKleptoPitch < 0x400)
 	{
 		objsound(SOUND_OBJ_KLEPTO1);
 		o->oAction	 = KLEPTO_ACT_DIVE_AT_MARIO;
@@ -412,9 +412,9 @@ void bhv_klepto_update(void)
 
 	s_enemybgcheck();
 
-	o->oKleptoDistanceToTarget = obj_lateral_dist_to_home();
+	o->oKleptoDistanceToTarget = s_calc_enemyscope();
 	o->oKleptoPitch		   = obj_get_pitch_to_home(o->oKleptoDistanceToTarget);
-	o->oKleptoYawToTarget	   = obj_angle_to_home();
+	o->oKleptoYawToTarget	   = s_calc_returnangle();
 
 	if(o->oAction == KLEPTO_ACT_STRUCK_BY_MARIO)
 	{

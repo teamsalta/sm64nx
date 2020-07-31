@@ -14,7 +14,7 @@ const GeoLayout unagi_geo[] = {
                   GEO_OPEN_NODE(),
                      GEO_ANIMATED_PART(LAYER_OPAQUE, 475, 0, 0, unagi_seg5_dl_0500D828),
                      GEO_OPEN_NODE(),
-                        GEO_SWITCH_CASE(2, geo_switch_anim_state),
+                        GEO_SWITCH_CASE(2, ControlShapeAnime),
                         GEO_OPEN_NODE(),
                            GEO_NODE_START(),
                            GEO_NODE_START(),

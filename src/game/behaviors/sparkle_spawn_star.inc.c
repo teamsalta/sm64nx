@@ -18,7 +18,7 @@ void bhv_spawned_star_init(void)
 	if(!(o->oInteractionSubtype & INT_SUBTYPE_NO_EXIT))
 		o->oBehParams = o->parentObj->oBehParams;
 	sp24 = (o->oBehParams >> 24) & 0xFF;
-	if(func_802A377C(sp24) & BuGetStarFlag(activePlayerNo - 1, activeCourseNo - 1))
+	if(s_index_bit(sp24) & BuGetStarFlag(activePlayerNo - 1, activeCourseNo - 1))
 		s_change_shape(MODEL_TRANSPARENT_STAR);
 	objsound(SOUND_GENERAL2_STAR_APPEARS);
 }
@@ -66,14 +66,14 @@ void bhv_spawned_star_loop(void)
 		if(o->oTimer == 0)
 		{
 			cutscene_object(CUTSCENE_STAR_SPAWN, o);
-			set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
+			s_begin_enemydemo(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 			o->activeFlags |= 0x20;
 			o->oAngleVelYaw = 0x800;
 			if(o->oBehParams2ndByte == 0)
 				func_802AA7EC();
 			else
 				func_802AA8E4();
-			o->oMoveAngleYaw = obj_angle_to_home();
+			o->oMoveAngleYaw = s_calc_returnangle();
 			o->oVelY	 = 50.0f;
 			o->oGravity	 = -4.0f;
 			s_kemuri();
@@ -109,7 +109,7 @@ void bhv_spawned_star_loop(void)
 	{
 		if(gCamera->cutscene == 0 && gRecentCutscene == 0)
 		{
-			clear_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
+			s_end_enemydemo(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 			o->activeFlags &= ~0x20;
 			o->oAction++;
 		}
@@ -129,5 +129,5 @@ void bhv_spawn_star_no_level_exit(u32 sp20)
 	struct Object* sp1C	  = s_makeobj_nowpos(o, MODEL_STAR, sm64::bhv::bhvSpawnedStarNoLevelExit());
 	sp1C->oBehParams	  = sp20 << 24;
 	sp1C->oInteractionSubtype = INT_SUBTYPE_NO_EXIT;
-	set_object_angle(sp1C, 0, 0, 0);
+	s_set_angle(sp1C, 0, 0, 0);
 }

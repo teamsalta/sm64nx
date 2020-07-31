@@ -47,7 +47,7 @@ void bhv_donut_platform_update(void)
 		}
 		else
 		{
-			func_802A3C98(150.0f, 1);
+			s_burn_remove(150.0f, 1);
 			obj_remove_sound(SOUND_GENERAL_DONUT_PLATFORM_EXPLOSION);
 		}
 	}
@@ -57,7 +57,7 @@ void bhv_donut_platform_update(void)
 		{
 			if(gMarioObject->platform == o)
 			{
-				obj_shake_y(4.0f);
+				s_effect_updown(4.0f);
 				if(o->oTimer > 15 * FRAME_RATE_SCALER_INV)
 				{
 					o->oGravity = -0.1f;
@@ -65,7 +65,7 @@ void bhv_donut_platform_update(void)
 			}
 			else
 			{
-				obj_set_pos_to_home();
+				s_copy_initpos();
 				o->oTimer = 0;
 			}
 		}

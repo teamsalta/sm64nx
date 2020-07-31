@@ -16,7 +16,7 @@ void bubba_act_0(void)
 {
 	f32 sp24;
 
-	sp24 = obj_lateral_dist_to_home();
+	sp24 = s_calc_enemyscope();
 	treat_far_home_as_mario(2000.0f);
 	o->oAnimState = 0;
 
@@ -41,7 +41,7 @@ void bubba_act_0(void)
 
 		if((o->oBubbaUnkFC = o->oMoveFlags & 0x00000200) != 0)
 		{
-			o->oBubbaUnk1AE = obj_reflect_move_angle_off_wall();
+			o->oBubbaUnk1AE = s_wall_rebound();
 		}
 		else if(o->oTimer > 30 * FRAME_RATE_SCALER_INV && o->oDistanceToMario < 2000.0f)
 		{
@@ -174,7 +174,7 @@ void bhv_bubba_loop(void)
 			sp38 = s_makeobj_nowpos(o, MODEL_WATER_SPLASH, sm64::bhv::bhvWaterSplash());
 			if(sp38 != NULL)
 			{
-				scale_object(sp38, 3.0f);
+				s_scale(sp38, 3.0f);
 			}
 
 			o->oBubbaUnk108 = o->oVelY;

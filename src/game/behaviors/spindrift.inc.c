@@ -15,17 +15,17 @@ struct ObjectHitbox sSpindriftHitbox = {
 void bhv_spindrift_loop(void)
 {
 	o->activeFlags |= 0x400;
-	if(obj_set_hitbox_and_die_if_attacked(&sSpindriftHitbox, SOUND_OBJ_DYING_ENEMY1, 0))
-		obj_change_action(1);
+	if(s_hit_remove_enemy(&sSpindriftHitbox, SOUND_OBJ_DYING_ENEMY1, 0))
+		s_set_newmode(1);
 	s_enemybgcheck();
 	switch(o->oAction)
 	{
 		case 0:
 			lerp(&o->oForwardVel, 4.0f, 1.0f * FRAME_RATE_SCALER);
-			if(obj_lateral_dist_from_mario_to_home() > 1000.0f)
-				o->oAngleToMario = obj_angle_to_home();
+			if(s_calc_playerscope() > 1000.0f)
+				o->oAngleToMario = s_calc_returnangle();
 			else if(o->oDistanceToMario > 300.0f)
-				o->oAngleToMario = angle_to_object(o, gMarioObject);
+				o->oAngleToMario = s_calc_targetangle(o, gMarioObject);
 			s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 			break;
 		case 1:

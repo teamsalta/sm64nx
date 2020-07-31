@@ -12,9 +12,9 @@ void bhv_horizontal_grindel_update(void)
 		{
 			objsound(SOUND_OBJ_THWOMP);
 			o->oHorizontalGrindelOnGround = TRUE;
-			set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
+			Viewshaking(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 
-			o->oHorizontalGrindelDistToHome = obj_lateral_dist_to_home();
+			o->oHorizontalGrindelDistToHome = s_calc_enemyscope();
 			o->oForwardVel			= 0.0f;
 			o->oTimer			= 0;
 		}

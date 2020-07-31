@@ -12,7 +12,7 @@ void bhv_water_splash_loop(void)
 		o->oPosY = find_water_level(o->oPosX, o->oPosZ);
 	if(o->oPosY > -10000.0f)
 		for(i = 0; i < 3; i++)
-			spawn_water_splash(o, &D_8032FDAC);
+			s_makeobj_initdata(o, &D_8032FDAC);
 }
 
 void bhv_water_drops_loop(void)
@@ -21,7 +21,7 @@ void bhv_water_drops_loop(void)
 	f32 waterLevel = find_water_level(o->oPosX, o->oPosZ);
 	if(o->oTimer == 0)
 	{
-		if(obj_has_model(MODEL_FISH))
+		if(s_check_shapename(MODEL_FISH))
 			o->header.gfx.node.flags &= ~4;
 		else
 			o->header.gfx.node.flags |= 4;
@@ -33,7 +33,7 @@ void bhv_water_drops_loop(void)
 	{
 		if(waterLevel > o->oPosY)
 		{
-			try_to_spawn_object(0, 1.0f, o, MODEL_SPOT_ON_GROUND, sm64::bhv::bhvWaterSurfaceWhiteWave());
+			s_makeobj_effect(0, 1.0f, o, MODEL_SPOT_ON_GROUND, sm64::bhv::bhvWaterSurfaceWhiteWave());
 			s_remove_obj(o);
 		}
 		else if(o->oTimer > 20 * FRAME_RATE_SCALER_INV)
@@ -45,7 +45,7 @@ void bhv_water_drops_loop(void)
 
 void bhv_surface_waves_loop(void)
 {
-	copy_object_pos(o, gMarioObject);
+	s_copy_worldXYZ(o, gMarioObject);
 	o->oPosY = playerWorks->waterLevel + 5;
 	if(!(gMarioObject->oMarioParticleFlags & 0x80))
 	{
@@ -62,7 +62,7 @@ void bhv_water_surface_white_wave_init(void)
 void bhv_object_bubble_ripples_init(void)
 {
 	f32 sp1C = find_water_level(o->oPosX, o->oPosZ);
-	scale_object_xyz(o, 0.5f, 1.0f, 0.5f);
+	stSetScale(o, 0.5f, 1.0f, 0.5f);
 	o->oPosY = sp1C + 5.0f;
 }
 
@@ -71,8 +71,8 @@ void bhv_surface_wave_shrinking_init(void)
 	UNUSED struct Object* sp1C;
 	if((RandomU16() & 0xFF) <= 0) // weird
 	{
-		sp1C = spawn_water_splash(o, &D_8032FDF4);
-		func_8029EE20(sp1C, (struct Animation**)blue_fish_seg3_anims_0301C2B0, 0);
+		sp1C = s_makeobj_initdata(o, &D_8032FDF4);
+		s_set_skeletonobj(sp1C, (struct Animation**)blue_fish_seg3_anims_0301C2B0, 0);
 	}
 }
 

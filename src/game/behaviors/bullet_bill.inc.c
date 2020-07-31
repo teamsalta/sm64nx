@@ -19,7 +19,7 @@ void ActionBulletBill0(void)
 	o->oFaceAnglePitch = 0;
 	o->oFaceAngleRoll  = 0;
 	o->oMoveFlags	   = 0;
-	obj_set_pos_to_home();
+	s_copy_initpos();
 	o->oAction = 1;
 }
 
@@ -89,6 +89,6 @@ void (*sBulletBillActions[])(void) = {ActionBulletBill0, ActionBulletBill1, Acti
 void bhv_bullet_bill_loop(void)
 {
 	s_modejmp(sBulletBillActions);
-	if(obj_check_interacted())
+	if(s_pl_hitcheck())
 		o->oAction = 4;
 }

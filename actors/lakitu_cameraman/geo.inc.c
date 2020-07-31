@@ -10,7 +10,7 @@ const GeoLayout lakitu_geo[] = {
             GEO_OPEN_NODE(),
                GEO_ANIMATED_PART(LAYER_OPAQUE, 132, 0, 0, lakitu_seg6_dl_06004680),
                GEO_OPEN_NODE(),
-                  GEO_SWITCH_CASE(2, geo_switch_anim_state),
+                  GEO_SWITCH_CASE(2, ControlShapeAnime),
                   GEO_OPEN_NODE(),
                      GEO_DISPLAY_LIST(LAYER_ALPHA, lakitu_seg6_dl_06004C60),
                      GEO_DISPLAY_LIST(LAYER_ALPHA, lakitu_seg6_dl_06004C88),

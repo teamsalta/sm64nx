@@ -19,11 +19,6 @@ namespace sm64::gfx
 	void set_fullscreen(bool value);
 }
 
-#define STICK_X_LEFT 0x10000
-#define STICK_X_RIGHT 0x20000
-#define STICK_X_DOWN 0x80000
-#define STICK_X_UP 0x40000
-
 bool saveJson(rapidjson::Document& doc, const std::string& jsonFilePath)
 {
 	rapidjson::StringBuffer buffer;
@@ -44,7 +39,7 @@ namespace sm64::hid
 {
 	namespace controller
 	{
-		static const char* getInputName(int input)
+		const char* getInputName(int input)
 		{
 			switch (input)
 			{
@@ -61,11 +56,12 @@ namespace sm64::hid
 			case R_CBUTTONS: return "R_CBUTTONS";
 			case R_TRIG: return "R_TRIG";
 			case START_BUTTON: return "START_BUTTON";
+			case WALK_BUTTON: return "WALK_BUTTON";
 			}
 			return "";
 		}
 
-		static int getInputValue(const std::string& input)
+		int getInputValue(const std::string& input)
 		{
 			if (input == "STICK_X_UP") return STICK_X_UP;
 			if (input == "STICK_X_LEFT") return STICK_X_LEFT;
@@ -80,6 +76,7 @@ namespace sm64::hid
 			if (input == "R_CBUTTONS") return R_CBUTTONS;
 			if (input == "R_TRIG") return R_TRIG;
 			if (input == "START_BUTTON") return START_BUTTON;
+			if (input == "WALK_BUTTON") return WALK_BUTTON;
 
 			return 0;
 		}
@@ -272,6 +269,7 @@ namespace sm64::hid
 
 			void update()
 			{
+				bool walk = false;
 				int count = 0;
 				auto state = SDL_GetKeyboardState(&count);
 
@@ -288,6 +286,11 @@ namespace sm64::hid
 						sm64::config().game().fullscreen() = false;
 						sm64::gfx::set_fullscreen(sm64::config().game().fullscreen());
 					}
+				}
+
+				if (hid::isTasPlaying())
+				{
+					return;
 				}
 
 				for (const auto x : m_keyBindings)
@@ -315,6 +318,9 @@ namespace sm64::hid
 								case STICK_X_RIGHT:
 									m_state.stick_x = 127;
 									break;
+								case WALK_BUTTON:
+									walk = true;
+									break;
 								}
 							}
 							else
@@ -326,10 +332,10 @@ namespace sm64::hid
 				}
 
 #ifdef ENABLE_MOUSE
-				m_state.mouse_delta_x = 0;
-				m_state.mouse_delta_y = 0;
+				int mouse_delta_x = 0;
+				int mouse_delta_y = 0;
 
-				auto buttons = SDL_GetRelativeMouseState(&m_state.mouse_delta_x, &m_state.mouse_delta_y);
+				auto buttons = SDL_GetRelativeMouseState(&mouse_delta_x, &mouse_delta_y);
 				this->enableMouse();
 
 				if (buttons & SDL_BUTTON(SDL_BUTTON_LEFT))
@@ -342,9 +348,25 @@ namespace sm64::hid
 					m_state.button |= A_BUTTON;
 				}
 
-				m_state.mouse_x += m_state.mouse_delta_x * 4;
-				m_state.mouse_y += m_state.mouse_delta_y * 4;
+				if (buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE))
+				{
+					walk = true;
+				}
+
+				m_state.mouse_x += mouse_delta_x * 4;
+				m_state.mouse_y += mouse_delta_y * 4;
+
+				if (mouse_delta_x > 10)
+				{
+					int yy = 0;
+				}
 #endif
+
+				if (walk)
+				{
+					m_state.stick_x *= 0.25f;
+					m_state.stick_y *= 0.25f;
+				}
 				memcpy(m_lastKeyState, state, MIN(MAX_KEY_STATE, count));
 			}
 

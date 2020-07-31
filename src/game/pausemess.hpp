@@ -10,7 +10,7 @@ extern void iwaStageInit()
 
 static void change_dialog_camera_angle()
 {
-	if(cam_select_alt_mode(0) == CAM_SELECTION_MARIO)
+	if(SpecialMode(0) == CAM_SELECTION_MARIO)
 	{
 		gDialogCameraAngleIndex = CAM_SELECTION_MARIO;
 	}
@@ -179,10 +179,10 @@ static void DrawCameraChange(s16 x, s16 y, s8* index, s16 xIndex)
 	switch(index[0])
 	{
 		case 1:
-			cam_select_alt_mode(1);
+			SpecialMode(1);
 			break;
 		case 2:
-			cam_select_alt_mode(2);
+			SpecialMode(2);
 			break;
 	}
 }
@@ -545,6 +545,7 @@ namespace sm64::menu
 			m_items.push_back(new sm64::menu::item::Base("D CBUTTONS", rebindCallback<hid::D_CBUTTONS>));
 			m_items.push_back(new sm64::menu::item::Base("R CBUTTONS",  rebindCallback<hid::R_CBUTTONS>));
 			m_items.push_back(new sm64::menu::item::Base("R TRIG", rebindCallback<hid::R_TRIG>));
+			m_items.push_back(new sm64::menu::item::Base("WALK", rebindCallback<hid::WALK_BUTTON>));
 			m_items.push_back(new sm64::menu::item::Base("START BUTTON", rebindCallback<hid::START_BUTTON>));
 		}
 
@@ -638,8 +639,8 @@ namespace sm64::menu
 			m_items.push_back(new sm64::menu::item::EnumFloat("RETURN SCALER", {1.0f, 0.75f, 0.5f, 0.25f, 0.10f, 0.0f}, &sm64::config().camera().yawReturnScaler()));
 
 #ifdef ENABLE_MOUSE
-			m_items.push_back(new sm64::menu::item::EnumFloat("MOUSE X SCALER", {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}, &sm64::config().camera().mousexScaler()));
-			m_items.push_back(new sm64::menu::item::EnumFloat("MOUSE Y SCALER", {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}, &sm64::config().camera().mouseyScaler()));
+			m_items.push_back(new sm64::menu::item::EnumFloat("MOUSE X SCALER", {4.0f, 5.0f, 6.0f, 1.0f, 2.0f, 3.0f}, &sm64::config().camera().mousexScaler()));
+			m_items.push_back(new sm64::menu::item::EnumFloat("MOUSE Y SCALER", {4.0f, 5.0f, 6.0f, 1.0f, 2.0f, 3.0f }, &sm64::config().camera().mouseyScaler()));
 			m_items.push_back(new sm64::menu::item::Bool("MOUSE X INVERT", &sm64::config().camera().mousexInvert()));
 			m_items.push_back(new sm64::menu::item::Bool("MOUSE Y INVERT", &sm64::config().camera().mouseyInvert()));
 #endif
@@ -663,7 +664,11 @@ namespace sm64::menu
 			m_items.push_back(new sm64::menu::item::Bool("NO STAR EXIT", &sm64::config().game().setNoStarExit()));
 			m_items.push_back(new sm64::menu::item::Bool("NO FRAME PACING", &sm64::config().game().disableFramePacing()));
 			m_items.push_back(new sm64::menu::item::Bool("MIRROR MODE", &sm64::config().game().setMirror()));
+			m_items.push_back(new sm64::menu::item::Bool("RECORD TAS", &sm64::config().game().recordTas()));
 			m_items.push_back(new sm64::menu::item::Bool("DISABLE SOUND", &sm64::config().game().disableSound()));
+#ifdef ENABLE_MOUSE
+			m_items.push_back(new sm64::menu::item::Bool("FORCE MOUSE", &sm64::config().game().forceMouse()));
+#endif
 		}
 
 		void render(const s16 x, const s16 y, const s16 yIndex = 15) override

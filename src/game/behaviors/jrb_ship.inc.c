@@ -18,14 +18,14 @@ void bhv_sunken_ship_part_loop(void)
 		o->oOpacity = 140;
 	else
 		o->oOpacity = o->oDistanceToMario * 140.0f / 10000.0;
-	obj_disable_rendering();
+	s_shapeOFF();
 }
 
 void bhv_ship_part_3_loop(void)
 {
 	s16 sp1E = o->oFaceAnglePitch;
 	s16 sp1C = o->oFaceAngleRoll;
-	func_802A3470();
+	s_debug_position();
 	o->oShipPart3UnkF4 += 0x100 / FRAME_RATE_SCALER_INV;
 	o->oFaceAnglePitch = sins(o->oShipPart3UnkF4) * 1024.0f;
 	o->oFaceAngleRoll  = sins(o->oShipPart3UnkF8) * 1024.0f;
@@ -66,7 +66,7 @@ void bhv_jrb_sliding_box_loop(void)
 		sp54[1] = o->oParentRelativePosY;
 		sp54[2] = o->oParentRelativePosZ;
 		mtxf_rotate_zxy_and_translate(sp60, sp54, sp40);
-		linear_mtxf_mul_vec3f(sp60, sp48, sp54);
+		stRotatePoint(sp60, sp48, sp54);
 		o->oPosX = sp3C->oPosX + sp48[0];
 		o->oPosY = sp3C->oPosY + sp48[1];
 		o->oPosZ = sp3C->oPosZ + sp48[2];
@@ -89,7 +89,7 @@ void bhv_jrb_sliding_box_loop(void)
 	o->oParentRelativePosZ += o->oJrbSlidingBoxUnkFC * FRAME_RATE_SCALER;
 
 	if(gMarioObject->oPosY > 1000.0f)
-		if(absf(o->oJrbSlidingBoxUnkFC) > 3.0f)
+		if(s_abs_f(o->oJrbSlidingBoxUnkFC) > 3.0f)
 			objsound_level(SOUND_AIR_ROUGH_SLIDE);
 	s_set_hitparam(o, &sSkullSlidingBoxHitbox);
 	if(!(o->oJrbSlidingBoxUnkF8 & 0x7FFF))

@@ -13,7 +13,7 @@ void bhv_water_mist_loop(void)
 	if(o->oTimer == 0)
 	{
 		o->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
-		translate_object_xz_random(o, 10.0f);
+		s_random_XZ_offset(o, 10.0f);
 	}
 	s_optionmove_F();
 	o->oOpacity -= 42;

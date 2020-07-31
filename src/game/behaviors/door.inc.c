@@ -26,7 +26,7 @@ void func_802AC0B8(void)
 
 void func_802AC130(void)
 {
-	s32 sp1C = obj_has_model(MODEL_HMC_METAL_DOOR);
+	s32 sp1C = s_check_shapename(MODEL_HMC_METAL_DOOR);
 	if(o->oTimer == 0)
 	{
 		objsound(D_8032F328[sp1C]);
@@ -40,7 +40,7 @@ void func_802AC130(void)
 
 void func_802AC1CC(void)
 {
-	s32 sp1C = obj_has_model(MODEL_HMC_METAL_DOOR);
+	s32 sp1C = s_check_shapename(MODEL_HMC_METAL_DOOR);
 	if(o->oTimer == 30 * FRAME_RATE_SCALER_INV)
 		objsound(D_8032F330[sp1C]);
 }
@@ -53,7 +53,7 @@ void bhv_door_loop(void)
 		if(obj_clear_interact_status_flag(D_8032F300[sp1C][0]))
 		{
 			func_802AC0B8();
-			obj_change_action(D_8032F300[sp1C][1]);
+			s_set_newmode(D_8032F300[sp1C][1]);
 		}
 		sp1C++;
 	}

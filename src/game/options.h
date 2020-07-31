@@ -196,6 +196,9 @@ namespace sm64
 			bool& setNoStarExit();
 			bool& disableFramePacing();
 
+			bool& recordTas();
+			bool& forceMouse();
+
 			protected:
 			u8 m_overclock;
 			u8 m_framerate;
@@ -204,7 +207,9 @@ namespace sm64
 			bool m_mirror;
 			bool m_noStarExit;
 			bool m_paceFrames;
-			u8 m_padding[0x40 - 7];
+			bool m_recordTas;
+			bool m_forceMouse;
+			u8 m_padding[0x40 - 9];
 		};
 
 		static_assert(sizeof(Game) == 0x40, "Game Incorrect Size");

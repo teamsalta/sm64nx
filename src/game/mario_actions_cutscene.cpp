@@ -383,7 +383,7 @@ void PlayerRecord::handle_save_menu()
 		// not quitting
 		if(mesgLatch != SAVE_OPT_SAVE_AND_QUIT)
 		{
-			disable_time_stop();
+			s_end_demomode();
 			this->faceAngle[1] += 0x8000;
 			// figure out what dialog to show, if we should
 			dialogID = get_star_collection_dialog();
@@ -536,7 +536,7 @@ s32 PlayerRecord::act_reading_automatic_dialog()
 	this->actionState++;
 	if(this->actionState == 2)
 	{
-		enable_time_stop();
+		s_begin_demomode();
 	}
 	if(this->actionState < 9)
 	{
@@ -575,7 +575,7 @@ s32 PlayerRecord::act_reading_automatic_dialog()
 		// finished action
 		else if(this->actionState == 25)
 		{
-			disable_time_stop();
+			s_end_demomode();
 			if(mesgCastle)
 			{
 				mesgCastle = FALSE;
@@ -608,7 +608,7 @@ s32 PlayerRecord::act_reading_sign()
 		// start dialog
 		case 0:
 			ViewingCam(1);
-			enable_time_stop();
+			s_begin_demomode();
 			// reading sign
 			this->set_mario_animation(MARIO_ANIM_FIRST_PERSON);
 			this->actionState = 1;
@@ -630,7 +630,7 @@ s32 PlayerRecord::act_reading_sign()
 			// dialog finished
 			if(gCamera->cutscene == 0)
 			{
-				disable_time_stop();
+				s_end_demomode();
 				this->ChangePlayerStatus(ACT_IDLE, 0);
 			}
 			break;
@@ -746,7 +746,7 @@ void PlayerRecord::general_star_dance_handler(s32 isInWater)
 				}
 				else
 				{
-					enable_time_stop();
+					s_begin_demomode();
 					CallMessageYesNo(gLastCompletedStarNum == 7 ? DIALOG_013 : DIALOG_014);
 					this->actionState = 1;
 				}
@@ -763,7 +763,7 @@ void PlayerRecord::general_star_dance_handler(s32 isInWater)
 	}
 	else if(this->actionState == 2 && this->is_anim_at_end())
 	{
-		disable_time_stop();
+		s_end_demomode();
 		AudUnlockSound();
 		dialogID = get_star_collection_dialog();
 		if(dialogID != 0)
@@ -1323,7 +1323,7 @@ s32 PlayerRecord::act_exit_land_save_dialog()
 			{
 				if(gLastCompletedCourseNum != COURSE_BITDW && gLastCompletedCourseNum != COURSE_BITFS)
 				{
-					enable_time_stop();
+					s_begin_demomode();
 				}
 
 				CallSelectMessage(RENDER_COURSE_DONE_SCREEN);
@@ -1737,7 +1737,7 @@ s32 PlayerRecord::act_shocked()
 {
 	this->play_sound_if_no_flag(SOUND_MARIO_WAAAOOOW, MARIO_ACTION_SOUND_PLAYED);
 	AudStartSound(SOUND_MOVING_SHOCKED, this->marioObj->header.gfx.cameraToObject);
-	set_camera_shake_from_hit(SHAKE_SHOCK);
+	Vieweffect(SHAKE_SHOCK);
 
 	if(this->set_mario_animation(MARIO_ANIM_SHOCKED) == 0)
 	{
@@ -1890,7 +1890,7 @@ s32 PlayerRecord::act_putting_on_cap()
 
 	if(animFrame == 0)
 	{
-		enable_time_stop();
+		s_begin_demomode();
 	}
 
 	if(animFrame == 28)
@@ -1901,7 +1901,7 @@ s32 PlayerRecord::act_putting_on_cap()
 	if(this->is_anim_at_end())
 	{
 		this->ChangePlayerStatus(ACT_IDLE, 0);
-		disable_time_stop();
+		s_end_demomode();
 	}
 
 	stationary_ground_step();
@@ -1996,7 +1996,7 @@ void PlayerRecord::intro_cutscene_peach_lakitu_scene()
 
 void PlayerRecord::intro_cutscene_raise_pipe()
 {
-	sIntroWarpPipeObj->oPosY = camera_approach_f32_symmetric(sIntroWarpPipeObj->oPosY, 260.0f, 10.0f * FRAME_RATE_SCALER);
+	sIntroWarpPipeObj->oPosY = c_Fchase_f(sIntroWarpPipeObj->oPosY, 260.0f, 10.0f * FRAME_RATE_SCALER);
 
 	if(this->actionTimer == 0)
 	{
@@ -2328,7 +2328,7 @@ void PlayerRecord::end_peach_cutscene_mario_landing()
 		this->capTimer = 60 * FRAME_RATE_SCALER_INV;
 
 		sEndJumboStarObj = s_makeobj_absolute(gCurrentObject, 0, MODEL_STAR, sm64::bhv::bhvStaticObject(), 0, 2528, -1800, 0, 0, 0);
-		scale_object(sEndJumboStarObj, 3.0);
+		s_scale(sEndJumboStarObj, 3.0);
 		advance_cutscene_step();
 	}
 }
@@ -2397,7 +2397,7 @@ void PlayerRecord::end_peach_cutscene_spawn_peach()
 
 	if(this->actionTimer >= 276 * FRAME_RATE_SCALER_INV)
 	{
-		sEndPeachObj->oOpacity = camera_approach_f32_symmetric(sEndPeachObj->oOpacity, 255.0f, 2.0f * FRAME_RATE_SCALER);
+		sEndPeachObj->oOpacity = c_Fchase_f(sEndPeachObj->oOpacity, 255.0f, 2.0f * FRAME_RATE_SCALER);
 	}
 	if(this->actionTimer >= 40 * FRAME_RATE_SCALER_INV)
 	{

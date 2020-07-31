@@ -25,11 +25,11 @@ void yoshi_walk_loop(void)
 
 	o->oForwardVel	 = 10.0f;
 	sp26		 = ObjMoveEvent();
-	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oYoshiTargetYaw, 0x500 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oYoshiTargetYaw, 0x500 / FRAME_RATE_SCALER_INV);
 	if(is_point_close_to_object(o, o->oHomeX, 3174.0f, o->oHomeZ, 200))
 		o->oAction = YOSHI_ACT_IDLE;
 
-	SetObjAnimation(1);
+	stSetSkelAnimeNumber(1);
 	if(sp24 == 0 || sp24 == 15)
 		objsound(SOUND_GENERAL_YOSHI_WALK);
 
@@ -66,7 +66,7 @@ void yoshi_idle_loop(void)
 		o->oAction	   = YOSHI_ACT_WALK;
 	}
 
-	SetObjAnimation(0);
+	stSetSkelAnimeNumber(0);
 	if(o->oInteractStatus == INT_STATUS_INTERACTED)
 		o->oAction = YOSHI_ACT_TALK;
 
@@ -84,7 +84,7 @@ void yoshi_talk_loop(void)
 {
 	if((s16)o->oMoveAngleYaw == (s16)o->oAngleToMario)
 	{
-		SetObjAnimation(0);
+		stSetSkelAnimeNumber(0);
 		if(CtrlPlayerDialog(1) == 2)
 		{
 			o->activeFlags |= 0x20;
@@ -101,9 +101,9 @@ void yoshi_talk_loop(void)
 	}
 	else
 	{
-		SetObjAnimation(1);
+		stSetSkelAnimeNumber(1);
 		Na_NazoClearBgm();
-		o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x500 / FRAME_RATE_SCALER_INV);
+		o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x500 / FRAME_RATE_SCALER_INV);
 	}
 }
 
@@ -113,14 +113,14 @@ void yoshi_walk_and_jump_off_roof_loop(void)
 
 	o->oForwardVel = 10.0f;
 	ObjMoveEvent();
-	SetObjAnimation(1);
+	stSetSkelAnimeNumber(1);
 	if(o->oTimer == 0)
 		cutscene_object(CUTSCENE_STAR_SPAWN, o);
 
-	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oYoshiTargetYaw, 0x500 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oYoshiTargetYaw, 0x500 / FRAME_RATE_SCALER_INV);
 	if(is_point_close_to_object(o, o->oHomeX, 3174.0f, o->oHomeZ, 200))
 	{
-		SetObjAnimation(2);
+		stSetSkelAnimeNumber(2);
 		objsound(SOUND_GENERAL_ENEMY_ALERT1);
 		o->oForwardVel	 = 50.0f;
 		o->oVelY	 = 40.0f;
@@ -199,7 +199,7 @@ void BehYoshiLoop(void)
 			break;
 
 		case YOSHI_ACT_CREDITS:
-			SetObjAnimation(0);
+			stSetSkelAnimeNumber(0);
 			break;
 	}
 

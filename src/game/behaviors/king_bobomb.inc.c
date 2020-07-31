@@ -14,15 +14,15 @@ void ActionKingBobomb0(void)
 		s_hitOFF();
 		gSecondCameraFocus = o;
 		s_set_skelanimeNo(5);
-		obj_set_pos_to_home();
+		s_copy_initpos();
 		o->oHealth = 3;
-		if(obj_is_mario_in_range_and_ready_to_speak(500.0f, 100.0f))
+		if(s_hitcheck_message(500.0f, 100.0f))
 		{
 			o->oSubAction++;
 			Na_SeqVolMute(0, 60, 40);
 		}
 	}
-	else if(obj_update_dialog_with_cutscene(2, 1, CUTSCENE_DIALOG, DIALOG_017))
+	else if(s_call_talkdemo(2, 1, CUTSCENE_DIALOG, DIALOG_017))
 	{
 		o->oAction = 2;
 		o->oFlags |= OBJ_FLAG_HOLDABLE;
@@ -56,7 +56,7 @@ void ActionKingBobomb2(void)
 	{
 		if(o->oKingBobombUnk100 == 1)
 		{
-			func_802A4A70(11, 7);
+			s_setanime_start(11, 7);
 			o->oKingBobombUnk100 = 2;
 		}
 		else
@@ -72,7 +72,7 @@ void ActionKingBobomb2(void)
 			o->oKingBobombUnk108--;
 		}
 	}
-	if(obj_check_grabbed_mario())
+	if(s_check_playercarry())
 		o->oAction = 3;
 	if(func_802A6AF8(1200.0f))
 	{
@@ -93,7 +93,7 @@ void ActionKingBobomb3(void)
 		if(s_setanime_endcheck(0))
 		{
 			o->oSubAction++;
-			func_802A4A70(1, 0);
+			s_setanime_start(1, 0);
 		}
 	}
 	else
@@ -101,7 +101,7 @@ void ActionKingBobomb3(void)
 		if(o->oSubAction == 1)
 		{
 			s_set_skelanimeNo(1);
-			o->oKingBobombUnkFC += player_performed_grab_escape_action();
+			o->oKingBobombUnkFC += key_gacha();
 
 			if(o->oKingBobombUnkFC > 10)
 			{
@@ -116,7 +116,7 @@ void ActionKingBobomb3(void)
 				if(o->oKingBobombUnk104 > 20 && s_chase_angleY(0, 0x400 / FRAME_RATE_SCALER_INV))
 				{
 					o->oSubAction++;
-					func_802A4A70(9, 22);
+					s_setanime_start(9, 22);
 				}
 			}
 			o->oKingBobombUnk104++;
@@ -143,7 +143,7 @@ void ActionKingBobomb1(void)
 	o->oForwardVel = 0;
 	o->oVelY       = 0;
 	s_set_skelanimeNo(11);
-	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 512 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oAngleToMario, 512 / FRAME_RATE_SCALER_INV);
 	if(o->oDistanceToMario < 2500.0f)
 		o->oAction = 2;
 	if(func_802A6AF8(1200.0f))
@@ -198,7 +198,7 @@ void ActionKingBobomb6(void)
 void ActionKingBobomb7(void)
 {
 	s_set_skelanimeNo(2);
-	if(obj_update_dialog_with_cutscene(2, 2, CUTSCENE_DIALOG, DIALOG_116))
+	if(s_call_talkdemo(2, 2, CUTSCENE_DIALOG, DIALOG_116))
 	{
 		obj_remove_sound(SOUND_OBJ_KING_WHOMP_DEATH);
 		s_shape_hide();
@@ -206,7 +206,7 @@ void ActionKingBobomb7(void)
 		s_burneffect(0, 0, 200.0f);
 		s_boxeffect(20, 138, 3.0f, 4);
 		s_call_Viewshake(SHAKE_POS_SMALL);
-		obj_spawn_star_at_y_offset(2000.0f, 4500.0f, -4500.0f, 200.0f);
+		sv2_enemyset_star(2000.0f, 4500.0f, -4500.0f, 200.0f);
 		o->oAction = 8;
 	}
 }
@@ -263,8 +263,8 @@ void ActionKingBobomb5()
 			if(o->oTimer == 0)
 				objsound(SOUND_OBJ_KING_BOBOMB_JUMP);
 			o->oKingBobombUnkF8 = 1;
-			func_802A4AEC(8);
-			o->oMoveAngleYaw = obj_angle_to_home();
+			s_setanime_endstop(8);
+			o->oMoveAngleYaw = s_calc_returnangle();
 			if(o->oPosY < o->oHomeY)
 				o->oVelY = 100.0f;
 			else
@@ -274,7 +274,7 @@ void ActionKingBobomb5()
 			}
 			break;
 		case 1:
-			func_802A4AEC(8);
+			s_setanime_endstop(8);
 			if(o->oVelY < 0 && o->oPosY < o->oHomeY)
 			{
 				o->oPosY	    = o->oHomeY;
@@ -298,11 +298,11 @@ void ActionKingBobomb5()
 				o->oAction = 0;
 				stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
 			}
-			if(obj_is_mario_in_range_and_ready_to_speak(500.0f, 100.0f))
+			if(s_hitcheck_message(500.0f, 100.0f))
 				o->oSubAction++;
 			break;
 		case 4:
-			if(obj_update_dialog_with_cutscene(2, 1, CUTSCENE_DIALOG, DIALOG_128))
+			if(s_call_talkdemo(2, 1, CUTSCENE_DIALOG, DIALOG_128))
 				o->oAction = 2;
 			break;
 	}
@@ -339,13 +339,13 @@ void func_802A7748(void)
 	if(!sm64::config().camera().disableDistanceClip())
 	{
 		if(o->oDistanceToMario < 5000.0f)
-			obj_enable_rendering();
+			s_shapeON();
 		else
-			obj_disable_rendering();
+			s_shapeOFF();
 	}
 	else
 	{
-		obj_enable_rendering();
+		s_shapeON();
 	}
 }
 

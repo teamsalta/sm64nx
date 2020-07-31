@@ -6,7 +6,7 @@ void bhv_white_puff_1_loop(void)
 	f32 sp18 = 0.5f;
 	if(o->oTimer == 0)
 	{
-		translate_object_xz_random(o, 40.0f);
+		s_random_XZ_offset(o, 40.0f);
 		o->oPosY += 30.0f * FRAME_RATE_SCALER;
 	}
 
@@ -25,6 +25,6 @@ void bhv_white_puff_2_loop(void)
 {
 	if(o->oTimer == 0)
 	{
-		translate_object_xz_random(o, 40.0f);
+		s_random_XZ_offset(o, 40.0f);
 	}
 }

@@ -36,7 +36,7 @@ void bhv_mips_init(void)
 	o->oFriction = 0.89f;
 	o->oBuoyancy = 1.2f;
 
-	SetObjAnimation(0);
+	stSetSkelAnimeNumber(0);
 }
 
 /**
@@ -103,7 +103,7 @@ void bhv_mips_act_wait_for_nearby_mario(void)
 		else
 		{
 			// Resume path following.
-			SetObjAnimation(1);
+			stSetSkelAnimeNumber(1);
 			o->oAction = MIPS_ACT_FOLLOW_PATH;
 		}
 	}
@@ -115,7 +115,7 @@ void bhv_mips_act_wait_for_nearby_mario(void)
 void bhv_mips_act_follow_path(void)
 {
 	s16 collisionFlags = 0;
-	s32 followStatus;
+	s32 followStatus = 0;
 	struct Waypoint** pathBase;
 	struct Waypoint* waypoint;
 
@@ -125,7 +125,7 @@ void bhv_mips_act_follow_path(void)
 
 	// Set start waypoint and follow the path from there.
 	o->oPathedStartWaypoint = waypoint;
-	followStatus		= obj_follow_path(followStatus);
+	followStatus		= s_road_move(followStatus);
 
 	// Update velocity and angle and do movement.
 	o->oForwardVel	 = o->oMipsForwardVelocity;
@@ -135,7 +135,7 @@ void bhv_mips_act_follow_path(void)
 	// If we are at the end of the path, do idle animation and wait for Mario.
 	if(followStatus == PATH_REACHED_END)
 	{
-		SetObjAnimation(0);
+		stSetSkelAnimeNumber(0);
 		o->oAction = MIPS_ACT_WAIT_FOR_NEARBY_MARIO;
 	}
 
@@ -158,7 +158,7 @@ void bhv_mips_act_wait_for_animation_done(void)
 {
 	if(s_check_animeend() == 1)
 	{
-		SetObjAnimation(0);
+		stSetSkelAnimeNumber(0);
 		o->oAction = MIPS_ACT_IDLE;
 	}
 }
@@ -240,8 +240,8 @@ void bhv_mips_held(void)
 	s16 dialogID;
 
 	o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-	SetObjAnimation(4); // Held animation.
-	obj_set_pos_relative(gMarioObject, 0, 60.0f, 100.0f);
+	stSetSkelAnimeNumber(4); // Held animation.
+	s_posoffset_mother(gMarioObject, 0, 60.0f, 100.0f);
 	s_hitOFF();
 
 	// If MIPS hasn't spawned his star yet...
@@ -272,9 +272,9 @@ void bhv_mips_held(void)
  */
 void bhv_mips_dropped(void)
 {
-	obj_get_dropped();
+	s_mode_drop();
 	o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-	SetObjAnimation(0);
+	stSetSkelAnimeNumber(0);
 	o->oHeldState = HELD_FREE;
 	s_hitON();
 	o->oForwardVel = 3.0f;
@@ -286,11 +286,11 @@ void bhv_mips_dropped(void)
  */
 void bhv_mips_thrown(void)
 {
-	obj_enable_rendering_2();
+	s_throw_object();
 	o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
 	o->oHeldState = HELD_FREE;
 	o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
-	SetObjAnimation(2);
+	stSetSkelAnimeNumber(2);
 	s_hitON();
 	o->oForwardVel = 25.0f;
 	o->oVelY       = 20.0f;

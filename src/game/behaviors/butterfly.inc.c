@@ -2,7 +2,7 @@
 
 void bhv_butterfly_init(void)
 {
-	SetObjAnimation(1);
+	stSetSkelAnimeNumber(1);
 
 	o->oButterflyYPhase = Randomf() * 100.0f;
 	o->header.gfx.unk38.setFrameRaw(Randomf() * 7.0f);
@@ -60,7 +60,7 @@ void ButterflyRestingLoop(void)
 {
 	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 1000))
 	{
-		SetObjAnimation(0);
+		stSetSkelAnimeNumber(0);
 
 		o->oAction	 = BUTTERFLY_ACT_FOLLOW_MARIO;
 		o->oMoveAngleYaw = gMarioObject->header.gfx.angle[1];
@@ -85,14 +85,14 @@ void ButterflyReturnHomeLoop(void)
 	s16 hAngleToHome = atan2s(homeDistZ, homeDistX);
 	s16 vAngleToHome = atan2s(sqrtf(homeDistX * homeDistX + homeDistZ * homeDistZ), -homeDistY);
 
-	o->oMoveAngleYaw   = approach_s16_symmetric(o->oMoveAngleYaw, hAngleToHome, 0x800 / FRAME_RATE_SCALER_INV);
-	o->oMoveAnglePitch = approach_s16_symmetric(o->oMoveAnglePitch, vAngleToHome, 0x50 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw   = s_chase_angle(o->oMoveAngleYaw, hAngleToHome, 0x800 / FRAME_RATE_SCALER_INV);
+	o->oMoveAnglePitch = s_chase_angle(o->oMoveAnglePitch, vAngleToHome, 0x50 / FRAME_RATE_SCALER_INV);
 
 	ButterflyStep(7);
 
 	if(homeDistX * homeDistX + homeDistY * homeDistY + homeDistZ * homeDistZ < 144.0f)
 	{
-		SetObjAnimation(1);
+		stSetSkelAnimeNumber(1);
 
 		o->oAction = BUTTERFLY_ACT_RESTING;
 		o->oPosX   = o->oHomeX;

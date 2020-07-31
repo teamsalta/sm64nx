@@ -90,7 +90,7 @@ void bhv_falling_pillar_loop(void)
 
 			// Calculate angle in front of Mario and turn towards it.
 			angleInFrontOfMario = bhv_falling_pillar_calculate_angle_in_front_of_mario();
-			o->oFaceAngleYaw    = approach_s16_symmetric(o->oFaceAngleYaw, angleInFrontOfMario, 0x400 / FRAME_RATE_SCALER_INV);
+			o->oFaceAngleYaw    = s_chase_angle(o->oFaceAngleYaw, angleInFrontOfMario, 0x400 / FRAME_RATE_SCALER_INV);
 
 			// After 10 ticks, start falling.
 			if(o->oTimer > 10 * FRAME_RATE_SCALER_INV)
@@ -113,7 +113,7 @@ void bhv_falling_pillar_loop(void)
 				o->oPosZ += coss(o->oFaceAngleYaw) * 500.0f * FRAME_RATE_SCALER;
 
 				// Make the camera shake and spawn dust clouds.
-				set_camera_shake_from_point(SHAKE_POS_MEDIUM, o->oPosX, o->oPosY, o->oPosZ);
+				Viewshaking(SHAKE_POS_MEDIUM, o->oPosX, o->oPosY, o->oPosZ);
 				s_burneffect(0, 0, 92.0f);
 
 				// Go invisible.

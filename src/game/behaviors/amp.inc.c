@@ -79,7 +79,7 @@ static void homing_amp_appear_loop(void)
 	f32 relativeTargetZ = gLakituState.goalPos[2] - o->oPosZ;
 	s16 targetYaw	    = atan2s(relativeTargetZ, relativeTargetX);
 
-	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, targetYaw, 0x1000 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, targetYaw, 0x1000 / FRAME_RATE_SCALER_INV);
 
 	// For 30 frames, make the amp "appear" by increasing its size by 0.03 each frame,
 	// except for the first frame (when oTimer == 0) because the expression in s_set_scale
@@ -307,7 +307,7 @@ static void fixed_circling_amp_idle_loop(void)
 	s16 vAngleToMario = atan2s(sqrtf(xToMario * xToMario + zToMario * zToMario), -yToMario);
 
 	s_chase_obj_angle(o, gMarioObject, 19, 0x1000 / FRAME_RATE_SCALER_INV);
-	o->oFaceAnglePitch = approach_s16_symmetric(o->oFaceAnglePitch, vAngleToMario, 0x1000 / FRAME_RATE_SCALER_INV);
+	o->oFaceAnglePitch = s_chase_angle(o->oFaceAnglePitch, vAngleToMario, 0x1000 / FRAME_RATE_SCALER_INV);
 
 	// Oscillate 40 units up and down.
 	// Interestingly, 0x458 (1112 in decimal) is a magic number with no apparent significance.

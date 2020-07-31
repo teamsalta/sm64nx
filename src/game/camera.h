@@ -431,7 +431,7 @@ struct CutsceneSplinePoint
 	   An index of -1 should come four points after the start of the last segment. */
 	s8 index;
 	/* Roughly controls the number of frames it takes to progress through the spline segment.
-	   See move_point_along_spline() in camera.c */
+	   See Crou_DosplineZ() in camera.c */
 	u8 speed;
 	Vec3s point;
 };
@@ -681,9 +681,9 @@ extern struct Object* gSecondCameraFocus;
 
 // TODO: sort all of this extremely messy shit out after the split
 
-extern void set_camera_shake_from_hit(s16);
+extern void Vieweffect(s16);
 extern void Viewshake(s16);
-extern void set_camera_shake_from_point(s16, f32, f32, f32);
+extern void Viewshaking(s16, f32, f32, f32);
 extern void move_mario_head_c_up(struct Camera*); // static (ASM)
 extern void transition_next_state(struct Camera* c, s16 frames);
 extern void set_camera_mode(struct Camera*, s16, s16);
@@ -692,33 +692,33 @@ extern void InitGameCamera(struct Camera*);
 extern void init_camera(struct Camera*);
 extern void select_mario_cam_mode(void);
 extern Gfx* geo_camera_main(s32 callContext, struct GraphNode* g, void* context);
-extern void vec3f_sub(Vec3f dst, Vec3f src);
-extern void object_pos_to_vec3f(Vec3f, struct Object*);
-extern void vec3f_to_object_pos(struct Object*, Vec3f); // static (ASM)
-extern s32 move_point_along_spline(Vec3f, struct CutsceneSplinePoint[], s16*, f32*);
-extern s32 cam_select_alt_mode(s32 angle);
-extern s32 set_cam_angle(s32);
-extern void set_handheld_shake(u8);
-extern void shake_camera_handheld(Vec3f, Vec3f);
-extern s32 find_c_buttons_pressed(u16, u16, u16);
+extern void SubFVector(Vec3f dst, Vec3f src);
+extern void Srou_pos2FVector(Vec3f, struct Object*);
+extern void Srou_FVector2pos(struct Object*, Vec3f); // static (ASM)
+extern s32 Crou_DosplineZ(Vec3f, struct CutsceneSplinePoint[], s16*, f32*);
+extern s32 SpecialMode(s32 angle);
+extern s32 SpecialCamera(s32);
+extern void Viewswing(u8);
+extern void Crou_Viewswing(Vec3f, Vec3f);
+extern s32 Crou_Key(u16, u16, u16);
 extern s32 update_camera_hud_status(struct Camera*);
-s32 collide_with_walls(Vec3f&, const f32, const f32);
-extern s32 clamp_pitch(Vec3f a, Vec3f b, s16 c, s16 d);
-extern s32 is_within_100_units_of_mario(f32, f32, f32);
-extern s32 set_or_approach_f32_asymptotic(f32*, f32, f32);
-extern s32 approach_f32_asymptotic_bool(f32* current, f32 target, f32 multiplier);
-extern f32 approach_f32_asymptotic(f32 current, f32 target, f32 multiplier); // static (ASM)
-extern s32 approach_s16_asymptotic_bool(s16* current, s16 target, s16 multiplier);
-extern s32 approach_s16_asymptotic(s16 current, s16 target, s16 multiplier);			  // static (ASM)
-extern void approach_vec3f_asymptotic(Vec3f current, Vec3f target, f32 xMul, f32 yMul, f32 zMul); // static (ASM)
+s32 CamWallCheck(Vec3f&, const f32, const f32);
+extern s32 Crou_CamAngLimit(Vec3f a, Vec3f b, s16 c, s16 d);
+extern s32 Crou_mariosamepos(f32, f32, f32);
+extern s32 c_c_achase_f(f32*, f32, f32);
+extern s32 c_achase_f(f32* current, f32 target, f32 multiplier);
+extern f32 c_Achase_f(f32 current, f32 target, f32 multiplier); // static (ASM)
+extern s32 c_achase_s(s16* current, s16 target, s16 multiplier);
+extern s32 c_Achase_s(s16 current, s16 target, s16 multiplier);			  // static (ASM)
+extern void c_achase_FVector(Vec3f current, Vec3f target, f32 xMul, f32 yMul, f32 zMul); // static (ASM)
 
-extern void set_or_approach_vec3f_asymptotic(Vec3f dst, Vec3f goal, f32 xMul, f32 yMul, f32 zMul); // postdefined
-extern s32 camera_approach_s16_symmetric_bool(s16* current, s16 target, s16 increment);
-extern s32 set_or_approach_s16_symmetric(s16* current, s16 target, s16 increment); // postdefined
-extern s32 camera_approach_f32_symmetric_bool(f32* current, f32 target, f32 increment);
-extern f32 camera_approach_f32_symmetric(f32 value, f32 target, f32 increment);
-extern void random_vec3s(Vec3s dst, s16 xRange, s16 yRange, s16 zRange); // postdefined
-extern s32 clamp_positions_and_find_yaw(Vec3f, Vec3f, f32, f32, f32, f32);
+extern void c_c_achase_FVector(Vec3f dst, Vec3f goal, f32 xMul, f32 yMul, f32 zMul); // postdefined
+extern s32 c_fchase_s(s16* current, s16 target, s16 increment);
+extern s32 c_c_fchase_s(s16* current, s16 target, s16 increment); // postdefined
+extern s32 c_fchase_f(f32* current, f32 target, f32 increment);
+extern f32 c_Fchase_f(f32 value, f32 target, f32 increment);
+extern void Crou_SetRandom_SVector(Vec3s dst, s16 xRange, s16 yRange, s16 zRange); // postdefined
+extern s32 Crou_XZbarrier(Vec3f, Vec3f, f32, f32, f32, f32);
 extern s32 is_range_behind_surface(Vec3f from, Vec3f to, struct Surface* surf, s16 range, s16 surfType);
 void scale_along_line(Vec3f& dest, const Vec3f from, const Vec3f to, const f32 scale);
 extern s16 calculate_pitch(Vec3f from, Vec3f to);
@@ -736,15 +736,15 @@ void shake_camera_pitch(Vec3f pos, Vec3f focus);
 void shake_camera_yaw(Vec3f pos, Vec3f focus);
 void shake_camera_roll(s16* roll);
 extern s32 offset_yaw_outward_radial(struct Camera* a, s16 b);
-extern void play_camera_buzz_if_cdown(void);
-extern void play_camera_buzz_if_cbutton(void);
-extern void play_camera_buzz_if_c_sideways(void);
-extern void play_sound_cbutton_up(void);
-extern void play_sound_cbutton_down(void);
-extern void play_sound_cbutton_side(void);
-extern void play_sound_button_change_blocked(void);		 // postdefined
-extern void play_sound_rbutton_changed(void);			 // postdefined
-extern void play_sound_if_cam_switched_to_lakitu_or_mario(void); // postdefined
+extern void Crou_SE_ViewDdisable(void);
+extern void Crou_SE_ViewUDLRdisable(void);
+extern void Crou_SE_ViewLRdisable(void);
+extern void Crou_SE_ZOOM_IN(void);
+extern void Crou_SE_ZOOM_OUT(void);
+extern void Crou_SE_CAMERAMOVE(void);
+extern void Crou_SE_BUZZER(void);		 // postdefined
+extern void Crou_SE_SHUTTER(void);			 // postdefined
+extern void Crou_SE_SPECIALCAMERA(void); // postdefined
 extern s32 radial_camera_input(struct Camera* a, f32 b);
 extern s32 ViewingCam(s32);
 extern void handle_c_button_movement(struct Camera*);

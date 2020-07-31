@@ -21,22 +21,22 @@ void bhv_wind_loop(void)
 
 		if(o->oMoveAnglePitch == 0)
 		{
-			translate_object_xz_random(o, 900.0f);
+			s_random_XZ_offset(o, 900.0f);
 			o->oPosX += (sins(o->oMoveAngleYaw + 0x8000) * sp2E) / FRAME_RATE_SCALER_INV; // NOP as Pitch is 0
-			o->oPosY += (80.0f + random_f32_around_zero(200.0f)) / FRAME_RATE_SCALER_INV;
+			o->oPosY += (80.0f + s_random_f(200.0f)) / FRAME_RATE_SCALER_INV;
 			o->oPosZ += (coss(o->oMoveAngleYaw + 0x8000) * sp2E) / FRAME_RATE_SCALER_INV; // -coss(a) * sp2E
-			o->oMoveAngleYaw += random_f32_around_zero(4000.0f * FRAME_RATE_SCALER);
+			o->oMoveAngleYaw += s_random_f(4000.0f * FRAME_RATE_SCALER);
 			o->oForwardVel = Randomf() * 70.0f + 50.0f;
 		}
 		else
 		{
-			translate_object_xz_random(o, 600.0f);
+			s_random_XZ_offset(o, 600.0f);
 			o->oPosY -= (sp2E - 200) / FRAME_RATE_SCALER_INV; // 300
 			o->oVelY	 = Randomf() * 30.0f + 50.0f;
 			o->oMoveAngleYaw = RandomU16();
 			o->oForwardVel	 = 10.0f;
 		}
-		obj_set_billboard(o);
+		s_softspritemodeON(o);
 		s_set_scale(sp28);
 	}
 	if(o->oTimer > 8 * FRAME_RATE_SCALER_INV)

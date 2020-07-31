@@ -45,7 +45,7 @@ static void func_80306ED4(s8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4)
 	D_80331A00.forwardVelBase = arg2;
 	D_80331A00.velYBase	  = arg3;
 	D_80331A00.sizeBase	  = arg4;
-	obj_spawn_particles(&D_80331A00);
+	s_makeeffect_chiri(&D_80331A00);
 }
 
 void bhv_mr_blizzard_init(void)
@@ -180,7 +180,7 @@ static void func_80307370(void)
 
 		if(o->oMrBlizzardUnk104 != 0.0f)
 		{
-			if(absi(o->oFaceAngleRoll) > 0x3000)
+			if(s_abs_d(o->oFaceAngleRoll) > 0x3000)
 			{
 				o->oAction = 6;
 				o->prevObj = o->oMrBlizzardUnkF8 = NULL;
@@ -254,7 +254,7 @@ static void func_80307650(void)
 				o->oMrBlizzardUnkF4 = 0.0f;
 				if(!(o->oBehParams & 0x0000FF00))
 				{
-					spawn_object_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+					s_makecoin(o, o->oNumLootCoins, 20.0f);
 					set_object_respawn_info_bits(o, 1);
 				}
 			}
@@ -335,7 +335,7 @@ static void func_80307AD4(void)
 		objsound(SOUND_OBJ_SNOW_SAND1);
 		if(o->oMrBlizzardUnkTimer != 0)
 		{
-			o->oMrBlizzardUnkTimer = (s32)obj_lateral_dist_to_home() * FRAME_RATE_SCALER_INV;
+			o->oMrBlizzardUnkTimer = (s32)s_calc_enemyscope() * FRAME_RATE_SCALER_INV;
 		}
 		else
 		{
@@ -380,7 +380,7 @@ void bhv_mr_blizzard_update(void)
 	}
 
 	o->oFaceAngleRoll = o->oMrBlizzardUnk104;
-	o->oGraphYOffset  = o->oMrBlizzardUnk10C + absf(20.0f * sins(o->oFaceAngleRoll)) - 40.0f * (1.0f - o->oMrBlizzardUnkF4);
+	o->oGraphYOffset  = o->oMrBlizzardUnk10C + s_abs_f(20.0f * sins(o->oFaceAngleRoll)) - 40.0f * (1.0f - o->oMrBlizzardUnkF4);
 
 	s_set_scale(o->oMrBlizzardUnkF4);
 	s_enemymove(78);

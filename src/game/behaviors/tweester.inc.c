@@ -29,7 +29,7 @@ void ActionTweester0(void)
 	if(o->oSubAction == 0)
 	{
 		s_hitON();
-		obj_set_pos_to_home();
+		s_copy_initpos();
 		s_set_scale(0);
 		o->oTweesterUnkF8 = 0;
 		if(o->oDistanceToMario < 1500.0f)
@@ -48,9 +48,9 @@ void ActionTweester0(void)
 void ActionTweester1(void)
 {
 	f32 sp1C   = o->oBehParams2ndByte * 0x64;
-	o->oUnk1BC = obj_angle_to_home();
+	o->oUnk1BC = s_calc_returnangle();
 	objsound_level(SOUND_ENV_WIND1);
-	if(obj_lateral_dist_from_mario_to_home() < sp1C && o->oSubAction == 0)
+	if(s_calc_playerscope() < sp1C && o->oSubAction == 0)
 	{
 		o->oForwardVel = 20.0f;
 		s_chase_angleY(o->oAngleToMario, 0x200 / FRAME_RATE_SCALER_INV);
@@ -62,7 +62,7 @@ void ActionTweester1(void)
 	{
 		o->oForwardVel = 20.0f;
 		s_chase_angleY(o->oUnk1BC, 0x200 / FRAME_RATE_SCALER_INV);
-		if(obj_lateral_dist_to_home() < 200.0f)
+		if(s_calc_enemyscope() < 200.0f)
 			o->oAction = 2;
 	}
 	if(o->oDistanceToMario > 3000.0f)
@@ -83,7 +83,7 @@ void ActionTweester2(void)
 	else
 	{
 		s_hitOFF();
-		if(obj_lateral_dist_from_mario_to_home() > 2500.0f)
+		if(s_calc_playerscope() > 2500.0f)
 			o->oAction = 0;
 		if(o->oTimer > 360 * FRAME_RATE_SCALER_INV)
 			o->oAction = 0;
@@ -107,7 +107,7 @@ void bhv_tweester_sand_particle_loop(void)
 	s_set_scale(Randomf() + 1.0);
 	if(o->oTimer == 0)
 	{
-		translate_object_xz_random(o, 100.0f);
+		s_random_XZ_offset(o, 100.0f);
 		o->oFaceAnglePitch = RandomU16();
 		o->oFaceAngleYaw   = RandomU16();
 	}

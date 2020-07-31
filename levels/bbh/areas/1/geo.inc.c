@@ -481,7 +481,7 @@ const GeoLayout bbh_level_geo[] = {
          GEO_OPEN_NODE(),
             GEO_CAMERA(4, 0, 2000, 6000, 0, 0, 0, geo_camera_main),
             GEO_OPEN_NODE(),
-               GEO_SWITCH_CASE(32, geo_switch_area),
+               GEO_SWITCH_CASE(32, ControlSwitchMap),
                GEO_OPEN_NODE(),
                   GEO_BRANCH(1, geo_bbh_000670), // 0x0E000670
                   GEO_BRANCH(1, geo_bbh_0006B0), // 0x0E0006B0

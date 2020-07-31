@@ -28,11 +28,11 @@ s32 bhv_coin_sparkles_init(void)
 
 void bhv_yellow_coin_init(void)
 {
-	obj_set_behavior(sm64::bhv::bhvYellowCoin());
+	s_change_pathname(sm64::bhv::bhvYellowCoin());
 	s_set_hitparam(o, &sYellowCoinHitbox);
-	bhv_init_room();
-	obj_update_floor_height();
-	if(500.0f < absf(o->oPosY - o->oFloorHeight))
+	s_areastage_init();
+	s_groundcheck();
+	if(500.0f < s_abs_f(o->oPosY - o->oFloorHeight))
 		s_change_shape(MODEL_YELLOW_COIN_NO_SHADOW);
 	if(o->oFloorHeight < -10000.0f)
 		s_remove_obj(o);
@@ -48,7 +48,7 @@ void bhv_temp_coin_loop(void)
 {
 	o->oAnimState++;
 
-	if(obj_wait_then_blink(200 * FRAME_RATE_SCALER_INV, 20))
+	if(s_flash_shape(200 * FRAME_RATE_SCALER_INV, 20))
 		s_remove_obj(o);
 
 	bhv_coin_sparkles_init();
@@ -59,7 +59,7 @@ void bhv_coin_init(void)
 	o->oVelY	 = Randomf() * 10.0f + 30 + o->oCoinUnk110;
 	o->oForwardVel	 = Randomf() * 10.0f;
 	o->oMoveAngleYaw = RandomU16();
-	obj_set_behavior(sm64::bhv::bhvYellowCoin());
+	s_change_pathname(sm64::bhv::bhvYellowCoin());
 	s_set_hitparam(o, &sYellowCoinHitbox);
 	s_hitOFF();
 }
@@ -69,7 +69,7 @@ void bhv_coin_loop(void)
 	struct Surface* sp1C;
 	s16 sp1A;
 	s_enemybgcheck();
-	obj_if_hit_wall_bounce_away();
+	s_wallreverse();
 	s_enemymove(-62);
 	if((sp1C = o->oFloor) != NULL)
 	{
@@ -101,7 +101,7 @@ void bhv_coin_loop(void)
 		o->oCoinUnk1B0++;
 	}
 
-	if(obj_wait_then_blink(400 * FRAME_RATE_SCALER_INV, 20))
+	if(s_flash_shape(400 * FRAME_RATE_SCALER_INV, 20))
 		s_remove_obj(o);
 
 	bhv_coin_sparkles_init();
@@ -111,13 +111,13 @@ void bhv_coin_formation_spawn_loop(void)
 {
 	if(o->oTimer == 0)
 	{
-		obj_set_behavior(sm64::bhv::bhvYellowCoin());
+		s_change_pathname(sm64::bhv::bhvYellowCoin());
 		s_set_hitparam(o, &sYellowCoinHitbox);
-		bhv_init_room();
+		s_areastage_init();
 		if(o->oCoinUnkF8)
 		{
 			o->oPosY += 300.0f * FRAME_RATE_SCALER;
-			obj_update_floor_height();
+			s_groundcheck();
 			if(o->oPosY < o->oFloorHeight || o->oFloorHeight < -10000.0f)
 				s_remove_obj(o);
 			else
@@ -125,15 +125,15 @@ void bhv_coin_formation_spawn_loop(void)
 		}
 		else
 		{
-			obj_update_floor_height();
-			if(absf(o->oPosY - o->oFloorHeight) > 250.0f)
+			s_groundcheck();
+			if(s_abs_f(o->oPosY - o->oFloorHeight) > 250.0f)
 				s_change_shape(MODEL_YELLOW_COIN_NO_SHADOW);
 		}
 	}
 	else
 	{
 		if(bhv_coin_sparkles_init())
-			o->parentObj->oCoinUnkF4 |= func_802A377C(o->oBehParams2ndByte);
+			o->parentObj->oCoinUnkF4 |= s_index_bit(o->oBehParams2ndByte);
 
 		o->oAnimState++;
 	}
@@ -225,7 +225,7 @@ void bhv_coin_formation_loop(void)
 void ActionCoinInsideBoo1(void)
 {
 	s_enemybgcheck();
-	obj_if_hit_wall_bounce_away();
+	s_wallreverse();
 
 	if(o->oMoveFlags & OBJ_MOVE_13)
 		objsound(SOUND_GENERAL_COIN_DROP);
@@ -234,16 +234,16 @@ void ActionCoinInsideBoo1(void)
 	{
 		s_set_hitparam(o, &sYellowCoinHitbox);
 		s_hitON();
-		obj_set_behavior(sm64::bhv::bhvYellowCoin());
+		s_change_pathname(sm64::bhv::bhvYellowCoin());
 	}
 
 	s_enemymove(-30);
 	bhv_coin_sparkles_init();
 
-	if(obj_has_model(MODEL_BLUE_COIN))
+	if(s_check_shapename(MODEL_BLUE_COIN))
 		o->oDamageOrCoinValue = 5;
 
-	if(obj_wait_then_blink(400 * FRAME_RATE_SCALER_INV, 20))
+	if(s_flash_shape(400 * FRAME_RATE_SCALER_INV, 20))
 		s_remove_obj(o);
 }
 
@@ -260,7 +260,7 @@ void ActionCoinInsideBoo0(void)
 		s_set_scale(0.7);
 	}
 
-	copy_object_pos(o, parent);
+	s_copy_worldXYZ(o, parent);
 
 	if(parent->oBooDeathStatus == BOO_DEATH_STATUS_DYING)
 	{

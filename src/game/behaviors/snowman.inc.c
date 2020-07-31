@@ -63,9 +63,9 @@ void func_802EFC44(void)
 
 	o->oPathedStartWaypoint = (Waypoint*)segmented_to_virtual(&ccm_seg7_trajectory_snowman);
 	sp26			= object_step_without_floor_orient();
-	sp20			= obj_follow_path(sp20);
+	sp20			= s_road_move(sp20);
 	o->oSnowmansBottomUnkF8 = o->oPathedTargetYaw;
-	o->oMoveAngleYaw	= approach_s16_symmetric(o->oMoveAngleYaw, o->oSnowmansBottomUnkF8, 0x400 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw	= s_chase_angle(o->oMoveAngleYaw, o->oSnowmansBottomUnkF8, 0x400 / FRAME_RATE_SCALER_INV);
 
 	if(o->oForwardVel > 70.0)
 		o->oForwardVel = 70.0f;
@@ -93,7 +93,7 @@ void func_802EFDA0(void)
 	if(o->oForwardVel > 70.0)
 		o->oForwardVel = 70.0f;
 
-	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oSnowmansBottomUnkF8, 0x400 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oSnowmansBottomUnkF8, 0x400 / FRAME_RATE_SCALER_INV);
 	if(is_point_close_to_object(o, -4230.0f, -1344.0f, 1813.0f, 300))
 	{
 		s_burneffect(0, 0, 70.0f);

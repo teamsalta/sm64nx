@@ -155,9 +155,15 @@ void main_func(void)
 #if(defined(_WIN32) || defined(_WIN64)) && defined(_MSC_VER)
 #include <windows.h>
 #include <shellscalingapi.h>
+//#include "engine/script.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
 {
+	/*sm64::script::Js js;
+	js.open("var gus = new Dog('Gus');"
+      "gus.bark();"
+		"(gus.getName());");
+	js.exec();*/
 	SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE);
 	main_func();
 	return 0;

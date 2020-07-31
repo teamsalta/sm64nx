@@ -25,25 +25,6 @@
 #include "hook_geo.h"
 #include "hook_macro.h"
 
-//#define DEBUG
-
-#ifndef __FUNCTION_NAME__
-#ifdef _MSC_VER // WINDOWS
-#define __FUNCTION_NAME__ __FUNCTION__
-#else //*NIX
-#define __FUNCTION_NAME__ __func__
-#endif
-#endif
-
-#if defined(DEBUG) && defined(WIN65)
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <debugapi.h>
-#define LOG_OP() OutputDebugString(__FUNCTION_NAME__ "\n")
-#else
-#define LOG_OP()
-#endif
-
 //#define CMD_SIZE_SHIFT (sizeof(void*) >> 3)
 //#define CMD_PROCESS_OFFSET(offset) ((offset & 3) | ((offset & ~3) << CMD_SIZE_SHIFT))
 
@@ -129,9 +110,6 @@ static s32 eval_script_op(s8 op, s32 arg)
 
 static void level_cmd_load_and_execute(void)
 {
-#ifdef DEBUG
-	LOG_OP();
-#endif
 	main_pool_push_state();
 
 	uintptr_t next = (uintptr_t)NEXT_CMD;
@@ -147,10 +125,6 @@ static void level_cmd_exit_and_execute(void)
 {
 	void* targetAddr = CMD_GET(void*, 12);
 
-#ifdef DEBUG
-	LOG_OP();
-#endif
-
 	main_pool_pop_state();
 	main_pool_push_state();
 
@@ -162,9 +136,6 @@ static void level_cmd_exit_and_execute(void)
 
 static void level_cmd_exit(void)
 {
-#ifdef DEBUG
-	LOG_OP();
-#endif
 	main_pool_pop_state();
 
 	sStackTop   = sStackBase;
@@ -174,9 +145,6 @@ static void level_cmd_exit(void)
 
 static void level_cmd_sleep(void)
 {
-#ifdef DEBUG
-	// LOG_OP();
-#endif
 	sScriptStatus = SCRIPT_PAUSED;
 
 	if(sDelayFrames == 0)
@@ -192,9 +160,6 @@ static void level_cmd_sleep(void)
 
 static void level_cmd_sleep2(void)
 {
-#ifdef DEBUG
-	// LOG_OP();
-#endif
 	sScriptStatus = SCRIPT_PAUSED2;
 
 	if(sDelayFrames2 == 0)
@@ -210,15 +175,12 @@ static void level_cmd_sleep2(void)
 
 static void level_cmd_jump(void)
 {
-#ifdef DEBUG
-	LOG_OP();
-#endif
 	sCurrentCmd = sm64::hook::level::apply((LevelCommand*)segmented_to_virtual(CMD_GET(void*, 4)));
 }
 
 static void level_cmd_jump_and_link(void)
 {
-	LOG_OP();
+	
 	*sStackTop++ = (uintptr_t)NEXT_CMD;
 	sCurrentCmd  = sm64::hook::level::apply((LevelCommand*)segmented_to_virtual(CMD_GET(void*, 4)));
 }
@@ -230,7 +192,7 @@ static void level_cmd_return(void)
 
 static void level_cmd_jump_and_link_push_arg(void)
 {
-	LOG_OP();
+	
 	*sStackTop++ = (uintptr_t)NEXT_CMD;
 	*sStackTop++ = CMD_GET(s16, 2);
 	sCurrentCmd  = CMD_NEXT;
@@ -238,7 +200,7 @@ static void level_cmd_jump_and_link_push_arg(void)
 
 static void level_cmd_jump_repeat(void)
 {
-	LOG_OP();
+	
 	s32 val = *(sStackTop - 1);
 
 	if(val == 0)
@@ -259,7 +221,7 @@ static void level_cmd_jump_repeat(void)
 
 static void level_cmd_loop_begin(void)
 {
-	LOG_OP();
+	
 	*sStackTop++ = (uintptr_t)NEXT_CMD;
 	*sStackTop++ = 0;
 	sCurrentCmd  = CMD_NEXT;
@@ -267,7 +229,7 @@ static void level_cmd_loop_begin(void)
 
 static void level_cmd_loop_until(void)
 {
-	LOG_OP();
+	
 	if(eval_script_op(CMD_GET(u8, 2), CMD_GET(s32, 4)) != 0)
 	{
 		sCurrentCmd = CMD_NEXT;
@@ -281,7 +243,7 @@ static void level_cmd_loop_until(void)
 
 static void level_cmd_jump_if(void)
 {
-	LOG_OP();
+	
 	if(eval_script_op(CMD_GET(u8, 2), CMD_GET(s32, 4)) != 0)
 	{
 		sCurrentCmd = sm64::hook::level::apply((LevelCommand*)segmented_to_virtual(CMD_GET(void*, 8)));
@@ -294,7 +256,7 @@ static void level_cmd_jump_if(void)
 
 static void level_cmd_jump_and_link_if(void)
 {
-	LOG_OP();
+	
 	if(eval_script_op(CMD_GET(u8, 2), CMD_GET(s32, 4)) != 0)
 	{
 		*sStackTop++ = (uintptr_t)NEXT_CMD;
@@ -308,7 +270,7 @@ static void level_cmd_jump_and_link_if(void)
 
 static void level_cmd_skip_if(void)
 {
-	LOG_OP();
+	
 	if(eval_script_op(CMD_GET(u8, 2), CMD_GET(s32, 4)) == 0)
 	{
 		do
@@ -322,7 +284,7 @@ static void level_cmd_skip_if(void)
 
 static void level_cmd_skip(void)
 {
-	LOG_OP();
+	
 	do
 	{
 		sCurrentCmd = CMD_NEXT;
@@ -334,14 +296,14 @@ static void level_cmd_skip(void)
 static void level_cmd_skippable_nop(void)
 {
 #ifdef DEBUG
-	LOG_OP();
+	
 #endif
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_call(void)
 {
-	LOG_OP();
+	
 	typedef s32 (*Func)(s16, s32);
 	Func func   = CMD_GET(Func, 4);
 	sRegister   = func(CMD_GET(s16, 2), sRegister);
@@ -350,7 +312,7 @@ static void level_cmd_call(void)
 
 static void level_cmd_call_loop(void)
 {
-	LOG_OP();
+	
 	typedef s32 (*Func)(s16, s32);
 	Func func = CMD_GET(Func, 4);
 	sRegister = func(CMD_GET(s16, 2), sRegister);
@@ -368,63 +330,63 @@ static void level_cmd_call_loop(void)
 
 static void level_cmd_set_register(void)
 {
-	LOG_OP();
+	
 	sRegister   = CMD_GET(s16, 2);
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_push_pool_state(void)
 {
-	LOG_OP();
+	
 	main_pool_push_state();
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_pop_pool_state(void)
 {
-	LOG_OP();
+	
 	main_pool_pop_state();
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_load_to_fixed_address(void)
 {
-	LOG_OP();
+	
 	load_to_fixed_pool_addr(CMD_GET(void*, 4), CMD_GET(void*, 8), CMD_GET(void*, 12));
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_load_raw(void)
 {
-	LOG_OP();
+	
 	load_segment(CMD_GET(s16, 2), CMD_GET(void*, 4), CMD_GET(void*, 8), MEMORY_POOL_LEFT);
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_load_mio0(void)
 {
-	LOG_OP();
+	
 	load_segment_decompress(CMD_GET(s16, 2), CMD_GET(void*, 4), CMD_GET(void*, 8));
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_load_mario_head(void)
 {
-	LOG_OP();
+	
 
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_load_mio0_texture(void)
 {
-	LOG_OP();
+	
 	func_80278304(CMD_GET(s16, 2), CMD_GET(void*, 4), CMD_GET(void*, 8));
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_init_level(void)
 {
-	LOG_OP();
+	
 	init_graph_node_start(NULL, (struct GraphNodeStart*)&strategyGroup);
 	clear_objects();
 	clear_areas();
@@ -446,7 +408,7 @@ static void level_cmd_clear_level(void)
 
 static void level_cmd_alloc_level_pool(void)
 {
-	LOG_OP();
+	
 	if(sLevelPool == NULL)
 	{
 		sLevelPool = alloc_only_pool_init(main_pool_available() - sizeof(struct AllocOnlyPool), MEMORY_POOL_LEFT);
@@ -457,7 +419,7 @@ static void level_cmd_alloc_level_pool(void)
 
 static void level_cmd_free_level_pool(void)
 {
-	LOG_OP();
+	
 	s32 i;
 
 	alloc_only_pool_resize(sLevelPool, sLevelPool->usedSpace);
@@ -477,7 +439,7 @@ static void level_cmd_free_level_pool(void)
 
 static void level_cmd_begin_area(void)
 {
-	LOG_OP();
+	
 	u8 areaIndex	   = CMD_GET(u8, 2);
 	auto geoLayoutAddr = (GeoLayout*)CMD_GET(void*, 4);
 
@@ -505,14 +467,14 @@ static void level_cmd_begin_area(void)
 
 static void level_cmd_end_area(void)
 {
-	LOG_OP();
+	
 	sCurrAreaIndex = -1;
 	sCurrentCmd    = CMD_NEXT;
 }
 
 static void level_cmd_load_model_from_dl(void)
 {
-	LOG_OP();
+	
 	s16 val1   = CMD_GET(s16, 2) & 0x0FFF;
 	s16 val2   = CMD_GET(u16, 2) >> 12;
 	void* val3 = CMD_GET(void*, 4);
@@ -527,7 +489,7 @@ static void level_cmd_load_model_from_dl(void)
 
 static void level_cmd_load_model_from_geo(void)
 {
-	LOG_OP();
+	
 	s16 arg0  = CMD_GET(s16, 2);
 	auto arg1 = (GeoLayout*)sm64::hook::geo::apply((GeoLayout*)nullptr, (sm64::hook::geo::Id)(u64)CMD_GET(void*, 4));
 
@@ -541,7 +503,7 @@ static void level_cmd_load_model_from_geo(void)
 
 static void level_cmd_23(void)
 {
-	LOG_OP();
+	
 	union
 	{
 		s32 i;
@@ -566,7 +528,7 @@ static void level_cmd_23(void)
 
 static void level_cmd_init_mario(void)
 {
-	LOG_OP();
+	
 	vec3s_set(marioActor->startPos, 0, 0, 0);
 	vec3s_set(marioActor->startAngle, 0, 0, 0);
 
@@ -582,7 +544,7 @@ static void level_cmd_init_mario(void)
 
 static void level_cmd_place_object(void)
 {
-	LOG_OP();
+	
 	u8 val7 = 1 << (activeLevelNo - 1);
 	u16 model;
 	struct SpawnInfo* spawnInfo;
@@ -616,7 +578,7 @@ static void level_cmd_place_object(void)
 
 static void level_cmd_create_warp_node(void)
 {
-	LOG_OP();
+	
 	if(sCurrAreaIndex != -1)
 	{
 		struct ObjectWarpNode* warpNode = (ObjectWarpNode*)alloc_only_pool_alloc(sLevelPool, sizeof(struct ObjectWarpNode));
@@ -637,7 +599,7 @@ static void level_cmd_create_warp_node(void)
 
 static void level_cmd_create_instant_warp(void)
 {
-	LOG_OP();
+	
 	s32 i;
 	struct InstantWarp* warp;
 
@@ -668,7 +630,7 @@ static void level_cmd_create_instant_warp(void)
 
 static void level_cmd_set_terrain_type(void)
 {
-	LOG_OP();
+	
 	if(sCurrAreaIndex != -1)
 	{
 		stageScenes[sCurrAreaIndex].terrainType |= CMD_GET(s16, 2);
@@ -679,7 +641,7 @@ static void level_cmd_set_terrain_type(void)
 
 static void level_cmd_create_painting_warp_node(void)
 {
-	LOG_OP();
+	
 	s32 i;
 	struct WarpNode* node;
 
@@ -708,7 +670,7 @@ static void level_cmd_create_painting_warp_node(void)
 
 static void level_cmd_3A(void)
 {
-	LOG_OP();
+	
 	struct UnusedArea28* val4;
 
 	if(sCurrAreaIndex != -1)
@@ -730,7 +692,7 @@ static void level_cmd_3A(void)
 
 static void level_cmd_create_whirlpool(void)
 {
-	LOG_OP();
+	
 	struct Whirlpool* whirlpool;
 	s32 index	= CMD_GET(u8, 2);
 	s32 beatBowser2 = (BuGetItemFlag() & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) != 0;
@@ -755,21 +717,21 @@ static void level_cmd_create_whirlpool(void)
 
 static void level_cmd_set_blackout(void)
 {
-	LOG_OP();
+	
 	osViBlack(CMD_GET(u8, 2));
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_set_gamma(void)
 {
-	LOG_OP();
+	
 	osViSetSpecialFeatures(CMD_GET(u8, 2) == 0 ? OS_VI_GAMMA_OFF : OS_VI_GAMMA_ON);
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_set_terrain_data(void)
 {
-	LOG_OP();
+	
 	if(sCurrAreaIndex != -1)
 	{
 		Collision* data;
@@ -785,7 +747,7 @@ static void level_cmd_set_terrain_data(void)
 
 static void level_cmd_set_rooms(void)
 {
-	LOG_OP();
+	
 	if(sCurrAreaIndex != -1)
 	{
 		stageScenes[sCurrAreaIndex].surfaceRooms = (s8*)segmented_to_virtual(CMD_GET(void*, 4));
@@ -795,7 +757,7 @@ static void level_cmd_set_rooms(void)
 
 static void level_cmd_set_macro_objects(void)
 {
-	LOG_OP();
+	
 	if(sCurrAreaIndex != -1)
 	{
 		const MacroObject* data = sm64::hook::macro::apply(CMD_GET(MacroObject*, 4), sm64::hook::macro::Id::NONE);
@@ -812,7 +774,7 @@ static void level_cmd_set_macro_objects(void)
 
 static void level_cmd_load_area(void)
 {
-	LOG_OP();
+	
 	s16 areaIndex	    = CMD_GET(u8, 2);
 	UNUSED void* unused = (u8*)sCurrentCmd + 4;
 
@@ -824,14 +786,14 @@ static void level_cmd_load_area(void)
 
 static void level_cmd_2A(void)
 {
-	LOG_OP();
+	
 	SnCloseScene();
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_set_mario_start_pos(void)
 {
-	LOG_OP();
+	
 	marioActor->areaIndex = CMD_GET(u8, 2);
 
 #if IS_64_BIT
@@ -847,21 +809,21 @@ static void level_cmd_set_mario_start_pos(void)
 
 static void level_cmd_2C(void)
 {
-	LOG_OP();
+	
 	SnExitPlayer();
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_2D(void)
 {
-	LOG_OP();
+	
 	SnExecuteStrategy();
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_set_transition(void)
 {
-	LOG_OP();
+	
 	if(snSceneInfo != NULL)
 	{
 		SnStartFader(CMD_GET(u8, 2), CMD_GET(u8, 3), CMD_GET(u8, 4), CMD_GET(u8, 5), CMD_GET(u8, 6));
@@ -871,13 +833,13 @@ static void level_cmd_set_transition(void)
 
 static void level_cmd_nop(void)
 {
-	LOG_OP();
+	
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_show_dialog(void)
 {
-	LOG_OP();
+	
 	if(sCurrAreaIndex != -1)
 	{
 		if(CMD_GET(u8, 2) < 2)
@@ -890,7 +852,7 @@ static void level_cmd_show_dialog(void)
 
 static void level_cmd_set_music(void)
 {
-	LOG_OP();
+	
 	if(sCurrAreaIndex != -1)
 	{
 		stageScenes[sCurrAreaIndex].musicParam	= CMD_GET(s16, 2);
@@ -901,14 +863,14 @@ static void level_cmd_set_music(void)
 
 static void level_cmd_set_menu_music(void)
 {
-	LOG_OP();
+	
 	AudPlayMusic(0, CMD_GET(s16, 2), 0);
 	sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_38(void)
 {
-	LOG_OP();
+	
 	AudStopMusic(CMD_GET(s16, 2));
 	sCurrentCmd = CMD_NEXT;
 }
@@ -917,7 +879,7 @@ extern int gPressedStart;
 
 static void level_cmd_get_or_set_var(void)
 {
-	LOG_OP();
+	
 	if(CMD_GET(u8, 2) == 0)
 	{
 		switch(CMD_GET(u8, 3))

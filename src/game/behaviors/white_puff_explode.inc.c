@@ -5,7 +5,7 @@ void bhv_white_puff_exploding_loop(void)
 	f32 sp24;
 	if(o->oTimer == 0)
 	{
-		obj_compute_vel_xz();
+		s_calcobj_speedF();
 		o->oWhitePuffUnkF4 = o->header.gfx.scale[0];
 
 		switch(o->oBehParams2ndByte)
@@ -22,8 +22,8 @@ void bhv_white_puff_exploding_loop(void)
 				break;
 		}
 	}
-	obj_move_using_vel_and_gravity();
-	obj_apply_drag_xz(o->oDragStrength);
+	s_optionmove_XZ();
+	s_calc_enemyspeedXZ(o->oDragStrength);
 
 	if(o->oVelY > 100.0f)
 		o->oVelY = 100.0f;

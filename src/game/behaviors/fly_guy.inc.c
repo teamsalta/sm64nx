@@ -222,7 +222,7 @@ void bhv_fly_guy_update(void)
 
 		if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
 		{
-			o->oMoveAngleYaw = obj_reflect_move_angle_off_wall();
+			o->oMoveAngleYaw = s_wall_rebound();
 		}
 		else if(o->oMoveFlags & OBJ_MOVE_MASK_IN_WATER)
 		{

@@ -2,7 +2,7 @@
 
 void bhv_hoot_init(void)
 {
-	SetObjAnimation(0);
+	stSetSkelAnimeNumber(0);
 
 	o->oHomeX = o->oPosX + 800.0f;
 	o->oHomeY = o->oPosY - 150.0f;
@@ -173,7 +173,7 @@ void HootAscentLoop(f32 xPrev, f32 zPrev)
 	f32 negZ	  = 0 - o->oPosZ;
 	s16 angleToOrigin = atan2s(negZ, negX);
 
-	o->oMoveAngleYaw   = approach_s16_symmetric(o->oMoveAngleYaw, angleToOrigin, 0x500 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw   = s_chase_angle(o->oMoveAngleYaw, angleToOrigin, 0x500 / FRAME_RATE_SCALER_INV);
 	o->oMoveAnglePitch = 0xCE38;
 
 	if(o->oTimer >= 29 * FRAME_RATE_SCALER_INV)
@@ -207,11 +207,11 @@ void HootActionLoop(void)
 
 			if(o->oPosY < 2700.0f)
 			{
-				set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
+				s_begin_enemydemo(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 
 				if(cutscene_object_with_dialog(CUTSCENE_DIALOG, o, DIALOG_045))
 				{
-					clear_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
+					s_end_enemydemo(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 
 					o->oAction = HOOT_ACT_TIRED;
 				}
@@ -243,8 +243,8 @@ void HootTurnToHome(void)
 	s16 hAngleToHome = atan2s(homeDistZ, homeDistX);
 	s16 vAngleToHome = atan2s(sqrtf(homeDistX * homeDistX + homeDistZ * homeDistZ), -homeDistY);
 
-	o->oMoveAngleYaw   = approach_s16_symmetric(o->oMoveAngleYaw, hAngleToHome, 0x140 / FRAME_RATE_SCALER_INV);
-	o->oMoveAnglePitch = approach_s16_symmetric(o->oMoveAnglePitch, vAngleToHome, 0x140 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw   = s_chase_angle(o->oMoveAngleYaw, hAngleToHome, 0x140 / FRAME_RATE_SCALER_INV);
+	o->oMoveAnglePitch = s_chase_angle(o->oMoveAnglePitch, vAngleToHome, 0x140 / FRAME_RATE_SCALER_INV);
 }
 
 void HootAwakeLoop(void)
@@ -253,11 +253,11 @@ void HootAwakeLoop(void)
 	{
 		HootActionLoop();
 
-		SetObjAnimation(1);
+		stSetSkelAnimeNumber(1);
 	}
 	else
 	{
-		SetObjAnimation(0);
+		stSetSkelAnimeNumber(0);
 
 		HootTurnToHome();
 		HootFloorBounce();

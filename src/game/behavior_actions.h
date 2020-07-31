@@ -124,7 +124,7 @@ void bhv_purple_switch_loop(void);
 void bhv_hidden_object_loop(void);
 void bhv_breakable_box_loop(void);
 void bhv_pushable_loop(void);
-void bhv_init_room(void);
+void s_areastage_init(void);
 void bhv_small_water_wave_loop(void);
 void bhv_yellow_coin_init(void);
 void bhv_yellow_coin_loop(void);
@@ -547,7 +547,7 @@ void bhv_intro_peach_loop(void);
 void bhv_end_birds_1_loop(void);
 void bhv_end_birds_2_loop(void);
 void bhv_intro_scene_loop(void);
-void BehDustSmokeLoop(void);
+void s_samplesmoke_main(void);
 void BehYoshiLoop(void);
 void bhvLllVolcanoFallingTrap_loop(void);
 

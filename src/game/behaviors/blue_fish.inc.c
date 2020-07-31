@@ -10,7 +10,7 @@ void bhv_blue_fish_loop(void)
 	switch(o->oAction)
 	{
 		case 0:
-			func_8029ED98(0, 1.0f);
+			s_set_skelanime_speed(0, 1.0f);
 			if(o->oTimer == 0)
 			{
 				o->oBlueFishUnk100 = RandomSign() << 11;
@@ -20,7 +20,7 @@ void bhv_blue_fish_loop(void)
 				sp24 = Randomf() * 5;
 
 				if(sp24 < 2.0f)
-					o->oAngleVelPitch = random_f32_around_zero(128) / FRAME_RATE_SCALER_INV;
+					o->oAngleVelPitch = s_random_f(128) / FRAME_RATE_SCALER_INV;
 				else
 					o->oAngleVelPitch = 0;
 			}
@@ -42,7 +42,7 @@ void bhv_blue_fish_loop(void)
 			o->oVelY = -sins(o->oFaceAnglePitch) * o->oForwardVel;
 			break;
 		case 1:
-			func_8029ED98(0, 2.0f);
+			s_set_skelanime_speed(0, 2.0f);
 
 			o->oMoveAngleYaw = (s32)(o->oBlueFishUnk100 + o->oMoveAngleYaw);
 
@@ -52,7 +52,7 @@ void bhv_blue_fish_loop(void)
 			}
 			break;
 		case 2:
-			func_8029ED98(0, 1.0f);
+			s_set_skelanime_speed(0, 1.0f);
 			if(o->oTimer >= (o->oBlueFishUnkF8 + 60))
 			{
 				o->oAction++;
@@ -68,7 +68,7 @@ void bhv_blue_fish_loop(void)
 			}
 			break;
 		case 3:
-			func_8029ED98(0, 2.0f);
+			s_set_skelanime_speed(0, 2.0f);
 
 			o->oMoveAngleYaw = (s32)(o->oBlueFishUnk100 + o->oMoveAngleYaw);
 
@@ -96,7 +96,7 @@ void bhv_tank_fish_group_loop(void)
 				for(i = 0; i < 15; i++)
 				{
 					fish = s_makeobj_chain(0, 300, 0, -200, o, MODEL_FISH, sm64::bhv::bhvBlueFish());
-					translate_object_xyz_random(fish, 200.0f);
+					s_random_XYZ_offset(fish, 200.0f);
 				}
 				o->oAction++;
 			}

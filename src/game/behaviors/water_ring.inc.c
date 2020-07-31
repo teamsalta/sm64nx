@@ -12,7 +12,7 @@ f32 WaterRingCalcMarioDistInFront(void)
 
 void WaterRingInit(void)
 {
-	SetObjAnimation(0);
+	stSetSkelAnimeNumber(0);
 	o->oWaterRingScalePhaseX = (s32)(Randomf() * 4096.0f) + 0x1000;
 	o->oWaterRingScalePhaseY = (s32)(Randomf() * 4096.0f) + 0x1000;
 	o->oWaterRingScalePhaseZ = (s32)(Randomf() * 4096.0f) + 0x1000;
@@ -39,7 +39,7 @@ void bhv_jet_stream_water_ring_init(void)
 {
 	WaterRingInit();
 	o->oOpacity = 70;
-	SetObjAnimation(0);
+	stSetSkelAnimeNumber(0);
 	o->oFaceAnglePitch = 0x8000;
 }
 

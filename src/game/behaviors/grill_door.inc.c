@@ -30,9 +30,9 @@ void bhv_openable_grill_loop(void)
 			sp38 = o->oBehParams2ndByte;
 			sp3C = s_makeobj_chain(-1, D_8032FCE8[sp38].unk0, 0, 0, o, D_8032FCE8[sp38].unk1, sm64::bhv::bhvOpenableCageDoor());
 			sp3C->oMoveAngleYaw += 0x8000;
-			set_object_collision_data(sp3C, D_8032FCE8[sp38].unk2);
+			s_set_shapeinfo(sp3C, D_8032FCE8[sp38].unk2);
 			sp3C = s_makeobj_chain(1, -D_8032FCE8[sp38].unk0, 0, 0, o, D_8032FCE8[sp38].unk1, sm64::bhv::bhvOpenableCageDoor());
-			set_object_collision_data(sp3C, D_8032FCE8[sp38].unk2);
+			s_set_shapeinfo(sp3C, D_8032FCE8[sp38].unk2);
 			o->oAction++;
 			break;
 		case 1:

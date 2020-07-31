@@ -15,9 +15,9 @@ void handle_hat_ukiki_reset(void)
 {
 	if(o->oBehParams2ndByte == UKIKI_HAT)
 	{
-		if(obj_mario_far_away())
+		if(s_enemy_areaout())
 		{
-			obj_set_pos_to_home_and_stop();
+			s_reset_posspeed();
 			o->oAction = UKIKI_ACT_IDLE;
 		}
 		else if(o->oMoveFlags & OBJ_MOVE_MASK_IN_WATER)
@@ -45,7 +45,7 @@ s32 is_hat_ukiki_and_mario_has_hat(void)
 }
 
 /**
- * Unused copy of geo_update_projectile_pos_from_parent. Perhaps a copy paste mistake.
+ * Unused copy of CtrlHand. Perhaps a copy paste mistake.
  */
 Gfx* unused_Geo18_8029D890(s32 run, UNUSED struct GraphNode* node, Mat4 mtx)
 {
@@ -59,9 +59,9 @@ Gfx* unused_Geo18_8029D890(s32 run, UNUSED struct GraphNode* node, Mat4 mtx)
 
 		if(obj->prevObj != NULL)
 		{
-			create_transformation_from_matrices(mtx2, mtx, *(Mat4*)gCurGraphNodeCamera->matrixPtr);
-			obj_update_pos_from_parent_transformation(mtx2, obj->prevObj);
-			obj_set_gfx_pos_from_pos(obj->prevObj);
+			s_calc_skeleton_glbmtx(mtx2, mtx, *(Mat4*)gCurGraphNodeCamera->matrixPtr);
+			s_calc_skeleton_glbpos(mtx2, obj->prevObj);
+			s_copy_worldXYZmappos(obj->prevObj);
 		}
 	}
 
@@ -217,7 +217,7 @@ void ukiki_act_return_home(void)
 	UNUSED s32 unused;
 
 	s_set_skelanimeNo(UKIKI_ANIM_RUN);
-	o->oMoveAngleYaw = obj_angle_to_home();
+	o->oMoveAngleYaw = s_calc_returnangle();
 	o->oForwardVel	 = 10.0f;
 
 	// If ukiki somehow walked home, go back to the idle action.
@@ -235,9 +235,9 @@ void ukiki_act_wait_to_respawn(void)
 {
 	idle_ukiki_taunt();
 
-	if(obj_mario_far_away())
+	if(s_enemy_areaout())
 	{
-		obj_set_pos_to_home_and_stop();
+		s_reset_posspeed();
 		o->oAction = UKIKI_ACT_IDLE;
 	}
 }
@@ -317,7 +317,7 @@ void ukiki_act_run(void)
 
 	//! @bug (Ukikispeedia) This function sets forward speed to 0.9 * Mario's
 	//! forward speed, which means ukiki can move at hyperspeed rates.
-	func_8029F684(20.0f, 0.9f);
+	s_chase_playerspeed(20.0f, 0.9f);
 
 	if(fleeMario)
 	{
@@ -335,14 +335,14 @@ void ukiki_act_run(void)
 	{
 		if(o->oDistanceToMario < 200.0f)
 		{
-			if((o->oMoveFlags & OBJ_MOVE_HIT_WALL) && obj_is_mario_moving_fast_or_in_air(10))
+			if((o->oMoveFlags & OBJ_MOVE_HIT_WALL) && s_check_playerslow(10))
 			{
 				o->oAction	 = UKIKI_ACT_JUMP;
 				o->oMoveAngleYaw = o->oWallAngle;
 			}
 			else if((o->oMoveFlags & OBJ_MOVE_HIT_EDGE))
 			{
-				if(obj_is_mario_moving_fast_or_in_air(10))
+				if(s_check_playerslow(10))
 				{
 					o->oAction = UKIKI_ACT_JUMP;
 					o->oMoveAngleYaw += 0x8000;
@@ -365,7 +365,7 @@ void ukiki_act_jump(void)
 	{
 		if(o->oTimer == 0)
 		{
-			func_8029FA1C(Randomf() * 10.0f + 45.0f, UKIKI_ANIM_JUMP);
+			s_set_jumpstart(Randomf() * 10.0f + 45.0f, UKIKI_ANIM_JUMP);
 		}
 		else if(o->oMoveFlags & OBJ_MOVE_MASK_NOT_AIR)
 		{
@@ -411,7 +411,7 @@ void ukiki_act_go_to_cage(void)
 	if(obj != NULL)
 	{
 		latDistToCage = s_distanceXZ_obj2obj(o, obj->parentObj);
-		yawToCage     = angle_to_object(o, obj->parentObj);
+		yawToCage     = s_calc_targetangle(o, obj->parentObj);
 	}
 
 	s_hitOFF();
@@ -425,7 +425,7 @@ void ukiki_act_go_to_cage(void)
 
 			o->oPathedWaypointsS16 = sCageUkikiPath;
 
-			if(obj_follow_path(0) != PATH_REACHED_END)
+			if(s_road_move(0) != PATH_REACHED_END)
 			{
 				o->oForwardVel = 10.0f;
 				s_chase_angleY(o->oPathedTargetYaw, 0x400 / FRAME_RATE_SCALER_INV);
@@ -442,7 +442,7 @@ void ukiki_act_go_to_cage(void)
 			s_set_skelanimeNo(UKIKI_ANIM_JUMP_CLAP);
 			s_chase_angleY(o->oAngleToMario, 0x400 / FRAME_RATE_SCALER_INV);
 
-			if(func_802A3FF8(200.0f, 30.0f, 0x7FFF))
+			if(s_hitcheck_message_entry(200.0f, 30.0f, 0x7FFF))
 			{
 				o->oSubAction++; // fallthrough
 			}
@@ -454,7 +454,7 @@ void ukiki_act_go_to_cage(void)
 		case UKIKI_SUB_ACT_CAGE_TALK_TO_MARIO:
 			s_set_skelanimeNo(UKIKI_ANIM_HANDSTAND);
 
-			if(obj_update_dialog_with_cutscene(3, 1, CUTSCENE_DIALOG, DIALOG_080))
+			if(s_call_talkdemo(3, 1, CUTSCENE_DIALOG, DIALOG_080))
 			{
 				o->oSubAction++;
 			}
@@ -471,7 +471,7 @@ void ukiki_act_go_to_cage(void)
 			break;
 
 		case UKIKI_SUB_ACT_CAGE_JUMP_TO_CAGE:
-			func_8029FA1C(55.0f, UKIKI_ANIM_JUMP);
+			s_set_jumpstart(55.0f, UKIKI_ANIM_JUMP);
 			o->oForwardVel = 36.0f;
 			o->oSubAction++;
 			break;
@@ -721,7 +721,7 @@ void bhv_ukiki_loop(void)
 
 		case HELD_HELD:
 			s_mode_catch(UKIKI_ANIM_HELD, 0);
-			copy_object_pos(o, gMarioObject);
+			s_copy_worldXYZ(o, gMarioObject);
 
 			if(o->oBehParams2ndByte == UKIKI_HAT)
 			{
@@ -735,7 +735,7 @@ void bhv_ukiki_loop(void)
 
 		case HELD_THROWN:
 		case HELD_DROPPED:
-			obj_get_dropped();
+			s_mode_drop();
 			break;
 	}
 

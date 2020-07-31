@@ -92,7 +92,7 @@ void bhv_spindel_loop(void)
 
 		if((o->oTimer / FRAME_RATE_SCALER_INV) + 1 == sp18 * 8)
 		{
-			set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
+			Viewshaking(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 		}
 	}
 }

@@ -122,7 +122,7 @@ static void beta_boo_key_drop(void)
 
 	// Update the key to be inside the boo
 	struct Object* parent = o->parentObj;
-	copy_object_pos(o, parent);
+	s_copy_worldXYZ(o, parent);
 
 	// This if statement to only run this code on the first frame
 	// is redundant, since it instantly sets the action to BETA_BOO_KEY_ACT_DROPPED
@@ -158,7 +158,7 @@ static void beta_boo_key_inside_boo_loop(void)
 {
 	// Update the key to be inside the boo at all times
 	struct Object* parent = o->parentObj;
-	copy_object_pos(o, parent);
+	s_copy_worldXYZ(o, parent);
 
 	// Use a Y offset of 40 to make the key model aligned correctly.
 	// (Why didn't they use oGraphYOffset?)

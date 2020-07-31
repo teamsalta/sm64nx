@@ -28,7 +28,7 @@ void bhv_wf_rotating_wooden_platform_loop(void)
 
 		objsound_level(SOUND_ENV_ELEVATOR2);
 	}
-	obj_rotate_face_angle_using_vel();
+	s_move_animeangle();
 }
 
 void bhv_rotating_platform_loop(void)
@@ -37,7 +37,7 @@ void bhv_rotating_platform_loop(void)
 
 	if(o->oTimer == 0)
 	{
-		set_object_collision_data(o, sWFRotatingPlatformData[o->oBehParams2ndByte].collisionData);
+		s_set_shapeinfo(o, sWFRotatingPlatformData[o->oBehParams2ndByte].collisionData);
 		o->oCollisionDistance = sWFRotatingPlatformData[o->oBehParams2ndByte].collisionDistance;
 		s_set_scale(sWFRotatingPlatformData[o->oBehParams2ndByte].scale * 0.01f);
 	}

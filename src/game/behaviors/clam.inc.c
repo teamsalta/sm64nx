@@ -31,7 +31,7 @@ void clam_act_0(void)
 	else if(o->oClamUnkF4 != 0)
 	{
 		o->oClamUnkF4 -= 1;
-		obj_shake_y(3.0f);
+		s_effect_updown(3.0f);
 	}
 }
 

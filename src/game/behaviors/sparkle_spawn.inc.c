@@ -7,11 +7,11 @@
  */
 void bhv_sparkle_spawn_loop(void)
 {
-	struct Object* sparkle = try_to_spawn_object(0, 1.0f, o, MODEL_SPARKLES_ANIMATION, sm64::bhv::bhvSparkle());
+	struct Object* sparkle = s_makeobj_effect(0, 1.0f, o, MODEL_SPARKLES_ANIMATION, sm64::bhv::bhvSparkle());
 	if(sparkle != NULL)
 	{
-		translate_object_xyz_random(sparkle, 90.0f);
-		scale_object_random(sparkle, 1.0f, 0.0f);
+		s_random_XYZ_offset(sparkle, 90.0f);
+		s_random_scale(sparkle, 1.0f, 0.0f);
 	}
 	if(o->oTimer > 1 * FRAME_RATE_SCALER_INV)
 	{

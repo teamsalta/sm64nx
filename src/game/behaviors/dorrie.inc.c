@@ -72,7 +72,7 @@ static void dorrie_act_move(void)
 		}
 
 		obj_forward_vel_approach(targetSpeed, 0.5f * FRAME_RATE_SCALER);
-		o->oDorrieYawVel = approach_s16_symmetric(o->oDorrieYawVel, (s16)(targetYaw - o->oMoveAngleYaw) / (50 * FRAME_RATE_SCALER_INV), 5 * FRAME_RATE_SCALER);
+		o->oDorrieYawVel = s_chase_angle(o->oDorrieYawVel, (s16)(targetYaw - o->oMoveAngleYaw) / (50 * FRAME_RATE_SCALER_INV), 5 * FRAME_RATE_SCALER);
 		o->oMoveAngleYaw += o->oDorrieYawVel * FRAME_RATE_SCALER;
 	}
 
@@ -90,7 +90,7 @@ static void dorrie_act_lower_head(void)
 {
 	if(func_802F92EC(2, 35) || s_check_animenumber(34))
 	{
-		func_8029F6F0();
+		s_wait_anime();
 
 		if(gMarioObject->platform == o)
 		{
@@ -135,7 +135,7 @@ static void dorrie_act_raise_head(void)
 		}
 		else
 		{
-			func_8029F6F0(); // lock frame
+			s_wait_anime(); // lock frame
 		}
 	}
 	else
@@ -160,8 +160,8 @@ void bhv_dorrie_update(void)
 			obj_perform_position_op(0);
 			s_optionmove_F();
 
-			o->oDorrieAngleToHome = obj_angle_to_home();
-			o->oDorrieDistToHome  = obj_lateral_dist_to_home();
+			o->oDorrieAngleToHome = s_calc_returnangle();
+			o->oDorrieDistToHome  = s_calc_enemyscope();
 
 			// Shift dorrie's bounds to account for her neck
 			boundsShift = 440.0f * coss(o->oDorrieNeckAngle) * coss(o->oMoveAngleYaw - o->oDorrieAngleToHome);

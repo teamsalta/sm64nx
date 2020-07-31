@@ -6,7 +6,7 @@ void bhv_lll_rotating_hex_flame_loop(void)
 	f32 sp20 = o->oLllRotatingHexFlameUnkF8;
 	f32 sp1C = o->oLllRotatingHexFlameUnkFC;
 
-	obj_set_pos_relative(o->parentObj, sp24, sp20, sp1C);
+	s_posoffset_mother(o->parentObj, sp24, sp20, sp1C);
 
 	o->oPosY = o->parentObj->oPosY + 100.0f;
 	if(o->parentObj->oAction == 3)
@@ -29,7 +29,7 @@ void func_802BB9F0(s16 a0)
 		sp2C->oLllRotatingHexFlameUnkF4 += sp1C;
 		sp2C->oLllRotatingHexFlameUnkF8 = o->oPosY - 200.0f;
 		sp2C->oLllRotatingHexFlameUnkFC += sp18;
-		scale_object_xyz(sp2C, 6.0f, 6.0f, 6.0f);
+		stSetScale(sp2C, 6.0f, 6.0f, 6.0f);
 
 		sp1C += sins(a0) * 150.0f;
 		sp18 += coss(a0) * 150.0f;

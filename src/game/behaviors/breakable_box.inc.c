@@ -10,7 +10,7 @@ void bhv_breakable_box_loop(void)
 
 	if(s_block_hitcheck() != 0)
 	{
-		func_802A3C98(46.0f, 1);
+		s_burn_remove(46.0f, 1);
 		obj_remove_sound(SOUND_GENERAL_BREAK_BOX);
 	}
 }

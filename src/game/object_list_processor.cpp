@@ -227,7 +227,7 @@ void spawn_particle(u32 activeParticleFlag, s16 model, const BehaviorScript* beh
 	{
 		struct Object* particle;
 		gCurrentObject->oActiveParticleFlags |= activeParticleFlag;
-		particle = spawn_object_at_origin(gCurrentObject, 0, model, behavior);
+		particle = s_makeobj(gCurrentObject, 0, model, behavior);
 		s_copy_worldXYZ_angleXYZ(particle, gCurrentObject);
 	}
 }

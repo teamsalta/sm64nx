@@ -30,7 +30,7 @@ void ActionHeaveHo1(void)
 {
 	s32 sp1C       = 0;
 	o->oForwardVel = 0.0f;
-	func_8029F6F0();
+	s_wait_anime();
 	while(1)
 	{
 		if(D_8032F460[sp1C][0] == -1)
@@ -40,7 +40,7 @@ void ActionHeaveHo1(void)
 		}
 		if(o->oTimer < D_8032F460[sp1C][0] * FRAME_RATE_SCALER_INV)
 		{
-			func_8029ED98(2, D_8032F460[sp1C][1]);
+			s_set_skelanime_speed(2, D_8032F460[sp1C][1]);
 			break;
 		}
 		sp1C++;
@@ -51,8 +51,8 @@ void ActionHeaveHo2(void)
 {
 	UNUSED s32 unused;
 	s16 angleVel;
-	if(1000.0f < obj_lateral_dist_from_mario_to_home())
-		o->oAngleToMario = obj_angle_to_home();
+	if(1000.0f < s_calc_playerscope())
+		o->oAngleToMario = s_calc_returnangle();
 	if(o->oTimer > 150 * FRAME_RATE_SCALER_INV)
 	{
 		o->oHeaveHoUnkF4 = (302 - (o->oTimer / FRAME_RATE_SCALER_INV)) / 152.0f;
@@ -64,10 +64,10 @@ void ActionHeaveHo2(void)
 	}
 	else
 		o->oHeaveHoUnkF4 = 1.0f;
-	func_8029ED98(0, o->oHeaveHoUnkF4);
+	s_set_skelanime_speed(0, o->oHeaveHoUnkF4);
 	o->oForwardVel	 = o->oHeaveHoUnkF4 * 10.0f;
 	angleVel	 = o->oHeaveHoUnkF4 * 0x400;
-	o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, angleVel / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oAngleToMario, angleVel / FRAME_RATE_SCALER_INV);
 }
 
 void ActionHeaveHo3(void) // actually throw mario
@@ -79,7 +79,7 @@ void ActionHeaveHo3(void) // actually throw mario
 
 	if(o->oTimer == 1 * FRAME_RATE_SCALER_INV)
 	{
-		func_8029ED98(1, 1.0f);
+		s_set_skelanime_speed(1, 1.0f);
 		o->numCollidedObjs = 20;
 	}
 
@@ -89,7 +89,7 @@ void ActionHeaveHo3(void) // actually throw mario
 
 void ActionHeaveHo0(void)
 {
-	obj_set_pos_to_home();
+	s_copy_initpos();
 	if(find_water_level(o->oPosX, o->oPosZ) < o->oPosY && (o->oDistanceToMario < 4000.0f || sm64::config().camera().disableDistanceClip()))
 	{
 		s_hitON();
@@ -139,10 +139,10 @@ void bhv_heave_ho_loop(void)
 			s_mode_catch(0, 0);
 			break;
 		case HELD_THROWN:
-			obj_get_dropped();
+			s_mode_drop();
 			break;
 		case HELD_DROPPED:
-			obj_get_dropped();
+			s_mode_drop();
 			break;
 	}
 	o->oInteractStatus = 0;

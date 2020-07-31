@@ -4,7 +4,7 @@ void bhv_static_checkered_platform_loop(void)
 {
 	if(gDebugInfo[5][0] == 1)
 	{
-		set_object_angle(o, 0, 0, 0);
+		s_set_angle(o, 0, 0, 0);
 		o->oAngleVelPitch = 0;
 		o->oAngleVelYaw	  = 0;
 		o->oAngleVelRoll  = 0;

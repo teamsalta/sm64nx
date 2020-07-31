@@ -40,12 +40,12 @@ void bhv_piranha_plant_bubble_loop(void)
 	f32 doneShrinkingFrame; // the first frame after shrinking is done
 	f32 beginGrowingFrame;	// the frame just before growing begins
 
-	obj_set_pos_relative(parent, 0, 72.0f, 180.0f);
+	s_posoffset_mother(parent, 0, 72.0f, 180.0f);
 
 	switch(o->oAction)
 	{
 		case PIRANHA_PLANT_BUBBLE_ACT_IDLE:
-			obj_disable_rendering();
+			s_shapeOFF();
 			scale = 0;
 
 			if(parent->oAction == PIRANHA_PLANT_ACT_SLEEPING)
@@ -57,7 +57,7 @@ void bhv_piranha_plant_bubble_loop(void)
 		case PIRANHA_PLANT_BUBBLE_ACT_GROW_SHRINK_LOOP:
 			if(parent->oDistanceToMario < parent->oDrawingDistance)
 			{
-				obj_enable_rendering();
+				s_shapeON();
 
 				if(parent->oAction == PIRANHA_PLANT_ACT_SLEEPING)
 				{
@@ -101,18 +101,18 @@ void bhv_piranha_plant_bubble_loop(void)
 			}
 			else
 			{
-				obj_disable_rendering();
+				s_shapeOFF();
 			}
 			break;
 
 		case PIRANHA_PLANT_BUBBLE_ACT_BURST:
-			obj_disable_rendering();
+			s_shapeOFF();
 			scale = 0;
 
 			// Spawn 15 small bubbles to make it look like this bubble burst.
 			for(i = 0; i < 15; i++)
 			{
-				try_to_spawn_object(0, 1.0f, o, MODEL_BUBBLE, sm64::bhv::bhvPiranhaPlantWakingBubbles());
+				s_makeobj_effect(0, 1.0f, o, MODEL_BUBBLE, sm64::bhv::bhvPiranhaPlantWakingBubbles());
 			}
 
 			o->oAction = PIRANHA_PLANT_BUBBLE_ACT_IDLE;

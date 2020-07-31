@@ -4,7 +4,7 @@
 void bhv_water_mist_2_loop(void)
 {
 	o->oPosY    = find_water_level(o->oHomeX, o->oHomeZ) + 20.0f;
-	o->oPosX    = o->oHomeX + random_f32_around_zero(150.0f);
-	o->oPosZ    = o->oHomeZ + random_f32_around_zero(150.0f);
+	o->oPosX    = o->oHomeX + s_random_f(150.0f);
+	o->oPosZ    = o->oHomeZ + s_random_f(150.0f);
 	o->oOpacity = Randomf() * 50.0f + 200.0f;
 }

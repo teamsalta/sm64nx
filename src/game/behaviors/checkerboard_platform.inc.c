@@ -47,7 +47,7 @@ void func_802B91A0(s32 a0, s16 a1)
 {
 	o->oVelY	  = 0.0f;
 	o->oAngleVelPitch = a1;
-	if(o->oTimer + 1 == 0x8000 * FRAME_RATE_SCALER_INV / absi(a1))
+	if(o->oTimer + 1 == 0x8000 * FRAME_RATE_SCALER_INV / s_abs_d(a1))
 		o->oAction = a0;
 	o->oCheckerBoardPlatformUnkF8 = a0;
 }
@@ -84,13 +84,13 @@ void bhv_checkerboard_platform_loop(void)
 			func_802B91A0(1, -512);
 			break;
 	}
-	o->oMoveAnglePitch += absi(o->oAngleVelPitch * FRAME_RATE_SCALER);
-	o->oFaceAnglePitch += absi(o->oAngleVelPitch * FRAME_RATE_SCALER);
+	o->oMoveAnglePitch += s_abs_d(o->oAngleVelPitch * FRAME_RATE_SCALER);
+	o->oFaceAnglePitch += s_abs_d(o->oAngleVelPitch * FRAME_RATE_SCALER);
 	o->oFaceAngleYaw = o->oMoveAngleYaw;
 	if(o->oMoveAnglePitch != 0)
 	{
-		o->oForwardVel = signum_positive(o->oAngleVelPitch) * sins(o->oMoveAnglePitch) * sp24;
-		o->oVelY       = signum_positive(o->oAngleVelPitch) * coss(o->oMoveAnglePitch) * sp24;
+		o->oForwardVel = s_sign_d(o->oAngleVelPitch) * sins(o->oMoveAnglePitch) * sp24;
+		o->oVelY       = s_sign_d(o->oAngleVelPitch) * coss(o->oMoveAnglePitch) * sp24;
 	}
 	if(o->oCheckerBoardPlatformUnkF8 == 1)
 	{

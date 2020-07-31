@@ -1,9 +1,18 @@
 #include "tas.h"
 #include <stdio.h>
 #include "player/players.h"
+#include "game/options.h"
+
+static u64 g_counter = 0;
+static  bool g_tasPlaying = false;
 
 namespace sm64::hid
 {
+	bool isTasPlaying()
+	{
+		return g_tasPlaying;
+	}
+
 	namespace controller
 	{
 		class Tas : public Controller
@@ -11,12 +20,12 @@ namespace sm64::hid
 			public:
 			Tas() : Controller()
 			{
-				fp = fopen("cont.m64", "rb");
+				fp = fopen("cont.tas", "rb");
 
 				if(fp != NULL)
 				{
-					uint8_t buf[0x400];
-					fread(buf, 1, sizeof(buf), fp);
+					fread(&sm64::config(), 1, sizeof(sm64::config()), fp);
+					g_tasPlaying = true;
 				}
 			}
 
@@ -32,16 +41,16 @@ namespace sm64::hid
 			{
 				if(fp != NULL)
 				{
-					u8 bytes[4] = {0};
-					fread(bytes, 1, 4, fp);
-					m_state.button	= (bytes[0] << 8) | bytes[1];
-					m_state.stick_x = bytes[2];
-					m_state.stick_y = bytes[3];
+					auto r = fread(&m_state, 1, sizeof(m_state), fp);
+					if (m_state.button)
+					{
+						int x = 0;
+					}
 				}
 			}
 
 			protected:
-			FILE* fp;
+				FILE* fp;
 		};
 	} // namespace controller
 

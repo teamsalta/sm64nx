@@ -15,7 +15,7 @@ void bhv_hidden_blue_coin_loop(void)
 	{
 		case HIDDEN_BLUE_COIN_ACT_INACTIVE:
 			// Become invisible and intangible
-			obj_disable_rendering();
+			s_shapeOFF();
 			s_hitOFF();
 
 			// Set action to HIDDEN_BLUE_COIN_ACT_WAITING after the blue coin switch is found.
@@ -39,7 +39,7 @@ void bhv_hidden_blue_coin_loop(void)
 			break;
 		case HIDDEN_BLUE_COIN_ACT_ACTIVE:
 			// Become tangible
-			obj_enable_rendering();
+			s_shapeON();
 			s_hitON();
 
 			// Delete the coin once collected
@@ -51,7 +51,7 @@ void bhv_hidden_blue_coin_loop(void)
 
 			// After 200 frames of waiting and 20 2-frame blinks (for 240 frames total),
 			// delete the object.
-			if(obj_wait_then_blink(200 * FRAME_RATE_SCALER_INV, 20))
+			if(s_flash_shape(200 * FRAME_RATE_SCALER_INV, 20))
 			{
 				s_remove_obj(o);
 			}

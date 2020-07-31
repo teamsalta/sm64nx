@@ -26,7 +26,7 @@ static struct ObjectHitbox sBigBullyHitbox = {
 
 void bhv_small_bully_init(void)
 {
-	SetObjAnimation(0);
+	stSetSkelAnimeNumber(0);
 
 	o->oHomeX	     = o->oPosX;
 	o->oHomeZ	     = o->oPosZ;
@@ -40,7 +40,7 @@ void bhv_small_bully_init(void)
 
 void bhv_big_bully_init(void)
 {
-	SetObjAnimation(0);
+	stSetSkelAnimeNumber(0);
 
 	o->oHomeX	     = o->oPosX;
 	o->oHomeY	     = o->oPosY;
@@ -65,7 +65,7 @@ void BullyCheckMarioCollision(void)
 		o->oInteractStatus &= ~INT_STATUS_INTERACTED;
 		o->oAction = BULLY_ACT_KNOCKBACK;
 		o->oFlags &= ~0x8; /* bit 3 */
-		SetObjAnimation(3);
+		stSetSkelAnimeNumber(3);
 		o->oBullyMarioCollisionAngle = o->oMoveAngleYaw;
 	}
 }
@@ -98,7 +98,7 @@ void BullyChaseMarioLoop(void)
 	if(!PlayerApproach(homeX, posY, homeZ, 1000))
 	{
 		o->oAction = BULLY_ACT_PATROL;
-		SetObjAnimation(0);
+		stSetSkelAnimeNumber(0);
 	}
 }
 
@@ -121,7 +121,7 @@ void BullyKnockbackLoop(void)
 	{
 		o->oAction			   = BULLY_ACT_CHASE_MARIO;
 		o->oBullyKBTimerAndMinionKOCounter = 0;
-		SetObjAnimation(1);
+		stSetSkelAnimeNumber(1);
 	}
 }
 
@@ -258,7 +258,7 @@ void bhv_bully_loop(void)
 			if(obj_return_home_if_safe(o, o->oHomeX, o->oPosY, o->oHomeZ, 800) == 1)
 			{
 				o->oAction = BULLY_ACT_CHASE_MARIO;
-				SetObjAnimation(1);
+				stSetSkelAnimeNumber(1);
 			}
 
 			BullyStep();
@@ -343,7 +343,7 @@ void bhv_big_bully_with_minions_loop(void)
 			if(obj_return_home_if_safe(o, o->oHomeX, o->oPosY, o->oHomeZ, 1000) == 1)
 			{
 				o->oAction = BULLY_ACT_CHASE_MARIO;
-				SetObjAnimation(1);
+				stSetSkelAnimeNumber(1);
 			}
 
 			BullyStep();
@@ -386,7 +386,7 @@ void bhv_big_bully_with_minions_loop(void)
 			if(collisionFlags == 1)
 			{
 				objsound(SOUND_OBJ_THWOMP);
-				set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
+				Viewshaking(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
 				s_kemuri();
 			}
 

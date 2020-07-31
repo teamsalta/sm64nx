@@ -16,13 +16,13 @@ void bhv_bubble_cannon_barrel_loop(void)
 
 		if((o->oCannonBarrelBubblesUnkF4 += o->oForwardVel * FRAME_RATE_SCALER) > 0.0f)
 		{
-			func_802A2A38();
+			s_3Dmove();
 			obj_forward_vel_approach(-5.0f, 18.0f * FRAME_RATE_SCALER); // bubble fx
 		}
 		else
 		{
 			o->oCannonBarrelBubblesUnkF4 = 0.0f;
-			copy_object_pos(o, o->parentObj);
+			s_copy_worldXYZ(o, o->parentObj);
 
 			// fire
 			if(o->parentObj->oWaterCannonUnkF4 != 0)
@@ -38,7 +38,7 @@ void bhv_bubble_cannon_barrel_loop(void)
 						val04->header.gfx.scale[1] = 1.7f;
 					}
 
-					set_camera_shake_from_point(SHAKE_POS_MEDIUM, o->oPosX, o->oPosY, o->oPosZ);
+					Viewshaking(SHAKE_POS_MEDIUM, o->oPosX, o->oPosY, o->oPosZ);
 				}
 			}
 			else

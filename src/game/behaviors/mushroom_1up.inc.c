@@ -63,7 +63,7 @@ void OneUp_kinoko_Get()
 	s16 targetAngleX = atan2s(sqrtf(sqr(dx) + sqr(dz)), dy);
 
 	s_chase_obj_angle(o, gMarioObject, 16, 0x1000);
-	o->oMoveAnglePitch = approach_s16_symmetric(o->oMoveAnglePitch, targetAngleX, 0x1000 / FRAME_RATE_SCALER_INV);
+	o->oMoveAnglePitch = s_chase_angle(o->oMoveAnglePitch, targetAngleX, 0x1000 / FRAME_RATE_SCALER_INV);
 	o->oVelY	   = sins(o->oMoveAnglePitch) * 30.0f;
 	o->oForwardVel	   = coss(o->oMoveAnglePitch) * 30.0f;
 	OneUp_kinoko_Hit();

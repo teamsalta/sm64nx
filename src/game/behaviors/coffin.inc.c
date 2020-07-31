@@ -56,7 +56,7 @@ void coffin_act_0(void)
 	{
 		if(o->oFaceAnglePitch != 0)
 		{
-			o->oAngleVelPitch = approach_s16_symmetric(o->oAngleVelPitch, -2000, 200 / FRAME_RATE_SCALER_INV);
+			o->oAngleVelPitch = s_chase_angle(o->oAngleVelPitch, -2000, 200 / FRAME_RATE_SCALER_INV);
 
 			if(obj_face_pitch_approach(0, -o->oAngleVelPitch / FRAME_RATE_SCALER_INV))
 			{
@@ -84,7 +84,7 @@ void coffin_act_0(void)
 
 			if(o->oTimer > 60 * FRAME_RATE_SCALER_INV && (o->oDistanceToMario > 100.0f || marioWorks->status == ACT_SQUISHED))
 			{
-				if(gMarioObject->oPosY - o->oPosY < 200.0f && absf(val04) < 140.0f)
+				if(gMarioObject->oPosY - o->oPosY < 200.0f && s_abs_f(val04) < 140.0f)
 				{
 					if(val00 < 150.0f && val00 > -450.0f)
 					{
@@ -103,7 +103,7 @@ void coffin_act_1(void)
 {
 	if(o->oFaceAnglePitch != 0x4000)
 	{
-		o->oAngleVelPitch = approach_s16_symmetric(o->oAngleVelPitch, 1000, 200 / FRAME_RATE_SCALER_INV);
+		o->oAngleVelPitch = s_chase_angle(o->oAngleVelPitch, 1000, 200 / FRAME_RATE_SCALER_INV);
 		obj_face_pitch_approach(0x4000, o->oAngleVelPitch / FRAME_RATE_SCALER_INV);
 	}
 	else

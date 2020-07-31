@@ -39,7 +39,7 @@ void haunted_chair_act_0(void)
 		{
 			if(s_distanceXZ_obj2obj(o, o->parentObj) < 250.0f)
 			{
-				val0E = angle_to_object(o, o->parentObj) - o->oFaceAngleYaw + 0x2000;
+				val0E = s_calc_targetangle(o, o->parentObj) - o->oFaceAngleYaw + 0x2000;
 				if(val0E & 0x4000)
 				{
 					o->oHauntedChairUnk100 = &o->oFaceAngleRoll;

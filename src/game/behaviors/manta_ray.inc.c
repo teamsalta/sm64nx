@@ -32,12 +32,12 @@ void func_802F5E20(void)
 
 	sp1E				    = o->header.gfx.unk38.frame();
 	gCurrentObject->oPathedWaypointsS16 = &D_803316A8;
-	sp18				    = obj_follow_path(0);
+	sp18				    = s_road_move(0);
 	o->oMantaUnkF8			    = o->oPathedTargetYaw;
 	o->oMantaUnkF4			    = o->oPathedTargetPitch;
 	o->oForwardVel			    = 10.0f;
-	o->oMoveAngleYaw		    = approach_s16_symmetric(o->oMoveAngleYaw, o->oMantaUnkF8, 0x80 / FRAME_RATE_SCALER_INV);
-	o->oMoveAnglePitch		    = approach_s16_symmetric(o->oMoveAnglePitch, o->oMantaUnkF4, 0x80 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw		    = s_chase_angle(o->oMoveAngleYaw, o->oMantaUnkF8, 0x80 / FRAME_RATE_SCALER_INV);
+	o->oMoveAnglePitch		    = s_chase_angle(o->oMoveAnglePitch, o->oMantaUnkF4, 0x80 / FRAME_RATE_SCALER_INV);
 	if((s16)o->oMantaUnkF8 != (s16)o->oMoveAngleYaw)
 	{
 		o->oMoveAngleRoll -= 91;
@@ -53,7 +53,7 @@ void func_802F5E20(void)
 			o->oMoveAngleRoll = 0x4000 / 3;
 	}
 
-	func_802A2A38();
+	s_3Dmove();
 	if(sp1E == 0)
 		objsound(SOUND_GENERAL_MOVING_WATER);
 }

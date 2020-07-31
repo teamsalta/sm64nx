@@ -36,10 +36,10 @@ void func_802BCFC4(f32 speed, f32 a1, s16 pitch, s16 roll) // 0x18 0x1c 0x22 0x2
 		o->oFaceAngleRoll = (rollFace * roll) + roll * o->oTimer / (7 * FRAME_RATE_SCALER_INV);
 	}
 
-	func_802A2A38();
+	s_3Dmove();
 	if(o->oTimer == 7 * FRAME_RATE_SCALER_INV)
 	{
-		o->oAction = func_802A32E0();
+		o->oAction = s_datamove_next();
 		objsound(SOUND_GENERAL_UNK46);
 	}
 }
@@ -74,26 +74,26 @@ void ActionToxBox1(void)
 
 	if(o->oTimer == 20 * FRAME_RATE_SCALER_INV)
 	{
-		o->oAction = func_802A32E0();
+		o->oAction = s_datamove_next();
 	}
 }
 
 void ActionToxBox2(void)
 {
 	if(o->oTimer == 20 * FRAME_RATE_SCALER_INV)
-		o->oAction = func_802A32E0();
+		o->oAction = s_datamove_next();
 }
 
 void ActionToxBox3(void)
 {
 	if(o->oTimer == 20 * FRAME_RATE_SCALER_INV)
-		o->oAction = func_802A32E0();
+		o->oAction = s_datamove_next();
 }
 
 void ActionToxBox0(void)
 {
 	s8* sp1C   = D_8032F96C[o->oBehParams2ndByte];
-	o->oAction = func_802A32A4(sp1C);
+	o->oAction = s_datamove_init(sp1C);
 }
 
 void (*sToxBoxActions[])(void) = {ActionToxBox0, ActionToxBox1, ActionToxBox2, ActionToxBox3, ActionToxBox4, ActionToxBox5, ActionToxBox6, ActionToxBox7};

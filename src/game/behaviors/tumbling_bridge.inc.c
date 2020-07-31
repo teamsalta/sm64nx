@@ -23,7 +23,7 @@ void bhv_tumbling_bridge_platform_loop(void)
 			}
 			break;
 		case 1:
-			obj_update_floor_height();
+			s_groundcheck();
 			if(o->oTimer > 5 * FRAME_RATE_SCALER_INV)
 			{
 				o->oAction++;
@@ -36,7 +36,7 @@ void bhv_tumbling_bridge_platform_loop(void)
 			if(o->oAngleVelRoll > -0x400 && o->oAngleVelRoll < 0x400)
 				o->oAngleVelRoll += o->oTumblingBridgeUnkF4 / FRAME_RATE_SCALER_INV; // acceleration?
 			o->oGravity = -3.0f;
-			obj_rotate_face_angle_using_vel();
+			s_move_animeangle();
 			s_optionmove_F();
 			if(o->oPosY < o->oFloorHeight - 300.0f)
 				o->oAction++;
@@ -68,7 +68,7 @@ void ActionTumblingBridge1(void)
 		else
 			relativePlatformZ = sTumblingBridgeParams[bridgeID].bridgeRelativeStartingXorZ + sTumblingBridgeParams[bridgeID].platformWidth * i;
 
-		if(obj_has_behavior(sm64::bhv::bhvLllTumblingBridge()))
+		if(s_check_pathname(sm64::bhv::bhvLllTumblingBridge()))
 		{
 			if(i % 3 == 0)
 				relativePlatformY -= 150;
@@ -77,7 +77,7 @@ void ActionTumblingBridge1(void)
 
 		platformObj = s_makeobj_chain(0, relativePlatformX, relativePlatformY + relativeInitialPlatformY, relativePlatformZ, o, sTumblingBridgeParams[bridgeID].model, sm64::bhv::bhvTumblingBridgePlatform());
 
-		set_object_collision_data(platformObj, sTumblingBridgeParams[bridgeID].segAddr);
+		s_set_shapeinfo(platformObj, sTumblingBridgeParams[bridgeID].segAddr);
 	}
 
 	o->oAction = 2;
@@ -86,7 +86,7 @@ void ActionTumblingBridge1(void)
 void ActionTumblingBridge2(void)
 {
 	s_shape_hide();
-	if(obj_has_behavior(sm64::bhv::bhvLllTumblingBridge()))
+	if(s_check_pathname(sm64::bhv::bhvLllTumblingBridge()))
 		s_shape_disp();
 	else if(o->oDistanceToMario > 1200.0f)
 	{
@@ -103,7 +103,7 @@ void ActionTumblingBridge3(void)
 
 void ActionTumblingBridge0(void)
 {
-	if(obj_has_behavior(sm64::bhv::bhvLllTumblingBridge()) || o->oDistanceToMario < 1000.0f)
+	if(s_check_pathname(sm64::bhv::bhvLllTumblingBridge()) || o->oDistanceToMario < 1000.0f)
 		o->oAction = 1;
 }
 

@@ -66,8 +66,8 @@ void snufit_act_0(void)
 
 	if(o->oTimer > sp1C * FRAME_RATE_SCALER_INV && o->oDistanceToMario < 800.0f)
 	{
-		o->oSnufitUnk104 = approach_s16_symmetric(o->oSnufitUnk104, 0, 1500 / FRAME_RATE_SCALER_INV);
-		o->oSnufitUnk108 = approach_s16_symmetric(o->oSnufitUnk108, 600, 15 / FRAME_RATE_SCALER_INV);
+		o->oSnufitUnk104 = s_chase_angle(o->oSnufitUnk104, 0, 1500 / FRAME_RATE_SCALER_INV);
+		o->oSnufitUnk108 = s_chase_angle(o->oSnufitUnk108, 600, 15 / FRAME_RATE_SCALER_INV);
 
 		if((s16)o->oSnufitUnk104 == 0 && o->oSnufitUnk108 == 600)
 		{
@@ -83,8 +83,8 @@ void snufit_act_0(void)
 
 void snufit_act_1(void)
 {
-	o->oSnufitUnk104 = approach_s16_symmetric(o->oSnufitUnk104, -0x8000, 3000 / FRAME_RATE_SCALER_INV);
-	o->oSnufitUnk108 = approach_s16_symmetric(o->oSnufitUnk108, 0xA7, 20 / FRAME_RATE_SCALER_INV);
+	o->oSnufitUnk104 = s_chase_angle(o->oSnufitUnk104, -0x8000, 3000 / FRAME_RATE_SCALER_INV);
+	o->oSnufitUnk108 = s_chase_angle(o->oSnufitUnk108, 0xA7, 20 / FRAME_RATE_SCALER_INV);
 
 	if((u16)o->oSnufitUnk104 == 0x8000 && o->oSnufitUnk108 == 0xA7)
 	{

@@ -261,7 +261,7 @@ static void koopa_dive_update_speed(f32 decel)
 		{
 			if(!(o->oTimer % (4 * FRAME_RATE_SCALER_INV)))
 			{
-				spawn_object_with_scale(o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke2(), 1.0f);
+				s_makeobj_nowpos_scale(o, MODEL_SMOKE, sm64::bhv::bhvWhitePuffSmoke2(), 1.0f);
 			}
 		}
 	}
@@ -276,7 +276,7 @@ static void koopa_shelled_act_lying(void)
 	{
 		if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
 		{
-			o->oMoveAngleYaw = obj_reflect_move_angle_off_wall();
+			o->oMoveAngleYaw = s_wall_rebound();
 		}
 
 		func_802F927C(5);
@@ -310,7 +310,7 @@ void shelled_koopa_attack_handler(s32 attackType)
 		// If attacked from the side, get knocked away from mario
 		if(attackType != ATTACK_FROM_ABOVE && attackType != ATTACK_GROUND_POUND_OR_TWIRL)
 		{
-			o->oMoveAngleYaw = angle_to_object(gMarioObject, o);
+			o->oMoveAngleYaw = s_calc_targetangle(gMarioObject, o);
 		}
 
 		s_change_shape(MODEL_KOOPA_WITHOUT_SHELL);
@@ -404,7 +404,7 @@ static void koopa_unshelled_act_run(void)
 		if(shell != NULL)
 		{
 			//! This overrides turning toward home
-			o->oKoopaTargetYaw = angle_to_object(o, shell);
+			o->oKoopaTargetYaw = s_calc_targetangle(o, shell);
 		}
 		else if(!(o->oKoopaTurningAwayFromWall = obj_bounce_off_walls_edges_objects(&o->oKoopaTargetYaw)))
 		{
@@ -470,7 +470,7 @@ static void koopa_unshelled_act_dive(void)
 		//  units behind mario.
 		//  Using this, we can get the koopa to pick up and despawn its shell
 		//  while mario is riding it.
-		if(shell != NULL && dist_between_objects(shell, gMarioObject) > 200.0f && distToShell < 50.0f)
+		if(shell != NULL && s_distance_obj2obj(shell, gMarioObject) > 200.0f && distToShell < 50.0f)
 		{
 			o->oKoopaMovementType = KOOPA_BP_NORMAL;
 			o->oAction	      = KOOPA_SHELLED_ACT_LYING;
@@ -564,7 +564,7 @@ s32 obj_begin_race(s32 noTimer)
 
 		// Unfreeze mario and disable time stop to begin the race
 		CtrlPlayerDialog(0);
-		disable_time_stop_including_mario();
+		s_demoend();
 	}
 	else if(o->oTimer > 50 * FRAME_RATE_SCALER_INV)
 	{
@@ -585,12 +585,12 @@ static void koopa_the_quick_act_wait_before_race(void)
 	{
 		o->oKoopaTheQuickInitTextboxCooldown -= 1;
 	}
-	else if(obj_is_mario_in_range_and_ready_to_speak(400.0f, 400.0f))
+	else if(s_hitcheck_message(400.0f, 400.0f))
 	{
 		//! The next action doesn't execute until next frame, giving mario one
 		//  frame where he can jump, and thus no longer be ready to speak.
 		//  (On J, he has two frames and doing this enables time stop - see
-		//  obj_update_dialog_with_cutscene for that glitch)
+		//  s_call_talkdemo for that glitch)
 		o->oAction     = KOOPA_THE_QUICK_ACT_SHOW_INIT_TEXT;
 		o->oForwardVel = 0.0f;
 		s_set_skelanimeNo(7);
@@ -683,7 +683,7 @@ static void koopa_the_quick_animate_footsteps(void)
 {
 	//! With high negative speed (using the bowling ball deceleration), we can
 	//  index out of the animation's bounds
-	func_8029ED98(9, o->oForwardVel * 0.09f);
+	s_set_skelanime_speed(9, o->oForwardVel * 0.09f);
 	koopa_play_footstep_sound(2, 17);
 }
 
@@ -701,7 +701,7 @@ static void koopa_the_quick_act_race(void)
 		// Hitbox is slightly larger while racing
 		s_player_slideout_RH(180.0f, 300.0f);
 
-		if(obj_follow_path(0) == PATH_REACHED_END)
+		if(s_road_move(0) == PATH_REACHED_END)
 		{
 			o->oAction = KOOPA_THE_QUICK_ACT_DECELERATE;
 		}
@@ -794,7 +794,7 @@ static void koopa_the_quick_act_race(void)
 static void koopa_the_quick_act_decelerate(void)
 {
 	obj_forward_vel_approach(3.0f, 1.0f);
-	func_8029ED98(9, 0.99f);
+	s_set_skelanime_speed(9, 0.99f);
 
 	if(s_check_animeend())
 	{
@@ -829,7 +829,7 @@ static void koopa_the_quick_act_after_race(void)
 
 	if(o->parentObj->oKoopaRaceEndpointUnk100 == 0)
 	{
-		if(obj_is_mario_in_range_and_ready_to_speak(400.0f, 400.0f))
+		if(s_hitcheck_message(400.0f, 400.0f))
 		{
 			stop_background_music(SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE));
 
@@ -860,7 +860,7 @@ static void koopa_the_quick_act_after_race(void)
 	}
 	else if(o->parentObj->oKoopaRaceEndpointUnk100 > 0)
 	{
-		s32 dialogResponse = obj_update_dialog_with_cutscene(2, 1, CUTSCENE_DIALOG, o->parentObj->oKoopaRaceEndpointUnk100);
+		s32 dialogResponse = s_call_talkdemo(2, 1, CUTSCENE_DIALOG, o->parentObj->oKoopaRaceEndpointUnk100);
 		if(dialogResponse != 0)
 		{
 			o->parentObj->oKoopaRaceEndpointUnk100 = -1;
@@ -908,7 +908,7 @@ static void koopa_the_quick_update(void)
 
 	if(o->parentObj != o)
 	{
-		if(dist_between_objects(o, o->parentObj) < 400.0f)
+		if(s_distance_obj2obj(o, o->parentObj) < 400.0f)
 		{
 			o->parentObj->oKoopaRaceEndpointKoopaFinished = TRUE;
 		}

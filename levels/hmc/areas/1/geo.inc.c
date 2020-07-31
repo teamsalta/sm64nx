@@ -304,7 +304,7 @@ const GeoLayout hmc_level_geo[] = {
          GEO_OPEN_NODE(),
             GEO_CAMERA(16, 0, 2000, 6000, 0, 0, 0, geo_camera_main),
             GEO_OPEN_NODE(),
-               GEO_SWITCH_CASE(18, geo_switch_area),
+               GEO_SWITCH_CASE(18, ControlSwitchMap),
                GEO_OPEN_NODE(),
                   GEO_BRANCH(1, hmc_geo_0005E8), // 0x0E0005E8
                   GEO_BRANCH(1, hmc_geo_000618), // 0x0E000618

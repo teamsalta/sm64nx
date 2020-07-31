@@ -232,7 +232,7 @@ static void shyguy_act_walk(void)
 			{
 				o->oGoombaRelativeSpeed = 4.0f / 3.0f;
 
-				auto aMario = angle_to_object(gCurrentObject, gMarioObject);
+				auto aMario = s_calc_targetangle(gCurrentObject, gMarioObject);
 				s16 dist    = s_calc_dangle(aMario, o->oMoveAngleYaw);
 
 				if(dist < DEGREES(1.0f) && o->oTimer > 3 * 30 * FRAME_RATE_SCALER_INV)
@@ -366,7 +366,7 @@ void bhv_shyguy_update(void)
 		{
 			animSpeed = 1.0f;
 		}
-		func_8029ED98(0, animSpeed);
+		s_set_skelanime_speed(0, animSpeed);
 
 		switch(o->oAction)
 		{

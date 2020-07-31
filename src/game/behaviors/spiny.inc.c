@@ -113,7 +113,7 @@ static void spiny_act_walk(void)
 		else if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
 		{
 			// Bounce off walls while falling
-			o->oMoveAngleYaw = obj_reflect_move_angle_off_wall();
+			o->oMoveAngleYaw = s_wall_rebound();
 		}
 
 		s_enemymove(-78);
@@ -181,7 +181,7 @@ static void spiny_act_thrown_by_lakitu(void)
 		{
 			objsound(SOUND_OBJ_SPINY_UNK59);
 			s_change_shape(MODEL_SPINY);
-			func_8029EE20(o, (Animation**)spiny_seg5_anims_05016EAC, 0);
+			s_set_skeletonobj(o, (Animation**)spiny_seg5_anims_05016EAC, 0);
 			o->oGraphYOffset = -17.0f;
 
 			o->oFaceAnglePitch = 0;
@@ -189,7 +189,7 @@ static void spiny_act_thrown_by_lakitu(void)
 		}
 		else if(o->oMoveFlags & OBJ_MOVE_HIT_WALL)
 		{
-			o->oMoveAngleYaw = obj_reflect_move_angle_off_wall();
+			o->oMoveAngleYaw = s_wall_rebound();
 		}
 
 		s_enemymove(-78);

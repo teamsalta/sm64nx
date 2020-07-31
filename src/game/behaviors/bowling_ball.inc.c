@@ -70,10 +70,10 @@ void bhv_bowling_ball_roll_loop(void)
 	collisionFlags = ObjMoveEvent();
 
 	//! Uninitialzed parameter, but the parameter is size in the called function
-	sp18 = obj_follow_path(0);
+	sp18 = s_road_move(0);
 
 	o->oBowlingBallTargetYaw = o->oPathedTargetYaw;
-	o->oMoveAngleYaw	 = approach_s16_symmetric(o->oMoveAngleYaw, o->oBowlingBallTargetYaw, 0x400 / FRAME_RATE_SCALER_INV);
+	o->oMoveAngleYaw	 = s_chase_angle(o->oMoveAngleYaw, o->oBowlingBallTargetYaw, 0x400 / FRAME_RATE_SCALER_INV);
 	if(o->oForwardVel > 70.0)
 	{
 		o->oForwardVel = 70.0;
@@ -103,7 +103,7 @@ void bhv_bowling_ball_initializeLoop(void)
 	func_802EDA6C();
 
 	//! Uninitialzed parameter, but the parameter is size in the called function
-	sp1c = obj_follow_path(0);
+	sp1c = s_road_move(0);
 
 	o->oMoveAngleYaw = o->oPathedTargetYaw;
 
@@ -148,7 +148,7 @@ void bhv_bowling_ball_loop(void)
 	}
 
 	if(o->oBehParams2ndByte != 4)
-		set_camera_shake_from_point(SHAKE_POS_BOWLING_BALL, o->oPosX, o->oPosY, o->oPosZ);
+		Viewshaking(SHAKE_POS_BOWLING_BALL, o->oPosX, o->oPosY, o->oPosZ);
 
 	PlayerApproachOnOff(o, 4000);
 }
@@ -237,7 +237,7 @@ void bhv_bob_pit_bowling_ball_loop(void)
 		o->oForwardVel = 28.0f;
 
 	func_802EDA14();
-	set_camera_shake_from_point(SHAKE_POS_BOWLING_BALL, o->oPosX, o->oPosY, o->oPosZ);
+	Viewshaking(SHAKE_POS_BOWLING_BALL, o->oPosX, o->oPosY, o->oPosZ);
 	objsound_level(SOUND_ENV_UNKNOWN2);
 	PlayerApproachOnOff(o, 3000);
 }
@@ -261,7 +261,7 @@ void bhv_free_bowling_ball_roll_loop(void)
 
 	if(o->oForwardVel > 10.0f)
 	{
-		set_camera_shake_from_point(SHAKE_POS_BOWLING_BALL, o->oPosX, o->oPosY, o->oPosZ);
+		Viewshaking(SHAKE_POS_BOWLING_BALL, o->oPosX, o->oPosY, o->oPosZ);
 		objsound_level(SOUND_ENV_UNKNOWN2);
 	}
 
