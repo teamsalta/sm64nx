@@ -355,6 +355,11 @@ namespace sm64::hid
 					m_buttonState[i] = SDL_GameControllerGetButton(m_context, (SDL_GameControllerButton)i);
 				}
 
+				m_state.stick_x = stickLeftX();
+				m_state.stick_y = invert(stickLeftY());
+				m_state.r_stick_x = stickRightX();
+				m_state.r_stick_y = stickRightY();
+
 				for (const auto& i : m_keyBindings)
 				{
 					if (m_buttonState[i.first])
@@ -363,6 +368,18 @@ namespace sm64::hid
 						{
 							switch (i.second)
 							{
+							case STICK_X_DOWN:
+								m_state.stick_y = -128;
+								break;
+							case STICK_X_UP:
+								m_state.stick_y = 127;
+								break;
+							case STICK_X_LEFT:
+								m_state.stick_x = -128;
+								break;
+							case STICK_X_RIGHT:
+								m_state.stick_x = 127;
+								break;
 							case WALK_BUTTON:
 								walk = true;
 								break;
@@ -414,11 +431,6 @@ namespace sm64::hid
 					m_state.button |= Z_TRIG;
 				if(rtrig > 30 * 256)
 					m_state.button |= R_TRIG;
-
-				m_state.stick_x	  = stickLeftX();
-				m_state.stick_y	  = invert(stickLeftY());
-				m_state.r_stick_x = stickRightX();
-				m_state.r_stick_y = stickRightY();
 
 				if (walk)
 				{

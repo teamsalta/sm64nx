@@ -510,7 +510,7 @@ namespace sm64::menu
 
 			m_items.push_back(new sm64::menu::item::Bool("UNLIMITED LIVES", &sm64::config().cheats().unlimitedLives()));
 			m_items.push_back(new sm64::menu::item::Bool("INVINCIBLE", &sm64::config().cheats().invincible()));
-			m_items.push_back(new sm64::menu::item::EnumFloat("SPEED", { 1.0f, 2.0f, 3.0f }, &sm64::config().cheats().speed()));
+			m_items.push_back(new sm64::menu::item::EnumFloat("SPEED", { 1.0f, 1.25f, 1.5f, 2.0f, 3.0f }, &sm64::config().cheats().speed()));
 			m_items.push_back(new sm64::menu::item::Bool("MOON JUMP", &sm64::config().cheats().moonJump()));
 			m_items.push_back(new sm64::menu::item::Bool("SUPER JUMP", &sm64::config().cheats().superJump()));
 			m_items.push_back(new sm64::menu::item::Bool("QUADRUPLE JUMP", &sm64::config().cheats().quadrupleJump()));
@@ -546,12 +546,17 @@ namespace sm64::menu
 			m_items.push_back(new sm64::menu::item::Base("R CBUTTONS",  rebindCallback<hid::R_CBUTTONS>));
 			m_items.push_back(new sm64::menu::item::Base("R TRIG", rebindCallback<hid::R_TRIG>));
 			m_items.push_back(new sm64::menu::item::Base("WALK", rebindCallback<hid::WALK_BUTTON>));
+			m_items.push_back(new sm64::menu::item::Base("UP", rebindCallback<hid::STICK_X_UP>));
+			m_items.push_back(new sm64::menu::item::Base("RIGHT", rebindCallback<hid::STICK_X_RIGHT>));
+			m_items.push_back(new sm64::menu::item::Base("DOWN", rebindCallback<hid::STICK_X_DOWN>));
+			m_items.push_back(new sm64::menu::item::Base("LEFT", rebindCallback<hid::STICK_X_LEFT>));
 			m_items.push_back(new sm64::menu::item::Base("START BUTTON", rebindCallback<hid::START_BUTTON>));
 		}
 
 		void render(const s16 x, const s16 y, const s16 yIndex = 15) override
 		{
-			print_hud_colorful_str(std::string("REBIND"), DIALOG_TITLE_X, DIALOG_TITLE_Y);
+			static const int offset = 50;
+			print_hud_colorful_str(std::string("REBIND"), DIALOG_TITLE_X, DIALOG_TITLE_Y - offset);
 
 			if (sm64::player(0).isRebindMode())
 			{
@@ -577,7 +582,7 @@ namespace sm64::menu
 			}
 			else
 			{
-				Dialog::render(x, y, yIndex);
+				Dialog::render(x, y + offset, yIndex);
 			}
 		}
 	};
