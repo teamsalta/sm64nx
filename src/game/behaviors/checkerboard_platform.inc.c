@@ -2,7 +2,7 @@
 
 struct Struct8032F754 D_8032F754[] = {{145, {0.7f, 1.5f, 0.7f}, 7.0f}, {235, {1.2f, 2.0f, 1.2f}, 11.6f}};
 
-void func_802B8F7C(Vec3f dest, Vec3f src)
+void s_copy_f(Vec3f dest, Vec3f src)
 {
 	dest[0] = src[0];
 	dest[1] = src[1];
@@ -29,7 +29,7 @@ void bhv_checkerboard_elevator_group_init(void)
 
 		sp2C				  = s_makeobj_chain(i, 0, i * sp3C, sp38, o, MODEL_CHECKERBOARD_PLATFORM, sm64::bhv::bhvCheckerboardPlatformSub());
 		sp2C->oCheckerBoardPlatformUnk1AC = D_8032F754[sp34].unk2;
-		func_802B8F7C(sp2C->header.gfx.scale, D_8032F754[sp34].unk1);
+		s_copy_f(sp2C->header.gfx.scale, D_8032F754[sp34].unk1);
 	}
 }
 

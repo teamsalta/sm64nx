@@ -49,7 +49,7 @@ extern s32 act_twirl_land(struct PlayerRecord *);
 extern s32 act_ground_pound_land(struct PlayerRecord *);
 extern s32 act_first_person(struct PlayerRecord *);
 extern s32 func_80263378(struct PlayerRecord *);
-extern s32 mario_execute_stationary_action(struct PlayerRecord *);
+extern s32 playerWaitMain(struct PlayerRecord *);
 */
 
 #endif /* _MARIO_ACTIONS_STATIONARY */

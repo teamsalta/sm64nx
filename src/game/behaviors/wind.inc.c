@@ -1,6 +1,6 @@
 // wind.c.inc
 
-void func_802ADC20(s16 pitch, s16 yaw)
+void s_make_effectwind(s16 pitch, s16 yaw)
 {
 	s32 i;
 	for(i = 0; i < 3; i++)

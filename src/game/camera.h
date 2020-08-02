@@ -672,7 +672,7 @@ struct LakituState
 extern struct PlayerCameraState camPlayerInfo[2];
 extern struct LakituState gLakituState;
 extern s16 gameCameraControl;
-extern s32 gObjCutsceneDone;
+extern s32 demoseqcode;
 extern struct Camera* gCamera;
 #endif
 
@@ -686,7 +686,7 @@ extern void Viewshake(s16);
 extern void Viewshaking(s16, f32, f32, f32);
 extern void move_mario_head_c_up(struct Camera*); // static (ASM)
 extern void transition_next_state(struct Camera* c, s16 frames);
-extern void set_camera_mode(struct Camera*, s16, s16);
+extern void ChangeGameCamera(struct Camera*, s16, s16);
 extern void CtrlGameCamera(struct Camera*);
 extern void InitGameCamera(struct Camera*);
 extern void init_camera(struct Camera*);
@@ -760,7 +760,7 @@ extern void resolve_geometry_collisions(Vec3f, Vec3f);
 extern s32 rotate_camera_around_walls(struct Camera*, Vec3f, s16*, s16);
 extern void find_mario_floor_and_ceil(struct PlayerGeometry*); // postdefined
 extern u8 start_object_cutscene_without_focus(u8);
-extern s16 cutscene_object_with_dialog(u8 cutsceneTable, struct Object*, s16);
+extern s16 cameraDemoStratMsgNum(u8 cutsceneTable, struct Object*, s16);
 extern s16 cutscene_object_without_dialog(u8, struct Object*);
 extern s16 cutscene_object(u8 cutscene, struct Object* o);
 extern void play_cutscene(struct Camera* c);

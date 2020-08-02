@@ -12,11 +12,11 @@ enum FlyingCarpetState
 
 extern s8 gFlyingCarpetState;
 
-extern void make_vertex(Vtx* vtx, s32 n, f32 x, f32 y, f32 z, s16 tx, s16 ty, u8 r, u8 g, u8 b, u8 a);
-extern s16 round_float(f32);
-extern Gfx* geo_exec_inside_castle_light(s32 callContext, struct GraphNode* node, f32 mtx[4][4]);
-extern Gfx* geo_exec_flying_carpet_timer_update(s32 callContext, struct GraphNode* node, f32 mtx[4][4]);
-extern Gfx* geo_exec_flying_carpet_create(s32 callContext, struct GraphNode* node, f32 mtx[4][4]);
-extern Gfx* geo_exec_cake_end_screen(s32 callContext, struct GraphNode* node, f32 mtx[4][4]);
+extern void Tani_SetOneVtxData(Vtx* vtx, s32 n, f32 x, f32 y, f32 z, s16 tx, s16 ty, u8 r, u8 g, u8 b, u8 a);
+extern s16 Tani_RoundOff(f32);
+extern Gfx* SelRoomEffect(s32 callContext, struct GraphNode* node, f32 mtx[4][4]);
+extern Gfx* ArajinInit(s32 callContext, struct GraphNode* node, f32 mtx[4][4]);
+extern Gfx* ArajinWave(s32 callContext, struct GraphNode* node, f32 mtx[4][4]);
+extern Gfx* EndingBGDraw(s32 callContext, struct GraphNode* node, f32 mtx[4][4]);
 
 #endif /* _TRANSPARENT_TEXTURE_H */

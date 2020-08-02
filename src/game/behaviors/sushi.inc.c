@@ -6,7 +6,7 @@ void bhv_sushi_shark_collision_loop(void)
 
 void bhv_sushi_shark_loop(void)
 {
-	f32 sp1C	 = find_water_level(o->oPosX, o->oPosZ);
+	f32 sp1C	 = mcWaterCheck(o->oPosX, o->oPosZ);
 	o->oPosX	 = o->oHomeX + sins(o->oSushiSharkUnkF4) * 1700.0f;
 	o->oPosZ	 = o->oHomeZ + coss(o->oSushiSharkUnkF4) * 1700.0f;
 	o->oPosY	 = sp1C + o->oHomeY + sins(o->oSushiSharkUnkF4) * 200.0f;

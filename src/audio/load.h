@@ -8,21 +8,21 @@
 #define PRELOAD_BANKS 2
 #define PRELOAD_SEQUENCE 1
 
-#define IS_SEQUENCE_CHANNEL_VALID(ptr) ((uintptr_t)(ptr) != (uintptr_t)&gSequenceChannelNone)
+#define IS_SEQUENCE_CHANNEL_VALID(ptr) ((uintptr_t)(ptr) != (uintptr_t)&DUMMYSUB)
 
 extern struct Note* gNotes;
 
 // Music in SM64 is played using 3 players:
-// gSequencePlayers[0] is level background music
-// gSequencePlayers[1] is misc music, like the puzzle jingle
-// gSequencePlayers[2] is sound
-extern struct SequencePlayer gSequencePlayers[SEQUENCE_PLAYERS];
+// GROUP_TRACK[0] is level background music
+// GROUP_TRACK[1] is misc music, like the puzzle jingle
+// GROUP_TRACK[2] is sound
+extern struct SequencePlayer GROUP_TRACK[SEQUENCE_PLAYERS];
 
 extern struct SequenceChannel gSequenceChannels[32];
 
 extern struct SequenceChannelLayer gSequenceLayers[52];
 
-extern struct SequenceChannel gSequenceChannelNone;
+extern struct SequenceChannel DUMMYSUB;
 
 extern struct AudioListItem gLayerFreeList;
 extern struct NotePool gNoteFreeLists;

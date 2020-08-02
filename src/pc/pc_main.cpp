@@ -143,7 +143,7 @@ void main_func(void)
 	}
 
 	audio_init();
-	sound_init();
+	interface_init();
 
 	game_init(NULL);
 

@@ -36,7 +36,7 @@ extern u16 func_802495B0(u32);
 
 // this area is the demo input + the header. when the demo is loaded in, there is a header the size
 // of a single word next to the input list. this word is the current ID count.
-extern struct MarioAnimation D_80339D10;
+extern struct MarioAnimation playerAnimation;
 extern struct MarioAnimation gDemo;
 
 // extern const void* marioAnims();

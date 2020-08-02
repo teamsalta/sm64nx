@@ -314,7 +314,7 @@ static void ChangePort()
 			SnEnterPlayer();
 		}
 
-		marioWorks->init();
+		marioWorks->initPlayer();
 		ChangeStatus(marioWorks, type, playerEntry.arg);
 
 		marioWorks->interactObj = port->object;
@@ -364,7 +364,7 @@ static void ChangePort()
 			AudPlaySpecialMusic(SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP));
 		}
 
-		if(activeStageNo == LEVEL_BOB && AudGetPlayingMusic() != SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE) && stopWatchSw != 0)
+		if(activeStageNo == LEVEL_BOB && Na_GetPlayingBgmFlag() != SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE) && stopWatchSw != 0)
 		{
 			Na_MusicStart(0, SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE), 0);
 		}
@@ -431,14 +431,14 @@ static void ChangeEndingStage(void)
 
 	SnOpenScene(playerEntry.areaIdx);
 
-	vec3s_set(starringActor[0].startPos, snEndingScene->marioPos[0], snEndingScene->marioPos[1], snEndingScene->marioPos[2]);
+	SetSVector(starringActor[0].startPos, snEndingScene->marioPos[0], snEndingScene->marioPos[1], snEndingScene->marioPos[2]);
 
-	vec3s_set(starringActor[0].startAngle, 0, 0x100 * snEndingScene->marioAngle, 0);
+	SetSVector(starringActor[0].startAngle, 0, 0x100 * snEndingScene->marioAngle, 0);
 
 	starringActor[0].areaIndex = playerEntry.areaIdx;
 
 	SnEnterPlayer();
-	marioWorks->init();
+	marioWorks->initPlayer();
 
 	marioWorks->ChangePlayerStatus(status, 0);
 
@@ -507,7 +507,7 @@ static s16 CheckSameMusic(s16 arg)
 
 	if(stage == LEVEL_BOB && stage == activeStageNo && scene == activeSceneNo)
 	{
-		s16 music = AudGetPlayingMusic();
+		s16 music = Na_GetPlayingBgmFlag();
 		if(music == SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP | SEQ_VARIATION) || music == SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP))
 		{
 			result = 0;
@@ -520,7 +520,7 @@ static s16 CheckSameMusic(s16 arg)
 
 		result = stage == activeStageNo && mode == snSceneInfo->musicParam && music == snSceneInfo->musicParam2;
 
-		if(AudGetPlayingMusic() != music)
+		if(Na_GetPlayingBgmFlag() != music)
 		{
 			result = FALSE;
 		}
@@ -534,7 +534,7 @@ static s16 CheckSameMusic(s16 arg)
 
 	s16 result = stage == activeStageNo && mode == snSceneInfo->musicParam && music == snSceneInfo->musicParam2;
 
-	if(AudGetPlayingMusic() != music)
+	if(Na_GetPlayingBgmFlag() != music)
 	{
 		result = FALSE;
 	}
@@ -811,7 +811,7 @@ static void CheckGameFadeout(void)
 
 				case PL_FADE_GAMEEND:
 					ChangeExitMode(PL_GAME_CLEAR);
-					sound_banks_enable(2, 0x03F0);
+					Na_PortUnlock(2, 0x03F0);
 					break;
 
 				case PL_FADE_GOTITLE:
@@ -824,7 +824,7 @@ static void CheckGameFadeout(void)
 					break;
 
 				case PL_FADE_STAFFROLL:
-					sound_banks_disable(2, 0x03FF);
+					Na_PortLock(2, 0x03FF);
 
 					snEndingScene += 1;
 					activeLevelNo = snEndingScene->info & 0x07;
@@ -1219,7 +1219,7 @@ static s32 InitGame(void)
 		if(starringActor[0].areaIndex >= 0)
 		{
 			SnEnterPlayer();
-			marioWorks->init();
+			marioWorks->initPlayer();
 		}
 
 		if(snSceneInfo != NULL)
@@ -1269,7 +1269,7 @@ static s32 InitGame(void)
 
 	if(marioWorks->status == ACT_INTRO_CUTSCENE)
 	{
-		sound_banks_disable(2, 0x0330);
+		Na_PortLock(2, 0x0330);
 	}
 
 	return 1;
@@ -1306,13 +1306,13 @@ s32 GameInitialize(s16 code, s32 levelNum)
 	activeCourseNo	   = COURSE_NONE;
 	ramSaveCourse	   = 0;
 	snEndingScene	   = NULL;
-	gSpecialTripleJump = 0;
+	buYosshiJump = 0;
 
-	marioWorks->init_mario_from_save_file();
+	marioWorks->initPlayerWorks();
 	disable_warp_checkpoint();
 	BuRestoreHat();
 	select_mario_cam_mode();
-	set_yoshi_as_not_dead();
+	iwa_StratInit();
 
 	return levelNum;
 }

@@ -15,7 +15,7 @@ void func_802F05DC(void)
 {
 	s16 sp1E;
 
-	sp1E = object_step_without_floor_orient();
+	sp1E = ObjMoveEvent_noInc();
 	if((sp1E & 0x09) == 0x01 && o->oVelY > 10.0f)
 	{
 		objsound(SOUND_GENERAL_GRINDEL_ROLL);
@@ -58,7 +58,7 @@ void bhv_big_boulder_generator_loop(void)
 		o->oTimer = 0;
 	}
 
-	if(!current_mario_room_check(4) || PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 1500))
+	if(!iwa_MapAreaCheck(4) || PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 1500))
 		return;
 
 	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 6000))

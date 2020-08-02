@@ -111,7 +111,7 @@ extern s8 gDoorAdjacentRooms[][2];
 extern const Collision inside_castle_seg7_collision_ddd_warp_2[];
 extern const Collision inside_castle_seg7_collision_ddd_warp[];
 extern s32 gDialogResponse;
-extern s32 gObjCutsceneDone;
+extern s32 demoseqcode;
 extern u8 gRecentCutscene;
 extern s8* D_8032F96C[];
 

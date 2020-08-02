@@ -238,7 +238,7 @@ extern struct Object* s_search_nearobject(const BehaviorScript*, f32*);
 Object* s_get_effectobj(const BehaviorScript* behavior, s16* dist);
 extern struct Object* s_count_effect(void);
 // extern ? s_count_obj(?);
-extern s32 count_objects_with_behavior(const BehaviorScript* behavior);
+extern s32 s_count_obj(const BehaviorScript* behavior);
 struct Object* s_search_catch_enemy(const BehaviorScript*, f32);
 // extern ? s_modereset(?);
 void s_set_newmode(s32);

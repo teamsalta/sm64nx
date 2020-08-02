@@ -83,7 +83,7 @@ void AudStartMute(s32 a) // Soften volume
 	switch(a)
 	{
 		case 1:
-			set_sound_disabled(TRUE);
+			Na_PauseSet(TRUE);
 			break;
 		case 2:
 			Na_SeqVolMute(0, 60, 40); // soften music
@@ -97,7 +97,7 @@ void AudEndMute(s32 a) // harden volume
 	switch(a)
 	{
 		case 1:
-			set_sound_disabled(FALSE);
+			Na_PauseSet(FALSE);
 			break;
 		case 2:
 			Na_SeqVolRecover(0, 60);
@@ -111,7 +111,7 @@ void func_80248D48(void)
 	if(D_8032C6C4 == 0)
 	{
 		D_8032C6C4 = 1;
-		sound_banks_disable(2, 0x037A);
+		Na_PortLock(2, 0x037A);
 	}
 }
 
@@ -120,7 +120,7 @@ void AudUnlockSound(void)
 	if(D_8032C6C4 == 1)
 	{
 		D_8032C6C4 = 0;
-		sound_banks_enable(2, 0x037A);
+		Na_PortUnlock(2, 0x037A);
 	}
 }
 
@@ -131,7 +131,7 @@ void set_sound_mode(u16 soundMode)
 {
 	if(soundMode < 3)
 	{
-		audio_set_sound_mode(sSoundMenuModeToSoundMode[soundMode]);
+		Na_OutputMode(sSoundMenuModeToSoundMode[soundMode]);
 	}
 }
 
@@ -203,7 +203,7 @@ void AudPictWaveSound(void)
 	}
 }
 
-void play_infinite_stairs_music(void)
+void AudUnlimitedMusic(void)
 {
 	u8 shouldPlay = FALSE;
 
@@ -224,11 +224,11 @@ void play_infinite_stairs_music(void)
 		sPlayingInfiniteStairs = shouldPlay;
 		if(shouldPlay)
 		{
-			play_secondary_music(SEQ_EVENT_ENDLESS_STAIRS, 0, 255, 1000);
+			Na_AddSeq(SEQ_EVENT_ENDLESS_STAIRS, 0, 255, 1000);
 		}
 		else
 		{
-			func_80321080(500);
+			Na_SubSeq(500);
 		}
 	}
 }
@@ -239,11 +239,11 @@ void AudPlayMusic(u16 a, u16 seqArgs, s16 fadeTimer)
 	{
 		if(snEndingScene != 0)
 		{
-			sound_reset(7);
+			Na_StageChange(7);
 		}
 		else
 		{
-			sound_reset(a);
+			Na_StageChange(a);
 		}
 
 		if(!(mesgCastle && seqArgs == SEQ_LEVEL_INSIDE_CASTLE))
@@ -256,7 +256,7 @@ void AudPlayMusic(u16 a, u16 seqArgs, s16 fadeTimer)
 
 void AudStopMusic(s16 fadeOutTime)
 {
-	func_803210D4(fadeOutTime);
+	Na_SoundFadeOut(fadeOutTime);
 	sCurrentMusic	   = MUSIC_NONE;
 	sCurrentShellMusic = MUSIC_NONE;
 	sCurrentCapMusic   = MUSIC_NONE;
@@ -334,10 +334,10 @@ void audio_game_loop_tick(void)
 void thread4_sound(UNUSED void* arg)
 {
 	audio_init();
-	sound_init();
+	interface_init();
 
 	// Zero-out size vector
-	vec3f_copy(unused80339DC0, gVec3fZero);
+	CopyFVector(unused80339DC0, gVec3fZero);
 
 	osCreateMesgQueue(&sSoundMesgQueue, sSoundMesgBuf, ARRAY_COUNT(sSoundMesgBuf));
 

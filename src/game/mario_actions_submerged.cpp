@@ -91,7 +91,7 @@ u32 PlayerRecord::perform_water_full_step(Vec3f nextPos)
 
 	wall	    = resolve_and_return_wall_collisions(nextPos, 10.0f, 110.0f);
 	floorHeight = mcBGGroundCheck(nextPos[0], nextPos[1], nextPos[2], &floor);
-	ceilHeight  = vec3f_find_ceil(nextPos, floorHeight, &ceil);
+	ceilHeight  = PL_CheckRoofPlane(nextPos, floorHeight, &ceil);
 
 	if(floor == NULL)
 	{
@@ -102,7 +102,7 @@ u32 PlayerRecord::perform_water_full_step(Vec3f nextPos)
 	{
 		if(ceilHeight - nextPos[1] >= 160.0f)
 		{
-			vec3f_copy(this->pos, nextPos);
+			CopyFVector(this->pos, nextPos);
 			this->floor	  = floor;
 			this->floorHeight = floorHeight;
 
@@ -206,7 +206,7 @@ u32 PlayerRecord::perform_water_step()
 	Vec3f step;
 	struct Object* marioObj = this->marioObj;
 
-	vec3f_copy(step, this->vel);
+	CopyFVector(step, this->vel);
 
 	if(this->status & ACT_FLAG_SWIMMING)
 	{
@@ -225,8 +225,8 @@ u32 PlayerRecord::perform_water_step()
 
 	stepResult = perform_water_full_step(nextPos);
 
-	vec3f_copy(marioObj->header.gfx.pos, this->pos);
-	vec3s_set(marioObj->header.gfx.angle, -this->faceAngle[0], this->faceAngle[1], this->faceAngle[2]);
+	CopyFVector(marioObj->header.gfx.pos, this->pos);
+	SetSVector(marioObj->header.gfx.angle, -this->faceAngle[0], this->faceAngle[1], this->faceAngle[2]);
 
 	return stepResult;
 }
@@ -392,11 +392,11 @@ void PlayerRecord::common_idle_step(s32 animation, s32 arg)
 
 	if(arg == 0)
 	{
-		set_mario_animation(animation);
+		setAnimation(animation);
 	}
 	else
 	{
-		set_mario_anim_with_accel(animation, arg);
+		setAnimation(animation, arg);
 	}
 
 	set_swimming_at_surface_particles(PARTICLE_SURFACE_WAVES);
@@ -439,7 +439,7 @@ s32 PlayerRecord::act_hold_water_idle()
 
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_WATER_IDLE, 0);
+		return changePlayerDropping(ACT_WATER_IDLE, 0);
 	}
 
 	if(this->input & INPUT_B_PRESSED)
@@ -474,7 +474,7 @@ s32 PlayerRecord::act_water_action_end()
 	}
 
 	common_idle_step(MARIO_ANIM_WATER_ACTION_END, 0);
-	if(is_anim_at_end())
+	if(isLast1AnimeFrame())
 	{
 		ChangePlayerStatus(ACT_WATER_IDLE, 0);
 	}
@@ -490,7 +490,7 @@ s32 PlayerRecord::act_hold_water_action_end()
 
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_WATER_IDLE, 0);
+		return changePlayerDropping(ACT_WATER_IDLE, 0);
 	}
 
 	if(this->input & INPUT_B_PRESSED)
@@ -504,7 +504,7 @@ s32 PlayerRecord::act_hold_water_action_end()
 	}
 
 	common_idle_step(this->actionArg == 0 ? MARIO_ANIM_WATER_ACTION_END_WITH_OBJ : MARIO_ANIM_STOP_GRAB_OBJ_WATER, 0);
-	if(is_anim_at_end())
+	if(isLast1AnimeFrame())
 	{
 		ChangePlayerStatus(ACT_HOLD_WATER_IDLE, 0);
 	}
@@ -544,7 +544,7 @@ void PlayerRecord::common_swimming_step(s16 swimStrength)
 	switch(perform_water_step())
 	{
 		case WATER_STEP_HIT_FLOOR:
-			floorPitch = -find_floor_slope(-0x8000);
+			floorPitch = -groundGradient(-0x8000);
 			if(this->faceAngle[0] < floorPitch)
 			{
 				this->faceAngle[0] = floorPitch;
@@ -607,7 +607,7 @@ s32 PlayerRecord::check_water_jump()
 	{
 		if(probe >= this->waterLevel - 80 && this->faceAngle[0] >= 0 && this->controller->stickY < -60.0f)
 		{
-			vec3s_set(this->angleVel, 0, 0, 0);
+			SetSVector(this->angleVel, 0, 0, 0);
 
 			this->vel[1] = 62.0f;
 
@@ -685,7 +685,7 @@ s32 PlayerRecord::act_breaststroke()
 		func_8027107C();
 	}
 
-	set_mario_animation(MARIO_ANIM_SWIM_PART1);
+	setAnimation(MARIO_ANIM_SWIM_PART1);
 	common_swimming_step(sSwimStrength);
 
 	return FALSE;
@@ -730,7 +730,7 @@ s32 PlayerRecord::act_swimming_end()
 	this->actionTimer++;
 
 	this->forwardVel -= 0.25f * FRAME_RATE_SCALER;
-	set_mario_animation(MARIO_ANIM_SWIM_PART2);
+	setAnimation(MARIO_ANIM_SWIM_PART2);
 	common_swimming_step(sSwimStrength);
 
 	return FALSE;
@@ -764,7 +764,7 @@ s32 PlayerRecord::act_flutter_kick()
 	if(this->forwardVel < 14.0f * sm64::config().cheats().speed())
 	{
 		func_802713A8();
-		set_mario_animation(MARIO_ANIM_FLUTTERKICK);
+		setAnimation(MARIO_ANIM_FLUTTERKICK);
 	}
 
 	common_swimming_step(sSwimStrength);
@@ -780,7 +780,7 @@ s32 PlayerRecord::act_hold_breaststroke()
 
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_WATER_IDLE, 0);
+		return changePlayerDropping(ACT_WATER_IDLE, 0);
 	}
 
 	if(++this->actionTimer == 17 * FRAME_RATE_SCALER_INV)
@@ -829,7 +829,7 @@ s32 PlayerRecord::act_hold_breaststroke()
 		func_8027107C();
 	}
 
-	set_mario_animation(MARIO_ANIM_SWIM_WITH_OBJ_PART1);
+	setAnimation(MARIO_ANIM_SWIM_WITH_OBJ_PART1);
 	common_swimming_step(0x00A0);
 	return FALSE;
 }
@@ -843,7 +843,7 @@ s32 PlayerRecord::act_hold_swimming_end()
 
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_WATER_IDLE, 0);
+		return changePlayerDropping(ACT_WATER_IDLE, 0);
 	}
 
 	if(this->actionTimer >= 15 * FRAME_RATE_SCALER_INV)
@@ -869,7 +869,7 @@ s32 PlayerRecord::act_hold_swimming_end()
 	this->actionTimer++;
 
 	this->forwardVel -= 0.25f * FRAME_RATE_SCALER;
-	set_mario_animation(MARIO_ANIM_SWIM_WITH_OBJ_PART2);
+	setAnimation(MARIO_ANIM_SWIM_WITH_OBJ_PART2);
 	common_swimming_step(0x00A0);
 	return FALSE;
 }
@@ -883,7 +883,7 @@ s32 PlayerRecord::act_hold_flutter_kick()
 
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_WATER_IDLE, 0);
+		return changePlayerDropping(ACT_WATER_IDLE, 0);
 	}
 
 	if(this->input & INPUT_B_PRESSED)
@@ -900,7 +900,7 @@ s32 PlayerRecord::act_hold_flutter_kick()
 	if(this->forwardVel < 14.0f)
 	{
 		func_802713A8();
-		set_mario_animation(MARIO_ANIM_FLUTTERKICK_WITH_OBJ);
+		setAnimation(MARIO_ANIM_FLUTTERKICK_WITH_OBJ);
 	}
 	common_swimming_step(0x00A0);
 	return FALSE;
@@ -910,7 +910,7 @@ s32 PlayerRecord::act_water_shell_swimming()
 {
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_WATER_IDLE, 0);
+		return changePlayerDropping(ACT_WATER_IDLE, 0);
 	}
 
 	if(this->input & INPUT_B_PRESSED)
@@ -929,7 +929,7 @@ s32 PlayerRecord::act_water_shell_swimming()
 	this->forwardVel = approach_f32(this->forwardVel, 30.0f, 2.0f * FRAME_RATE_SCALER, 1.0f * FRAME_RATE_SCALER);
 
 	func_802713A8();
-	set_mario_animation(MARIO_ANIM_FLUTTERKICK_WITH_OBJ);
+	setAnimation(MARIO_ANIM_FLUTTERKICK_WITH_OBJ);
 	common_swimming_step(0x012C);
 
 	return FALSE;
@@ -942,7 +942,7 @@ s32 PlayerRecord::check_water_grab()
 	// you can use water grab to pick up heave ho.
 	if(this->marioObj->collidedObjInteractTypes & INTERACT_GRABBABLE)
 	{
-		struct Object* object = mario_get_collided_object(this, INTERACT_GRABBABLE);
+		struct Object* object = PL_GetCollidedObject(this, INTERACT_GRABBABLE);
 		f32 dx		      = object->oPosX - this->pos[0];
 		f32 dz		      = object->oPosZ - this->pos[2];
 		s16 dAngleToObject    = atan2s(dz, dx) - this->faceAngle[1];
@@ -950,7 +950,7 @@ s32 PlayerRecord::check_water_grab()
 		if(dAngleToObject >= -0x2AAA && dAngleToObject <= 0x2AAA)
 		{
 			this->usedObj = object;
-			mario_grab_used_object(this);
+			PL_TakeObject(this);
 			this->marioBodyState->grabPos = GRAB_POS_LIGHT_OBJ;
 			return TRUE;
 		}
@@ -967,18 +967,18 @@ s32 PlayerRecord::act_water_throw()
 	perform_water_step();
 	func_80270504();
 
-	set_mario_animation(MARIO_ANIM_WATER_THROW_OBJ);
-	play_sound_if_no_flag(SOUND_ACTION_SWIM, MARIO_ACTION_SOUND_PLAYED);
+	setAnimation(MARIO_ANIM_WATER_THROW_OBJ);
+	startSoundEffect(SOUND_ACTION_SWIM, MARIO_ACTION_SOUND_PLAYED);
 
 	this->marioBodyState->headAngle[0] = approach_s32(this->marioBodyState->headAngle[0], 0, 0x200 / FRAME_RATE_SCALER_INV, 0x200 / FRAME_RATE_SCALER_INV);
 
 	if(this->actionTimer++ == 5 * FRAME_RATE_SCALER_INV)
 	{
-		mario_throw_held_object(this);
+		PL_ThrowObject(this);
 		SendMotorEvent(3, 50);
 	}
 
-	if(is_anim_at_end())
+	if(isLast1AnimeFrame())
 	{
 		ChangePlayerStatus(ACT_WATER_IDLE, 0);
 	}
@@ -1001,29 +1001,29 @@ s32 PlayerRecord::act_water_punch()
 
 	this->marioBodyState->headAngle[0] = approach_s32(this->marioBodyState->headAngle[0], 0, 0x200 / FRAME_RATE_SCALER_INV, 0x200 / FRAME_RATE_SCALER_INV);
 
-	play_sound_if_no_flag(SOUND_ACTION_SWIM, MARIO_ACTION_SOUND_PLAYED);
+	startSoundEffect(SOUND_ACTION_SWIM, MARIO_ACTION_SOUND_PLAYED);
 
 	switch(this->actionState)
 	{
 		case 0:
-			set_mario_animation(MARIO_ANIM_WATER_GRAB_OBJ_PART1);
-			if(is_anim_at_end())
+			setAnimation(MARIO_ANIM_WATER_GRAB_OBJ_PART1);
+			if(isLast1AnimeFrame())
 			{
 				this->actionState = check_water_grab() + 1;
 			}
 			break;
 
 		case 1:
-			set_mario_animation(MARIO_ANIM_WATER_GRAB_OBJ_PART2);
-			if(is_anim_at_end())
+			setAnimation(MARIO_ANIM_WATER_GRAB_OBJ_PART2);
+			if(isLast1AnimeFrame())
 			{
 				ChangePlayerStatus(ACT_WATER_ACTION_END, 0);
 			}
 			break;
 
 		case 2:
-			set_mario_animation(MARIO_ANIM_WATER_PICK_UP_OBJ);
-			if(is_anim_at_end())
+			setAnimation(MARIO_ANIM_WATER_PICK_UP_OBJ);
+			if(isLast1AnimeFrame())
 			{
 				if(this->heldObj->behavior == segmented_to_virtual(sm64::bhv::bhvKoopaShellUnderwater()))
 				{
@@ -1045,11 +1045,11 @@ void PlayerRecord::common_water_knockback_step(s32 animation, u32 endAction, s32
 {
 	stationary_slow_down();
 	perform_water_step();
-	set_mario_animation(animation);
+	setAnimation(animation);
 
 	this->marioBodyState->headAngle[0] = 0;
 
-	if(is_anim_at_end())
+	if(isLast1AnimeFrame())
 	{
 		if(arg3 > 0)
 		{
@@ -1074,11 +1074,11 @@ s32 PlayerRecord::act_forward_water_kb()
 
 s32 PlayerRecord::act_water_shocked()
 {
-	play_sound_if_no_flag(SOUND_MARIO_WAAAOOOW, MARIO_ACTION_SOUND_PLAYED);
+	startSoundEffect(SOUND_MARIO_WAAAOOOW, MARIO_ACTION_SOUND_PLAYED);
 	AudStartSound(SOUND_MOVING_SHOCKED, this->marioObj->header.gfx.cameraToObject);
 	Vieweffect(SHAKE_SHOCK);
 
-	if(set_mario_animation(MARIO_ANIM_SHOCKED) == 0)
+	if(setAnimation(MARIO_ANIM_SHOCKED) == 0)
 	{
 		this->actionTimer++;
 		this->flags |= MARIO_METAL_SHOCK;
@@ -1101,16 +1101,16 @@ s32 PlayerRecord::act_drowning()
 	switch(this->actionState)
 	{
 		case 0:
-			set_mario_animation(MARIO_ANIM_DROWNING_PART1);
+			setAnimation(MARIO_ANIM_DROWNING_PART1);
 			this->marioBodyState->eyeState = MARIO_EYES_HALF_CLOSED;
-			if(is_anim_at_end())
+			if(isLast1AnimeFrame())
 			{
 				this->actionState = 1;
 			}
 			break;
 
 		case 1:
-			set_mario_animation(MARIO_ANIM_DROWNING_PART2);
+			setAnimation(MARIO_ANIM_DROWNING_PART2);
 			this->marioBodyState->eyeState = MARIO_EYES_DEAD;
 			if(this->marioObj->header.gfx.unk38.frame() == 30)
 			{
@@ -1119,7 +1119,7 @@ s32 PlayerRecord::act_drowning()
 			break;
 	}
 
-	play_sound_if_no_flag(SOUND_MARIO_DROWNING, MARIO_ACTION_SOUND_PLAYED);
+	startSoundEffect(SOUND_MARIO_DROWNING, MARIO_ACTION_SOUND_PLAYED);
 	stationary_slow_down();
 	perform_water_step();
 
@@ -1133,8 +1133,8 @@ s32 PlayerRecord::act_water_death()
 
 	this->marioBodyState->eyeState = MARIO_EYES_DEAD;
 
-	set_mario_animation(MARIO_ANIM_WATER_DYING);
-	if(set_mario_animation(MARIO_ANIM_WATER_DYING) == 35)
+	setAnimation(MARIO_ANIM_WATER_DYING);
+	if(setAnimation(MARIO_ANIM_WATER_DYING) == 35)
 	{
 		PL_StartFadeout(this, PL_FADE_LOSING);
 	}
@@ -1218,22 +1218,22 @@ s32 PlayerRecord::act_water_plunge()
 	switch(stateFlags)
 	{
 		case 0:
-			set_mario_animation(MARIO_ANIM_WATER_ACTION_END);
+			setAnimation(MARIO_ANIM_WATER_ACTION_END);
 			break;
 		case 1:
-			set_mario_animation(MARIO_ANIM_WATER_ACTION_END_WITH_OBJ);
+			setAnimation(MARIO_ANIM_WATER_ACTION_END_WITH_OBJ);
 			break;
 		case 2:
-			set_mario_animation(MARIO_ANIM_FLUTTERKICK);
+			setAnimation(MARIO_ANIM_FLUTTERKICK);
 			break;
 		case 3:
-			set_mario_animation(MARIO_ANIM_FLUTTERKICK_WITH_OBJ);
+			setAnimation(MARIO_ANIM_FLUTTERKICK_WITH_OBJ);
 			break;
 		case 4:
-			set_mario_animation(MARIO_ANIM_GENERAL_FALL);
+			setAnimation(MARIO_ANIM_GENERAL_FALL);
 			break;
 		case 5:
-			set_mario_animation(MARIO_ANIM_FALL_WITH_LIGHT_OBJ);
+			setAnimation(MARIO_ANIM_FALL_WITH_LIGHT_OBJ);
 			break;
 	}
 
@@ -1302,9 +1302,9 @@ s32 PlayerRecord::act_caught_in_whirlpool()
 
 	this->faceAngle[1] = atan2s(dz, dx) + 0x8000;
 
-	set_mario_animation(MARIO_ANIM_GENERAL_FALL);
-	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
-	vec3s_set(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+	setAnimation(MARIO_ANIM_GENERAL_FALL);
+	CopyFVector(this->marioObj->header.gfx.pos, this->pos);
+	SetSVector(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 
 	return FALSE;
 }
@@ -1316,12 +1316,12 @@ void PlayerRecord::play_metal_water_jumping_sound(u32 landing)
 		this->particleFlags |= PARTICLE_POUND_WHITE_PUFF;
 	}
 
-	play_sound_if_no_flag(landing ? SOUND_ACTION_METAL_LAND_WATER : SOUND_ACTION_METAL_JUMP_WATER, MARIO_ACTION_SOUND_PLAYED);
+	startSoundEffect(landing ? SOUND_ACTION_METAL_LAND_WATER : SOUND_ACTION_METAL_JUMP_WATER, MARIO_ACTION_SOUND_PLAYED);
 }
 
 void PlayerRecord::play_metal_water_walking_sound()
 {
-	if(is_anim_past_frame(10) || is_anim_past_frame(49))
+	if(checkAnimeFrame(10) || checkAnimeFrame(49))
 	{
 		AudStartSound(SOUND_ACTION_METAL_STEP_WATER, this->marioObj->header.gfx.cameraToObject);
 		this->particleFlags |= PARTICLE_DUST;
@@ -1416,22 +1416,22 @@ s32 PlayerRecord::act_metal_water_standing()
 	switch(this->actionState)
 	{
 		case 0:
-			set_mario_animation(MARIO_ANIM_IDLE_HEAD_LEFT);
+			setAnimation(MARIO_ANIM_IDLE_HEAD_LEFT);
 			break;
 		case 1:
-			set_mario_animation(MARIO_ANIM_IDLE_HEAD_RIGHT);
+			setAnimation(MARIO_ANIM_IDLE_HEAD_RIGHT);
 			break;
 		case 2:
-			set_mario_animation(MARIO_ANIM_IDLE_HEAD_CENTER);
+			setAnimation(MARIO_ANIM_IDLE_HEAD_CENTER);
 			break;
 	}
 
-	if(is_anim_at_end() && ++this->actionState == 3)
+	if(isLast1AnimeFrame() && ++this->actionState == 3)
 	{
 		this->actionState = 0;
 	}
 
-	stop_and_set_height_to_floor();
+	stopProcess();
 	if(this->pos[1] >= this->waterLevel - 150)
 	{
 		this->particleFlags |= PARTICLE_SURFACE_WAVES;
@@ -1444,7 +1444,7 @@ s32 PlayerRecord::act_hold_metal_water_standing()
 {
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_METAL_WATER_STANDING, 0);
+		return changePlayerDropping(ACT_METAL_WATER_STANDING, 0);
 	}
 
 	if(!(this->flags & MARIO_METAL_CAP))
@@ -1462,8 +1462,8 @@ s32 PlayerRecord::act_hold_metal_water_standing()
 		return ChangePlayerStatus(ACT_HOLD_METAL_WATER_WALKING, 0);
 	}
 
-	stop_and_set_height_to_floor();
-	set_mario_animation(MARIO_ANIM_IDLE_WITH_LIGHT_OBJ);
+	stopProcess();
+	setAnimation(MARIO_ANIM_IDLE_WITH_LIGHT_OBJ);
 	return FALSE;
 }
 
@@ -1496,11 +1496,11 @@ s32 PlayerRecord::act_metal_water_walking()
 		val04 = 0x1000;
 	}
 
-	set_mario_anim_with_accel(MARIO_ANIM_WALKING, val04);
+	setAnimation(MARIO_ANIM_WALKING, val04);
 	play_metal_water_walking_sound();
 	update_metal_water_walking_speed();
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_METAL_WATER_FALLING, 1);
@@ -1520,7 +1520,7 @@ s32 PlayerRecord::act_hold_metal_water_walking()
 
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_METAL_WATER_WALKING, 0);
+		return changePlayerDropping(ACT_METAL_WATER_WALKING, 0);
 	}
 
 	if(!(this->flags & MARIO_METAL_CAP))
@@ -1545,11 +1545,11 @@ s32 PlayerRecord::act_hold_metal_water_walking()
 		val04 = 0x1000;
 	}
 
-	set_mario_anim_with_accel(MARIO_ANIM_RUN_WITH_LIGHT_OBJ, val04);
+	setAnimation(MARIO_ANIM_RUN_WITH_LIGHT_OBJ, val04);
 	play_metal_water_walking_sound();
 	update_metal_water_walking_speed();
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_HOLD_METAL_WATER_FALLING, 1);
@@ -1576,9 +1576,9 @@ s32 PlayerRecord::act_metal_water_jump()
 	}
 
 	play_metal_water_jumping_sound(FALSE);
-	set_mario_animation(MARIO_ANIM_SINGLE_JUMP);
+	setAnimation(MARIO_ANIM_SINGLE_JUMP);
 
-	switch(perform_air_step(0))
+	switch(jumpProcess(0))
 	{
 		case AIR_STEP_LANDED:
 			ChangePlayerStatus(ACT_METAL_WATER_JUMP_LAND, 0);
@@ -1596,7 +1596,7 @@ s32 PlayerRecord::act_hold_metal_water_jump()
 {
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_METAL_WATER_FALLING, 0);
+		return changePlayerDropping(ACT_METAL_WATER_FALLING, 0);
 	}
 
 	if(!(this->flags & MARIO_METAL_CAP))
@@ -1610,9 +1610,9 @@ s32 PlayerRecord::act_hold_metal_water_jump()
 	}
 
 	play_metal_water_jumping_sound(FALSE);
-	set_mario_animation(MARIO_ANIM_JUMP_WITH_LIGHT_OBJ);
+	setAnimation(MARIO_ANIM_JUMP_WITH_LIGHT_OBJ);
 
-	switch(perform_air_step(0))
+	switch(jumpProcess(0))
 	{
 		case AIR_STEP_LANDED:
 			ChangePlayerStatus(ACT_HOLD_METAL_WATER_JUMP_LAND, 0);
@@ -1638,7 +1638,7 @@ s32 PlayerRecord::act_metal_water_falling()
 		this->faceAngle[1] += 0x400 / FRAME_RATE_SCALER_INV * sins(this->intendedYaw - this->faceAngle[1]);
 	}
 
-	set_mario_animation(this->actionArg == 0 ? MARIO_ANIM_GENERAL_FALL : MARIO_ANIM_FALL_FROM_WATER);
+	setAnimation(this->actionArg == 0 ? MARIO_ANIM_GENERAL_FALL : MARIO_ANIM_FALL_FROM_WATER);
 	stationary_slow_down();
 
 	if(perform_water_step() & WATER_STEP_HIT_FLOOR)
@@ -1653,7 +1653,7 @@ s32 PlayerRecord::act_hold_metal_water_falling()
 {
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_METAL_WATER_FALLING, 0);
+		return changePlayerDropping(ACT_METAL_WATER_FALLING, 0);
 	}
 
 	if(!(this->flags & MARIO_METAL_CAP))
@@ -1666,7 +1666,7 @@ s32 PlayerRecord::act_hold_metal_water_falling()
 		this->faceAngle[1] += 0x400 / FRAME_RATE_SCALER_INV * sins(this->intendedYaw - this->faceAngle[1]);
 	}
 
-	set_mario_animation(MARIO_ANIM_FALL_WITH_LIGHT_OBJ);
+	setAnimation(MARIO_ANIM_FALL_WITH_LIGHT_OBJ);
 	stationary_slow_down();
 
 	if(perform_water_step() & WATER_STEP_HIT_FLOOR)
@@ -1691,10 +1691,10 @@ s32 PlayerRecord::act_metal_water_jump_land()
 		return ChangePlayerStatus(ACT_METAL_WATER_WALKING, 0);
 	}
 
-	stop_and_set_height_to_floor();
-	set_mario_animation(MARIO_ANIM_LAND_FROM_SINGLE_JUMP);
+	stopProcess();
+	setAnimation(MARIO_ANIM_LAND_FROM_SINGLE_JUMP);
 
-	if(is_anim_at_end())
+	if(isLast1AnimeFrame())
 	{
 		return ChangePlayerStatus(ACT_METAL_WATER_STANDING, 0);
 	}
@@ -1708,7 +1708,7 @@ s32 PlayerRecord::act_hold_metal_water_jump_land()
 
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_METAL_WATER_STANDING, 0);
+		return changePlayerDropping(ACT_METAL_WATER_STANDING, 0);
 	}
 
 	if(!(this->flags & MARIO_METAL_CAP))
@@ -1721,10 +1721,10 @@ s32 PlayerRecord::act_hold_metal_water_jump_land()
 		return ChangePlayerStatus(ACT_HOLD_METAL_WATER_WALKING, 0);
 	}
 
-	stop_and_set_height_to_floor();
-	set_mario_animation(MARIO_ANIM_JUMP_LAND_WITH_LIGHT_OBJ);
+	stopProcess();
+	setAnimation(MARIO_ANIM_JUMP_LAND_WITH_LIGHT_OBJ);
 
-	if(is_anim_at_end())
+	if(isLast1AnimeFrame())
 	{
 		return ChangePlayerStatus(ACT_HOLD_METAL_WATER_STANDING, 0);
 	}
@@ -1746,10 +1746,10 @@ s32 PlayerRecord::act_metal_water_fall_land()
 		return ChangePlayerStatus(ACT_METAL_WATER_WALKING, 0);
 	}
 
-	stop_and_set_height_to_floor();
-	set_mario_animation(MARIO_ANIM_GENERAL_LAND);
+	stopProcess();
+	setAnimation(MARIO_ANIM_GENERAL_LAND);
 
-	if(is_anim_at_end())
+	if(isLast1AnimeFrame())
 	{
 		return ChangePlayerStatus(ACT_METAL_WATER_STANDING, 0);
 	}
@@ -1763,7 +1763,7 @@ s32 PlayerRecord::act_hold_metal_water_fall_land()
 
 	if(this->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_METAL_WATER_STANDING, 0);
+		return changePlayerDropping(ACT_METAL_WATER_STANDING, 0);
 	}
 
 	if(!(this->flags & MARIO_METAL_CAP))
@@ -1776,10 +1776,10 @@ s32 PlayerRecord::act_hold_metal_water_fall_land()
 		return ChangePlayerStatus(ACT_HOLD_METAL_WATER_WALKING, 0);
 	}
 
-	stop_and_set_height_to_floor();
-	set_mario_animation(MARIO_ANIM_FALL_LAND_WITH_LIGHT_OBJ);
+	stopProcess();
+	setAnimation(MARIO_ANIM_FALL_LAND_WITH_LIGHT_OBJ);
 
-	if(is_anim_at_end())
+	if(isLast1AnimeFrame())
 	{
 		return ChangePlayerStatus(ACT_HOLD_METAL_WATER_STANDING, 0);
 	}
@@ -1808,7 +1808,7 @@ s32 PlayerRecord::check_common_submerged_cancels()
 				stop_shell_music();
 			}
 
-			return transition_submerged_to_walking();
+			return changeFieldMode();
 		}
 	}
 
@@ -1820,7 +1820,7 @@ s32 PlayerRecord::check_common_submerged_cancels()
 	return FALSE;
 }
 
-s32 PlayerRecord::mario_execute_submerged_action()
+s32 PlayerRecord::PL_PlayerSwimMain()
 {
 	s32 cancel;
 

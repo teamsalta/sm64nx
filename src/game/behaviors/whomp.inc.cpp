@@ -1,6 +1,6 @@
 // whomp.c.inc
 
-void func_802C61CC(void)
+void wallman_sound(void)
 {
 	UNUSED s32 sp2C = o->header.gfx.unk38.frame();
 	s32 sp28	= 0;
@@ -18,7 +18,7 @@ void func_802C61CC(void)
 		objsound(SOUND_OBJ_POUNDING1);
 }
 
-void ActionWhomp0(void)
+void wallman_init(void)
 {
 	s_set_skelanime_speed(0, 1.0f);
 	s_copy_initpos();
@@ -44,10 +44,10 @@ void ActionWhomp0(void)
 	}
 	else if(o->oDistanceToMario < 500.0f)
 		o->oAction = 1;
-	func_802C61CC();
+	wallman_sound();
 }
 
-void ActionWhomp7(void)
+void wallman_walkstart(void)
 {
 	if(o->oSubAction == 0)
 	{
@@ -64,10 +64,10 @@ void ActionWhomp7(void)
 		if(o->oTimer > 42 * FRAME_RATE_SCALER_INV)
 			o->oAction = 1;
 	}
-	func_802C61CC();
+	wallman_sound();
 }
 
-void ActionWhomp1(void)
+void wallman_walk(void)
 {
 	s16 sp26;
 	f32 sp20;
@@ -92,10 +92,10 @@ void ActionWhomp1(void)
 		if(o->oDistanceToMario < 300.0f)
 			o->oAction = 3;
 	}
-	func_802C61CC();
+	wallman_sound();
 }
 
-void ActionWhomp2(void)
+void wallman_search(void)
 {
 	s16 sp1E;
 	s_set_skelanime_speed(0, 1.0f);
@@ -115,7 +115,7 @@ void ActionWhomp2(void)
 				o->oAction = 3;
 		}
 	}
-	func_802C61CC();
+	wallman_sound();
 	if(func_802A6AF8(1000.0f))
 	{
 		o->oAction = 0;
@@ -123,7 +123,7 @@ void ActionWhomp2(void)
 	}
 }
 
-void ActionWhomp3(void)
+void wallman_attack(void)
 {
 	o->oForwardVel = 0.0f;
 	s_set_skelanime_speed(1, 1.0f);
@@ -131,7 +131,7 @@ void ActionWhomp3(void)
 		o->oAction = 4;
 }
 
-void ActionWhomp4(void)
+void wallman_down(void)
 {
 	if(o->oTimer == 0)
 		o->oVelY = 40.0f;
@@ -153,7 +153,7 @@ void ActionWhomp4(void)
 	}
 }
 
-void ActionWhomp5(void)
+void wallman_down_end(void)
 {
 	if(o->oSubAction == 0 && o->oMoveFlags & 1)
 	{
@@ -166,7 +166,7 @@ void ActionWhomp5(void)
 		o->oAction = 6;
 }
 
-void func_802C6954(void)
+void wallman_boss_sleep(void)
 {
 	Vec3f pos;
 	if(o->oSubAction == 0)
@@ -180,12 +180,12 @@ void func_802C6954(void)
 				o->oAction = 8;
 			else
 			{
-				func_802B8F7C(pos, &o->oPosX);
-				func_802B8F7C(&o->oPosX, &gMarioObject->oPosX);
+				s_copy_f(pos, &o->oPosX);
+				s_copy_f(&o->oPosX, &gMarioObject->oPosX);
 				s_burneffect(0, 0, 100.0f);
 				s_boxeffect(20, 138, 3.0f, 4);
 				s_call_Viewshake(SHAKE_POS_SMALL);
-				func_802B8F7C(&o->oPosX, pos);
+				s_copy_f(&o->oPosX, pos);
 			}
 			o->oSubAction++;
 		}
@@ -206,7 +206,7 @@ void func_802C6954(void)
 	}
 }
 
-void func_802C6B28(void)
+void wallman_mini_sleep(void)
 {
 	if(o->oSubAction == 0)
 	{
@@ -229,7 +229,7 @@ void func_802C6B28(void)
 		o->oSubAction = 0;
 }
 
-void ActionWhomp6(void)
+void wallman_sleep(void)
 {
 	if(o->oSubAction != 10)
 	{
@@ -238,9 +238,9 @@ void ActionWhomp6(void)
 		o->oAngleVelYaw	  = 0;
 		o->oAngleVelRoll  = 0;
 		if(o->oBehParams2ndByte != 0)
-			func_802C6954();
+			wallman_boss_sleep();
 		else
-			func_802C6B28();
+			wallman_mini_sleep();
 		if(o->oTimer > 100 * FRAME_RATE_SCALER_INV || (marioWorks->status == ACT_SQUISHED && o->oTimer > 30 * FRAME_RATE_SCALER_INV))
 			o->oSubAction = 10;
 	}
@@ -263,7 +263,7 @@ void ActionWhomp6(void)
 	}
 }
 
-void ActionWhomp8(void)
+void wallman_burn(void)
 {
 	if(o->oBehParams2ndByte != 0)
 	{
@@ -291,16 +291,16 @@ void ActionWhomp8(void)
 	}
 }
 
-void ActionWhomp9(void)
+void wallman_dead_stop(void)
 {
 	if(o->oTimer == 60 * FRAME_RATE_SCALER_INV)
 		stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
 }
 
-void (*sWhompActions[])(void) = {ActionWhomp0, ActionWhomp1, ActionWhomp2, ActionWhomp3, ActionWhomp4, ActionWhomp5, ActionWhomp6, ActionWhomp7, ActionWhomp8, ActionWhomp9};
+void (*sWhompActions[])(void) = {wallman_init, wallman_walk, wallman_search, wallman_attack, wallman_down, wallman_down_end, wallman_sleep, wallman_walkstart, wallman_burn, wallman_dead_stop};
 
 // MM
-void bhv_whomp_loop(void)
+void s_wallman(void)
 {
 	s_enemybgcheck();
 	s_modejmp(sWhompActions);

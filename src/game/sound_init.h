@@ -70,7 +70,7 @@ extern void AudUnlockSound(void);
 extern void set_sound_mode(u16);
 extern void play_menu_sounds(s16 a);
 extern void AudPictWaveSound(void);
-extern void play_infinite_stairs_music(void);
+extern void AudUnlimitedMusic(void);
 extern void AudPlayMusic(u16, u16, s16);
 extern void AudStopMusic(s16);
 extern void func_8024924C(s16 fadeTimer);

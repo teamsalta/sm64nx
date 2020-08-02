@@ -281,17 +281,17 @@ struct Surface
 
 struct MarioBodyState
 {
-	/*0x00*/ u32 action;
-	/*0x04*/ s8 capState;
-	/*0x05*/ s8 eyeState;
-	/*0x06*/ s8 handState;
-	/*0x07*/ s8 unk07;
-	/*0x08*/ s16 modelState;
-	/*0x0A*/ s8 grabPos;
-	/*0x0B*/ u8 punchState;
-	/*0x0C*/ Vec3s torsoAngle;
-	/*0x12*/ Vec3s headAngle;
-	/*0x18*/ Vec3f unk18;
+	 u32 action;
+	s8 capState;
+	s8 eyeState;
+	s8 handState;
+	s8 unk07;
+	s16 modelState;
+	s8 grabPos;
+	u8 punchState;
+	Vec3s torsoAngle;
+	Vec3s headAngle;
+	Vec3f unk18;
 	u8 padding[4];
 };
 

@@ -273,15 +273,15 @@ void movtex_make_quad_vertex(Vtx* verts, s32 index, s16 x, s16 y, s16 z, s16 rot
 
 	if(gMovtexVtxColor == MOVTEX_VTX_COLOR_YELLOW)
 	{
-		make_vertex(verts, index, x, y, z, s, t, 255, 255, 0, alpha);
+		Tani_SetOneVtxData(verts, index, x, y, z, s, t, 255, 255, 0, alpha);
 	}
 	else if(gMovtexVtxColor == MOVTEX_VTX_COLOR_RED)
 	{
-		make_vertex(verts, index, x, y, z, s, t, 255, 0, 0, alpha);
+		Tani_SetOneVtxData(verts, index, x, y, z, s, t, 255, 0, 0, alpha);
 	}
 	else
 	{
-		make_vertex(verts, index, x, y, z, s, t, 255, 255, 255, alpha);
+		Tani_SetOneVtxData(verts, index, x, y, z, s, t, 255, 255, 255, alpha);
 	}
 }
 
@@ -677,7 +677,7 @@ void movtex_write_vertex_first(Vtx* vtx, s16* movtexVerts, const struct MovtexOb
 			b1 = c->b;
 			s  = movtexVerts[MOVTEX_ATTR_NOCOLOR_S];
 			t  = movtexVerts[MOVTEX_ATTR_NOCOLOR_T];
-			make_vertex(vtx, 0, x, y, z, s, t, r1, g1, b1, alpha);
+			Tani_SetOneVtxData(vtx, 0, x, y, z, s, t, r1, g1, b1, alpha);
 			break;
 		case MOVTEX_LAYOUT_COLORED:
 			r2 = movtexVerts[MOVTEX_ATTR_COLORED_R];
@@ -685,7 +685,7 @@ void movtex_write_vertex_first(Vtx* vtx, s16* movtexVerts, const struct MovtexOb
 			b2 = movtexVerts[MOVTEX_ATTR_COLORED_B];
 			s  = movtexVerts[MOVTEX_ATTR_COLORED_S];
 			t  = movtexVerts[MOVTEX_ATTR_COLORED_T];
-			make_vertex(vtx, 0, x, y, z, s, t, r2, g2, b2, alpha);
+			Tani_SetOneVtxData(vtx, 0, x, y, z, s, t, r2, g2, b2, alpha);
 			break;
 	}
 }
@@ -729,7 +729,7 @@ void movtex_write_vertex_index(Vtx* verts, s32 index, s16* movtexVerts, const st
 			r1    = d->r;
 			g1    = d->g;
 			b1    = d->b;
-			make_vertex(verts, index, x, y, z, s, t, r1, g1, b1, alpha);
+			Tani_SetOneVtxData(verts, index, x, y, z, s, t, r1, g1, b1, alpha);
 			break;
 		case MOVTEX_LAYOUT_COLORED:
 			x     = movtexVerts[index * 8 + MOVTEX_ATTR_X];
@@ -744,7 +744,7 @@ void movtex_write_vertex_index(Vtx* verts, s32 index, s16* movtexVerts, const st
 			r2    = movtexVerts[index * 8 + MOVTEX_ATTR_COLORED_R];
 			g2    = movtexVerts[index * 8 + MOVTEX_ATTR_COLORED_G];
 			b2    = movtexVerts[index * 8 + MOVTEX_ATTR_COLORED_B];
-			make_vertex(verts, index, x, y, z, s, t, r2, g2, b2, alpha);
+			Tani_SetOneVtxData(verts, index, x, y, z, s, t, r2, g2, b2, alpha);
 			break;
 	}
 }

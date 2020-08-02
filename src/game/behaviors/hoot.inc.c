@@ -20,7 +20,7 @@ f32 HootFindNextFloor(struct FloorGeometry** arg0, f32 arg1)
 	f32 sp24	= arg1 * sins(o->oMoveAngleYaw) + o->oPosX;
 	UNUSED f32 sp20 = o->oPosY;
 	f32 sp1c	= arg1 * coss(o->oMoveAngleYaw) + o->oPosZ;
-	f32 floorY	= find_floor_height_and_data(sp24, 10000.0f, sp1c, arg0);
+	f32 floorY	= GroundCheck(sp24, 10000.0f, sp1c, arg0);
 
 	return floorY;
 }
@@ -71,7 +71,7 @@ void HootFreeStep(s16 fastOscY, s32 speed)
 
 	o->oPosZ += o->oVelZ * FRAME_RATE_SCALER;
 
-	find_floor_height_and_data(o->oPosX, o->oPosY, o->oPosZ, &sp2c);
+	GroundCheck(o->oPosX, o->oPosY, o->oPosZ, &sp2c);
 	if(sp2c == NULL)
 	{
 		o->oPosX = xPrev;
@@ -148,7 +148,7 @@ void HootSurfaceCollision(f32 xPrev, UNUSED f32 yPrev, f32 zPrev)
 		gMarioObject->oInteractStatus |= INT_STATUS_MARIO_UNK7; /* bit 7 */
 	}
 
-	floorY = find_floor_height_and_data(o->oPosX, o->oPosY, o->oPosZ, &sp44);
+	floorY = GroundCheck(o->oPosX, o->oPosY, o->oPosZ, &sp44);
 	if(sp44 == NULL)
 	{
 		o->oPosX = xPrev;
@@ -209,7 +209,7 @@ void HootActionLoop(void)
 			{
 				s_begin_enemydemo(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 
-				if(cutscene_object_with_dialog(CUTSCENE_DIALOG, o, DIALOG_045))
+				if(cameraDemoStratMsgNum(CUTSCENE_DIALOG, o, DIALOG_045))
 				{
 					s_end_enemydemo(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 
@@ -285,7 +285,7 @@ void bhv_hoot_loop(void)
 		case HOOT_AVAIL_WANTS_TO_TALK:
 			HootAwakeLoop();
 
-			if(CtrlPlayerDialog(2) == 2 && cutscene_object_with_dialog(CUTSCENE_DIALOG, o, DIALOG_044))
+			if(CtrlPlayerDialog(2) == 2 && cameraDemoStratMsgNum(CUTSCENE_DIALOG, o, DIALOG_044))
 			{
 				CtrlPlayerDialog(0);
 

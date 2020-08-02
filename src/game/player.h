@@ -6,48 +6,48 @@ struct PlayerRecord
 	PlayerRecord();
 	~PlayerRecord();
 
-	void init();
-	void init_mario_from_save_file();
+	void initPlayer();
+	void initPlayerWorks();
 
-	s32 is_anim_at_end();
-	s32 is_anim_past_end();
-	s16 set_mario_animation(s32 targetAnimID);
-	s16 set_mario_anim_with_accel(s32 targetAnimID, s32 accel);
+	s32 isLast1AnimeFrame();
+	s32 isLast2AnimeFrame();
+	s16 setAnimation(s32 targetAnimID);
+	s16 setAnimation(s32 targetAnimID, s32 accel);
 	void anim_reset();
 	void set_anim_to_frame(s16 animFrame);
-	s32 is_anim_past_frame(s16 animFrame);
+	s32 checkAnimeFrame(s16 animFrame);
 	void update_mario_pos_for_anim();
 	s16 return_mario_anim_y_translation();
-	void play_sound_if_no_flag(u32 soundBits, u32 flags);
-	void play_mario_jump_sound();
-	void adjust_sound_for_speed();
-	void play_sound_and_spawn_particles(u32 soundBits, u32 waveParticleType);
-	void play_mario_action_sound(u32 soundBits, u32 waveParticleType);
-	void play_mario_landing_sound(u32 soundBits);
-	void play_mario_landing_sound_once(u32 soundBits);
-	void play_mario_heavy_landing_sound(u32 soundBits);
-	void play_mario_heavy_landing_sound_once(u32 soundBits);
-	void play_mario_sound(s32 primarySoundBits, s32 scondarySoundBits);
-	void mario_set_forward_vel(f32 speed);
-	s32 mario_get_floor_class();
-	u32 mario_get_terrain_sound_addend();
+	void startSoundEffect(u32 soundBits, u32 flags);
+	void startJumpVoice();
+	void setSpeedVolume();
+	void specialEffect(u32 soundBits, u32 waveParticleType);
+	void trigSpecialEffect(u32 soundBits, u32 waveParticleType);
+	void startLandingEffect(u32 soundBits);
+	void trigStartLandingEffect(u32 soundBits);
+	void startDowningEffect(u32 soundBits);
+	void trigStartDowningEffect(u32 soundBits);
+	void startJumpingEffect(s32 primarySoundBits, s32 scondarySoundBits);
+	void setPlayerVelocity(f32 speed);
+	s32 getSlipCode();
+	u32 checkGroundSurface();
 
-	s32 mario_facing_downhill(s32 turnYaw);
-	u32 mario_floor_is_slippery();
-	s32 mario_floor_is_slope();
-	s32 mario_floor_is_steep();
-	f32 find_floor_height_relative_polar(s16 angleFromMario, f32 distFromMario);
-	s16 find_floor_slope(s16 yawOffset);
-	void update_mario_sound_and_camera();
+	s32 isFrontSlip(s32 turnYaw);
+	u32 isSlipStart();
+	s32 isSlipLimit();
+	s32 isJumpMiss();
+	f32 checkPlayerAround(s16 angleFromMario, f32 distFromMario);
+	s16 groundGradient(s16 yawOffset);
+	void resetSpecialCameraMode();
 	void set_steep_jump_action();
-	s32 set_jump_from_landing();
-	s32 set_jumping_action(u32 action, u32 actionArg);
-	s32 drop_and_set_mario_action(u32 action, u32 actionArg);
-	s32 hurt_and_set_mario_action(u32 action, u32 actionArg, s16 hurtCounter);
-	s32 check_common_action_exits();
-	s32 check_common_hold_action_exits();
-	s32 transition_submerged_to_walking();
-	s32 set_water_plunge_action();
+	s32 changePlayerTriJump();
+	s32 changePlayerJumping(u32 action, u32 actionArg);
+	s32 changePlayerDropping(u32 action, u32 actionArg);
+	s32 changePlayerDamage(u32 action, u32 actionArg, s16 hurtCounter);
+	s32 checkAllMotions();
+	s32 checkAllHoldMotions();
+	s32 changeFieldMode();
+	s32 changeWaterMode();
 
 	/*0x00*/ u16 number;
 	/*0x02*/ u16 input;
@@ -112,7 +112,7 @@ struct PlayerRecord
 
 	// actions moving
 	s16 func_80263A50();
-	void func_80263AD4(s16 frame1, s16 frame2);
+	void playerRunningSound(s16 frame1, s16 frame2);
 	void func_80263C14();
 	s32 begin_walking_action(f32 forwardVel, u32 action, u32 actionArg);
 	void check_ledge_climb_down();
@@ -160,7 +160,7 @@ struct PlayerRecord
 	s32 act_holding_bowser();
 	s32 act_releasing_bowser();
 	s32 check_common_object_cancels();
-	s32 mario_execute_object_action();
+	s32 playerActnMain();
 
 	// actions_stationary
 	s32 func_802604E0();
@@ -206,7 +206,7 @@ struct PlayerRecord
 	s32 act_ground_pound_land();
 	s32 act_first_person();
 	s32 func_80263378();
-	s32 mario_execute_stationary_action();
+	s32 playerWaitMain();
 
 	// actions_submerged
 	void set_swimming_at_surface_particles(u32 particleFlag);
@@ -265,7 +265,7 @@ struct PlayerRecord
 	s32 act_metal_water_fall_land();
 	s32 act_hold_metal_water_fall_land();
 	s32 check_common_submerged_cancels();
-	s32 mario_execute_submerged_action();
+	s32 PL_PlayerSwimMain();
 
 	// action_airborne
 	void play_flip_sounds(s16 frame1, s16 frame2, s16 frame3);
@@ -331,7 +331,7 @@ struct PlayerRecord
 	s32 act_vertical_wind();
 	s32 act_special_triple_jump();
 	s32 check_common_airborne_cancels();
-	s32 mario_execute_airborne_action();
+	s32 playerJumpMain();
 
 	// actions automatic
 	void add_tree_leaf_particles();
@@ -361,7 +361,7 @@ struct PlayerRecord
 	s32 act_in_cannon();
 	s32 act_tornado_twirling();
 	s32 check_common_automatic_cancels();
-	s32 mario_execute_automatic_action();
+	s32 playerSpecMain();
 
 	// actions cutscene
 	s32 get_star_collection_dialog();
@@ -447,27 +447,27 @@ struct PlayerRecord
 	s32 act_credits_cutscene();
 	s32 act_end_waving_cutscene();
 	s32 check_for_instant_quicksand();
-	s32 mario_execute_cutscene_action();
+	s32 playerDemoMain();
 
 	// mario_step
-	void mario_bonk_reflection(u32 negateSpeed);
-	u32 mario_update_quicksand(f32 sinkingSpeed);
-	u32 mario_push_off_steep_floor(u32 action, u32 actionArg);
-	u32 mario_update_moving_sand();
-	u32 mario_update_windy_ground();
-	void stop_and_set_height_to_floor();
-	s32 stationary_ground_step();
+	void playerRefrection(u32 negateSpeed);
+	u32 checkPlayerSinking(f32 sinkingSpeed);
+	u32 fallFromHeavySlope(u32 action, u32 actionArg);
+	u32 quicksandProcess();
+	u32 gustProcess();
+	void stopProcess();
+	s32 waitProcess();
 	s32 perform_ground_quarter_step(Vec3f nextPos);
-	s32 perform_ground_step();
+	s32 walkProcess();
 	u32 check_ledge_grab(struct Surface* wall, Vec3f intendedPos, Vec3f nextPos);
 	s32 perform_air_quarter_step(Vec3f intendedPos, u32 stepArg);
 	void apply_twirl_gravity();
 	u32 should_strengthen_gravity_for_jump_ascent();
 	void apply_gravity();
 	void apply_vertical_wind();
-	s32 perform_air_step(u32 stepArg);
-	void set_vel_from_pitch_and_yaw();
-	void set_vel_from_yaw();
+	s32 jumpProcess(u32 stepArg);
+	void set3DSpeed();
+	void set2DSpeed();
 
 	//	protected:
 	void update_mario_info_for_cam();
@@ -522,7 +522,7 @@ struct PlayerRecord
 	s32 act_quicksand_jump_land();
 	s32 act_hold_quicksand_jump_land();
 	s32 check_common_moving_cancels();
-	s32 mario_execute_moving_action();
+	s32 playerMoveMain();
 
 	void update_mario_button_inputs();
 	void update_mario_joystick_inputs();

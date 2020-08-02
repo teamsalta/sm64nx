@@ -66,7 +66,7 @@
 #define /*0x0B4*/ oVelZ                       OBJECT_FIELD_F32(0x0B)
 #define /*0x0B8*/ oForwardVel                 OBJECT_FIELD_F32(0x0C)
 #define /*0x0B8*/ oForwardVelS32              OBJECT_FIELD_S32(0x0C)
-#define /*0x0BC*/ oUnkBC                      OBJECT_FIELD_F32(0x0D)
+#define /*0x0BC*/ oStarDoorSpeed              OBJECT_FIELD_F32(0x0D)
 #define /*0x0C0*/ oUnkC0                      OBJECT_FIELD_F32(0x0E)
 #define /*0x0C4*/ O_MOVE_ANGLE_INDEX          0x0F
 #define /*0x0C4*/ O_MOVE_ANGLE_PITCH_INDEX    (O_MOVE_ANGLE_INDEX + 0)

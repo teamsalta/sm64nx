@@ -398,7 +398,7 @@ static const Vtx cake_end_vertex_070263C0[] = {
 };
 
 // 0x07026400 - 0x07027350
-const Gfx dl_cake_end_screen[] = {
+const Gfx gfx_ending[] = {
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
     gsDPSetRenderMode(G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2),
@@ -607,5 +607,5 @@ const Gfx dl_cake_end_screen[] = {
 #include "game/debug.h"
 namespace sm64
 {
-	EXPORT_DL(dl_cake_end_screen);
+	EXPORT_DL(gfx_ending);
 }

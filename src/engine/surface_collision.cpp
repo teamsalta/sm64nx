@@ -199,7 +199,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode* surfaceNode, struc
 /**
  * Formats the position and wall search for find_wall_collisions.
  */
-s32 f32_find_wall_collision(f32* xPtr, f32* yPtr, f32* zPtr, f32 offsetY, f32 radius)
+s32 WallCheck(f32* xPtr, f32* yPtr, f32* zPtr, f32 offsetY, f32 radius)
 {
 	struct WallCollisionData collision;
 	s32 numCollisions = 0;
@@ -438,7 +438,7 @@ static u8 unused8038BE50[0x40];
  * with data about the floor's normal vector and origin offset. Also update
  * sFloorGeo.
  */
-f32 find_floor_height_and_data(f32 xPos, f32 yPos, f32 zPos, struct FloorGeometry** floorGeo)
+f32 GroundCheck(f32 xPos, f32 yPos, f32 zPos, struct FloorGeometry** floorGeo)
 {
 	struct Surface* floor;
 	f32 floorHeight = mcBGGroundCheck(xPos, yPos, zPos, &floor);
@@ -671,7 +671,7 @@ f32 mcBGGroundCheck(f32 xPos, f32 yPos, f32 zPos, struct Surface** pfloor)
 /**
  * Finds the height of water at a given location.
  */
-f32 find_water_level(f32 x, f32 z)
+f32 mcWaterCheck(f32 x, f32 z)
 {
 	s32 i;
 	s32 numRegions;
@@ -710,7 +710,7 @@ f32 find_water_level(f32 x, f32 z)
 /**
  * Finds the height of the poison gas (used only in HMC) at a given location.
  */
-f32 find_poison_gas_level(f32 x, f32 z)
+f32 mcGasCheck(f32 x, f32 z)
 {
 	s32 i;
 	s32 numRegions;

@@ -62,7 +62,7 @@ void func_802EFC44(void)
 	UNUSED s16 sp1E;
 
 	o->oPathedStartWaypoint = (Waypoint*)segmented_to_virtual(&ccm_seg7_trajectory_snowman);
-	sp26			= object_step_without_floor_orient();
+	sp26			= ObjMoveEvent_noInc();
 	sp20			= s_road_move(sp20);
 	o->oSnowmansBottomUnkF8 = o->oPathedTargetYaw;
 	o->oMoveAngleYaw	= s_chase_angle(o->oMoveAngleYaw, o->oSnowmansBottomUnkF8, 0x400 / FRAME_RATE_SCALER_INV);
@@ -89,12 +89,12 @@ void func_802EFDA0(void)
 {
 	UNUSED s16 sp26;
 
-	sp26 = object_step_without_floor_orient();
+	sp26 = ObjMoveEvent_noInc();
 	if(o->oForwardVel > 70.0)
 		o->oForwardVel = 70.0f;
 
 	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oSnowmansBottomUnkF8, 0x400 / FRAME_RATE_SCALER_INV);
-	if(is_point_close_to_object(o, -4230.0f, -1344.0f, 1813.0f, 300))
+	if(ObjApproach(o, -4230.0f, -1344.0f, 1813.0f, 300))
 	{
 		s_burneffect(0, 0, 70.0f);
 		o->oMoveAngleYaw = atan2s(1813.0f - o->oPosZ, -4230.0f - o->oPosX);
@@ -109,7 +109,7 @@ void func_802EFDA0(void)
 
 	if(o->oTimer == 200 * FRAME_RATE_SCALER_INV)
 	{
-		create_respawner(MODEL_CCM_SNOWMAN_BASE, sm64::bhv::bhvSnowmansBottom(), 3000);
+		Obj_reset(MODEL_CCM_SNOWMAN_BASE, sm64::bhv::bhvSnowmansBottom(), 3000);
 		o->activeFlags = 0;
 	}
 }
@@ -118,7 +118,7 @@ void func_802EFF58(void)
 {
 	UNUSED s16 sp1E;
 
-	sp1E = object_step_without_floor_orient();
+	sp1E = ObjMoveEvent_noInc();
 	if((sp1E & 0x09) == 0x09)
 	{
 		o->oAction = 4;
@@ -143,7 +143,7 @@ void bhv_snowmans_bottom_loop(void)
 		case 0:
 			if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 400) == 1 && CtrlPlayerDialog(1) == 2)
 			{
-				sp1E = cutscene_object_with_dialog(CUTSCENE_DIALOG, o, DIALOG_110);
+				sp1E = cameraDemoStratMsgNum(CUTSCENE_DIALOG, o, DIALOG_110);
 				if(sp1E)
 				{
 					o->oForwardVel = 10.0f;
@@ -212,7 +212,7 @@ void bhv_snowmans_head_loop(void)
 	switch(o->oAction)
 	{
 		case 0:
-			if(trigger_obj_dialog_when_facing(&o->oSnowmansHeadUnkF4, DIALOG_109, 400.0f, 1))
+			if(iwa_ObjMessage(&o->oSnowmansHeadUnkF4, DIALOG_109, 400.0f, 1))
 				o->oAction = 1;
 			break;
 
@@ -220,13 +220,13 @@ void bhv_snowmans_head_loop(void)
 			break;
 
 		case 2:
-			sp1C = object_step_without_floor_orient();
+			sp1C = ObjMoveEvent_noInc();
 			if(sp1C & 0x08)
 				o->oAction = 3;
 			break;
 
 		case 3:
-			object_step_without_floor_orient();
+			ObjMoveEvent_noInc();
 			if(o->oPosY < -994.0f)
 			{
 				o->oPosY   = -994.0f;
@@ -237,7 +237,7 @@ void bhv_snowmans_head_loop(void)
 			break;
 
 		case 4:
-			if(trigger_obj_dialog_when_facing(&o->oSnowmansHeadUnkF4, DIALOG_111, 700.0f, 2))
+			if(iwa_ObjMessage(&o->oSnowmansHeadUnkF4, DIALOG_111, 700.0f, 2))
 			{
 				s_kemuri();
 				s_enemyset_star(-4700.0f, -1024.0f, 1890.0f);

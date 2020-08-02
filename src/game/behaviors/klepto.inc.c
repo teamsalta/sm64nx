@@ -313,7 +313,7 @@ static void klepto_act_dive_at_mario(void)
 
 			if(playerWorks[0].status != ACT_SLEEPING && !(playerWorks[0].status & (ACT_FLAG_SHORT_HITBOX | ACT_FLAG_BUTT_OR_STOMACH_SLIDE)) && o->oDistanceToMario < 200.0f && dy > 50.0f && dy < 90.0f)
 			{
-				if(mario_lose_cap_to_enemy(1))
+				if(PL_StealMariosHat(1))
 				{
 					o->oAnimState = KLEPTO_ANIM_STATE_HOLDING_CAP;
 				}

@@ -34,7 +34,7 @@ void sequence_player_process_sound(struct SequencePlayer* seqPlayer)
 			switch(seqPlayer->state)
 			{
 				case SEQUENCE_PLAYER_STATE_FADE_OUT:
-					sequence_player_disable(seqPlayer);
+					Nas_ReleaseGroup(seqPlayer);
 					return;
 
 				case SEQUENCE_PLAYER_STATE_2:

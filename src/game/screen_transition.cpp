@@ -55,10 +55,10 @@ Vtx* vertex_transition_color(struct WarpTransitionData* transData, u8 alpha)
 
 	if(verts != NULL)
 	{
-		make_vertex(verts, 0, GFX_DIMENSIONS_FROM_LEFT_EDGE(0), 0, -1, 0, 0, r, g, b, alpha);
-		make_vertex(verts, 1, GFX_DIMENSIONS_FROM_RIGHT_EDGE(0), 0, -1, 0, 0, r, g, b, alpha);
-		make_vertex(verts, 2, GFX_DIMENSIONS_FROM_RIGHT_EDGE(0), SCREEN_HEIGHT, -1, 0, 0, r, g, b, alpha);
-		make_vertex(verts, 3, GFX_DIMENSIONS_FROM_LEFT_EDGE(0), SCREEN_HEIGHT, -1, 0, 0, r, g, b, alpha);
+		Tani_SetOneVtxData(verts, 0, GFX_DIMENSIONS_FROM_LEFT_EDGE(0), 0, -1, 0, 0, r, g, b, alpha);
+		Tani_SetOneVtxData(verts, 1, GFX_DIMENSIONS_FROM_RIGHT_EDGE(0), 0, -1, 0, 0, r, g, b, alpha);
+		Tani_SetOneVtxData(verts, 2, GFX_DIMENSIONS_FROM_RIGHT_EDGE(0), SCREEN_HEIGHT, -1, 0, 0, r, g, b, alpha);
+		Tani_SetOneVtxData(verts, 3, GFX_DIMENSIONS_FROM_LEFT_EDGE(0), SCREEN_HEIGHT, -1, 0, 0, r, g, b, alpha);
 	}
 	else
 	{
@@ -72,7 +72,7 @@ s32 dl_transition_color(s8 fadeTimer, u8 transTime, struct WarpTransitionData* t
 
 	if(verts != NULL)
 	{
-		gSPDisplayList(gDisplayListHead++, dl_proj_mtx_fullscreen);
+		gSPDisplayList(gDisplayListHead++, wipe_gfx_init);
 		gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
 		gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
 		gSPVertex(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(verts), 4, 0);
@@ -148,10 +148,10 @@ void make_tex_transition_vertex(Vtx* verts, s32 n, s8 fadeTimer, struct WarpTran
 	u16 zeroTimer = sTransitionTextureFadeCount[fadeTimer];
 	f32 centerX   = texRadius1 * coss(zeroTimer) - texRadius2 * sins(zeroTimer) + centerTransX;
 	f32 centerY   = texRadius1 * sins(zeroTimer) + texRadius2 * coss(zeroTimer) + centerTransY;
-	s16 x	      = round_float(centerX);
-	s16 y	      = round_float(centerY);
+	s16 x	      = Tani_RoundOff(centerX);
+	s16 y	      = Tani_RoundOff(centerY);
 
-	make_vertex(verts, n, x, y, -1, tx * 32, ty * 32, r, g, b, 255);
+	Tani_SetOneVtxData(verts, n, x, y, -1, tx * 32, ty * 32, r, g, b, 255);
 }
 
 void load_tex_transition_vertex(Vtx* verts, s8 fadeTimer, struct WarpTransitionData* transData, s16 centerTransX, s16 centerTransY, s16 texTransRadius, s8 transTexType)
@@ -196,7 +196,7 @@ s32 render_textured_transition(s8 fadeTimer, s8 transTime, struct WarpTransition
 	if(verts != NULL)
 	{
 		load_tex_transition_vertex(verts, fadeTimer, transData, centerTransX, centerTransY, texTransRadius, transTexType);
-		gSPDisplayList(gDisplayListHead++, dl_proj_mtx_fullscreen) gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
+		gSPDisplayList(gDisplayListHead++, wipe_gfx_init) gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
 		gDPSetRenderMode(gDisplayListHead++, G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2);
 		gSPVertex(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(verts), 8, 0);
 		gSPDisplayList(gDisplayListHead++, dl_transition_draw_filled_region);
@@ -272,17 +272,17 @@ Gfx* render_cannon_circle_base(void)
 
 	if(verts != NULL && dlist != NULL)
 	{
-		make_vertex(verts, 0, 0, 0, -1, -1152, 1824, 0, 0, 0, 255);
-		make_vertex(verts, 1, SCREEN_WIDTH, 0, -1, 1152, 1824, 0, 0, 0, 255);
-		make_vertex(verts, 2, SCREEN_WIDTH, SCREEN_HEIGHT, -1, 1152, 192, 0, 0, 0, 255);
-		make_vertex(verts, 3, 0, SCREEN_HEIGHT, -1, -1152, 192, 0, 0, 0, 255);
+		Tani_SetOneVtxData(verts, 0, 0, 0, -1, -1152, 1824, 0, 0, 0, 255);
+		Tani_SetOneVtxData(verts, 1, SCREEN_WIDTH, 0, -1, 1152, 1824, 0, 0, 0, 255);
+		Tani_SetOneVtxData(verts, 2, SCREEN_WIDTH, SCREEN_HEIGHT, -1, 1152, 192, 0, 0, 0, 255);
+		Tani_SetOneVtxData(verts, 3, 0, SCREEN_HEIGHT, -1, -1152, 192, 0, 0, 0, 255);
 
-		make_vertex(verts, 4, GFX_DIMENSIONS_FROM_LEFT_EDGE(0), 0, -1, 0, 0, 0, 0, 0, 255);
-		make_vertex(verts, 5, GFX_DIMENSIONS_FROM_RIGHT_EDGE(0), 0, -1, 0, 0, 0, 0, 0, 255);
-		make_vertex(verts, 6, GFX_DIMENSIONS_FROM_RIGHT_EDGE(0), SCREEN_HEIGHT, -1, 0, 0, 0, 0, 0, 255);
-		make_vertex(verts, 7, GFX_DIMENSIONS_FROM_LEFT_EDGE(0), SCREEN_HEIGHT, -1, 0, 0, 0, 0, 0, 255);
+		Tani_SetOneVtxData(verts, 4, GFX_DIMENSIONS_FROM_LEFT_EDGE(0), 0, -1, 0, 0, 0, 0, 0, 255);
+		Tani_SetOneVtxData(verts, 5, GFX_DIMENSIONS_FROM_RIGHT_EDGE(0), 0, -1, 0, 0, 0, 0, 0, 255);
+		Tani_SetOneVtxData(verts, 6, GFX_DIMENSIONS_FROM_RIGHT_EDGE(0), SCREEN_HEIGHT, -1, 0, 0, 0, 0, 0, 255);
+		Tani_SetOneVtxData(verts, 7, GFX_DIMENSIONS_FROM_LEFT_EDGE(0), SCREEN_HEIGHT, -1, 0, 0, 0, 0, 0, 255);
 
-		gSPDisplayList(g++, dl_proj_mtx_fullscreen);
+		gSPDisplayList(g++, wipe_gfx_init);
 		gDPSetCombineMode(g++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
 		gDPSetTextureFilter(g++, G_TF_BILERP);
 		gDPLoadTextureBlock(g++, sTextureTransitionID[TEX_TRANS_CIRCLE], G_IM_FMT_IA, G_IM_SIZ_8b, 32, 64, 0, G_TX_WRAP | G_TX_MIRROR, G_TX_WRAP | G_TX_MIRROR, 5, 6, G_TX_NOLOD, G_TX_NOLOD);

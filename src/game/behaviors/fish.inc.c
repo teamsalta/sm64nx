@@ -180,7 +180,7 @@ void bhv_fish_group_2_loop(void) // TODO rename
 {
 	UNUSED s32 unused[4];
 	s_set_scale(1.0f);
-	o->oFishGroupUnkF4 = find_water_level(o->oPosX, o->oPosZ);
+	o->oFishGroupUnkF4 = mcWaterCheck(o->oPosX, o->oPosZ);
 	if(activeStageNo == LEVEL_SA)
 		o->oFishGroupUnkF4 = 0.0f;
 	o->oWallHitboxRadius = 30.0f;

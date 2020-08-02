@@ -3,25 +3,23 @@
 
 void s_speedL_move(void)
 {
-	o->oVelX = (o->oUnkBC) * coss(o->oMoveAngleYaw);
-	o->oVelZ = (o->oUnkBC) * -sins(o->oMoveAngleYaw);
+	o->oVelX = (o->oStarDoorSpeed) * coss(o->oMoveAngleYaw);
+	o->oVelZ = (o->oStarDoorSpeed) * -sins(o->oMoveAngleYaw);
 
 	o->oPosX += o->oVelX * FRAME_RATE_SCALER;
 	o->oPosZ += o->oVelZ * FRAME_RATE_SCALER;
 }
 
-void bhv_star_door_loop(void)
+void s_autodoor(void)
 {
-	UNUSED u8 pad[4];
-	struct Object* sp18;
-	sp18 = s_find_obj(sm64::bhv::bhvStarDoor());
+	Object*  stp = s_find_obj(sm64::bhv::bhvStarDoor());
 	switch(o->oAction)
 	{
 		case 0:
 			s_hitON();
 			if(0x30000 & o->oInteractStatus)
 				o->oAction = 1;
-			if(sp18 != NULL && sp18->oAction != 0)
+			if(stp != NULL && stp->oAction != 0)
 				o->oAction = 1;
 			break;
 		case 1:
@@ -31,7 +29,7 @@ void bhv_star_door_loop(void)
 				SendMotorEvent(35, 30);
 			}
 			s_hitOFF();
-			o->oUnkBC = -8.0f;
+			o->oStarDoorSpeed = -8.0f;
 			s_speedL_move();
 			if(o->oTimer >= 16 * FRAME_RATE_SCALER_INV)
 				o->oAction++;
@@ -47,7 +45,7 @@ void bhv_star_door_loop(void)
 				SendMotorEvent(35, 30);
 			}
 
-			o->oUnkBC = 8.0f;
+			o->oStarDoorSpeed = 8.0f;
 			s_speedL_move();
 			if(o->oTimer >= 16 * FRAME_RATE_SCALER_INV)
 				o->oAction++;

@@ -205,7 +205,7 @@ u8 dim_shadow_with_distance(u8 solidity, f32 distFromFloor)
  */
 f32 get_water_level_below_shadow(struct Shadow* s)
 {
-	f32 waterLevel = find_water_level(s->parentX, s->parentZ);
+	f32 waterLevel = mcWaterCheck(s->parentX, s->parentZ);
 	if(waterLevel < -10000.0)
 	{
 		return 0;
@@ -236,7 +236,7 @@ s8 init_shadow(struct Shadow* s, f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, 
 	s->parentY = yPos;
 	s->parentZ = zPos;
 
-	s->floorHeight = find_floor_height_and_data(s->parentX, s->parentY, s->parentZ, &floorGeometry);
+	s->floorHeight = GroundCheck(s->parentX, s->parentY, s->parentZ, &floorGeometry);
 
 	if(gEnvironmentRegions != 0)
 	{
@@ -327,9 +327,9 @@ void get_texture_coords_4_vertices(s8 vertexNum, s16* textureX, s16* textureY)
  */
 void make_shadow_vertex_at_xyz(Vtx* vertices, s8 index, f32 relX, f32 relY, f32 relZ, u8 alpha, s8 shadowVertexType)
 {
-	s16 vtxX = round_float(relX);
-	s16 vtxY = round_float(relY);
-	s16 vtxZ = round_float(relZ);
+	s16 vtxX = Tani_RoundOff(relX);
+	s16 vtxY = Tani_RoundOff(relY);
+	s16 vtxZ = Tani_RoundOff(relZ);
 	s16 textureX, textureY;
 
 	switch(shadowVertexType)
@@ -349,7 +349,7 @@ void make_shadow_vertex_at_xyz(Vtx* vertices, s8 index, f32 relX, f32 relY, f32 
 		vtxY += 5;
 		vtxZ += 5;
 	}
-	make_vertex(
+	Tani_SetOneVtxData(
 	    vertices, index, vtxX, vtxY, vtxZ, textureX << 5, textureY << 5, 255, 255, 255,
 	    alpha // shadows are black
 	);
@@ -437,7 +437,7 @@ void calculate_vertex_xyz(s8 index, struct Shadow s, f32* xPosVtx, f32* yPosVtx,
 				// Clamp this vertex's y-position to that of the floor directly
 				// below it, which may differ from the floor below the center
 				// vertex.
-				*yPosVtx = find_floor_height_and_data(*xPosVtx, s.parentY, *zPosVtx, &dummy);
+				*yPosVtx = GroundCheck(*xPosVtx, s.parentY, *zPosVtx, &dummy);
 				break;
 			case SHADOW_WITH_4_VERTS:
 				// Do not clamp. Instead, extrapolate the y-position of this
@@ -789,9 +789,9 @@ Gfx* create_shadow_circle_assuming_flat_ground(f32 xPos, f32 yPos, f32 zPos, s16
 {
 	Vtx* verts;
 	Gfx* displayList;
-	struct FloorGeometry* dummy; // only for calling find_floor_height_and_data
+	struct FloorGeometry* dummy; // only for calling GroundCheck
 	f32 distBelowFloor;
-	f32 floorHeight = find_floor_height_and_data(xPos, yPos, zPos, &dummy);
+	f32 floorHeight = GroundCheck(xPos, yPos, zPos, &dummy);
 	f32 radius	= shadowScale / 2;
 
 	if(floorHeight < -10000.0)
@@ -858,7 +858,7 @@ s32 get_shadow_height_solidity(f32 xPos, f32 yPos, f32 zPos, f32* shadowHeight, 
 {
 	struct FloorGeometry* dummy;
 	f32 waterLevel;
-	*shadowHeight = find_floor_height_and_data(xPos, yPos, zPos, &dummy);
+	*shadowHeight = GroundCheck(xPos, yPos, zPos, &dummy);
 
 	if(*shadowHeight < -10000.0)
 	{
@@ -866,7 +866,7 @@ s32 get_shadow_height_solidity(f32 xPos, f32 yPos, f32 zPos, f32* shadowHeight, 
 	}
 	else
 	{
-		waterLevel = find_water_level(xPos, zPos);
+		waterLevel = mcWaterCheck(xPos, zPos);
 
 		if(waterLevel < -10000.0)
 		{

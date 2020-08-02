@@ -20,14 +20,14 @@ static u16 D_803315B4[] = {0x0000, 0xED4E, 0x0065, 0xF78A, 0x0001, 0xEC78, 0x005
 static u16 D_80331608[] = {0x0000, 0xFA3C, 0x001D, 0xFD58, 0x0001, 0xFA2C, 0x000E, 0xFBD0, 0x0002, 0xFA24, 0x0003, 0xFACD, 0x0003, 0xFAA2, 0xFFEF, 0xFA09, 0x0004, 0xFB66, 0xFFAD,
 			   0xFA28, 0x0005, 0xFEDC, 0xFE58, 0xFA6F, 0x0006, 0x00FA, 0xFE15, 0xFA67, 0x0007, 0x035E, 0xFD9B, 0xFA57, 0x0008, 0x0422, 0xF858, 0xFA57, 0xFFFF, 0x0000};
 
-void bhv_bowling_ball_init(void)
+void s_rail_ironball_init(void)
 {
 	o->oGravity  = 5.5f;
 	o->oFriction = 1.0f;
 	o->oBuoyancy = 2.0f;
 }
 
-void func_802EDA14(void)
+void iron_PlayerTouch(void)
 {
 	s_set_hitparam(o, &sBowlingBallHitbox);
 
@@ -35,7 +35,7 @@ void func_802EDA14(void)
 		o->oInteractStatus = 0;
 }
 
-void func_802EDA6C(void)
+void iron_ReadRailData(void)
 {
 	switch(o->oBehParams2ndByte)
 	{
@@ -61,12 +61,12 @@ void func_802EDA6C(void)
 	}
 }
 
-void bhv_bowling_ball_roll_loop(void)
+void Ironball_Move(void)
 {
 	s16 collisionFlags;
 	s32 sp18;
 
-	func_802EDA6C();
+	iron_ReadRailData();
 	collisionFlags = ObjMoveEvent();
 
 	//! Uninitialzed parameter, but the parameter is size in the called function
@@ -79,7 +79,7 @@ void bhv_bowling_ball_roll_loop(void)
 		o->oForwardVel = 70.0;
 	}
 
-	func_802EDA14();
+	iron_PlayerTouch();
 
 	if(sp18 == -1)
 	{
@@ -96,11 +96,11 @@ void bhv_bowling_ball_roll_loop(void)
 		objsound(SOUND_GENERAL_QUIET_POUND1_LOWPRIO);
 }
 
-void bhv_bowling_ball_initializeLoop(void)
+void iron_ProgramInit(void)
 {
 	s32 sp1c;
 
-	func_802EDA6C();
+	iron_ReadRailData();
 
 	//! Uninitialzed parameter, but the parameter is size in the called function
 	sp1c = s_road_move(0);
@@ -133,17 +133,17 @@ void bhv_bowling_ball_initializeLoop(void)
 	}
 }
 
-void bhv_bowling_ball_loop(void)
+void s_rail_ironball(void)
 {
 	switch(o->oAction)
 	{
 		case BBALL_ACT_INITIALIZE:
 			o->oAction = BBALL_ACT_ROLL;
-			bhv_bowling_ball_initializeLoop();
+			iron_ProgramInit();
 			break;
 
 		case BBALL_ACT_ROLL:
-			bhv_bowling_ball_roll_loop();
+			Ironball_Move();
 			break;
 	}
 
@@ -153,7 +153,7 @@ void bhv_bowling_ball_loop(void)
 	PlayerApproachOnOff(o, 4000);
 }
 
-void bhv_generic_bowling_ball_spawner_init(void)
+void s_gush_ironball_init(void)
 {
 	switch(o->oBehParams2ndByte)
 	{
@@ -174,7 +174,7 @@ void bhv_generic_bowling_ball_spawner_init(void)
 	}
 }
 
-void bhv_generic_bowling_ball_spawner_loop(void)
+void s_gush_ironball(void)
 {
 	struct Object* bowlingBall;
 
@@ -197,7 +197,7 @@ void bhv_generic_bowling_ball_spawner_loop(void)
 	}
 }
 
-void bhv_thi_bowling_ball_spawner_loop(void)
+void s_gush_ironball2(void)
 {
 	struct Object* bowlingBall;
 
@@ -220,29 +220,29 @@ void bhv_thi_bowling_ball_spawner_loop(void)
 	}
 }
 
-void bhv_bob_pit_bowling_ball_init(void)
+void s_ironball_init(void)
 {
 	o->oGravity  = 12.0f;
 	o->oFriction = 1.0f;
 	o->oBuoyancy = 2.0f;
 }
 
-void bhv_bob_pit_bowling_ball_loop(void)
+void s_ironball(void)
 {
 	struct FloorGeometry* sp1c;
 	UNUSED s16 collisionFlags = ObjMoveEvent();
 
-	find_floor_height_and_data(o->oPosX, o->oPosY, o->oPosZ, &sp1c);
+	GroundCheck(o->oPosX, o->oPosY, o->oPosZ, &sp1c);
 	if((sp1c->normalX == 0) && (sp1c->normalZ == 0))
 		o->oForwardVel = 28.0f;
 
-	func_802EDA14();
+	iron_PlayerTouch();
 	Viewshaking(SHAKE_POS_BOWLING_BALL, o->oPosX, o->oPosY, o->oPosZ);
 	objsound_level(SOUND_ENV_UNKNOWN2);
 	PlayerApproachOnOff(o, 3000);
 }
 
-void bhv_free_bowling_ball_init(void)
+void s_ironball_normal_init(void)
 {
 	o->oGravity	 = 5.5f;
 	o->oFriction	 = 1.0f;
@@ -254,10 +254,10 @@ void bhv_free_bowling_ball_init(void)
 	o->oMoveAngleYaw = 0;
 }
 
-void bhv_free_bowling_ball_roll_loop(void)
+void normal_ball_Move(void)
 {
 	s16 collisionFlags = ObjMoveEvent();
-	func_802EDA14();
+	iron_PlayerTouch();
 
 	if(o->oForwardVel > 10.0f)
 	{
@@ -276,12 +276,12 @@ void bhv_free_bowling_ball_roll_loop(void)
 		o->oPosX = o->oHomeX;
 		o->oPosY = o->oHomeY;
 		o->oPosZ = o->oHomeZ;
-		bhv_free_bowling_ball_init();
+		s_ironball_normal_init();
 		o->oAction = FREE_BBALL_ACT_RESET;
 	}
 }
 
-void bhv_free_bowling_ball_loop(void)
+void s_ironball_normal_main(void)
 {
 	o->oGravity = 5.5f;
 
@@ -297,7 +297,7 @@ void bhv_free_bowling_ball_loop(void)
 			break;
 
 		case FREE_BBALL_ACT_ROLL:
-			bhv_free_bowling_ball_roll_loop();
+			normal_ball_Move();
 			break;
 
 		case FREE_BBALL_ACT_RESET:

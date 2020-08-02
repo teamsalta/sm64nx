@@ -30,7 +30,7 @@ s32 CoinStep(s16* collisionFlagsPtr)
 {
 	*collisionFlagsPtr = ObjMoveEvent();
 
-	obj_check_floor_death(*collisionFlagsPtr, sObjFloor);
+	ObjDangerCheck(*collisionFlagsPtr, sObjFloor);
 
 	if((*collisionFlagsPtr & 0x1) != 0 && (*collisionFlagsPtr & 0x8) == 0) /* bit 0, bit 3 */
 	{

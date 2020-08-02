@@ -76,7 +76,7 @@ void bhv_koopa_shell_loop(void)
 		case 1:
 			s_copy_worldXYZ(o, gMarioObject);
 			sp34 = s_groundcheck_ptr();
-			if(s_abs_f(find_water_level(o->oPosX, o->oPosZ) - o->oPosY) < 10.0f)
+			if(s_abs_f(mcWaterCheck(o->oPosX, o->oPosZ) - o->oPosY) < 10.0f)
 				func_802BCA8C();
 			else if(5.0f > s_abs_f(o->oPosY - o->oFloorHeight))
 			{

@@ -118,7 +118,7 @@ void MoneybagMoveAroundLoop(void)
 {
 	s16 collisionFlags;
 
-	obj_return_and_displace_home(o, o->oHomeX, o->oHomeY, o->oHomeZ, 200);
+	ShapeRandomAngle(o, o->oHomeX, o->oHomeY, o->oHomeZ, 200);
 
 	collisionFlags = ObjMoveEvent();
 
@@ -155,7 +155,7 @@ void MoneybagReturnHomeLoop(void)
 	MoneybagJump(collisionFlags);
 	MoneybagCheckMarioCollision();
 
-	if(is_point_close_to_object(o, o->oHomeX, o->oHomeY, o->oHomeZ, 100))
+	if(ObjApproach(o, o->oHomeX, o->oHomeY, o->oHomeZ, 100))
 	{
 		s_makeobj_nowpos(o, MODEL_YELLOW_COIN, sm64::bhv::bhvMoneybagHidden());
 		objsound(SOUND_GENERAL_VANISH_SFX);
@@ -185,7 +185,7 @@ void MoneybagDeathLoop(void)
 {
 	if(o->oTimer == 1 * FRAME_RATE_SCALER_INV)
 	{
-		obj_spawn_yellow_coins(o, 5);
+		iwa_MakeCoin(o, 5);
 		obj_remove_sound(SOUND_GENERAL_SPLATTERING);
 		s_kemuri();
 		o->activeFlags = 0;

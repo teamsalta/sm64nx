@@ -37,7 +37,7 @@ void bhv_water_air_bubble_loop(void)
 		for(i = 0; i < 30; i++)
 			s_makeobj_nowpos(o, MODEL_BUBBLE, sm64::bhv::bhvBubbleMaybe());
 	}
-	if(find_water_level(o->oPosX, o->oPosZ) < o->oPosY)
+	if(mcWaterCheck(o->oPosX, o->oPosZ) < o->oPosY)
 		s_remove_obj(o);
 	o->oInteractStatus = 0;
 }
@@ -68,7 +68,7 @@ void bhv_bubble_maybe_loop(void)
 
 void bhv_small_water_wave_loop(void)
 {
-	f32 waterLevel = find_water_level(o->oPosX, o->oPosZ);
+	f32 waterLevel = mcWaterCheck(o->oPosX, o->oPosZ);
 
 	o->header.gfx.scale[0] = sins(o->oWaterObjScaleCounterX) * 0.2 + 1.0;
 	o->oWaterObjScaleCounterX += o->oWaterObjAnimSpeedX / FRAME_RATE_SCALER_INV;
@@ -110,7 +110,7 @@ void bhv_particle_init(void)
 
 void bhv_particle_loop()
 {
-	f32 sp24 = find_water_level(o->oPosX, o->oPosZ);
+	f32 sp24 = mcWaterCheck(o->oPosX, o->oPosZ);
 	o->oPosY += 5.0f * FRAME_RATE_SCALER;
 	s_random_XZ_offset(o, 4.0f);
 	func_802A81C4();

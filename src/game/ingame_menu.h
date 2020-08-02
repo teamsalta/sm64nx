@@ -74,7 +74,7 @@ extern s32 gDialogVariable;
 extern u16 font_alpha;
 extern s16 gCutsceneMsgXOffset;
 extern s16 gCutsceneMsgYOffset;
-extern s8 gRedCoinsCollected;
+extern s8 redcoin_num;
 
 extern void iwa_LoadImatrix(void);
 extern void iTranslate(s8 pushOp, f32 x, f32 y, f32 z);

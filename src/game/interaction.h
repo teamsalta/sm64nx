@@ -103,25 +103,25 @@ struct BullyCollisionData
 
 extern u8 D_03009AC8[];
 
-extern s16 mario_angle_to_object(struct PlayerRecord*, struct Object*);
-extern void mario_stop_riding_object(struct PlayerRecord*);
-extern void mario_grab_used_object(struct PlayerRecord*);
-extern void mario_drop_held_object(struct PlayerRecord*);
-extern void mario_throw_held_object(struct PlayerRecord*);
-extern void mario_stop_riding_and_holding(struct PlayerRecord*);
-extern u32 does_mario_have_hat(struct PlayerRecord*);
-extern void mario_blow_off_cap(struct PlayerRecord*, f32);
-extern u32 mario_lose_cap_to_enemy(u32);
-extern void mario_retrieve_cap(void);
-extern struct Object* mario_get_collided_object(struct PlayerRecord*, u32);
-extern u32 mario_check_object_grab(struct PlayerRecord*);
+extern s16 PL_GetPlayerAttackAngle(struct PlayerRecord*, struct Object*);
+extern void PL_GetOffSkateBoard(struct PlayerRecord*);
+extern void PL_TakeObject(struct PlayerRecord*);
+extern void PL_DropObject(struct PlayerRecord*);
+extern void PL_ThrowObject(struct PlayerRecord*);
+extern void PL_DropAllObject(struct PlayerRecord*);
+extern u32 PL_IsPlayerWearingRedHat(struct PlayerRecord*);
+extern void PL_BlowHat(struct PlayerRecord*, f32);
+extern u32 PL_StealMariosHat(u32);
+extern void PL_ReturnMariosHat(void);
+extern struct Object* PL_GetCollidedObject(struct PlayerRecord*, u32);
+extern u32 PL_CheckTakingEnemy(struct PlayerRecord*);
 
-extern void mario_process_interactions(struct PlayerRecord*);
-extern void mario_handle_special_floors(struct PlayerRecord*);
+extern void PL_CollisionCheck(struct PlayerRecord*);
+extern void PL_CheckGroundCondition(struct PlayerRecord*);
 
-extern u32 get_door_save_file_flag(struct Object*);
+extern u32 PL_GetStarDoorFlag(struct Object*);
 
-extern void init_bully_collision_data(struct BullyCollisionData* data, f32 posX, f32 posZ, f32 forwardVel, s16 yaw, f32 conversionRatio, f32 radius);
-extern void transfer_bully_speed(struct BullyCollisionData*, struct BullyCollisionData*);
+extern void PL_SetBallRecord(struct BullyCollisionData* data, f32 posX, f32 posZ, f32 forwardVel, s16 yaw, f32 conversionRatio, f32 radius);
+extern void PL_CollideBalls(struct BullyCollisionData*, struct BullyCollisionData*);
 
 #endif /* _INTERACTION_H */

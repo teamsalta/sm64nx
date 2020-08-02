@@ -22,12 +22,12 @@ struct SharedDma
 };				  // size = 0x10
 
 struct Note* gNotes;
-struct SequencePlayer gSequencePlayers[SEQUENCE_PLAYERS];
+struct SequencePlayer GROUP_TRACK[SEQUENCE_PLAYERS];
 struct SequenceChannel gSequenceChannels[32];
 
 struct SequenceChannelLayer gSequenceLayers[52];
 
-struct SequenceChannel gSequenceChannelNone;
+struct SequenceChannel DUMMYSUB;
 struct AudioListItem gLayerFreeList;
 struct NotePool gNoteFreeLists;
 
@@ -260,7 +260,7 @@ void* dma_sample_data(uintptr_t devAddr, u32 size, s32 arg2, u8* arg3)
 	return dma->buffer + (devAddr - dmaDevAddr);
 }
 
-// called from sound_reset
+// called from Na_StageChange
 void init_sample_dma_buffers(UNUSED s32 arg0)
 {
 	s32 i;
@@ -752,7 +752,7 @@ void load_sequence(u32 player, u32 seqId, s32 loadAsync)
 void load_sequence_internal(u32 player, u32 seqId, s32 loadAsync)
 {
 	void* sequenceData;
-	struct SequencePlayer* seqPlayer = &gSequencePlayers[player];
+	struct SequencePlayer* seqPlayer = &GROUP_TRACK[player];
 	UNUSED u32 padding[2];
 
 	if(seqId >= gSequenceCount)
@@ -760,7 +760,7 @@ void load_sequence_internal(u32 player, u32 seqId, s32 loadAsync)
 		return;
 	}
 
-	sequence_player_disable(seqPlayer);
+	Nas_ReleaseGroup(seqPlayer);
 	if(loadAsync)
 	{
 		s32 numMissingBanks = 0;

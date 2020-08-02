@@ -4,7 +4,7 @@
 #include "types.h"
 
 extern struct GraphNodeObject D_80339FE0;
-extern struct MarioBodyState gBodyStates[2];
+extern struct MarioBodyState playerShapeCtrl[2];
 
 extern Gfx* Geo18_802764B0(s32 a, struct GraphNode* b, Mat4* c);
 extern void bhvToadMessage_loop(void);

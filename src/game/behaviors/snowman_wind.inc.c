@@ -11,11 +11,11 @@ void bhv_snowman_wind_blowing_loop(void)
 	if(o->oSubAction == 0)
 	{
 		o->oDistanceToMario = 0;
-		func_802B8F7C(pos, &o->oPosX);
+		s_copy_f(pos, &o->oPosX);
 		s_set_world(o, 1100, 3328, 1164);
 		if(s_hitcheck_message_entry(1000.0f, 30.0f, 0x7FFF))
 			o->oSubAction++;
-		func_802B8F7C(&o->oPosX, pos);
+		s_copy_f(&o->oPosX, pos);
 	}
 	else if(o->oSubAction == 1)
 	{

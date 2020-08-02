@@ -20,7 +20,7 @@ static struct ObjectHitbox sFallingPillarHitbox = {
 /**
  * Initiates various physics params for the pillar.
  */
-void bhv_falling_pillar_init(void)
+void s_wd_pillar_init(void)
 {
 	o->oGravity  = 0.5f;
 	o->oFriction = 0.91f;
@@ -30,7 +30,7 @@ void bhv_falling_pillar_init(void)
 /**
  * Spawns 4 hitboxes with Y coordinates offset.
  */
-void bhv_falling_pillar_spawn_hitboxes(void)
+void PillarMakeHit(void)
 {
 	s32 i;
 
@@ -44,15 +44,12 @@ void bhv_falling_pillar_spawn_hitboxes(void)
  * Computes the angle from current pillar position to 500 units in front of
  * Mario.
  */
-s16 bhv_falling_pillar_calculate_angle_in_front_of_mario(void)
+s16 pillar_targetON(void)
 {
-	f32 targetX;
-	f32 targetZ;
-
 	// Calculate target to be 500 units in front of Mario in
 	// the direction he is facing (angle[1] is yaw).
-	targetX = sins(gMarioObject->header.gfx.angle[1]) * 500.0f + gMarioObject->header.gfx.pos[0];
-	targetZ = coss(gMarioObject->header.gfx.angle[1]) * 500.0f + gMarioObject->header.gfx.pos[2];
+	float targetX = sins(gMarioObject->header.gfx.angle[1]) * 500.0f + gMarioObject->header.gfx.pos[0];
+	float targetZ = coss(gMarioObject->header.gfx.angle[1]) * 500.0f + gMarioObject->header.gfx.pos[2];
 
 	// Calculate the angle to the target from the pillar's current location.
 	return atan2s(targetZ - o->oPosZ, targetX - o->oPosX);
@@ -61,7 +58,7 @@ s16 bhv_falling_pillar_calculate_angle_in_front_of_mario(void)
 /**
  * Falling pillar main logic loop.
  */
-void bhv_falling_pillar_loop(void)
+void s_wd_pillar_main(void)
 {
 	s16 angleInFrontOfMario;
 	switch(o->oAction)
@@ -75,7 +72,7 @@ void bhv_falling_pillar_loop(void)
 				o->oForwardVel	 = 1.0f;
 
 				// Spawn the invisible hitboxes.
-				bhv_falling_pillar_spawn_hitboxes();
+				PillarMakeHit();
 
 				// Start turning towards Mario.
 				o->oAction = FALLING_PILLAR_ACT_TURNING;
@@ -86,10 +83,10 @@ void bhv_falling_pillar_loop(void)
 			break;
 
 		case FALLING_PILLAR_ACT_TURNING:
-			object_step_without_floor_orient();
+			ObjMoveEvent_noInc();
 
 			// Calculate angle in front of Mario and turn towards it.
-			angleInFrontOfMario = bhv_falling_pillar_calculate_angle_in_front_of_mario();
+			angleInFrontOfMario = pillar_targetON();
 			o->oFaceAngleYaw    = s_chase_angle(o->oFaceAngleYaw, angleInFrontOfMario, 0x400 / FRAME_RATE_SCALER_INV);
 
 			// After 10 ticks, start falling.
@@ -98,7 +95,7 @@ void bhv_falling_pillar_loop(void)
 			break;
 
 		case FALLING_PILLAR_ACT_FALLING:
-			object_step_without_floor_orient();
+			ObjMoveEvent_noInc();
 
 			// Start falling slowly, with increasing acceleration each frame.
 			o->oFallingPillarPitchAcceleration += 4.0f * FRAME_RATE_SCALER;
@@ -129,7 +126,7 @@ void bhv_falling_pillar_loop(void)
 /**
  * Main loop for the invisible hitboxes.
  */
-void bhv_falling_pillar_hitbox_loop(void)
+void s_pillar_hit_main(void)
 {
 	// Get the state of the pillar.
 	s32 pitch   = o->parentObj->oFaceAnglePitch;

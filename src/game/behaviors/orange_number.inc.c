@@ -1,12 +1,12 @@
 // orange_number.c.inc
 
-void bhv_orange_number_init(void)
+void s_numbers_init(void)
 {
 	o->oAnimState = o->oBehParams2ndByte;
 	o->oVelY      = 26.0f;
 }
 
-void bhv_orange_number_loop(void)
+void s_numbers_main(void)
 {
 	struct Object* sp1C;
 

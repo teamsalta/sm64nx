@@ -92,5 +92,5 @@ void bhv_beta_trampoline_top_loop(void)
 	// that the trampoline is currently in use. This potential
 	// trampoline infrastructure is found in mario_step.c. See
 	// that file for more details.
-	nop_80254E50();
+	DoTrampoline();
 }

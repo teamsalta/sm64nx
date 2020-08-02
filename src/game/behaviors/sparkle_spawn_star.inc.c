@@ -87,9 +87,9 @@ void bhv_spawned_star_loop(void)
 			o->oVelY       = 20.0f;
 			o->oGravity    = -1.0f;
 			if(o->oInteractionSubtype & INT_SUBTYPE_NO_EXIT)
-				play_power_star_jingle(TRUE);
+				Na_NewStarAppearBgm(TRUE);
 			else
-				play_power_star_jingle(TRUE);
+				Na_NewStarAppearBgm(TRUE);
 		}
 	}
 	else if(o->oAction == 1)
@@ -98,7 +98,7 @@ void bhv_spawned_star_loop(void)
 			o->oVelY = -4.0f;
 		if(o->oVelY < 0 && o->oPosY < o->oHomeY)
 		{
-			gObjCutsceneDone = TRUE;
+			demoseqcode = TRUE;
 			o->oVelY	 = 0;
 			o->oGravity	 = 0;
 			o->oAction++;

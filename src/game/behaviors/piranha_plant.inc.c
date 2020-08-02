@@ -43,7 +43,7 @@ s32 piranha_plant_check_interactions(void)
 	s32 interacted = 1;
 	if(o->oInteractStatus & INT_STATUS_INTERACTED)
 	{
-		func_80321080(50);
+		Na_SubSeq(50);
 		if(o->oInteractStatus & INT_STATUS_WAS_ATTACKED)
 		{
 			objsound(SOUND_OBJ2_PIRANHA_PLANT_DYING);
@@ -102,13 +102,13 @@ void piranha_plant_act_sleeping(void)
 	}
 	else if(o->oDistanceToMario < 1000.0f)
 	{
-		play_secondary_music(SEQ_EVENT_PIRANHA_PLANT, 0, 255, 1000);
+		Na_AddSeq(SEQ_EVENT_PIRANHA_PLANT, 0, 255, 1000);
 		o->oPiranhaPlantSleepMusicState = PIRANHA_PLANT_SLEEP_MUSIC_PLAYING;
 	}
 	else if(o->oPiranhaPlantSleepMusicState == PIRANHA_PLANT_SLEEP_MUSIC_PLAYING)
 	{
 		o->oPiranhaPlantSleepMusicState++;
-		func_80321080(50);
+		Na_SubSeq(50);
 	}
 	piranha_plant_check_interactions();
 }
@@ -128,7 +128,7 @@ void piranha_plant_act_woken_up(void)
 	o->oDamageOrCoinValue = 3;
 #endif
 	if(o->oTimer == 0)
-		func_80321080(50);
+		Na_SubSeq(50);
 
 	if(piranha_plant_check_interactions() == 0)
 		if(o->oTimer > 10 * FRAME_RATE_SCALER_INV)

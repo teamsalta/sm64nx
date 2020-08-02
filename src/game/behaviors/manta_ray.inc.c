@@ -1,7 +1,7 @@
 // manta_ray.c.inc
 
 // TODO: these are likely Waypoint structs
-static u16 D_803316A8[] = {0x0000, 0xEE6C, 0xFA9C, 0xFFD8, 0x0001, 0xEFE8, 0xF740, 0x02E4, 0x0002, 0xF330, 0xF3F8, 0x0410, 0x0003, 0xF740, 0xF308, 0x02D0, 0x0004,
+static u16 manta_raildata[] = {0x0000, 0xEE6C, 0xFA9C, 0xFFD8, 0x0001, 0xEFE8, 0xF740, 0x02E4, 0x0002, 0xF330, 0xF3F8, 0x0410, 0x0003, 0xF740, 0xF308, 0x02D0, 0x0004,
 			   0xF8D0, 0xF3BC, 0xFEE8, 0x0005, 0xF6F0, 0xF650, 0xFBB4, 0x0006, 0xF36C, 0xF9C0, 0xFAB0, 0x0007, 0xEFAC, 0xFC04, 0xFBF0, 0xFFFF, 0x0000};
 
 static struct ObjectHitbox sMantaRayHitbox = {
@@ -16,7 +16,7 @@ static struct ObjectHitbox sMantaRayHitbox = {
     /* hurtboxHeight:     */ 50,
 };
 
-void bhv_manta_ray_init(void)
+void s_d_manta_init(void)
 {
 	struct Object* sp1C;
 	sp1C	     = s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvMantaRayRingManager());
@@ -25,13 +25,13 @@ void bhv_manta_ray_init(void)
 	s_set_scale(2.5f);
 }
 
-void func_802F5E20(void)
+void manta_Move(void)
 {
 	s16 sp1E;
 	s32 sp18;
 
 	sp1E				    = o->header.gfx.unk38.frame();
-	gCurrentObject->oPathedWaypointsS16 = &D_803316A8;
+	gCurrentObject->oPathedWaypointsS16 = &manta_raildata;
 	sp18				    = s_road_move(0);
 	o->oMantaUnkF8			    = o->oPathedTargetYaw;
 	o->oMantaUnkF4			    = o->oPathedTargetPitch;
@@ -58,7 +58,7 @@ void func_802F5E20(void)
 		objsound(SOUND_GENERAL_MOVING_WATER);
 }
 
-void func_802F5FD8(void)
+static void manta_MakeRing(void)
 {
 	struct Object* sp1C = o->parentObj;
 	struct Object* sp18;
@@ -82,13 +82,13 @@ void func_802F5FD8(void)
 	}
 }
 
-void bhv_manta_ray_loop(void)
+void s_d_manta_main(void)
 {
 	switch(o->oAction)
 	{
 		case 0:
-			func_802F5E20();
-			func_802F5FD8();
+			manta_Move();
+			manta_MakeRing();
 			if(o->oMantaUnk1AC == 5)
 			{
 				s_kemuri();
@@ -98,7 +98,7 @@ void bhv_manta_ray_loop(void)
 			break;
 
 		case 1:
-			func_802F5E20();
+			manta_Move();
 			break;
 	}
 

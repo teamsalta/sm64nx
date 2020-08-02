@@ -94,9 +94,9 @@ void discard_sequence(s32 seqId)
 
 	for(i = 0; i < SEQUENCE_PLAYERS; i++)
 	{
-		if(gSequencePlayers[i].enabled && gSequencePlayers[i].seqId == seqId)
+		if(GROUP_TRACK[i].enabled && GROUP_TRACK[i].seqId == seqId)
 		{
-			sequence_player_disable(gSequencePlayers + i);
+			Nas_ReleaseGroup(GROUP_TRACK + i);
 		}
 	}
 }

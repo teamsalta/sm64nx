@@ -27,7 +27,7 @@ void NEWSbutton_OFF(void)
 	}
 }
 
-void bhv_controllable_platform_sub_loop(void)
+void s_NEWSbut_main(void)
 {
 	switch(o->oAction)
 	{
@@ -59,7 +59,7 @@ void bhv_controllable_platform_sub_loop(void)
 		o->activeFlags = 0;
 }
 
-void bhv_controllable_platform_init(void)
+void s_NEWSlift_init(void)
 {
 	struct Object* sp34;
 	sp34			= s_makeobj_relative(o, MODEL_HMC_METAL_ARROW_PLATFORM, sm64::bhv::bhvControllablePlatformSub(), 0, 51, 204, 0, 0, 0);
@@ -170,7 +170,7 @@ void NEWSlift_PlayerRideCheck(void)
 	}
 }
 
-void bhv_controllable_platform_loop(void)
+void s_NEWSlift_main(void)
 {
 	s8 ch[3];
 	Vec3f check1;

@@ -7,7 +7,7 @@
 
 #include "levels/bob/header.h"
 
-void set_yoshi_as_not_dead(void);
+void iwa_StratInit(void);
 
 s32 CoinStep(s16* collisionFlagsPtr);
 void MovingCoinFlickerLoop(void);
@@ -58,13 +58,13 @@ void bhv_homing_amp_init(void);
 void bhv_homing_amp_loop(void);
 void bhv_circling_amp_init(void);
 void bhv_circling_amp_loop(void);
-void bhv_butterfly_init(void);
-void ButterflyStep(s32 speed);
-void CalculateButterflyAngle(void);
-void ButterflyRestingLoop(void);
-void ButterflyFollowMarioLoop(void);
-void ButterflyReturnHomeLoop(void);
-void bhv_butterfly_loop(void);
+void s_butterflyInit(void);
+void ButterflyWorldMove(s32 speed);
+void ButterflyDirection(void);
+void ButterflyStay(void);
+void ButterflyTakeOff(void);
+void ButterflyComeback(void);
+void s_butterflyfunc(void);
 void bhv_hoot_init(void);
 f32 HootFindNextFloor(struct FloorGeometry** arg0, f32 arg1);
 void HootFloorBounce(void);
@@ -89,7 +89,7 @@ void bhv_bobomb_bully_death_smoke_init(void);
 void bhv_bobomb_explosion_bubble_init(void);
 void bhv_bobomb_explosion_bubble_loop(void);
 void bhv_respawner_loop(void);
-void create_respawner(s32 arg0, const BehaviorScript* behToSpawn, s32 minSpawnDist);
+void Obj_reset(s32 arg0, const BehaviorScript* behToSpawn, s32 minSpawnDist);
 void bhv_small_bully_init(void);
 void bhv_big_bully_init(void);
 void BullyCheckMarioCollision(void);
@@ -146,20 +146,20 @@ void MoneybagDisappearLoop(void);
 void MoneybagDeathLoop(void);
 void bhv_moneybag_loop(void);
 void bhv_moneybag_hidden_loop(void);
-void bhv_bowling_ball_init(void);
-void func_802EDA14(void);
-void func_802EDA6C(void);
-void bhv_bowling_ball_roll_loop(void);
-void bhv_bowling_ball_initializeLoop(void);
-void bhv_bowling_ball_loop(void);
-void bhv_generic_bowling_ball_spawner_init(void);
-void bhv_generic_bowling_ball_spawner_loop(void);
-void bhv_thi_bowling_ball_spawner_loop(void);
-void bhv_bob_pit_bowling_ball_init(void);
-void bhv_bob_pit_bowling_ball_loop(void);
-void bhv_free_bowling_ball_init(void);	    /* likely size */
-void bhv_free_bowling_ball_roll_loop(void); /* likely size */
-void bhv_free_bowling_ball_loop(void);	    /* likely size */
+void s_rail_ironball_init(void);
+void iron_PlayerTouch(void);
+void iron_ReadRailData(void);
+void Ironball_Move(void);
+void iron_ProgramInit(void);
+void s_rail_ironball(void);
+void s_gush_ironball_init(void);
+void s_gush_ironball(void);
+void s_gush_ironball2(void);
+void s_ironball_init(void);
+void s_ironball(void);
+void s_ironball_normal_init(void);	    /* likely size */
+void normal_ball_Move(void); /* likely size */
+void s_ironball_normal_main(void);	    /* likely size */
 void bhv_rr_cruiser_wing_init(void);
 void bhv_rr_cruiser_wing_loop(void);
 extern void s_enemyset_star(f32, f32, f32);

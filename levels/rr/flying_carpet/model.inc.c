@@ -7,7 +7,7 @@ static const Lights1 rr_seg7_lights_07019230 = gdSPDefLights1(
 );
 
 // 0x07019248 - 0x070192F0
-const s16 flying_carpet_static_vertex_data[] = {
+const s16 arajin_vtx[] = {
 //     x     z    tx    ty
     -306,  205,    0,    0,
     -306,    0,  992,    0,

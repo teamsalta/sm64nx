@@ -25,7 +25,7 @@ void func_802E5B7C(void)
 {
 	if(((o->oBehParams >> 8) & 0x1) == 0)
 	{
-		obj_spawn_yellow_coins(o, 1);
+		iwa_MakeCoin(o, 1);
 		o->oBehParams = 0x100;
 		set_object_respawn_info_bits(o, 1);
 	}
@@ -44,7 +44,7 @@ void BobombExplodeLoop(void)
 		explosion->oGraphYOffset += 100.0f * FRAME_RATE_SCALER;
 
 		func_802E5B7C();
-		create_respawner(MODEL_BLACK_BOBOMB, sm64::bhv::bhvBobomb(), 3000);
+		Obj_reset(MODEL_BLACK_BOBOMB, sm64::bhv::bhvBobomb(), 3000);
 		o->activeFlags = 0;
 	}
 }
@@ -82,12 +82,12 @@ void BobombPatrolLoop(void)
 	o->oForwardVel = 5.0;
 
 	collisionFlags = ObjMoveEvent();
-	if((obj_return_home_if_safe(o, o->oHomeX, o->oHomeY, o->oHomeZ, 400) == 1) && (ShapeSameAngle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000) == 1))
+	if((ShapePatrol(o, o->oHomeX, o->oHomeY, o->oHomeZ, 400) == 1) && (ShapeSameAngle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000) == 1))
 	{
 		o->oBobombFuseLit = 1;
 		o->oAction	  = BOBOMB_ACT_CHASE_MARIO;
 	}
-	obj_check_floor_death(collisionFlags, sObjFloor);
+	ObjDangerCheck(collisionFlags, sObjFloor);
 }
 
 void BobombChaseMarioLoop(void)
@@ -104,7 +104,7 @@ void BobombChaseMarioLoop(void)
 		objsound(SOUND_OBJ_BOBOMB_WALK);
 
 	s_chase_obj_angle(o, gMarioObject, 16, 0x800);
-	obj_check_floor_death(collisionFlags, sObjFloor);
+	ObjDangerCheck(collisionFlags, sObjFloor);
 }
 
 void BobombLaunchedLoop(void)
@@ -136,13 +136,13 @@ void GenericBobombFreeLoop(void)
 			break;
 
 		case BOBOMB_ACT_LAVA_DEATH:
-			if(obj_lava_death() == 1)
-				create_respawner(MODEL_BLACK_BOBOMB, sm64::bhv::bhvBobomb(), 3000);
+			if(ObjMeltEvent() == 1)
+				Obj_reset(MODEL_BLACK_BOBOMB, sm64::bhv::bhvBobomb(), 3000);
 			break;
 
 		case BOBOMB_ACT_DEATH_PLANE_DEATH:
 			o->activeFlags = 0;
-			create_respawner(MODEL_BLACK_BOBOMB, sm64::bhv::bhvBobomb(), 3000);
+			Obj_reset(MODEL_BLACK_BOBOMB, sm64::bhv::bhvBobomb(), 3000);
 			break;
 	}
 
@@ -165,13 +165,13 @@ void StationaryBobombFreeLoop(void)
 			break;
 
 		case BOBOMB_ACT_LAVA_DEATH:
-			if(obj_lava_death() == 1)
-				create_respawner(MODEL_BLACK_BOBOMB, sm64::bhv::bhvBobomb(), 3000);
+			if(ObjMeltEvent() == 1)
+				Obj_reset(MODEL_BLACK_BOBOMB, sm64::bhv::bhvBobomb(), 3000);
 			break;
 
 		case BOBOMB_ACT_DEATH_PLANE_DEATH:
 			o->activeFlags = 0;
-			create_respawner(MODEL_BLACK_BOBOMB, sm64::bhv::bhvBobomb(), 3000);
+			Obj_reset(MODEL_BLACK_BOBOMB, sm64::bhv::bhvBobomb(), 3000);
 			break;
 	}
 
@@ -362,7 +362,7 @@ void BobombBuddyCannonLoop(s16 dialogFirstText, s16 dialogSecondText)
 	switch(o->oBobombBuddyCannonStatus)
 	{
 		case BOBOMB_BUDDY_CANNON_UNOPENED:
-			buddyText = cutscene_object_with_dialog(CUTSCENE_DIALOG, o, dialogFirstText);
+			buddyText = cameraDemoStratMsgNum(CUTSCENE_DIALOG, o, dialogFirstText);
 			if(buddyText != 0)
 			{
 				BuSetCannonFlag();
@@ -382,7 +382,7 @@ void BobombBuddyCannonLoop(s16 dialogFirstText, s16 dialogSecondText)
 			break;
 
 		case BOBOMB_BUDDY_CANNON_OPENED:
-			buddyText = cutscene_object_with_dialog(CUTSCENE_DIALOG, o, dialogSecondText);
+			buddyText = cameraDemoStratMsgNum(CUTSCENE_DIALOG, o, dialogSecondText);
 			if(buddyText != 0)
 				o->oBobombBuddyCannonStatus = BOBOMB_BUDDY_CANNON_STOP_TALKING;
 			break;
@@ -408,7 +408,7 @@ void BobombBuddyTalkLoop(void)
 		switch(o->oBobombBuddyRole)
 		{
 			case BOBOMB_BUDDY_ROLE_ADVICE:
-				if(cutscene_object_with_dialog(CUTSCENE_DIALOG, o, o->oBehParams2ndByte) != BOBOMB_BUDDY_BP_STYPE_GENERIC)
+				if(cameraDemoStratMsgNum(CUTSCENE_DIALOG, o, o->oBehParams2ndByte) != BOBOMB_BUDDY_BP_STYPE_GENERIC)
 				{
 					CtrlPlayerDialog(0);
 

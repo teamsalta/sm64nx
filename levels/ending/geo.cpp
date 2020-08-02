@@ -19,7 +19,7 @@ const GeoLayout ending_level_geo[] = {
       GEO_OPEN_NODE(),
          GEO_NODE_ORTHO(100),
          GEO_OPEN_NODE(),
-            GEO_ASM(0, geo_exec_cake_end_screen),
+            GEO_ASM(0, EndingBGDraw),
          GEO_CLOSE_NODE(),
       GEO_CLOSE_NODE(),
       GEO_ZBUFFER(1),

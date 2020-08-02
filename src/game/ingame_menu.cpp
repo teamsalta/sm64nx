@@ -44,7 +44,7 @@ s32 gDialogVariable;
 u16 font_alpha;
 s16 gCutsceneMsgXOffset;
 s16 gCutsceneMsgYOffset;
-s8 gRedCoinsCollected;
+s8 redcoin_num;
 
 extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;

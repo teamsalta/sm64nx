@@ -21,12 +21,12 @@ struct Surface gWaterSurfacePseudoFloor = {
  * to be used for the beta trampoline. Its return value
  * is used by set_mario_y_vel_based_on_fspeed as a constant
  * addition to Mario's Y velocity. Given the closeness of
- * this function to nop_80254E50, it is probable that this
+ * this function to DoTrampoline, it is probable that this
  * was intended to check whether a trampoline had made itself
- * known through nop_80254E50 and whether Mario was on it,
+ * known through DoTrampoline and whether Mario was on it,
  * and if so return a higher value than 0.
  */
-f32 get_additive_y_vel_for_jumps(void)
+f32 PL_GetTrampolinePower(void)
 {
 	return 0.0f;
 }
@@ -34,28 +34,28 @@ f32 get_additive_y_vel_for_jumps(void)
 /**
  * Does nothing, but takes in a PlayerRecord. This is only ever
  * called by update_mario_inputs, which is called as part of Mario's
- * update routine. Due to its proximity to nop_80254E50, an
- * incomplete trampoline function, and get_additive_y_vel_for_jumps,
+ * update routine. Due to its proximity to DoTrampoline, an
+ * incomplete trampoline function, and PL_GetTrampolinePower,
  * a potentially trampoline-related function, it is plausible that
  * this could be used for checking if Mario was on the trampoline.
  * It could, for example, make him bounce.
  */
-void nop_80254E3C(UNUSED struct PlayerRecord* x)
+void PL_CheckTrampolineJump(UNUSED struct PlayerRecord* x)
 {
 }
 
 /**
  * Does nothing. This is only called by the beta trampoline.
- * Due to its proximity to get_additive_y_vel_for_jumps, another
+ * Due to its proximity to PL_GetTrampolinePower, another
  * currently-pointless function, it is probable that this was used
- * by the trampoline to make itself known to get_additive_y_vel_for_jumps,
+ * by the trampoline to make itself known to PL_GetTrampolinePower,
  * or to set a variable with its intended additive Y vel.
  */
-void nop_80254E50(void)
+void DoTrampoline(void)
 {
 }
 
-void transfer_bully_speed(struct BullyCollisionData* obj1, struct BullyCollisionData* obj2)
+void PL_CollideBalls(struct BullyCollisionData* obj1, struct BullyCollisionData* obj2)
 {
 	f32 rx = obj2->posX - obj1->posX;
 	f32 rz = obj2->posZ - obj1->posZ;
@@ -75,7 +75,7 @@ void transfer_bully_speed(struct BullyCollisionData* obj1, struct BullyCollision
 	//! Bully battery
 }
 
-void init_bully_collision_data(struct BullyCollisionData* data, f32 posX, f32 posZ, f32 forwardVel, s16 yaw, f32 conversionRatio, f32 radius)
+void PL_SetBallRecord(struct BullyCollisionData* data, f32 posX, f32 posZ, f32 forwardVel, s16 yaw, f32 conversionRatio, f32 radius)
 {
 	if(forwardVel < 0.0f)
 	{
@@ -91,7 +91,7 @@ void init_bully_collision_data(struct BullyCollisionData* data, f32 posX, f32 po
 	data->velZ	      = forwardVel * coss(yaw);
 }
 
-void PlayerRecord::mario_bonk_reflection(u32 negateSpeed)
+void PlayerRecord::playerRefrection(u32 negateSpeed)
 {
 	if(this->wall != NULL)
 	{
@@ -107,7 +107,7 @@ void PlayerRecord::mario_bonk_reflection(u32 negateSpeed)
 
 	if(negateSpeed)
 	{
-		this->mario_set_forward_vel(-this->forwardVel);
+		this->setPlayerVelocity(-this->forwardVel);
 	}
 	else
 	{
@@ -115,7 +115,7 @@ void PlayerRecord::mario_bonk_reflection(u32 negateSpeed)
 	}
 }
 
-u32 PlayerRecord::mario_update_quicksand(f32 sinkingSpeed)
+u32 PlayerRecord::checkPlayerSinking(f32 sinkingSpeed)
 {
 	if(this->status & ACT_FLAG_RIDING_SHELL)
 	{
@@ -156,15 +156,15 @@ u32 PlayerRecord::mario_update_quicksand(f32 sinkingSpeed)
 			case SURFACE_DEEP_MOVING_QUICKSAND:
 				if((this->sinking += sinkingSpeed) >= 160.0f)
 				{
-					update_mario_sound_and_camera();
-					return drop_and_set_mario_action(ACT_QUICKSAND_DEATH, 0);
+					resetSpecialCameraMode();
+					return changePlayerDropping(ACT_QUICKSAND_DEATH, 0);
 				}
 				break;
 
 			case SURFACE_INSTANT_QUICKSAND:
 			case SURFACE_INSTANT_MOVING_QUICKSAND:
-				update_mario_sound_and_camera();
-				return drop_and_set_mario_action(ACT_QUICKSAND_DEATH, 0);
+				resetSpecialCameraMode();
+				return changePlayerDropping(ACT_QUICKSAND_DEATH, 0);
 				break;
 
 			default:
@@ -176,7 +176,7 @@ u32 PlayerRecord::mario_update_quicksand(f32 sinkingSpeed)
 	return 0;
 }
 
-u32 PlayerRecord::mario_push_off_steep_floor(u32 action, u32 actionArg)
+u32 PlayerRecord::fallFromHeavySlope(u32 action, u32 actionArg)
 {
 	s16 floorDYaw = this->floorAngle - this->faceAngle[1];
 
@@ -194,7 +194,7 @@ u32 PlayerRecord::mario_push_off_steep_floor(u32 action, u32 actionArg)
 	return ChangePlayerStatus(action, actionArg);
 }
 
-u32 PlayerRecord::mario_update_moving_sand()
+u32 PlayerRecord::quicksandProcess()
 {
 	s32 floorType = floor->type;
 
@@ -212,7 +212,7 @@ u32 PlayerRecord::mario_update_moving_sand()
 	return 0;
 }
 
-u32 PlayerRecord::mario_update_windy_ground()
+u32 PlayerRecord::gustProcess()
 {
 	if(floor->type == SURFACE_HORIZONTAL_WIND)
 	{
@@ -246,38 +246,38 @@ u32 PlayerRecord::mario_update_windy_ground()
 	return 0;
 }
 
-void PlayerRecord::stop_and_set_height_to_floor()
+void PlayerRecord::stopProcess()
 {
-	mario_set_forward_vel(0.0f);
+	setPlayerVelocity(0.0f);
 	this->vel[1] = 0.0f;
 
 	//! This is responsible for some downwarps.
 	this->pos[1] = this->floorHeight;
 
-	vec3f_copy(marioObj->header.gfx.pos, this->pos);
-	vec3s_set(marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+	CopyFVector(marioObj->header.gfx.pos, this->pos);
+	SetSVector(marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 }
 
-s32 PlayerRecord::stationary_ground_step()
+s32 PlayerRecord::waitProcess()
 {
 	u32 takeStep;
 	u32 stepResult = GROUND_STEP_NONE;
 
-	mario_set_forward_vel(0.0f);
+	setPlayerVelocity(0.0f);
 
-	takeStep = mario_update_moving_sand();
-	takeStep |= mario_update_windy_ground();
+	takeStep = quicksandProcess();
+	takeStep |= gustProcess();
 	if(takeStep)
 	{
-		stepResult = perform_ground_step();
+		stepResult = walkProcess();
 	}
 	else
 	{
 		//! This is responsible for several stationary downwarps.
 		this->pos[1] = this->floorHeight;
 
-		vec3f_copy(marioObj->header.gfx.pos, this->pos);
-		vec3s_set(marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+		CopyFVector(marioObj->header.gfx.pos, this->pos);
+		SetSVector(marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 	}
 
 	return stepResult;
@@ -297,9 +297,9 @@ s32 PlayerRecord::perform_ground_quarter_step(Vec3f nextPos)
 	upperWall = resolve_and_return_wall_collisions(nextPos, 60.0f, 50.0f);
 
 	floorHeight = mcBGGroundCheck(nextPos[0], nextPos[1], nextPos[2], &floor);
-	ceilHeight  = vec3f_find_ceil(nextPos, floorHeight, &ceil);
+	ceilHeight  = PL_CheckRoofPlane(nextPos, floorHeight, &ceil);
 
-	waterLevel = find_water_level(nextPos[0], nextPos[2]);
+	waterLevel = mcWaterCheck(nextPos[0], nextPos[2]);
 
 	this->wall = upperWall;
 
@@ -322,7 +322,7 @@ s32 PlayerRecord::perform_ground_quarter_step(Vec3f nextPos)
 			return GROUND_STEP_HIT_WALL_STOP_QSTEPS;
 		}
 
-		vec3f_copy(this->pos, nextPos);
+		CopyFVector(this->pos, nextPos);
 		this->floor	  = floor;
 		this->floorHeight = floorHeight;
 		return GROUND_STEP_LEFT_GROUND;
@@ -356,7 +356,7 @@ s32 PlayerRecord::perform_ground_quarter_step(Vec3f nextPos)
 	return GROUND_STEP_NONE;
 }
 
-s32 PlayerRecord::perform_ground_step()
+s32 PlayerRecord::walkProcess()
 {
 	s32 i;
 	u32 stepResult;
@@ -375,9 +375,9 @@ s32 PlayerRecord::perform_ground_step()
 		}
 	}
 
-	this->terrainSoundAddend = mario_get_terrain_sound_addend();
-	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
-	vec3s_set(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+	this->terrainSoundAddend = checkGroundSurface();
+	CopyFVector(this->marioObj->header.gfx.pos, this->pos);
+	SetSVector(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 
 	if(stepResult == GROUND_STEP_HIT_WALL_CONTINUE_QSTEPS)
 	{
@@ -419,7 +419,7 @@ u32 PlayerRecord::check_ledge_grab(struct Surface* wall, Vec3f intendedPos, Vec3
 		return 0;
 	}
 
-	vec3f_copy(this->pos, ledgePos);
+	CopyFVector(this->pos, ledgePos);
 	this->floor	  = ledgeFloor;
 	this->floorHeight = ledgePos[1];
 
@@ -442,15 +442,15 @@ s32 PlayerRecord::perform_air_quarter_step(Vec3f intendedPos, u32 stepArg)
 	f32 floorHeight;
 	f32 waterLevel;
 
-	vec3f_copy(nextPos, intendedPos);
+	CopyFVector(nextPos, intendedPos);
 
 	upperWall = resolve_and_return_wall_collisions(nextPos, 170.0f, 50.0f); // TODO gross hack, changed from 150 to 160 to ensure ledge grabs would happen on tiny big island
 	lowerWall = resolve_and_return_wall_collisions(nextPos, 30.0f, 50.0f);
 
 	floorHeight = mcBGGroundCheck(nextPos[0], nextPos[1], nextPos[2], &floor);
-	ceilHeight  = vec3f_find_ceil(nextPos, floorHeight, &ceil);
+	ceilHeight  = PL_CheckRoofPlane(nextPos, floorHeight, &ceil);
 
-	waterLevel = find_water_level(nextPos[0], nextPos[2]);
+	waterLevel = mcWaterCheck(nextPos[0], nextPos[2]);
 
 	this->wall = NULL;
 
@@ -529,13 +529,13 @@ s32 PlayerRecord::perform_air_quarter_step(Vec3f intendedPos, u32 stepArg)
 			return AIR_STEP_GRABBED_LEDGE;
 		}
 
-		vec3f_copy(this->pos, nextPos);
+		CopyFVector(this->pos, nextPos);
 		this->floor	  = floor;
 		this->floorHeight = floorHeight;
 		return AIR_STEP_NONE;
 	}
 
-	vec3f_copy(this->pos, nextPos);
+	CopyFVector(this->pos, nextPos);
 	this->floor	  = floor;
 	this->floorHeight = floorHeight;
 
@@ -705,7 +705,7 @@ void PlayerRecord::apply_vertical_wind()
 	}
 }
 
-s32 PlayerRecord::perform_air_step(u32 stepArg)
+s32 PlayerRecord::jumpProcess(u32 stepArg)
 {
 	Vec3f intendedPos;
 	s32 i;
@@ -742,7 +742,7 @@ s32 PlayerRecord::perform_air_step(u32 stepArg)
 		this->fallpos = this->pos[1];
 	}
 
-	this->terrainSoundAddend = mario_get_terrain_sound_addend();
+	this->terrainSoundAddend = checkGroundSurface();
 
 	if(this->status != ACT_FLYING)
 	{
@@ -750,22 +750,22 @@ s32 PlayerRecord::perform_air_step(u32 stepArg)
 	}
 	apply_vertical_wind();
 
-	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
-	vec3s_set(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+	CopyFVector(this->marioObj->header.gfx.pos, this->pos);
+	SetSVector(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 
 	return stepResult;
 }
 
 // They had these functions the whole time and never used them? Lol
 
-void PlayerRecord::set_vel_from_pitch_and_yaw()
+void PlayerRecord::set3DSpeed()
 {
 	this->vel[0] = this->forwardVel * coss(this->faceAngle[0]) * sins(this->faceAngle[1]);
 	this->vel[1] = this->forwardVel * sins(this->faceAngle[0]);
 	this->vel[2] = this->forwardVel * coss(this->faceAngle[0]) * coss(this->faceAngle[1]);
 }
 
-void PlayerRecord::set_vel_from_yaw()
+void PlayerRecord::set2DSpeed()
 {
 	this->vel[0] = this->slideVelX = this->forwardVel * sins(this->faceAngle[1]);
 	this->vel[1]		       = 0.0f;

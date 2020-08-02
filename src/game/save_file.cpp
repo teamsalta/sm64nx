@@ -28,7 +28,7 @@ s8 sUnusedGotGlobalCoinHiScore = 0;
 u8 gGotFileCoinHiScore	       = 0;
 u8 gCurrCourseStarFlags	       = 0;
 
-u8 gSpecialTripleJump = 0;
+u8 buYosshiJump = 0;
 
 #define STUB_LEVEL(_0, _1, courseenum, _3, _4, _5, _6, _7, _8) courseenum,
 #define DEFINE_LEVEL(_0, _1, courseenum, _3, _4, _5, _6, _7, _8, _9, _10) courseenum,
@@ -577,7 +577,7 @@ void BuSetHatPosition(s16 x, s16 y, s16 z)
 
 	saveFile->capLevel = activeStageNo;
 	saveFile->capArea  = activeSceneNo;
-	vec3s_set(saveFile->capPos, x, y, z);
+	SetSVector(saveFile->capPos, x, y, z);
 	BuSetItemFlag(SAVE_FLAG_CAP_ON_GROUND);
 }
 

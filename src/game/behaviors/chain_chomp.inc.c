@@ -408,7 +408,7 @@ static void chain_chomp_released_jump_away(void)
 {
 	if(o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND)
 	{
-		gObjCutsceneDone	    = TRUE;
+		demoseqcode	    = TRUE;
 		o->oChainChompReleaseStatus = CHAIN_CHOMP_RELEASED_END_CUTSCENE;
 	}
 }

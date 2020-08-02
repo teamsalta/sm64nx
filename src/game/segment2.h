@@ -21,7 +21,7 @@ extern const u8 texture_waterbox_mist[];
 extern const u8 texture_waterbox_jrb_water[];
 extern const u8 texture_waterbox_unknown_water[];
 extern const u8 texture_waterbox_lava[];
-extern const Gfx dl_proj_mtx_fullscreen[];
+extern const Gfx wipe_gfx_init[];
 extern const Gfx dl_draw_quad_verts_0123[];
 extern const Gfx dl_screen_transition_end[];
 extern const Gfx dl_transition_draw_filled_region[];

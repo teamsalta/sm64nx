@@ -64,7 +64,7 @@ s16 bhv_mips_find_furthest_waypoint_to_mario(void)
 		z	 = waypoint->pos[2];
 
 		// Is the waypoint within 800 units of MIPS?
-		if(is_point_close_to_object(o, x, y, z, 800))
+		if(ObjApproach(o, x, y, z, 800))
 		{
 			// Is this further from Mario than the last waypoint?
 			distanceToMario = sqr(x - gMarioObject->header.gfx.pos[0]) + sqr(z - gMarioObject->header.gfx.pos[2]);
@@ -256,7 +256,7 @@ void bhv_mips_held(void)
 		if(CtrlPlayerDialog(1) == 2)
 		{
 			o->activeFlags |= ACTIVE_FLAG_INITIATED_TIME_STOP;
-			if(cutscene_object_with_dialog(CUTSCENE_DIALOG, o, dialogID))
+			if(cameraDemoStratMsgNum(CUTSCENE_DIALOG, o, dialogID))
 			{
 				o->oInteractionSubtype |= INT_SUBTYPE_DROP_IMMEDIATELY;
 				o->activeFlags &= ~ACTIVE_FLAG_INITIATED_TIME_STOP;

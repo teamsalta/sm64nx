@@ -161,7 +161,7 @@ struct SequenceChannel* allocate_sequence_channel(void)
 			return gSequenceChannels + i;
 		}
 	}
-	return &gSequenceChannelNone;
+	return &DUMMYSUB;
 }
 
 void sequence_player_init_channels(struct SequencePlayer* seqPlayer, u16 channelBits)
@@ -216,7 +216,7 @@ void sequence_player_disable_channels(struct SequencePlayer* seqPlayer, u16 chan
 					sequence_channel_disable(seqChannel);
 					seqChannel->seqPlayer = NULL;
 				}
-				seqPlayer->channels[i] = &gSequenceChannelNone;
+				seqPlayer->channels[i] = &DUMMYSUB;
 			}
 		}
 		channelBits >>= 1;
@@ -245,7 +245,7 @@ void sequence_channel_enable(struct SequencePlayer* seqPlayer, u8 channelIndex, 
 	}
 }
 
-void sequence_player_disable(struct SequencePlayer* seqPlayer)
+void Nas_ReleaseGroup(struct SequencePlayer* seqPlayer)
 {
 	sequence_player_disable_channels(seqPlayer, 0xffff);
 	note_pool_clear(&seqPlayer->notePool);
@@ -1452,7 +1452,7 @@ void sequence_player_process_sequence(struct SequencePlayer* seqPlayer)
 	// If discarded, bail out.
 	if(IS_SEQ_LOAD_COMPLETE(seqPlayer->seqId) == FALSE || IS_BANK_LOAD_COMPLETE(seqPlayer->defaultBank[0]) == FALSE)
 	{
-		sequence_player_disable(seqPlayer);
+		Nas_ReleaseGroup(seqPlayer);
 		return;
 	}
 
@@ -1487,7 +1487,7 @@ void sequence_player_process_sequence(struct SequencePlayer* seqPlayer)
 			{
 				if(state->depth == 0)
 				{
-					sequence_player_disable(seqPlayer);
+					Nas_ReleaseGroup(seqPlayer);
 					break;
 				}
 				state->depth--, state->pc = state->stack[state->depth];
@@ -1721,7 +1721,7 @@ void sequence_player_process_sequence(struct SequencePlayer* seqPlayer)
 
 	for(i = 0; i < CHANNELS_MAX; i++)
 	{
-		if(seqPlayer->channels[i] != &gSequenceChannelNone)
+		if(seqPlayer->channels[i] != &DUMMYSUB)
 		{
 			sequence_channel_process_script(seqPlayer->channels[i]);
 		}
@@ -1734,10 +1734,10 @@ void process_sequences(UNUSED s32 iterationsRemaining)
 	s32 i;
 	for(i = 0; i < SEQUENCE_PLAYERS; i++)
 	{
-		if(gSequencePlayers[i].enabled == TRUE)
+		if(GROUP_TRACK[i].enabled == TRUE)
 		{
-			sequence_player_process_sequence(gSequencePlayers + i);
-			sequence_player_process_sound(gSequencePlayers + i);
+			sequence_player_process_sequence(GROUP_TRACK + i);
+			sequence_player_process_sound(GROUP_TRACK + i);
 		}
 	}
 	reclaim_notes();
@@ -1746,7 +1746,7 @@ void process_sequences(UNUSED s32 iterationsRemaining)
 
 void init_sequence_player(u32 player)
 {
-	struct SequencePlayer* seqPlayer  = &gSequencePlayers[player];
+	struct SequencePlayer* seqPlayer  = &GROUP_TRACK[player];
 	seqPlayer->muted		  = FALSE;
 	seqPlayer->delay		  = 0;
 	seqPlayer->state		  = SEQUENCE_PLAYER_STATE_0;
@@ -1803,13 +1803,13 @@ void init_sequence_players(void)
 	{
 		for(j = 0; j < CHANNELS_MAX; j++)
 		{
-			gSequencePlayers[i].channels[j] = &gSequenceChannelNone;
+			GROUP_TRACK[i].channels[j] = &DUMMYSUB;
 		}
 
-		gSequencePlayers[i].seqVariation      = -1;
-		gSequencePlayers[i].bankDmaInProgress = FALSE;
-		gSequencePlayers[i].seqDmaInProgress  = FALSE;
-		init_note_lists(&gSequencePlayers[i].notePool);
+		GROUP_TRACK[i].seqVariation      = -1;
+		GROUP_TRACK[i].bankDmaInProgress = FALSE;
+		GROUP_TRACK[i].seqDmaInProgress  = FALSE;
+		init_note_lists(&GROUP_TRACK[i].notePool);
 		init_sequence_player(i);
 	}
 }

@@ -18,7 +18,7 @@ int gSplineState;
 #pragma GCC diagnostic ignored "-Wreturn-local-addr"
 
 /// Copy vector 'src' to 'dest'
-Vec3f* vec3f_copy(Vec3f& dest, const Vec3f src)
+Vec3f* CopyFVector(Vec3f& dest, const Vec3f src)
 {
 	dest[0] = src[0];
 	dest[1] = src[1];
@@ -70,7 +70,7 @@ Vec3s* vec3s_copy(Vec3s& dest, const Vec3s src)
 }
 
 /// Set vector 'dest' to (x, y, z)
-Vec3s* vec3s_set(Vec3s& dest, const s16 x, const s16 y, const s16 z)
+Vec3s* SetSVector(Vec3s& dest, const s16 x, const s16 y, const s16 z)
 {
 	dest[0] = x;
 	dest[1] = y;
@@ -411,7 +411,7 @@ void mtxf_align_terrain_normal(Mat4& dest, const Vec3f up, const Vec3f pos, cons
 	Vec3f forwardDir;
 	Vec3f upDir;
 
-	vec3f_copy(upDir, up);
+	CopyFVector(upDir, up);
 
 	vec3f_set(lateralDir, sins(yaw), 0, coss(yaw));
 	vec3f_normalize(upDir);
@@ -929,7 +929,7 @@ s32 anim_spline_poll(Vec3f& result)
 	s32 i;
 	s32 hasEnded = FALSE;
 
-	vec3f_copy(result, gVec3fZero);
+	CopyFVector(result, gVec3fZero);
 	spline_get_weights(weights, gSplineKeyframeFraction, gSplineState);
 	for(i = 0; i < 4; i++)
 	{

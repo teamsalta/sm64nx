@@ -1,12 +1,12 @@
 // floating_platform.c.inc
 
-f32 func_802F54F8(void)
+f32 board_YCheck(void)
 {
 	struct Surface* sp24;
 	f32 sp20;
 	f32 sp1C;
 
-	sp20 = find_water_level(o->oPosX, o->oPosZ);
+	sp20 = mcWaterCheck(o->oPosX, o->oPosZ);
 	sp1C = mcBGGroundCheck(o->oPosX, o->oPosY, o->oPosZ, &sp24);
 	if(sp20 > sp1C + o->oFloatingPlatformUnkFC)
 	{
@@ -20,7 +20,7 @@ f32 func_802F54F8(void)
 	}
 }
 
-void func_802F55CC(void)
+void board_Floating(void)
 {
 	s16 sp6 = (gMarioObject->header.gfx.pos[0] - o->oPosX) * coss(-o->oMoveAngleYaw) + (gMarioObject->header.gfx.pos[2] - o->oPosZ) * sins(-o->oMoveAngleYaw);
 	s16 sp4 = (gMarioObject->header.gfx.pos[2] - o->oPosZ) * coss(-o->oMoveAngleYaw) - (gMarioObject->header.gfx.pos[0] - o->oPosX) * sins(-o->oMoveAngleYaw);
@@ -64,9 +64,9 @@ void func_802F55CC(void)
 	}
 }
 
-void bhv_floating_platform_loop(void)
+void s_floatingboard_main(void)
 {
-	o->oHomeY = func_802F54F8();
+	o->oHomeY = board_YCheck();
 	if(o->oFloatingPlatformUnkF4 == 0)
 		o->oAction = 0;
 	else
@@ -75,7 +75,7 @@ void bhv_floating_platform_loop(void)
 	switch(o->oAction)
 	{
 		case 0:
-			func_802F55CC();
+			board_Floating();
 			break;
 
 		case 1:

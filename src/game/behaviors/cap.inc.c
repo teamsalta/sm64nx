@@ -12,7 +12,7 @@ static struct ObjectHitbox sCapHitbox = {
     /* hurtboxHeight:     */ 90,
 };
 
-s32 func_802F0904(void)
+s32 hat_HitCheckEvent(void)
 {
 	s_set_hitparam(o, &sCapHitbox);
 	if(o->oInteractStatus & INT_STATUS_INTERACTED)
@@ -25,7 +25,7 @@ s32 func_802F0904(void)
 	return 0;
 }
 
-void func_802F0978(void)
+void hat_RemoveCheck(void)
 {
 	if(o->oTimer > 300 * FRAME_RATE_SCALER_INV)
 	{
@@ -33,7 +33,7 @@ void func_802F0978(void)
 	}
 }
 
-void func_802F09C0(void)
+void HatLostCheck(void)
 {
 	if(sObjFloor == NULL)
 		return;
@@ -72,7 +72,7 @@ void func_802F09C0(void)
 	}
 }
 
-void func_802F0B68(void)
+void itemhat_Goodby(void)
 {
 	switch(o->oAction)
 	{
@@ -107,10 +107,10 @@ void func_802F0B68(void)
 			break;
 	}
 
-	func_802F09C0();
+	HatLostCheck();
 }
 
-void bhv_wing_cap_init(void)
+void s_itemhat_wing_init(void)
 {
 	o->oGravity  = 1.2f;
 	o->oFriction = 0.999f;
@@ -118,7 +118,7 @@ void bhv_wing_cap_init(void)
 	o->oOpacity  = 255;
 }
 
-void func_802F0D70(void)
+void hat_ScaleEvent(void)
 {
 	o->oCapUnkF8 += 0x2000 / FRAME_RATE_SCALER_INV;
 	o->header.gfx.scale[1] = coss(o->oCapUnkF8) * 0.3 + 0.7;
@@ -130,7 +130,7 @@ void func_802F0D70(void)
 	}
 }
 
-void func_802F0E0C(void)
+void itemhat_wing_Move(void)
 {
 	s16 sp1E;
 
@@ -138,7 +138,7 @@ void func_802F0E0C(void)
 	sp1E = ObjMoveEvent();
 	if(sp1E & 0x01)
 	{
-		func_802F09C0();
+		HatLostCheck();
 		if(o->oVelY != 0.0f)
 		{
 			o->oCapUnkF4 = 1;
@@ -147,31 +147,31 @@ void func_802F0E0C(void)
 	}
 
 	if(o->oCapUnkF4 == 1)
-		func_802F0D70();
+		hat_ScaleEvent();
 }
 
-void bhv_wing_vanish_cap_loop(void)
+void s_itemhat_wing_main(void)
 {
 	switch(o->oAction)
 	{
 		case 0:
-			func_802F0E0C();
+			itemhat_wing_Move();
 			break;
 
 		default:
 			ObjMoveEvent();
-			func_802F0B68();
+			itemhat_Goodby();
 			break;
 	}
 
 	if(o->oTimer > 20 * FRAME_RATE_SCALER_INV)
 		s_hitON();
 
-	func_802F0978();
-	func_802F0904();
+	hat_RemoveCheck();
+	hat_HitCheckEvent();
 }
 
-void bhv_metal_cap_init(void)
+void s_itemhat_metal_init(void)
 {
 	o->oGravity  = 2.4f;
 	o->oFriction = 0.999f;
@@ -179,38 +179,38 @@ void bhv_metal_cap_init(void)
 	o->oOpacity  = 0xFF;
 }
 
-void func_802F0FE0(void)
+void itemhat_metal_Move(void)
 {
 	s16 sp1E;
 
 	o->oFaceAngleYaw += o->oForwardVel * 128.0f * FRAME_RATE_SCALER;
 	sp1E = ObjMoveEvent();
 	if(sp1E & 0x01)
-		func_802F09C0();
+		HatLostCheck();
 }
 
-void bhv_metal_cap_loop(void)
+void s_itemhat_metal_main(void)
 {
 	switch(o->oAction)
 	{
 		case 0:
-			func_802F0FE0();
+			itemhat_metal_Move();
 			break;
 
 		default:
 			ObjMoveEvent();
-			func_802F0B68();
+			itemhat_Goodby();
 			break;
 	}
 
 	if(o->oTimer > 20 * FRAME_RATE_SCALER_INV)
 		s_hitON();
 
-	func_802F0904();
-	func_802F0978();
+	hat_HitCheckEvent();
+	hat_RemoveCheck();
 }
 
-void bhv_normal_cap_init(void)
+void s_itemhat_blow_init(void)
 {
 	o->oGravity  = 0.7f;
 	o->oFriction = 0.89f;
@@ -220,7 +220,7 @@ void bhv_normal_cap_init(void)
 	BuSetHatPosition(o->oPosX, o->oPosY, o->oPosZ);
 }
 
-void func_802F1190(void)
+void hat_LostEvent(void)
 {
 	BuClrItemFlag(SAVE_FLAG_CAP_ON_GROUND);
 
@@ -244,7 +244,7 @@ void func_802F1190(void)
 	}
 }
 
-void func_802F1234(void)
+void itemhat_blow_Move(void)
 {
 	s16 sp1E;
 
@@ -254,7 +254,7 @@ void func_802F1234(void)
 	sp1E = ObjMoveEvent();
 	if(sp1E & 0x01)
 	{
-		func_802F09C0();
+		HatLostCheck();
 
 		if(o->oVelY != 0.0f)
 		{
@@ -265,20 +265,20 @@ void func_802F1234(void)
 	}
 
 	if(o->oCapUnkF4 == 1)
-		func_802F0D70();
+		hat_ScaleEvent();
 }
 
-void bhv_normal_cap_loop(void)
+void s_itemhat_blow_main(void)
 {
 	switch(o->oAction)
 	{
 		case 0:
-			func_802F1234();
+			itemhat_blow_Move();
 			break;
 
 		default:
 			ObjMoveEvent();
-			func_802F0B68();
+			itemhat_Goodby();
 			break;
 	}
 
@@ -286,13 +286,13 @@ void bhv_normal_cap_loop(void)
 		BuSetHatPosition(o->oPosX, o->oPosY, o->oPosZ);
 
 	if(o->activeFlags == 0)
-		func_802F1190();
+		hat_LostEvent();
 
-	if(func_802F0904() == 1)
+	if(hat_HitCheckEvent() == 1)
 		BuClrItemFlag(SAVE_FLAG_CAP_ON_GROUND);
 }
 
-void bhv_vanish_cap_init(void)
+void s_itemhat_erase_init(void)
 {
 	o->oGravity  = 1.2f;
 	o->oFriction = 0.999f;

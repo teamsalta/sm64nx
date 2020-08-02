@@ -215,8 +215,8 @@ struct GraphNodeCamera* init_graph_node_camera(struct AllocOnlyPool* pool, struc
 	if(graphNode != NULL)
 	{
 		init_scene_graph_node_links(&graphNode->fnNode.node, GRAPH_NODE_TYPE_CAMERA);
-		vec3f_copy(graphNode->pos, pos);
-		vec3f_copy(graphNode->focus, focus);
+		CopyFVector(graphNode->pos, pos);
+		CopyFVector(graphNode->focus, focus);
 		graphNode->fnNode.func = func;
 		graphNode->config.mode = mode;
 		graphNode->roll	       = 0;
@@ -331,8 +331,8 @@ struct GraphNodeObject* init_graph_node_object(struct AllocOnlyPool* pool, struc
 	if(graphNode != NULL)
 	{
 		init_scene_graph_node_links(&graphNode->node, GRAPH_NODE_TYPE_OBJECT);
-		vec3f_copy(graphNode->pos, pos);
-		vec3f_copy(graphNode->scale, scale);
+		CopyFVector(graphNode->pos, pos);
+		CopyFVector(graphNode->scale, scale);
 		vec3s_copy(graphNode->angle, angle);
 		graphNode->sharedChild		      = sharedChild;
 		graphNode->throwMatrix		      = NULL;
@@ -757,7 +757,7 @@ void geo_reset_object_node(struct GraphNodeObject* graphNode)
 void geo_obj_init(struct GraphNodeObject* graphNode, void* sharedChild, Vec3f pos, Vec3s angle)
 {
 	vec3f_set(graphNode->scale, 1.0f, 1.0f, 1.0f);
-	vec3f_copy(graphNode->pos, pos);
+	CopyFVector(graphNode->pos, pos);
 	vec3s_copy(graphNode->angle, angle);
 
 	graphNode->sharedChild	 = (GraphNode*)sharedChild;
@@ -838,6 +838,7 @@ void geo_obj_init_animation(struct GraphNodeObject* graphNode, struct Animation*
  */
 s32 retrieve_animation_index(s32 frame, u16** attributes)
 {
+	frame = MAX(frame, 0);
 	s32 result;
 
 	if(frame < (*attributes)[0])

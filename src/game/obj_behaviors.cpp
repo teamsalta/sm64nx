@@ -68,7 +68,7 @@ s16 sPrevCheckMarioRoom = 0;
 /**
  * Tracks whether or not Yoshi has walked/jumped off the roof.
  */
-s8 sYoshiDead = FALSE;
+s8 yoshi_destFlag = FALSE;
 
 // extern void *ccm_seg7_trajectory_snowman;
 
@@ -76,9 +76,9 @@ s8 sYoshiDead = FALSE;
  * Resets yoshi as spawned/despawned upon new file select.
  * Possibly a function with stubbed code.
  */
-void set_yoshi_as_not_dead(void)
+void iwa_StratInit(void)
 {
-	sYoshiDead = FALSE;
+	yoshi_destFlag = FALSE;
 }
 
 /**
@@ -86,7 +86,7 @@ void set_yoshi_as_not_dead(void)
  * of the opacity of an object to something else. Perhaps like, giving a parent object the same
  * opacity?
  */
-Gfx UNUSED* geo_obj_transparency_something(s32 callContext, struct GraphNode* node, UNUSED Mat4* mtx)
+Gfx UNUSED* AlphaSet(s32 callContext, struct GraphNode* node, UNUSED Mat4* mtx)
 {
 	Gfx* gfxHead;
 	Gfx* gfx;
@@ -476,7 +476,7 @@ s32 ObjMoveEvent(void)
 
 	if(turn_obj_away_from_steep_floor(sObjFloor, floorY, objVelX, objVelZ) == 1)
 	{
-		waterY = find_water_level(objX + objVelX, objZ + objVelZ);
+		waterY = mcWaterCheck(objX + objVelX, objZ + objVelZ);
 
 		if(waterY > objY)
 		{
@@ -517,7 +517,7 @@ s32 ObjMoveEvent(void)
  *
  * TODO: Fix fake EU matching.
  */
-s32 object_step_without_floor_orient(void)
+s32 ObjMoveEvent_noInc(void)
 {
 	s16 collisionFlags  = 0;
 	sOrientObjWithFloor = FALSE;
@@ -534,7 +534,7 @@ s32 object_step_without_floor_orient(void)
  * `obj`'s forward velocity and yaw instead of `o`'s, and wouldn't update `o`'s
  * position.
  */
-void obj_move_xyz_using_fvel_and_yaw(struct Object* obj)
+void ObjSpeedOn(struct Object* obj)
 {
 	o->oVelX = obj->oForwardVel * sins(obj->oMoveAngleYaw);
 	o->oVelZ = obj->oForwardVel * coss(obj->oMoveAngleYaw);
@@ -564,7 +564,7 @@ s32 PlayerApproach(f32 x, f32 y, f32 z, s32 dist)
 /**
  * Checks whether a point is within distance of a given point. Test is exclusive.
  */
-s32 is_point_close_to_object(struct Object* obj, f32 x, f32 y, f32 z, s32 dist)
+s32 ObjApproach(struct Object* obj, f32 x, f32 y, f32 z, s32 dist)
 {
 	f32 objX = obj->oPosX;
 	f32 objY = obj->oPosY;
@@ -600,7 +600,7 @@ void PlayerApproachOnOff(struct Object* obj, s32 dist)
 /**
  * Turns an object towards home if Mario is not near to it.
  */
-s32 obj_return_home_if_safe(struct Object* obj, f32 homeX, f32 y, f32 homeZ, s32 dist)
+s32 ShapePatrol(struct Object* obj, f32 homeX, f32 y, f32 homeZ, s32 dist)
 {
 	f32 homeDistX	     = homeX - obj->oPosX;
 	f32 homeDistZ	     = homeZ - obj->oPosZ;
@@ -621,7 +621,7 @@ s32 obj_return_home_if_safe(struct Object* obj, f32 homeX, f32 y, f32 homeZ, s32
 /**
  * Randomly displaces an objects home if RNG says to, and turns the object towards its home.
  */
-void obj_return_and_displace_home(struct Object* obj, f32 homeX, UNUSED f32 homeY, f32 homeZ, s32 baseDisp)
+void ShapeRandomAngle(struct Object* obj, f32 homeX, UNUSED f32 homeY, f32 homeZ, s32 baseDisp)
 {
 	s16 angleToNewHome;
 	f32 homeDistX, homeDistZ;
@@ -685,7 +685,7 @@ s32 PositionWallCheck(Vec3f dist, f32 x, f32 y, f32 z, f32 radius)
  * Spawns a number of coins at the location of an object
  * with a random forward velocity, y velocity, and direction.
  */
-void obj_spawn_yellow_coins(struct Object* obj, s8 nCoins)
+void iwa_MakeCoin(struct Object* obj, s8 nCoins)
 {
 	struct Object* coin;
 	s8 count;
@@ -732,7 +732,7 @@ s32 iwa_TimerRemove(struct Object* obj, s16 lifeSpan)
 /**
  * Checks if a given room is Mario's current room, even if on an object.
  */
-s8 current_mario_room_check(s16 room)
+s8 iwa_MapAreaCheck(s16 room)
 {
 	s16 result;
 
@@ -769,7 +769,7 @@ s8 current_mario_room_check(s16 room)
 /**
  * Triggers dialog when Mario is facing an object and controls it while in the dialog.
  */
-s16 trigger_obj_dialog_when_facing(s32* inDialog, s16 dialogID, f32 dist, s32 actionArg)
+s16 iwa_ObjMessage(s32* inDialog, s16 dialogID, f32 dist, s32 actionArg)
 {
 	s16 dialogueResponse;
 
@@ -779,7 +779,7 @@ s16 trigger_obj_dialog_when_facing(s32* inDialog, s16 dialogID, f32 dist, s32 ac
 
 		if(CtrlPlayerDialog(actionArg) == 2)
 		{ // If Mario is speaking.
-			dialogueResponse = cutscene_object_with_dialog(CUTSCENE_DIALOG, o, dialogID);
+			dialogueResponse = cameraDemoStratMsgNum(CUTSCENE_DIALOG, o, dialogID);
 			if(dialogueResponse != 0)
 			{
 				CtrlPlayerDialog(0);
@@ -796,7 +796,7 @@ s16 trigger_obj_dialog_when_facing(s32* inDialog, s16 dialogID, f32 dist, s32 ac
 /**
  *Checks if a floor is one that should cause an object to "die".
  */
-void obj_check_floor_death(s16 collisionFlags, struct Surface* floor)
+void ObjDangerCheck(s16 collisionFlags, struct Surface* floor)
 {
 	if(floor == NULL)
 	{
@@ -824,7 +824,7 @@ void obj_check_floor_death(s16 collisionFlags, struct Surface* floor)
  * Controls an object dying in lava by creating smoke, sinking the object, playing
  * audio, and eventually despawning it. Returns TRUE when the obj is dead.
  */
-s32 obj_lava_death(void)
+s32 ObjMeltEvent(void)
 {
 	struct Object* deathSmoke;
 

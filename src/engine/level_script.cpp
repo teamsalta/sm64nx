@@ -529,8 +529,8 @@ static void level_cmd_23(void)
 static void level_cmd_init_mario(void)
 {
 	
-	vec3s_set(marioActor->startPos, 0, 0, 0);
-	vec3s_set(marioActor->startAngle, 0, 0, 0);
+	SetSVector(marioActor->startPos, 0, 0, 0);
+	SetSVector(marioActor->startAngle, 0, 0, 0);
 
 	marioActor->activeAreaIndex = -1;
 	marioActor->areaIndex	    = 0;
@@ -707,7 +707,7 @@ static void level_cmd_create_whirlpool(void)
 				stageScenes[sCurrAreaIndex].whirlpools[index] = whirlpool;
 			}
 
-			vec3s_set(whirlpool->pos, CMD_GET(s16, 4), CMD_GET(s16, 6), CMD_GET(s16, 8));
+			SetSVector(whirlpool->pos, CMD_GET(s16, 4), CMD_GET(s16, 6), CMD_GET(s16, 8));
 			whirlpool->strength = CMD_GET(s16, 10);
 		}
 	}
@@ -797,11 +797,11 @@ static void level_cmd_set_mario_start_pos(void)
 	marioActor->areaIndex = CMD_GET(u8, 2);
 
 #if IS_64_BIT
-	vec3s_set(marioActor->startPos, CMD_GET(s16, 6), CMD_GET(s16, 8), CMD_GET(s16, 10));
+	SetSVector(marioActor->startPos, CMD_GET(s16, 6), CMD_GET(s16, 8), CMD_GET(s16, 10));
 #else
 	vec3s_copy(marioActor->startPos, CMD_GET(Vec3s, 6));
 #endif
-	vec3s_set(marioActor->startAngle, 0, CMD_GET(s16, 4) * 0x8000 / 180, 0);
+	SetSVector(marioActor->startAngle, 0, CMD_GET(s16, 4) * 0x8000 / 180, 0);
 	sm64::config().camera().setLevelLoaded();
 
 	sCurrentCmd = CMD_NEXT;

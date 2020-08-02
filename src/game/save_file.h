@@ -75,7 +75,7 @@ extern u8 gLastCompletedStarNum;
 extern s8 sUnusedGotGlobalCoinHiScore;
 extern u8 gGotFileCoinHiScore;
 extern u8 gCurrCourseStarFlags;
-extern u8 gSpecialTripleJump;
+extern u8 buYosshiJump;
 extern s8 gLevelToCourseNumTable[];
 
 // game progress flags

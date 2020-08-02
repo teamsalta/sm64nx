@@ -17,7 +17,7 @@ void OneUp_kinoko_Hit()
 	}
 }
 
-void bhv_1up_common_init()
+void s_1up_kinoko_init()
 {
 	o->oMoveAnglePitch = -0x4000;
 	o->oGravity	   = 3.0f;
@@ -25,9 +25,9 @@ void bhv_1up_common_init()
 	o->oBuoyancy	   = 1.0f;
 }
 
-void bhv_1up_init()
+void s_1up_kuppa_init()
 {
-	bhv_1up_common_init();
+	s_1up_kinoko_init();
 	if(o->oBehParams2ndByte == 1)
 	{
 		if((BuGetItemFlag() & 0x50) == 0)
@@ -81,7 +81,7 @@ void OneUp_kinoko_Escape(s16 move_flag)
 		o->oAction = 2;
 }
 
-void bhv_1up_walking_loop()
+void s_1up_kinoko_main()
 {
 	ObjMoveEvent();
 
@@ -120,7 +120,7 @@ void bhv_1up_walking_loop()
 	PlayerApproachOnOff(o, 3000);
 }
 
-void bhv_1up_running_away_loop()
+void s_1up_kinoko_escape_main()
 {
 	s16 move_flag = ObjMoveEvent();
 	switch(o->oAction)
@@ -176,7 +176,7 @@ void OneUp_kinoko_Slider()
 		o->oAction = 2;
 }
 
-void bhv_1up_sliding_loop()
+void s_1up_kinoko_slider_main()
 {
 	switch(o->oAction)
 	{
@@ -200,13 +200,13 @@ void bhv_1up_sliding_loop()
 	s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
 }
 
-void bhv_1up_loop()
+void s_1up_kinoko_stop_main()
 {
 	OneUp_kinoko_Hit();
 	PlayerApproachOnOff(o, 3000);
 }
 
-void bhv_1up_jump_on_approach_loop()
+void s_set_1up_kinoko_main()
 {
 	s16 sp26;
 
@@ -236,7 +236,7 @@ void bhv_1up_jump_on_approach_loop()
 	PlayerApproachOnOff(o, 3000);
 }
 
-void bhv_1up_hidden_loop()
+void s_1up_kinoko_secret_main()
 {
 	s16 move_flag;
 	switch(o->oAction)
@@ -281,7 +281,7 @@ void bhv_1up_hidden_loop()
 	}
 }
 
-void bhv_1up_hidden_trigger_loop()
+void s_dummy_kinoko()
 {
 	if(s_hitcheck(o, gMarioObject) == 1)
 	{
@@ -293,7 +293,7 @@ void bhv_1up_hidden_trigger_loop()
 	}
 }
 
-void bhv_1up_hidden_in_pole_loop()
+void s_1up_secret_chase_main()
 {
 	switch(o->oAction)
 	{
@@ -330,7 +330,7 @@ void bhv_1up_hidden_in_pole_loop()
 	}
 }
 
-void bhv_1up_hidden_in_pole_trigger_loop()
+void s_dummy_kinoko_chase()
 {
 	if(s_hitcheck(o, gMarioObject) == 1)
 	{
@@ -344,7 +344,7 @@ void bhv_1up_hidden_in_pole_trigger_loop()
 	}
 }
 
-void bhv_1up_hidden_in_pole_spawner_loop()
+void s_1up_secret_tate_main()
 {
 	s8 sp2F;
 

@@ -10,7 +10,7 @@ void bhv_object_bubble_init(void)
 void bhv_object_bubble_loop(void)
 {
 	struct Object* bubbleRipples;
-	f32 waterY  = find_water_level(o->oPosX, o->oPosZ);
+	f32 waterY  = mcWaterCheck(o->oPosX, o->oPosZ);
 	f32 bubbleY = o->oPosY;
 
 	if(bubbleY > waterY)

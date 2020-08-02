@@ -56,7 +56,7 @@ enum UnlockDoorStarStates
 static s8 D_8032CDF0[7]		       = {0x01, 0x02, 0x01, 0x00, 0x01, 0x02, 0x01};
 static s8 gMarioAttackScaleAnimation[] = {0x0a, 0x0c, 0x10, 0x18, 0x0a, 0x0a, 0x0a, 0x0e, 0x14, 0x1e, 0x0a, 0x0a, 0x0a, 0x10, 0x14, 0x1a, 0x1a, 0x14, 0x00, 0x00};
 GraphNodeObject D_80339FE0;
-MarioBodyState gBodyStates[2]; // 2nd is never accessed in practice, most likely Luigi related
+MarioBodyState playerShapeCtrl[2]; // 2nd is never accessed in practice, most likely Luigi related
 
 // This whole file is weirdly organized. It has to be the same file due
 // to rodata boundries and function aligns, which means the programmer
@@ -97,7 +97,7 @@ static void bhvToadMessage_opaque(void)
 			{
 				gCurrentObject->oInteractStatus	  = 0;
 				gCurrentObject->oToadMessageState = TOAD_MESSAGE_TALKING;
-				play_toads_jingle();
+				Na_kinopioAppearBgm();
 			}
 		}
 	}
@@ -324,7 +324,7 @@ Gfx* geo_mirror_mario_set_alpha(s32 callContext, struct GraphNode* node, UNUSED 
 	UNUSED u8 unused1[4];
 	Gfx* sp28			= NULL;
 	struct GraphNodeGenerated* sp24 = (struct GraphNodeGenerated*)node;
-	struct MarioBodyState* sp20	= &gBodyStates[sp24->parameter];
+	struct MarioBodyState* sp20	= &playerShapeCtrl[sp24->parameter];
 	s16 sp1E;
 	UNUSED u8 unused2[4];
 
@@ -339,7 +339,7 @@ Gfx* geo_mirror_mario_set_alpha(s32 callContext, struct GraphNode* node, UNUSED 
 Gfx* geo_switch_mario_stand_run(s32 callContext, struct GraphNode* node, UNUSED Mat4* mtx)
 {
 	struct GraphNodeSwitchCase* switchCase = (struct GraphNodeSwitchCase*)node;
-	struct MarioBodyState* sp0	       = &gBodyStates[switchCase->numCases];
+	struct MarioBodyState* sp0	       = &playerShapeCtrl[switchCase->numCases];
 
 	if(callContext == GEO_CONTEXT_RENDER)
 	{
@@ -352,7 +352,7 @@ Gfx* geo_switch_mario_stand_run(s32 callContext, struct GraphNode* node, UNUSED 
 Gfx* geo_switch_mario_eyes(s32 callContext, struct GraphNode* node, UNUSED Mat4* c)
 {
 	struct GraphNodeSwitchCase* switchCase = (struct GraphNodeSwitchCase*)node;
-	struct MarioBodyState* sp8	       = &gBodyStates[switchCase->numCases];
+	struct MarioBodyState* sp8	       = &playerShapeCtrl[switchCase->numCases];
 	s16 sp6;
 
 	if(callContext == GEO_CONTEXT_RENDER)
@@ -383,7 +383,7 @@ Gfx* geo_switch_mario_eyes(s32 callContext, struct GraphNode* node, UNUSED Mat4*
 Gfx* geo_mario_tilt_torso(s32 callContext, struct GraphNode* node, UNUSED Mat4* c)
 {
 	struct GraphNodeGenerated* sp24 = (struct GraphNodeGenerated*)node;
-	struct MarioBodyState* sp20	= &gBodyStates[sp24->parameter];
+	struct MarioBodyState* sp20	= &playerShapeCtrl[sp24->parameter];
 	s32 action			= sp20->action;
 
 	if(callContext == GEO_CONTEXT_RENDER)
@@ -407,7 +407,7 @@ Gfx* geo_mario_tilt_torso(s32 callContext, struct GraphNode* node, UNUSED Mat4* 
 Gfx* geo_mario_head_rotation(s32 callContext, struct GraphNode* node, UNUSED Mat4* c)
 {
 	struct GraphNodeGenerated* sp2C	 = (struct GraphNodeGenerated*)node;
-	struct MarioBodyState* bodyState = &gBodyStates[sp2C->parameter];
+	struct MarioBodyState* bodyState = &playerShapeCtrl[sp2C->parameter];
 	s32 action			 = bodyState->action;
 
 	if(callContext == GEO_CONTEXT_RENDER)
@@ -428,8 +428,8 @@ Gfx* geo_mario_head_rotation(s32 callContext, struct GraphNode* node, UNUSED Mat
 		}
 		else
 		{
-			vec3s_set(bodyState->headAngle, 0, 0, 0);
-			vec3s_set(sp20->rotation, 0, 0, 0);
+			SetSVector(bodyState->headAngle, 0, 0, 0);
+			SetSVector(sp20->rotation, 0, 0, 0);
 		}
 	}
 	return NULL;
@@ -442,7 +442,7 @@ Gfx* geo_mario_head_rotation(s32 callContext, struct GraphNode* node, UNUSED Mat
 Gfx* geo_switch_mario_hand(s32 callContext, struct GraphNode* node, UNUSED Mat4* c)
 {
 	struct GraphNodeSwitchCase* switchCase = (struct GraphNodeSwitchCase*)node;
-	struct MarioBodyState* sp0	       = &gBodyStates[0];
+	struct MarioBodyState* sp0	       = &playerShapeCtrl[0];
 
 	if(callContext == GEO_CONTEXT_RENDER)
 	{
@@ -478,7 +478,7 @@ Gfx* geo_mario_hand_foot_scaler(s32 callContext, struct GraphNode* node, UNUSED 
 	static s16 sMarioAttackAnimCounter     = 0;
 	struct GraphNodeGenerated* asGenerated = (struct GraphNodeGenerated*)node;
 	struct GraphNodeScale* sp8	       = (struct GraphNodeScale*)node->next;
-	struct MarioBodyState* bodyState       = &gBodyStates[0];
+	struct MarioBodyState* bodyState       = &playerShapeCtrl[0];
 
 	if(callContext == GEO_CONTEXT_RENDER)
 	{
@@ -499,7 +499,7 @@ Gfx* geo_mario_hand_foot_scaler(s32 callContext, struct GraphNode* node, UNUSED 
 Gfx* geo_switch_mario_cap_effect(s32 callContext, struct GraphNode* node, UNUSED Mat4* c)
 {
 	struct GraphNodeSwitchCase* switchCase = (struct GraphNodeSwitchCase*)node;
-	struct MarioBodyState* sp0	       = &gBodyStates[switchCase->numCases];
+	struct MarioBodyState* sp0	       = &playerShapeCtrl[switchCase->numCases];
 
 	if(callContext == GEO_CONTEXT_RENDER)
 	{
@@ -512,7 +512,7 @@ Gfx* geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode* node, UNUSED
 {
 	struct GraphNode* next		       = node->next;
 	struct GraphNodeSwitchCase* switchCase = (struct GraphNodeSwitchCase*)node;
-	struct MarioBodyState* sp4	       = &gBodyStates[switchCase->numCases];
+	struct MarioBodyState* sp4	       = &playerShapeCtrl[switchCase->numCases];
 
 	if(callContext == GEO_CONTEXT_RENDER)
 	{
@@ -549,7 +549,7 @@ Gfx* geo_mario_rotate_wing_cap_wings(s32 callContext, struct GraphNode* node, UN
 	{
 		struct GraphNodeRotation* rotNode = (struct GraphNodeRotation*)node->next;
 
-		if(gBodyStates[sp8->parameter >> 1].unk07 == 0)
+		if(playerShapeCtrl[sp8->parameter >> 1].unk07 == 0)
 		{
 			rotX = (coss((animationCounter & 0xF) << 12) + 1.0f) * 4096.0f;
 		}
@@ -586,18 +586,18 @@ Gfx* geo_switch_mario_hand_grab_pos(s32 callContext, struct GraphNode* b, Mat4* 
 				case GRAB_POS_LIGHT_OBJ:
 					if(sp24->status & ACT_FLAG_THROWING)
 					{
-						vec3s_set(sp2C->translation, 50, 0, 0);
+						SetSVector(sp2C->translation, 50, 0, 0);
 					}
 					else
 					{
-						vec3s_set(sp2C->translation, 50, 0, 110);
+						SetSVector(sp2C->translation, 50, 0, 110);
 					}
 					break;
 				case GRAB_POS_HEAVY_OBJ:
-					vec3s_set(sp2C->translation, 145, -173, 180);
+					SetSVector(sp2C->translation, 145, -173, 180);
 					break;
 				case GRAB_POS_BOWSER:
-					vec3s_set(sp2C->translation, 80, -270, 1260);
+					SetSVector(sp2C->translation, 80, -270, 1260);
 					break;
 			}
 		}
@@ -632,8 +632,8 @@ Gfx* geo_render_mirror_mario(s32 callContext, struct GraphNode* node, UNUSED Mat
 				D_80339FE0.sharedChild = sp30->header.gfx.sharedChild;
 				D_80339FE0.unk18       = sp30->header.gfx.unk18;
 				vec3s_copy(D_80339FE0.angle, sp30->header.gfx.angle);
-				vec3f_copy(D_80339FE0.pos, sp30->header.gfx.pos);
-				vec3f_copy(D_80339FE0.scale, sp30->header.gfx.scale);
+				CopyFVector(D_80339FE0.pos, sp30->header.gfx.pos);
+				CopyFVector(D_80339FE0.scale, sp30->header.gfx.scale);
 				// FIXME: why does this set unk38, an inline struct, to a ptr to another one? wrong
 				// GraphNode types again?
 				D_80339FE0.unk38    = *(struct GraphNodeObject_sub*)&sp30->header.gfx.unk38.animID;

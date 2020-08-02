@@ -6,7 +6,7 @@
 // hypothesis is that the object in the middle here used to be
 // a rolling log of another variation.
 
-void bhv_ttm_rolling_log_init(void)
+void s_don_maruta_init(void)
 {
 	o->oPitouneUnkF8   = 3970.0f;
 	o->oPitouneUnkFC   = 3654.0f;
@@ -19,7 +19,7 @@ void bhv_ttm_rolling_log_init(void)
 	o->oAngleVelPitch  = 0;
 }
 
-void func_802F238C(void)
+void don_maruta_PlayerOnCheck(void)
 {
 	f32 sp24;
 
@@ -39,7 +39,7 @@ void func_802F238C(void)
 	}
 	else
 	{
-		if(is_point_close_to_object(o, o->oHomeX, o->oHomeY, o->oHomeZ, 100))
+		if(ObjApproach(o, o->oHomeX, o->oHomeY, o->oHomeZ, 100))
 		{
 			if(o->oAngleVelPitch != 0)
 			{
@@ -68,12 +68,12 @@ void func_802F238C(void)
 	}
 }
 
-void bhv_rolling_log_loop(void)
+void s_don_maruta_main(void)
 {
 	f32 prevX = o->oPosX;
 	f32 prevZ = o->oPosZ;
 
-	func_802F238C();
+	don_maruta_PlayerOnCheck();
 
 	o->oForwardVel = o->oAngleVelPitch / 0x40;
 	o->oVelX       = o->oForwardVel * sins(o->oMoveAngleYaw);
@@ -99,7 +99,7 @@ void bhv_rolling_log_loop(void)
 	}
 }
 
-void func_802F2820(void)
+void battan_Move(void)
 {
 	o->oRollingLogUnkF4 += 4.0f * FRAME_RATE_SCALER;
 	o->oAngleVelPitch += o->oRollingLogUnkF4 * FRAME_RATE_SCALER;
@@ -116,7 +116,7 @@ void func_802F2820(void)
 	}
 }
 
-void func_802F2924(void)
+void battan_Home(void)
 {
 	o->oAngleVelPitch = 0x90;
 	o->oFaceAnglePitch += o->oAngleVelPitch * FRAME_RATE_SCALER;
@@ -127,7 +127,7 @@ void func_802F2924(void)
 		o->oAction = 0;
 }
 
-void bhvLllVolcanoFallingTrap_loop(void)
+void s_fm_battan_main(void)
 {
 	switch(o->oAction)
 	{
@@ -140,7 +140,7 @@ void bhvLllVolcanoFallingTrap_loop(void)
 			break;
 
 		case 1:
-			func_802F2820();
+			battan_Move();
 			break;
 
 		case 2:
@@ -156,12 +156,12 @@ void bhvLllVolcanoFallingTrap_loop(void)
 			break;
 
 		case 3:
-			func_802F2924();
+			battan_Home();
 			break;
 	}
 }
 
-void bhv_lll_rolling_log_init(void)
+void s_fm_maruta_init(void)
 {
 	o->oPitouneUnkF8 = 5120.0f;
 	o->oPitouneUnkFC = 6016.0f;

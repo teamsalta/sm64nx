@@ -82,7 +82,7 @@ void bubba_act_1(void)
 		}
 		else if(o->oBubbaUnk100 == 20)
 		{
-			val06 = 10000 - (s16)(20.0f * (find_water_level(o->oPosX, o->oPosZ) - o->oPosY));
+			val06 = 10000 - (s16)(20.0f * (mcWaterCheck(o->oPosX, o->oPosZ) - o->oPosY));
 			o->oBubbaUnk1AC -= val06;
 			o->oMoveAnglePitch = o->oBubbaUnk1AC;
 			o->oBubbaUnkF4	   = 40.0f;

@@ -136,7 +136,7 @@ void (*sCheepCheepActions[])(void) = {ActionCheepCheep0, ActionCheepCheep1, Acti
 
 void bhv_cheep_cheep_loop(void)
 {
-	o->oCheepCheepUnkF4  = find_water_level(o->oPosX, o->oPosZ);
+	o->oCheepCheepUnkF4  = mcWaterCheck(o->oPosX, o->oPosZ);
 	o->oCheepCheepUnkF8  = gMarioObject->oPosY + o->oCheepCheepUnkFC;
 	o->oWallHitboxRadius = 30.0f;
 	s_enemybgcheck();

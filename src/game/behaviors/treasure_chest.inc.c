@@ -17,7 +17,7 @@ static struct ObjectHitbox sTreasureChestBottomHitbox = {
     /* hurtboxHeight:     */ 310,
 };
 
-void bhv_treasure_chest_top_loop()
+void s_trebox_futa_main()
 {
 	struct Object* sp34 = o->parentObj->parentObj;
 
@@ -68,13 +68,13 @@ void bhv_treasure_chest_top_loop()
 	}
 }
 
-void bhv_treasure_chest_bottom_init()
+void s_trebox_init()
 {
 	s_makeobj_chain(0, 0, 102, -77, o, MODEL_TREASURE_CHEST_LID, sm64::bhv::bhvTreasureChestTop());
 	s_set_hitparam(o, &sTreasureChestBottomHitbox);
 }
 
-void bhv_treasure_chest_bottom_loop()
+void s_trebox_main()
 {
 	switch(o->oAction)
 	{
@@ -129,7 +129,7 @@ void tBoxMake(s8 sp3B, s32 sp3C, s32 sp40, s32 sp44, s16 sp4A)
 	sp34->oBehParams2ndByte = sp3B;
 }
 
-void bhv_treasure_chest_ship_init()
+void s_tbox_quize_init()
 {
 	tBoxMake(1, 400, -350, -2700, 0);
 	tBoxMake(2, 650, -350, -940, -0x6001);
@@ -139,7 +139,7 @@ void bhv_treasure_chest_ship_init()
 	o->oTreasureChestUnkFC = 0;
 }
 
-void bhv_treasure_chest_ship_loop()
+void s_tbox_quize_main()
 {
 	switch(o->oAction)
 	{
@@ -169,7 +169,7 @@ void bhv_treasure_chest_ship_loop()
 	}
 }
 
-void bhv_treasure_chest_jrb_init()
+void s_tbox_quize_ground_init()
 {
 	tBoxMake(1, -1700, -2812, -1150, 0x7FFF);
 	tBoxMake(2, -1150, -2812, -1550, 0x7FFF);
@@ -179,7 +179,7 @@ void bhv_treasure_chest_jrb_init()
 	o->oTreasureChestUnkFC = 1;
 }
 
-void bhv_treasure_chest_jrb_loop()
+void s_tbox_quize_ground_main()
 {
 	switch(o->oAction)
 	{

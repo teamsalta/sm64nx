@@ -2,7 +2,7 @@
 #include "engine/graph_node.h"
 #include "dukglue/dukglue.h"
 
-extern MarioBodyState gBodyStates[2];
+extern MarioBodyState playerShapeCtrl[2];
 
 /*
 MAP THESE

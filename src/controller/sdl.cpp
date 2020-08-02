@@ -505,6 +505,10 @@ namespace sm64::hid
 				}
 			}
 		}
+
+#ifdef ENABLE_MOUSE
+		SDL_SetRelativeMouseMode(m_controllers.size() ? SDL_FALSE : SDL_TRUE);
+#endif
 	}
 } // namespace sm64::hid
 

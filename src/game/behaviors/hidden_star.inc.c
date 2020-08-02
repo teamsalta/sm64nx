@@ -1,11 +1,11 @@
 // hidden_star.c.inc
 
-void bhv_hidden_star_init(void)
+void s_getdummy_star_init(void)
 {
 	s16 sp36;
 	struct Object* sp30;
 
-	sp36 = count_objects_with_behavior(sm64::bhv::bhvHiddenStarTrigger());
+	sp36 = s_count_obj(sm64::bhv::bhvHiddenStarTrigger());
 	if(sp36 == 0)
 	{
 		sp30		 = s_makeobj_absolute(o, 0, MODEL_STAR, sm64::bhv::bhvStar(), o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
@@ -16,7 +16,7 @@ void bhv_hidden_star_init(void)
 	o->oHiddenStarTriggerCounter = 5 - sp36;
 }
 
-void bhv_hidden_star_loop(void)
+void s_getdummy_star_main(void)
 {
 	switch(o->oAction)
 	{
@@ -28,7 +28,7 @@ void bhv_hidden_star_loop(void)
 		case 1:
 			if(o->oTimer > 2 * FRAME_RATE_SCALER_INV)
 			{
-				func_802F1B84(o->oPosX, o->oPosY, o->oPosZ);
+				s_coinset_star(o->oPosX, o->oPosY, o->oPosZ);
 				s_kemuri();
 				o->activeFlags = 0;
 			}
@@ -37,7 +37,7 @@ void bhv_hidden_star_loop(void)
 }
 
 /* TODO: this is likely not a checkpoint but a Secret */
-void bhv_hidden_star_trigger_loop(void)
+void s_dummy_appear(void)
 {
 	struct Object* hiddenStar;
 	if(s_hitcheck(o, gMarioObject) == 1)
@@ -58,9 +58,9 @@ void bhv_hidden_star_trigger_loop(void)
 	}
 }
 
-void bhv_bowser_course_red_coin_star_loop(void)
+void s_getcoins_extstar_main(void)
 {
-	gRedCoinsCollected = o->oHiddenStarTriggerCounter;
+	redcoin_num = o->oHiddenStarTriggerCounter;
 	switch(o->oAction)
 	{
 		case 0:
@@ -71,7 +71,7 @@ void bhv_bowser_course_red_coin_star_loop(void)
 		case 1:
 			if(o->oTimer > 2 * FRAME_RATE_SCALER_INV)
 			{
-				func_802F1BD4(o->oPosX, o->oPosY, o->oPosZ);
+				s_extraset_star(o->oPosX, o->oPosY, o->oPosZ);
 				s_kemuri();
 				o->activeFlags = 0;
 			}

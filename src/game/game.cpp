@@ -32,7 +32,7 @@ Gfx* gDisplayListHead;
 u8* gGfxPoolEnd;
 struct GfxPool* gGfxPool;
 
-struct MarioAnimation D_80339D10;
+struct MarioAnimation playerAnimation;
 struct MarioAnimation gDemo;
 UNUSED u8 filler80339D30[0x90];
 
@@ -165,7 +165,7 @@ void setup_game_memory(void)
 	D_80339CF0		 = main_pool_alloc(0x4000, MEMORY_POOL_LEFT);
 	set_segment_base_addr(17, (void*)D_80339CF0);
 
-	func_80278A78(&D_80339D10, (void*)marioAnim(), (Animation*)D_80339CF0);
+	func_80278A78(&playerAnimation, (void*)marioAnim(), (Animation*)D_80339CF0);
 	D_80339CF4 = main_pool_alloc(2048, MEMORY_POOL_LEFT);
 	set_segment_base_addr(24, (void*)D_80339CF4);
 	func_80278A78(&gDemo, (void*)demoInputs(), (Animation*)D_80339CF4);

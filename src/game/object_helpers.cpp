@@ -596,7 +596,7 @@ struct Object* s_makeobj_initdata(struct Object* parent, struct WaterSplashParam
 
 	if(params->flags & WATER_SPLASH_FLAG_SET_Y_TO_WATER_LEVEL)
 	{
-		newObj->oPosY = find_water_level(newObj->oPosX, newObj->oPosZ);
+		newObj->oPosY = mcWaterCheck(newObj->oPosX, newObj->oPosZ);
 	}
 
 	if(params->flags & WATER_SPLASH_FLAG_RAND_OFFSET_XZ)
@@ -1080,7 +1080,7 @@ s32 s_count_obj(void)
 	return count;
 }
 
-s32 count_objects_with_behavior(const BehaviorScript* behavior)
+s32 s_count_obj(const BehaviorScript* behavior)
 {
 	uintptr_t* behaviorAddr	    = (uintptr_t*)segmented_to_virtual(behavior);
 	struct ObjectNode* listHead = &gObjectLists[s_check_enemytype(behaviorAddr)];
@@ -1643,7 +1643,7 @@ static f32 s_calc_speedY(f32 gravity, f32 buoyancy)
 	}
 	else
 	{
-		waterLevel = find_water_level(o->oPosX, o->oPosZ);
+		waterLevel = mcWaterCheck(o->oPosX, o->oPosZ);
 	}
 
 	return waterLevel;
@@ -1737,7 +1737,7 @@ void s_wall_revise(f32 offsetY, f32 radius)
 {
 	if(radius > 0.1L)
 	{
-		f32_find_wall_collision(&o->oPosX, &o->oPosY, &o->oPosZ, offsetY, radius);
+		WallCheck(&o->oPosX, &o->oPosY, &o->oPosZ, offsetY, radius);
 	}
 }
 
@@ -2541,7 +2541,7 @@ void s_random_XZ_offset(struct Object* obj, f32 rangeLength)
 static void func_802A297C(struct Object* a0)
 {
 	f32 spC = a0->oUnkC0;
-	f32 sp8 = a0->oUnkBC;
+	f32 sp8 = a0->oStarDoorSpeed;
 	f32 sp4 = a0->oForwardVel;
 
 	a0->oVelX = a0->transform[0][0] * spC + a0->transform[1][0] * sp8 + a0->transform[2][0] * sp4;
@@ -3318,7 +3318,7 @@ s32 s_call_talkdemo(s32 actionArg, s32 dialogFlags, s32 cutsceneTable, s32 dialo
 			}
 			else
 			{
-				if((o->oDialogResponse = cutscene_object_with_dialog(cutsceneTable, o, dialogID)) != 0)
+				if((o->oDialogResponse = cameraDemoStratMsgNum(cutsceneTable, o, dialogID)) != 0)
 				{
 					o->oDialogState++;
 				}
@@ -3564,7 +3564,7 @@ Gfx* geo_rotate_coin(s32 callContext, GraphNode* node, Mat4* c)
 		obj = (struct Object*)gCurGraphNodeObject; // TODO: change global type to Object pointer
 
 		struct GraphNodeRotation* rotNode = (struct GraphNodeRotation*)node->next;
-		vec3s_set(rotNode->rotation, 0, obj->oAnimState, 0);
+		SetSVector(rotNode->rotation, 0, obj->oAnimState, 0);
 
 		obj->oAnimState += 0x0800 / FRAME_RATE_SCALER_INV;
 

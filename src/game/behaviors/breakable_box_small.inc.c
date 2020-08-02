@@ -12,7 +12,7 @@ struct ObjectHitbox sBreakableBoxSmallHitbox = {
     /* hurtboxHeight:     */ 250,
 };
 
-void bhv_breakable_box_small_init(void)
+void s_takeblock_init(void)
 {
 	o->oGravity  = 2.5f;
 	o->oFriction = 0.99f;
@@ -23,14 +23,14 @@ void bhv_breakable_box_small_init(void)
 	o->activeFlags |= 0x200;
 }
 
-void func_802F4CE8(void)
+void takeblock_Kemuri(void)
 {
 	struct Object* sp24 = s_makeobj_nowpos(o, MODEL_SMOKE, sm64::bhv::bhvSmoke());
 	sp24->oPosX += (s32)(Randomf() * 80.0f) - 40;
 	sp24->oPosZ += (s32)(Randomf() * 80.0f) - 40;
 }
 
-void func_802F4DB4(void)
+void takeblock_Move(void)
 {
 	s16 sp1E = ObjMoveEvent();
 
@@ -43,7 +43,7 @@ void func_802F4DB4(void)
 		if(o->oForwardVel > 20.0f)
 		{
 			objsound(SOUND_ENV_SLIDING);
-			func_802F4CE8();
+			takeblock_Kemuri();
 		}
 	}
 
@@ -51,20 +51,20 @@ void func_802F4DB4(void)
 	{
 		s_kemuri();
 		s_boxeffect(20, 138, 0.7f, 3);
-		obj_spawn_yellow_coins(o, 3);
+		iwa_MakeCoin(o, 3);
 		obj_remove_sound(SOUND_GENERAL_BREAK_BOX);
 		o->activeFlags = 0;
 	}
 
-	obj_check_floor_death(sp1E, sObjFloor);
+	ObjDangerCheck(sp1E, sObjFloor);
 }
 
-void breakable_box_small_released_loop(void)
+void takeblock_Return(void)
 {
 	o->oBreakableBoxSmallFramesSinceReleased++;
 
 	// Begin flashing
-	if(o->oBreakableBoxSmallFramesSinceReleased > 810)
+	if(o->oBreakableBoxSmallFramesSinceReleased > 810 * FRAME_RATE_SCALER_INV)
 	{
 		if(o->oBreakableBoxSmallFramesSinceReleased & 1)
 			o->header.gfx.node.flags |= 0x10;
@@ -73,36 +73,36 @@ void breakable_box_small_released_loop(void)
 	}
 
 	// Despawn, and create a corkbox respawner
-	if(o->oBreakableBoxSmallFramesSinceReleased > 900)
+	if(o->oBreakableBoxSmallFramesSinceReleased > 900 * FRAME_RATE_SCALER_INV)
 	{
-		create_respawner(MODEL_BREAKABLE_BOX_SMALL, sm64::bhv::bhvBreakableBoxSmall(), 3000);
+		Obj_reset(MODEL_BREAKABLE_BOX_SMALL, sm64::bhv::bhvBreakableBoxSmall(), 3000);
 		o->activeFlags = 0;
 	}
 }
 
-void breakable_box_small_idle_loop(void)
+void takeblock_Event(void)
 {
 	switch(o->oAction)
 	{
 		case 0:
-			func_802F4DB4();
+			takeblock_Move();
 			break;
 
 		case 100:
-			obj_lava_death();
+			ObjMeltEvent();
 			break;
 
 		case 101:
 			o->activeFlags = 0;
-			create_respawner(MODEL_BREAKABLE_BOX_SMALL, sm64::bhv::bhvBreakableBoxSmall(), 3000);
+			Obj_reset(MODEL_BREAKABLE_BOX_SMALL, sm64::bhv::bhvBreakableBoxSmall(), 3000);
 			break;
 	}
 
 	if(o->oBreakableBoxSmallReleased == 1)
-		breakable_box_small_released_loop();
+		takeblock_Return();
 }
 
-void breakable_box_small_get_dropped(void)
+void takeblock_Drop(void)
 {
 	s_hitON();
 	s_shapeON();
@@ -113,7 +113,7 @@ void breakable_box_small_get_dropped(void)
 	o->oBreakableBoxSmallFramesSinceReleased = 0;
 }
 
-void breakable_box_small_get_thrown(void)
+void takeblock_Throw(void)
 {
 	s_hitON();
 	s_throw_object();
@@ -128,12 +128,12 @@ void breakable_box_small_get_thrown(void)
 	o->activeFlags &= ~0x200;
 }
 
-void bhv_breakable_box_small_loop(void)
+void s_takeblock_main(void)
 {
 	switch(o->oHeldState)
 	{
 		case 0:
-			breakable_box_small_idle_loop();
+			takeblock_Event();
 			break;
 
 		case 1:
@@ -142,11 +142,11 @@ void bhv_breakable_box_small_loop(void)
 			break;
 
 		case 2:
-			breakable_box_small_get_thrown();
+			takeblock_Throw();
 			break;
 
 		case 3:
-			breakable_box_small_get_dropped();
+			takeblock_Drop();
 			break;
 	}
 

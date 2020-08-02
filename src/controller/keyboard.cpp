@@ -389,7 +389,7 @@ namespace sm64::hid
 		if (!size())
 		{
 #ifdef ENABLE_MOUSE
-			SDL_SetRelativeMouseMode(SDL_TRUE);
+			//SDL_SetRelativeMouseMode(SDL_TRUE);
 #endif
 			auto controller = std::make_shared<controller::Keyboard>();
 #ifdef ENABLE_MOUSE

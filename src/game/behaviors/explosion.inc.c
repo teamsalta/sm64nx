@@ -14,7 +14,7 @@ void bhv_explosion_loop(void)
 
 	if(o->oTimer == 9 * FRAME_RATE_SCALER_INV)
 	{
-		if(find_water_level(o->oPosX, o->oPosZ) > o->oPosY)
+		if(mcWaterCheck(o->oPosX, o->oPosZ) > o->oPosY)
 		{
 			for(i = 0; i < 40; i++)
 				s_makeobj_nowpos(o, MODEL_WHITE_PARTICLE_SMALL, sm64::bhv::bhvBobombExplosionBubble());

@@ -35,7 +35,7 @@ s32 is_hat_ukiki_and_mario_has_hat(void)
 {
 	if(o->oBehParams2ndByte == UKIKI_HAT)
 	{
-		if(does_mario_have_hat(marioWorks))
+		if(PL_IsPlayerWearingRedHat(marioWorks))
 		{
 			return TRUE;
 		}
@@ -652,7 +652,7 @@ void hat_ukiki_held_loop(void)
 	switch(o->oUkikiTextState)
 	{
 		case UKIKI_TEXT_DEFAULT:
-			if(mario_lose_cap_to_enemy(2))
+			if(PL_StealMariosHat(2))
 			{
 				o->oUkikiTextState = UKIKI_TEXT_STEAL_HAT;
 				o->oUkikiHasHat |= UKIKI_HAT_ON;
@@ -676,7 +676,7 @@ void hat_ukiki_held_loop(void)
 		case UKIKI_TEXT_HAS_HAT:
 			if(s_call_enemydemo(2, 18, DIALOG_101, 0))
 			{
-				mario_retrieve_cap();
+				PL_ReturnMariosHat();
 				CtrlPlayerDialog(0);
 				o->oUkikiHasHat &= ~UKIKI_HAT_ON;
 				o->oUkikiTextState = UKIKI_TEXT_GAVE_HAT_BACK;

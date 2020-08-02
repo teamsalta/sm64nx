@@ -54,7 +54,7 @@ void bhv_respawner_loop(void)
 	}
 }
 
-void create_respawner(s32 model, const BehaviorScript* behToSpawn, s32 minSpawnDist)
+void Obj_reset(s32 model, const BehaviorScript* behToSpawn, s32 minSpawnDist)
 {
 	struct Object* respawner	       = s_makeobj_absolute(o, 0, MODEL_NONE, sm64::bhv::bhvRespawner(), o->oHomeX, o->oHomeY, o->oHomeZ, 0, 0, 0);
 	respawner->oBehParams		       = o->oBehParams;

@@ -860,6 +860,12 @@
         "xxhash32": "25FA6E30",
         "xxhash64": "A4A2844C31406EE4"
     },
+	    "actors/exclamation_box/vanish_cap_box_side.rgba16.png": {
+        "riceName": "SUPER MARIO 64#B16EDFA9#0#2_all.png",
+        "var": "exclamation_box_seg8_texture_08013628",
+        "xxhash32": "25FA6E30",
+        "xxhash64": "A4A2844C31406EE4"
+    },
     "actors/exclamation_box/wing_cap_box_front.rgba16.png": {
         "riceName": "SUPER MARIO 64#A765AAA8#0#2_all.png",
         "var": "exclamation_box_seg8_texture_08015E28",
@@ -867,6 +873,12 @@
         "xxhash64": "C49626E27F343D3F"
     },
     "actors/exclamation_box/wing_cap_box_sides.rgba16.png": {
+        "riceName": "SUPER MARIO 64#4838A16E#0#2_all.png",
+        "var": "exclamation_box_seg8_texture_08016628",
+        "xxhash32": "49DC8276",
+        "xxhash64": "516806F067BE0FE2"
+    },
+	"actors/exclamation_box/wing_cap_box_side.rgba16.png": {
         "riceName": "SUPER MARIO 64#4838A16E#0#2_all.png",
         "var": "exclamation_box_seg8_texture_08016628",
         "xxhash32": "49DC8276",

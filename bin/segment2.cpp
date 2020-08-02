@@ -1232,7 +1232,7 @@ const Gfx dl_shadow_end[] = {
 };
 
 // 0x02014660 - 0x02014698
-const Gfx dl_proj_mtx_fullscreen[] = {
+const Gfx wipe_gfx_init[] = {
     gsDPPipeSync(),
     gsSPClearGeometryMode(G_LIGHTING),
     gsSPMatrix(&matrix_identity, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH),

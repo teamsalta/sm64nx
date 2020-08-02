@@ -64,24 +64,24 @@ Mat4 D_80339F50[2];
 
 s16 PlayerRecord::func_80263A50()
 {
-	s16 pitch = find_floor_slope(0);
+	s16 pitch = groundGradient(0);
 	pitch	  = pitch * forwardVel / 40.0f;
 	return -pitch;
 }
 
-void PlayerRecord::func_80263AD4(s16 frame1, s16 frame2)
+void PlayerRecord::playerRunningSound(s16 frame1, s16 frame2)
 {
-	if(is_anim_past_frame(frame1) || is_anim_past_frame(frame2))
+	if(checkAnimeFrame(frame1) || checkAnimeFrame(frame2))
 	{
 		if(flags & MARIO_METAL_CAP)
 		{
 			if(marioObj->header.gfx.unk38.animID == MARIO_ANIM_TIPTOE)
 			{
-				play_sound_and_spawn_particles(SOUND_ACTION_METAL_STEP_TIPTOE, 0);
+				specialEffect(SOUND_ACTION_METAL_STEP_TIPTOE, 0);
 			}
 			else
 			{
-				play_sound_and_spawn_particles(SOUND_ACTION_METAL_STEP, 0);
+				specialEffect(SOUND_ACTION_METAL_STEP, 0);
 			}
 		}
 		else if(sinking > 50.0f)
@@ -90,11 +90,11 @@ void PlayerRecord::func_80263AD4(s16 frame1, s16 frame2)
 		}
 		else if(marioObj->header.gfx.unk38.animID == MARIO_ANIM_TIPTOE)
 		{
-			play_sound_and_spawn_particles(SOUND_ACTION_TERRAIN_STEP_TIPTOE, 0);
+			specialEffect(SOUND_ACTION_TERRAIN_STEP_TIPTOE, 0);
 		}
 		else
 		{
-			play_sound_and_spawn_particles(SOUND_ACTION_TERRAIN_STEP, 0);
+			specialEffect(SOUND_ACTION_TERRAIN_STEP, 0);
 		}
 	}
 }
@@ -109,7 +109,7 @@ void PlayerRecord::func_80263C14()
 s32 PlayerRecord::begin_walking_action(f32 forwardVel, u32 action, u32 actionArg)
 {
 	faceAngle[1] = intendedYaw;
-	mario_set_forward_vel(forwardVel);
+	setPlayerVelocity(forwardVel);
 	return ChangePlayerStatus(action, actionArg);
 }
 
@@ -150,7 +150,7 @@ void PlayerRecord::check_ledge_climb_down()
 						faceAngle[1] = wallAngle + 0x8000;
 
 						ChangePlayerStatus(ACT_LEDGE_CLIMB_DOWN, 0);
-						set_mario_animation(MARIO_ANIM_CLIMB_DOWN_LEDGE);
+						setAnimation(MARIO_ANIM_CLIMB_DOWN_LEDGE);
 					}
 				}
 			}
@@ -162,12 +162,12 @@ void PlayerRecord::slide_bonk(u32 fastAction, u32 slowAction)
 {
 	if(forwardVel > 16.0f)
 	{
-		mario_bonk_reflection(TRUE);
-		drop_and_set_mario_action(fastAction, 0);
+		playerRefrection(TRUE);
+		changePlayerDropping(fastAction, 0);
 	}
 	else
 	{
-		mario_set_forward_vel(0.0f);
+		setPlayerVelocity(0.0f);
 		ChangePlayerStatus(slowAction, 0);
 	}
 }
@@ -260,8 +260,8 @@ void PlayerRecord::update_sliding_angle(f32 accel, f32 lossFactor)
 	vel[1] = 0.0f;
 	vel[2] = slideVelZ;
 
-	mario_update_moving_sand();
-	mario_update_windy_ground();
+	quicksandProcess();
+	gustProcess();
 
 	//! Speed is capped a frame late (butt slide HSG)
 	forwardVel = sqrtf(slideVelX * slideVelX + slideVelZ * slideVelZ);
@@ -296,7 +296,7 @@ s32 PlayerRecord::update_sliding(f32 stopSpeed)
 		forward *= 0.5f + 0.5f * forwardVel / 100.0f;
 	}
 
-	switch(mario_get_floor_class())
+	switch(getSlipCode())
 	{
 		case SURFACE_CLASS_VERY_SLIPPERY:
 			accel	   = 10.0f;
@@ -339,9 +339,9 @@ s32 PlayerRecord::update_sliding(f32 stopSpeed)
 
 	update_sliding_angle(accel, lossFactor);
 
-	if(!mario_floor_is_slope() && forwardVel * forwardVel < stopSpeed * stopSpeed)
+	if(!isSlipLimit() && forwardVel * forwardVel < stopSpeed * stopSpeed)
 	{
-		mario_set_forward_vel(0.0f);
+		setPlayerVelocity(0.0f);
 		stopped = TRUE;
 	}
 
@@ -357,13 +357,13 @@ void PlayerRecord::apply_slope_accel()
 	UNUSED f32 normalY = floor->normal.y;
 	s16 floorDYaw	   = floorAngle - faceAngle[1];
 
-	if(mario_floor_is_slope())
+	if(isSlipLimit())
 	{
 		s16 slopeClass = 0;
 
 		if(status != ACT_SOFT_BACKWARD_GROUND_KB && status != ACT_SOFT_FORWARD_GROUND_KB)
 		{
-			slopeClass = mario_get_floor_class();
+			slopeClass = getSlipCode();
 		}
 
 		switch(slopeClass)
@@ -403,8 +403,8 @@ void PlayerRecord::apply_slope_accel()
 
 	pos[0] = pos[0];
 
-	mario_update_moving_sand();
-	mario_update_windy_ground();
+	quicksandProcess();
+	gustProcess();
 }
 
 s32 PlayerRecord::apply_landing_accel(f32 frictionFactor)
@@ -413,12 +413,12 @@ s32 PlayerRecord::apply_landing_accel(f32 frictionFactor)
 
 	apply_slope_accel();
 
-	if(!mario_floor_is_slope())
+	if(!isSlipLimit())
 	{
 		forwardVel *= frictionFactor;
 		if(forwardVel * forwardVel < 1.0f)
 		{
-			mario_set_forward_vel(0.0f);
+			setPlayerVelocity(0.0f);
 			stopped = TRUE;
 		}
 	}
@@ -486,7 +486,7 @@ s32 PlayerRecord::apply_slope_decel(f32 decelCoef)
 	f32 decel;
 	s32 stopped = FALSE;
 
-	switch(mario_get_floor_class())
+	switch(getSlipCode())
 	{
 		case SURFACE_CLASS_VERY_SLIPPERY:
 			decel = decelCoef * 0.2f;
@@ -520,9 +520,9 @@ s32 PlayerRecord::update_decelerating_speed()
 		stopped = TRUE;
 	}
 
-	mario_set_forward_vel(forwardVel);
-	mario_update_moving_sand();
-	mario_update_windy_ground();
+	setPlayerVelocity(forwardVel);
+	quicksandProcess();
+	gustProcess();
 
 	return stopped;
 }
@@ -582,7 +582,7 @@ s32 PlayerRecord::should_begin_sliding()
 		s32 slideLevel	   = (area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE;
 		s32 movingBackward = forwardVel <= -1.0f;
 
-		if(slideLevel || movingBackward || mario_facing_downhill(FALSE))
+		if(slideLevel || movingBackward || isFrontSlip(FALSE))
 		{
 			return TRUE;
 		}
@@ -618,7 +618,7 @@ s32 PlayerRecord::check_ground_dive_or_punch()
 
 s32 PlayerRecord::begin_braking_action()
 {
-	mario_drop_held_object(this);
+	PL_DropObject(this);
 
 	if(actionState == 1)
 	{
@@ -651,8 +651,8 @@ void PlayerRecord::func_802652F0()
 	if(sinking > 50.0f)
 	{
 		nRunningVelocity = (s32)(runningVelocity / 4.0f * 0x10000);
-		set_mario_anim_with_accel(MARIO_ANIM_MOVE_IN_QUICKSAND, nRunningVelocity);
-		func_80263AD4(19, 93);
+		setAnimation(MARIO_ANIM_MOVE_IN_QUICKSAND, nRunningVelocity);
+		playerRunningSound(19, 93);
 		actionTimer = 0;
 	}
 	else
@@ -673,9 +673,9 @@ void PlayerRecord::func_802652F0()
 						{
 							nRunningVelocity = 0x1000;
 						}
-						set_mario_anim_with_accel(MARIO_ANIM_START_TIPTOE, nRunningVelocity);
-						func_80263AD4(7, 22);
-						if(is_anim_past_frame(23))
+						setAnimation(MARIO_ANIM_START_TIPTOE, nRunningVelocity);
+						playerRunningSound(7, 22);
+						if(checkAnimeFrame(23))
 						{
 							actionTimer = 2;
 						}
@@ -696,8 +696,8 @@ void PlayerRecord::func_802652F0()
 						{
 							nRunningVelocity = 0x1000;
 						}
-						set_mario_anim_with_accel(MARIO_ANIM_TIPTOE, nRunningVelocity);
-						func_80263AD4(14, 72);
+						setAnimation(MARIO_ANIM_TIPTOE, nRunningVelocity);
+						playerRunningSound(14, 72);
 
 						shouldRun = FALSE;
 					}
@@ -716,8 +716,8 @@ void PlayerRecord::func_802652F0()
 					{
 						//! (Speed Crash) If Mario's speed is more than 2^17.
 						nRunningVelocity = (s32)(runningVelocity / 4.0f * 0x10000);
-						set_mario_anim_with_accel(MARIO_ANIM_WALKING, nRunningVelocity);
-						func_80263AD4(10, 49);
+						setAnimation(MARIO_ANIM_WALKING, nRunningVelocity);
+						playerRunningSound(10, 49);
 
 						shouldRun = FALSE;
 					}
@@ -732,8 +732,8 @@ void PlayerRecord::func_802652F0()
 					{
 						//! (Speed Crash) If Mario's speed is more than 2^17.
 						nRunningVelocity = (s32)(runningVelocity / 4.0f * 0x10000);
-						set_mario_anim_with_accel(MARIO_ANIM_RUNNING, nRunningVelocity);
-						func_80263AD4(9, 45);
+						setAnimation(MARIO_ANIM_RUNNING, nRunningVelocity);
+						playerRunningSound(9, 45);
 						targetPitch = func_80263A50();
 
 						shouldRun = FALSE;
@@ -773,8 +773,8 @@ void PlayerRecord::func_8026570C()
 				{
 					//! (Speed Crash) Crashes if Mario's speed exceeds or equals 2^15.
 					val0C = (s32)(val04 * 0x10000);
-					set_mario_anim_with_accel(MARIO_ANIM_SLOW_WALK_WITH_LIGHT_OBJ, val0C);
-					func_80263AD4(12, 62);
+					setAnimation(MARIO_ANIM_SLOW_WALK_WITH_LIGHT_OBJ, val0C);
+					playerRunningSound(12, 62);
 
 					val08 = FALSE;
 				}
@@ -793,8 +793,8 @@ void PlayerRecord::func_8026570C()
 				{
 					//! (Speed Crash) Crashes if Mario's speed exceeds or equals 2^15.
 					val0C = (s32)(val04 * 0x10000);
-					set_mario_anim_with_accel(MARIO_ANIM_WALK_WITH_LIGHT_OBJ, val0C);
-					func_80263AD4(12, 62);
+					setAnimation(MARIO_ANIM_WALK_WITH_LIGHT_OBJ, val0C);
+					playerRunningSound(12, 62);
 
 					val08 = FALSE;
 				}
@@ -809,8 +809,8 @@ void PlayerRecord::func_8026570C()
 				{
 					//! (Speed Crash) Crashes if Mario's speed exceeds or equals 2^16.
 					val0C = (s32)(val04 / 2.0f * 0x10000);
-					set_mario_anim_with_accel(MARIO_ANIM_RUN_WITH_LIGHT_OBJ, val0C);
-					func_80263AD4(10, 49);
+					setAnimation(MARIO_ANIM_RUN_WITH_LIGHT_OBJ, val0C);
+					playerRunningSound(10, 49);
 
 					val08 = FALSE;
 				}
@@ -822,8 +822,8 @@ void PlayerRecord::func_8026570C()
 void PlayerRecord::func_80265980()
 {
 	s32 val04 = (s32)(intendedMag * 0x10000);
-	set_mario_anim_with_accel(MARIO_ANIM_WALK_WITH_HEAVY_OBJ, val04);
-	func_80263AD4(26, 79);
+	setAnimation(MARIO_ANIM_WALK_WITH_HEAVY_OBJ, val04);
+	playerRunningSound(26, 79);
 }
 
 void PlayerRecord::func_802659E8(Vec3f startPos)
@@ -838,7 +838,7 @@ void PlayerRecord::func_802659E8(Vec3f startPos)
 
 	if(forwardVel > 6.0f * sm64::config().cheats().speed())
 	{
-		mario_set_forward_vel(6.0f * sm64::config().cheats().speed());
+		setPlayerVelocity(6.0f * sm64::config().cheats().speed());
 	}
 
 	if(wall != NULL)
@@ -850,18 +850,18 @@ void PlayerRecord::func_802659E8(Vec3f startPos)
 	if(wall == NULL || dWallAngle <= -0x71C8 || dWallAngle >= 0x71C8)
 	{
 		flags |= MARIO_UNKNOWN_31;
-		set_mario_animation(MARIO_ANIM_PUSHING);
-		func_80263AD4(6, 18);
+		setAnimation(MARIO_ANIM_PUSHING);
+		playerRunningSound(6, 18);
 	}
 	else
 	{
 		if(dWallAngle < 0)
 		{
-			set_mario_anim_with_accel(MARIO_ANIM_SIDESTEP_RIGHT, val04);
+			setAnimation(MARIO_ANIM_SIDESTEP_RIGHT, val04);
 		}
 		else
 		{
-			set_mario_anim_with_accel(MARIO_ANIM_SIDESTEP_LEFT, val04);
+			setAnimation(MARIO_ANIM_SIDESTEP_LEFT, val04);
 		}
 
 		if(marioObj->header.gfx.unk38.frame() < 20)
@@ -873,7 +873,7 @@ void PlayerRecord::func_802659E8(Vec3f startPos)
 		actionState		      = 1;
 		actionArg		      = wallAngle + 0x8000;
 		marioObj->header.gfx.angle[1] = wallAngle + 0x8000;
-		marioObj->header.gfx.angle[2] = find_floor_slope(0x4000);
+		marioObj->header.gfx.angle[2] = groundGradient(0x4000);
 	}
 }
 
@@ -960,7 +960,7 @@ s32 PlayerRecord::act_walking()
 	Vec3f startPos;
 	s16 startYaw = faceAngle[1];
 
-	mario_drop_held_object(this);
+	PL_DropObject(this);
 
 	if(should_begin_sliding())
 	{
@@ -974,7 +974,7 @@ s32 PlayerRecord::act_walking()
 
 	if(input & INPUT_A_PRESSED)
 	{
-		return set_jump_from_landing();
+		return changePlayerTriJump();
 	}
 
 	if(check_ground_dive_or_punch())
@@ -999,14 +999,14 @@ s32 PlayerRecord::act_walking()
 
 	actionState = 0;
 
-	vec3f_copy(startPos, pos);
+	CopyFVector(startPos, pos);
 	update_walking_speed();
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_FREEFALL, 0);
-			set_mario_animation(MARIO_ANIM_GENERAL_FALL);
+			setAnimation(MARIO_ANIM_GENERAL_FALL);
 			break;
 
 		case GROUND_STEP_NONE:
@@ -1057,7 +1057,7 @@ s32 PlayerRecord::act_move_punching()
 		apply_slope_accel();
 	}
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_FREEFALL, 0);
@@ -1080,7 +1080,7 @@ s32 PlayerRecord::act_hold_walking()
 
 	if(marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_WALKING, 0);
+		return changePlayerDropping(ACT_WALKING, 0);
 	}
 
 	if(should_begin_sliding())
@@ -1095,7 +1095,7 @@ s32 PlayerRecord::act_hold_walking()
 
 	if(input & INPUT_A_PRESSED)
 	{
-		return set_jumping_action(ACT_HOLD_JUMP, 0);
+		return changePlayerJumping(ACT_HOLD_JUMP, 0);
 	}
 
 	if(input & INPUT_UNKNOWN_5)
@@ -1105,14 +1105,14 @@ s32 PlayerRecord::act_hold_walking()
 
 	if(input & INPUT_Z_PRESSED)
 	{
-		return drop_and_set_mario_action(ACT_CROUCH_SLIDE, 0);
+		return changePlayerDropping(ACT_CROUCH_SLIDE, 0);
 	}
 
 	intendedMag *= 0.4f;
 
 	update_walking_speed();
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_HOLD_FREEFALL, 0);
@@ -1121,7 +1121,7 @@ s32 PlayerRecord::act_hold_walking()
 		case GROUND_STEP_HIT_WALL:
 			if(forwardVel > 16.0f)
 			{
-				mario_set_forward_vel(16.0f);
+				setPlayerVelocity(16.0f);
 			}
 			break;
 	}
@@ -1145,7 +1145,7 @@ s32 PlayerRecord::act_hold_heavy_walking()
 
 	if(should_begin_sliding())
 	{
-		return drop_and_set_mario_action(ACT_BEGIN_SLIDING, 0);
+		return changePlayerDropping(ACT_BEGIN_SLIDING, 0);
 	}
 
 	if(input & INPUT_UNKNOWN_5)
@@ -1157,16 +1157,16 @@ s32 PlayerRecord::act_hold_heavy_walking()
 
 	update_walking_speed();
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
-			drop_and_set_mario_action(ACT_FREEFALL, 0);
+			changePlayerDropping(ACT_FREEFALL, 0);
 			break;
 
 		case GROUND_STEP_HIT_WALL:
 			if(forwardVel > 10.0f)
 			{
-				mario_set_forward_vel(10.0f);
+				setPlayerVelocity(10.0f);
 			}
 			break;
 	}
@@ -1184,7 +1184,7 @@ s32 PlayerRecord::act_turning_around()
 
 	if(input & INPUT_A_PRESSED)
 	{
-		return set_jumping_action(ACT_SIDE_FLIP, 0);
+		return changePlayerJumping(ACT_SIDE_FLIP, 0);
 	}
 
 	if(input & INPUT_UNKNOWN_5)
@@ -1204,9 +1204,9 @@ s32 PlayerRecord::act_turning_around()
 
 	AudStartSound(SOUND_MOVING_TERRAIN_SLIDE + terrainSoundAddend, marioObj->header.gfx.cameraToObject);
 
-	adjust_sound_for_speed();
+	setSpeedVolume();
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_FREEFALL, 0);
@@ -1219,12 +1219,12 @@ s32 PlayerRecord::act_turning_around()
 
 	if(forwardVel >= 18.0f)
 	{
-		set_mario_animation(MARIO_ANIM_TURNING_PART1);
+		setAnimation(MARIO_ANIM_TURNING_PART1);
 	}
 	else
 	{
-		set_mario_animation(MARIO_ANIM_TURNING_PART2);
-		if(is_anim_at_end())
+		setAnimation(MARIO_ANIM_TURNING_PART2);
+		if(isLast1AnimeFrame())
 		{
 			if(forwardVel > 0.0f)
 			{
@@ -1249,18 +1249,18 @@ s32 PlayerRecord::act_finish_turning_around()
 
 	if(input & INPUT_A_PRESSED)
 	{
-		return set_jumping_action(ACT_SIDE_FLIP, 0);
+		return changePlayerJumping(ACT_SIDE_FLIP, 0);
 	}
 
 	update_walking_speed();
-	set_mario_animation(MARIO_ANIM_TURNING_PART2);
+	setAnimation(MARIO_ANIM_TURNING_PART2);
 
-	if(perform_ground_step() == GROUND_STEP_LEFT_GROUND)
+	if(walkProcess() == GROUND_STEP_LEFT_GROUND)
 	{
 		ChangePlayerStatus(ACT_FREEFALL, 0);
 	}
 
-	if(is_anim_at_end())
+	if(isLast1AnimeFrame())
 	{
 		ChangePlayerStatus(ACT_WALKING, 0);
 	}
@@ -1273,7 +1273,7 @@ s32 PlayerRecord::act_braking()
 {
 	if(!(input & INPUT_FIRST_PERSON) && (input & (INPUT_NONZERO_ANALOG | INPUT_A_PRESSED | INPUT_OFF_FLOOR | INPUT_ABOVE_SLIDE)))
 	{
-		return check_common_action_exits();
+		return checkAllMotions();
 	}
 
 	if(apply_slope_decel(2.0f))
@@ -1286,7 +1286,7 @@ s32 PlayerRecord::act_braking()
 		return ChangePlayerStatus(ACT_MOVE_PUNCHING, 0);
 	}
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_FREEFALL, 0);
@@ -1302,15 +1302,15 @@ s32 PlayerRecord::act_braking()
 	}
 
 	AudStartSound(SOUND_MOVING_TERRAIN_SLIDE + terrainSoundAddend, marioObj->header.gfx.cameraToObject);
-	adjust_sound_for_speed();
-	set_mario_animation(MARIO_ANIM_SKID_ON_GROUND);
+	setSpeedVolume();
+	setAnimation(MARIO_ANIM_SKID_ON_GROUND);
 	return FALSE;
 }
 
 s32 PlayerRecord::act_decelerating()
 {
 	s32 val0C;
-	s16 slopeClass = mario_get_floor_class();
+	s16 slopeClass = getSlipCode();
 
 	if(!(input & INPUT_FIRST_PERSON))
 	{
@@ -1321,7 +1321,7 @@ s32 PlayerRecord::act_decelerating()
 
 		if(input & INPUT_A_PRESSED)
 		{
-			return set_jump_from_landing();
+			return changePlayerTriJump();
 		}
 
 		if(check_ground_dive_or_punch())
@@ -1345,7 +1345,7 @@ s32 PlayerRecord::act_decelerating()
 		return ChangePlayerStatus(ACT_IDLE, 0);
 	}
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_FREEFALL, 0);
@@ -1354,20 +1354,20 @@ s32 PlayerRecord::act_decelerating()
 		case GROUND_STEP_HIT_WALL:
 			if(slopeClass == SURFACE_CLASS_VERY_SLIPPERY)
 			{
-				mario_bonk_reflection(TRUE);
+				playerRefrection(TRUE);
 			}
 			else
 			{
-				mario_set_forward_vel(0.0f);
+				setPlayerVelocity(0.0f);
 			}
 			break;
 	}
 
 	if(slopeClass == SURFACE_CLASS_VERY_SLIPPERY)
 	{
-		set_mario_animation(MARIO_ANIM_IDLE_HEAD_LEFT);
+		setAnimation(MARIO_ANIM_IDLE_HEAD_LEFT);
 		AudStartSound(SOUND_MOVING_TERRAIN_SLIDE + terrainSoundAddend, marioObj->header.gfx.cameraToObject);
-		adjust_sound_for_speed();
+		setSpeedVolume();
 		particleFlags |= PARTICLE_DUST;
 	}
 	else
@@ -1378,8 +1378,8 @@ s32 PlayerRecord::act_decelerating()
 			val0C = 0x1000;
 		}
 
-		set_mario_anim_with_accel(MARIO_ANIM_WALKING, val0C);
-		func_80263AD4(10, 49);
+		setAnimation(MARIO_ANIM_WALKING, val0C);
+		playerRunningSound(10, 49);
 	}
 
 	return FALSE;
@@ -1388,11 +1388,11 @@ s32 PlayerRecord::act_decelerating()
 s32 PlayerRecord::act_hold_decelerating()
 {
 	s32 val0C;
-	s16 slopeClass = mario_get_floor_class();
+	s16 slopeClass = getSlipCode();
 
 	if(marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_WALKING, 0);
+		return changePlayerDropping(ACT_WALKING, 0);
 	}
 
 	if(should_begin_sliding())
@@ -1407,12 +1407,12 @@ s32 PlayerRecord::act_hold_decelerating()
 
 	if(input & INPUT_A_PRESSED)
 	{
-		return set_jumping_action(ACT_HOLD_JUMP, 0);
+		return changePlayerJumping(ACT_HOLD_JUMP, 0);
 	}
 
 	if(input & INPUT_Z_PRESSED)
 	{
-		return drop_and_set_mario_action(ACT_CROUCH_SLIDE, 0);
+		return changePlayerDropping(ACT_CROUCH_SLIDE, 0);
 	}
 
 	if(input & INPUT_NONZERO_ANALOG)
@@ -1427,7 +1427,7 @@ s32 PlayerRecord::act_hold_decelerating()
 
 	intendedMag *= 0.4f;
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_HOLD_FREEFALL, 0);
@@ -1436,20 +1436,20 @@ s32 PlayerRecord::act_hold_decelerating()
 		case GROUND_STEP_HIT_WALL:
 			if(slopeClass == SURFACE_CLASS_VERY_SLIPPERY)
 			{
-				mario_bonk_reflection(TRUE);
+				playerRefrection(TRUE);
 			}
 			else
 			{
-				mario_set_forward_vel(0.0f);
+				setPlayerVelocity(0.0f);
 			}
 			break;
 	}
 
 	if(slopeClass == SURFACE_CLASS_VERY_SLIPPERY)
 	{
-		set_mario_animation(MARIO_ANIM_IDLE_WITH_LIGHT_OBJ);
+		setAnimation(MARIO_ANIM_IDLE_WITH_LIGHT_OBJ);
 		AudStartSound(SOUND_MOVING_TERRAIN_SLIDE + terrainSoundAddend, marioObj->header.gfx.cameraToObject);
-		adjust_sound_for_speed();
+		setSpeedVolume();
 		particleFlags |= PARTICLE_DUST;
 	}
 	else
@@ -1460,8 +1460,8 @@ s32 PlayerRecord::act_hold_decelerating()
 			val0C = 0x1000;
 		}
 
-		set_mario_anim_with_accel(MARIO_ANIM_WALK_WITH_LIGHT_OBJ, val0C);
-		func_80263AD4(12, 62);
+		setAnimation(MARIO_ANIM_WALK_WITH_LIGHT_OBJ, val0C);
+		playerRunningSound(12, 62);
 	}
 
 	return FALSE;
@@ -1478,25 +1478,25 @@ s32 PlayerRecord::act_riding_shell_ground()
 
 	if(input & INPUT_Z_PRESSED)
 	{
-		mario_stop_riding_object(this);
+		PL_GetOffSkateBoard(this);
 		if(forwardVel < 24.0f)
 		{
-			mario_set_forward_vel(24.0f);
+			setPlayerVelocity(24.0f);
 		}
 		return ChangePlayerStatus(ACT_CROUCH_SLIDE, 0);
 	}
 
 	update_shell_speed();
-	set_mario_animation(actionArg == 0 ? MARIO_ANIM_START_RIDING_SHELL : MARIO_ANIM_RIDING_SHELL);
+	setAnimation(actionArg == 0 ? MARIO_ANIM_START_RIDING_SHELL : MARIO_ANIM_RIDING_SHELL);
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_RIDING_SHELL_FALL, 0);
 			break;
 
 		case GROUND_STEP_HIT_WALL:
-			mario_stop_riding_object(this);
+			PL_GetOffSkateBoard(this);
 			AudStartSound(flags & MARIO_METAL_CAP ? SOUND_ACTION_METAL_BONK : SOUND_ACTION_BONK, marioObj->header.gfx.cameraToObject);
 			particleFlags |= PARTICLE_WALL_TINY_STAR;
 			ChangePlayerStatus(ACT_BACKWARD_GROUND_KB, 0);
@@ -1513,7 +1513,7 @@ s32 PlayerRecord::act_riding_shell_ground()
 		AudStartSound(SOUND_MOVING_TERRAIN_RIDING_SHELL + terrainSoundAddend, marioObj->header.gfx.cameraToObject);
 	}
 
-	adjust_sound_for_speed();
+	setSpeedVolume();
 	return FALSE;
 }
 
@@ -1533,7 +1533,7 @@ s32 PlayerRecord::act_crawling()
 
 	if(input & INPUT_A_PRESSED)
 	{
-		return set_jumping_action(ACT_JUMP, 0);
+		return changePlayerJumping(ACT_JUMP, 0);
 	}
 
 	if(check_ground_dive_or_punch())
@@ -1555,7 +1555,7 @@ s32 PlayerRecord::act_crawling()
 
 	update_walking_speed();
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_FREEFALL, 0);
@@ -1564,7 +1564,7 @@ s32 PlayerRecord::act_crawling()
 		case GROUND_STEP_HIT_WALL:
 			if(forwardVel > 10.0f)
 			{
-				mario_set_forward_vel(10.0f);
+				setPlayerVelocity(10.0f);
 			}
 			//! Possibly unintended missing break
 
@@ -1574,8 +1574,8 @@ s32 PlayerRecord::act_crawling()
 	}
 
 	val04 = (s32)(intendedMag * 2.0f * 0x10000);
-	set_mario_anim_with_accel(MARIO_ANIM_CRAWLING, val04);
-	func_80263AD4(26, 79);
+	setAnimation(MARIO_ANIM_CRAWLING, val04);
+	playerRunningSound(26, 79);
 	return FALSE;
 }
 
@@ -1618,13 +1618,13 @@ s32 PlayerRecord::act_burning_ground()
 
 	apply_slope_accel();
 
-	if(perform_ground_step() == GROUND_STEP_LEFT_GROUND)
+	if(walkProcess() == GROUND_STEP_LEFT_GROUND)
 	{
 		ChangePlayerStatus(ACT_BURNING_FALL, 0);
 	}
 
-	set_mario_anim_with_accel(MARIO_ANIM_RUNNING, (s32)(forwardVel / 2.0f * 0x10000));
-	func_80263AD4(9, 45);
+	setAnimation(MARIO_ANIM_RUNNING, (s32)(forwardVel / 2.0f * 0x10000));
+	playerRunningSound(9, 45);
 
 	particleFlags |= PARTICLE_FLAME;
 	AudStartSound(SOUND_MOVING_LAVA_BURN, marioObj->header.gfx.cameraToObject);
@@ -1654,12 +1654,12 @@ void PlayerRecord::common_slide_action(u32 endAction, u32 airAction, s32 animati
 {
 	Vec3f val14;
 
-	vec3f_copy(val14, pos);
+	CopyFVector(val14, pos);
 	AudStartSound(SOUND_MOVING_TERRAIN_SLIDE + terrainSoundAddend, marioObj->header.gfx.cameraToObject);
 
-	adjust_sound_for_speed();
+	setSpeedVolume();
 
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(airAction, 0);
@@ -1670,13 +1670,13 @@ void PlayerRecord::common_slide_action(u32 endAction, u32 airAction, s32 animati
 			break;
 
 		case GROUND_STEP_NONE:
-			set_mario_animation(animation);
+			setAnimation(animation);
 			func_80263C14();
 			particleFlags |= PARTICLE_DUST;
 			break;
 
 		case GROUND_STEP_HIT_WALL:
-			if(!mario_floor_is_slippery())
+			if(!isSlipStart())
 			{
 				if(forwardVel > 16.0f)
 				{
@@ -1711,7 +1711,7 @@ s32 PlayerRecord::common_slide_action_with_jump(u32 stopAction, u32 jumpAction, 
 	{
 		if(input & INPUT_A_PRESSED)
 		{
-			return set_jumping_action(jumpAction, 0);
+			return changePlayerJumping(jumpAction, 0);
 		}
 	}
 	else
@@ -1741,7 +1741,7 @@ s32 PlayerRecord::act_hold_butt_slide()
 
 	if(marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_BUTT_SLIDE, 0);
+		return changePlayerDropping(ACT_BUTT_SLIDE, 0);
 	}
 
 	cancel = common_slide_action_with_jump(ACT_UNKNOWN_03F, ACT_HOLD_JUMP, ACT_HOLD_BUTT_SLIDE_AIR, MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ);
@@ -1765,7 +1765,7 @@ s32 PlayerRecord::act_crouch_slide()
 		{
 			if(forwardVel > 10.0f)
 			{
-				return set_jumping_action(ACT_LONG_JUMP, 0);
+				return changePlayerJumping(ACT_LONG_JUMP, 0);
 			}
 		}
 	}
@@ -1784,7 +1784,7 @@ s32 PlayerRecord::act_crouch_slide()
 
 	if(input & INPUT_A_PRESSED)
 	{
-		return set_jumping_action(ACT_JUMP, 0);
+		return changePlayerJumping(ACT_JUMP, 0);
 	}
 
 	if(input & INPUT_FIRST_PERSON)
@@ -1801,24 +1801,24 @@ s32 PlayerRecord::act_slide_kick_slide()
 	if(input & INPUT_A_PRESSED)
 	{
 		SendMotorEvent(5, 80);
-		return set_jumping_action(ACT_FORWARD_ROLLOUT, 0);
+		return changePlayerJumping(ACT_FORWARD_ROLLOUT, 0);
 	}
 
-	set_mario_animation(MARIO_ANIM_SLIDE_KICK);
-	if(is_anim_at_end() && forwardVel < 1.0f)
+	setAnimation(MARIO_ANIM_SLIDE_KICK);
+	if(isLast1AnimeFrame() && forwardVel < 1.0f)
 	{
 		return ChangePlayerStatus(ACT_SLIDE_KICK_SLIDE_STOP, 0);
 	}
 
 	update_sliding(1.0f);
-	switch(perform_ground_step())
+	switch(walkProcess())
 	{
 		case GROUND_STEP_LEFT_GROUND:
 			ChangePlayerStatus(ACT_FREEFALL, 2);
 			break;
 
 		case GROUND_STEP_HIT_WALL:
-			mario_bonk_reflection(TRUE);
+			playerRefrection(TRUE);
 			particleFlags |= PARTICLE_WALL_TINY_STAR;
 			ChangePlayerStatus(ACT_BACKWARD_GROUND_KB, 0);
 			break;
@@ -1836,7 +1836,7 @@ s32 PlayerRecord::stomach_slide_action(u32 stopAction, u32 airAction, s32 animat
 		if(!(input & INPUT_ABOVE_SLIDE) && (input & (INPUT_A_PRESSED | INPUT_B_PRESSED)))
 		{
 			SendMotorEvent(5, 80);
-			return drop_and_set_mario_action(forwardVel >= 0.0f ? ACT_FORWARD_ROLLOUT : ACT_BACKWARD_ROLLOUT, 0);
+			return changePlayerDropping(forwardVel >= 0.0f ? ACT_FORWARD_ROLLOUT : ACT_BACKWARD_ROLLOUT, 0);
 		}
 	}
 	else
@@ -1865,7 +1865,7 @@ s32 PlayerRecord::act_hold_stomach_slide()
 
 	if(marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_STOMACH_SLIDE, 0);
+		return changePlayerDropping(ACT_STOMACH_SLIDE, 0);
 	}
 
 	cancel = stomach_slide_action(ACT_DIVE_PICKING_UP, ACT_HOLD_FREEFALL, MARIO_ANIM_SLIDE_DIVE);
@@ -1880,22 +1880,22 @@ s32 PlayerRecord::act_dive_slide()
 		return ChangePlayerStatus(forwardVel > 0.0f ? ACT_FORWARD_ROLLOUT : ACT_BACKWARD_ROLLOUT, 0);
 	}
 
-	play_mario_landing_sound_once(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
+	trigStartLandingEffect(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
 
 	//! If the dive slide ends on the same frame that we pick up on object,
 	// mario will not be in the dive slide action for the call to
-	// mario_check_object_grab, and so will end up in the regular picking action,
+	// PL_CheckTakingEnemy, and so will end up in the regular picking action,
 	// rather than the picking up after dive action.
 
-	if(update_sliding(8.0f) && is_anim_at_end())
+	if(update_sliding(8.0f) && isLast1AnimeFrame())
 	{
-		mario_set_forward_vel(0.0f);
+		setPlayerVelocity(0.0f);
 		ChangePlayerStatus(ACT_STOMACH_SLIDE_STOP, 0);
 	}
 
-	if(mario_check_object_grab(this))
+	if(PL_CheckTakingEnemy(this))
 	{
-		mario_grab_used_object(this);
+		PL_TakeObject(this);
 		marioBodyState->grabPos = GRAB_POS_LIGHT_OBJ;
 		return TRUE;
 	}
@@ -1910,16 +1910,16 @@ s32 PlayerRecord::common_ground_knockback_action(s32 animation, s32 arg2, s32 ar
 
 	if(arg3)
 	{
-		play_mario_heavy_landing_sound_once(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
+		trigStartDowningEffect(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
 	}
 
 	if(arg4 > 0)
 	{
-		play_sound_if_no_flag(SOUND_MARIO_ATTACKED, MARIO_MARIO_SOUND_PLAYED);
+		startSoundEffect(SOUND_MARIO_ATTACKED, MARIO_MARIO_SOUND_PLAYED);
 	}
 	else
 	{
-		play_sound_if_no_flag(SOUND_MARIO_OOOF2, MARIO_MARIO_SOUND_PLAYED);
+		startSoundEffect(SOUND_MARIO_OOOF2, MARIO_MARIO_SOUND_PLAYED);
 	}
 
 	if(forwardVel > 32.0f)
@@ -1931,21 +1931,21 @@ s32 PlayerRecord::common_ground_knockback_action(s32 animation, s32 arg2, s32 ar
 		forwardVel = -32.0f;
 	}
 
-	val04 = set_mario_animation(animation);
+	val04 = setAnimation(animation);
 	if(val04 < arg2)
 	{
 		apply_landing_accel(0.9f);
 	}
 	else if(forwardVel >= 0.0f)
 	{
-		mario_set_forward_vel(0.1f);
+		setPlayerVelocity(0.1f);
 	}
 	else
 	{
-		mario_set_forward_vel(-0.1f);
+		setPlayerVelocity(-0.1f);
 	}
 
-	if(perform_ground_step() == GROUND_STEP_LEFT_GROUND)
+	if(walkProcess() == GROUND_STEP_LEFT_GROUND)
 	{
 		if(forwardVel >= 0.0f)
 		{
@@ -1956,7 +1956,7 @@ s32 PlayerRecord::common_ground_knockback_action(s32 animation, s32 arg2, s32 ar
 			ChangePlayerStatus(ACT_BACKWARD_AIR_KB, arg4);
 		}
 	}
-	else if(is_anim_at_end())
+	else if(isLast1AnimeFrame())
 	{
 		if(health < 0x100)
 		{
@@ -1991,7 +1991,7 @@ s32 PlayerRecord::act_hard_backward_ground_kb()
 
 	if(val04 == 0x45)
 	{
-		play_mario_landing_sound_once(SOUND_ACTION_TERRAIN_LANDING);
+		trigStartLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 	}
 
 	return FALSE;
@@ -2038,7 +2038,7 @@ s32 PlayerRecord::act_ground_bonk()
 
 	if(val04 == 0x20)
 	{
-		play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+		startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 	}
 
 	return FALSE;
@@ -2049,9 +2049,9 @@ s32 PlayerRecord::act_death_exit_land()
 	s32 val04;
 
 	apply_landing_accel(0.9f);
-	play_mario_heavy_landing_sound_once(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
+	trigStartDowningEffect(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
 
-	val04 = set_mario_animation(MARIO_ANIM_FALL_OVER_BACKWARDS);
+	val04 = setAnimation(MARIO_ANIM_FALL_OVER_BACKWARDS);
 
 	if(val04 == 0x36)
 	{
@@ -2059,10 +2059,10 @@ s32 PlayerRecord::act_death_exit_land()
 	}
 	if(val04 == 0x44)
 	{
-		play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+		startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 	}
 
-	if(is_anim_at_end())
+	if(isLast1AnimeFrame())
 	{
 		ChangePlayerStatus(ACT_IDLE, 0);
 	}
@@ -2087,7 +2087,7 @@ u32 PlayerRecord::common_landing_action(s16 animation, u32 airAction)
 		vel[1] = 0.0f;
 	}
 
-	stepResult = perform_ground_step();
+	stepResult = walkProcess();
 	switch(stepResult)
 	{
 		case GROUND_STEP_LEFT_GROUND:
@@ -2095,7 +2095,7 @@ u32 PlayerRecord::common_landing_action(s16 animation, u32 airAction)
 			break;
 
 		case GROUND_STEP_HIT_WALL:
-			set_mario_animation(MARIO_ANIM_PUSHING);
+			setAnimation(MARIO_ANIM_PUSHING);
 			break;
 	}
 
@@ -2104,8 +2104,8 @@ u32 PlayerRecord::common_landing_action(s16 animation, u32 airAction)
 		particleFlags |= PARTICLE_DUST;
 	}
 
-	set_mario_animation(animation);
-	play_mario_landing_sound_once(SOUND_ACTION_TERRAIN_LANDING);
+	setAnimation(animation);
+	trigStartLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 
 	if(floor->type >= SURFACE_SHALLOW_QUICKSAND && floor->type <= SURFACE_MOVING_QUICKSAND)
 	{
@@ -2122,7 +2122,7 @@ s32 PlayerRecord::common_landing_cancels(struct LandingAction* landingAction, s3
 
 	if(floor->normal.y < 0.2923717f)
 	{
-		return mario_push_off_steep_floor(landingAction->verySteepAction, 0);
+		return fallFromHeavySlope(landingAction->verySteepAction, 0);
 	}
 
 	doubleJumpTimer = landingAction->unk02 * FRAME_RATE_SCALER_INV;
@@ -2157,7 +2157,7 @@ s32 PlayerRecord::common_landing_cancels(struct LandingAction* landingAction, s3
 
 s32 PlayerRecord::act_jump_land()
 {
-	if(common_landing_cancels(&sJumpLandAction, &PlayerRecord::set_jumping_action))
+	if(common_landing_cancels(&sJumpLandAction, &PlayerRecord::changePlayerJumping))
 	{
 		return TRUE;
 	}
@@ -2168,7 +2168,7 @@ s32 PlayerRecord::act_jump_land()
 
 s32 PlayerRecord::act_freefall_land()
 {
-	if(common_landing_cancels(&sFreefallLandAction, &PlayerRecord::set_jumping_action))
+	if(common_landing_cancels(&sFreefallLandAction, &PlayerRecord::changePlayerJumping))
 	{
 		return TRUE;
 	}
@@ -2179,7 +2179,7 @@ s32 PlayerRecord::act_freefall_land()
 
 s32 PlayerRecord::act_side_flip_land()
 {
-	if(common_landing_cancels(&sSideFlipLandAction, &PlayerRecord::set_jumping_action))
+	if(common_landing_cancels(&sSideFlipLandAction, &PlayerRecord::changePlayerJumping))
 	{
 		return TRUE;
 	}
@@ -2195,10 +2195,10 @@ s32 PlayerRecord::act_hold_jump_land()
 {
 	if(marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_JUMP_LAND_STOP, 0);
+		return changePlayerDropping(ACT_JUMP_LAND_STOP, 0);
 	}
 
-	if(common_landing_cancels(&sHoldJumpLandAction, &PlayerRecord::set_jumping_action))
+	if(common_landing_cancels(&sHoldJumpLandAction, &PlayerRecord::changePlayerJumping))
 	{
 		return TRUE;
 	}
@@ -2211,10 +2211,10 @@ s32 PlayerRecord::act_hold_freefall_land()
 {
 	if(marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT)
 	{
-		return drop_and_set_mario_action(ACT_FREEFALL_LAND_STOP, 0);
+		return changePlayerDropping(ACT_FREEFALL_LAND_STOP, 0);
 	}
 
-	if(common_landing_cancels(&sHoldFreefallLandAction, &PlayerRecord::set_jumping_action))
+	if(common_landing_cancels(&sHoldFreefallLandAction, &PlayerRecord::changePlayerJumping))
 	{
 		return TRUE;
 	}
@@ -2230,14 +2230,14 @@ s32 PlayerRecord::act_long_jump_land()
 		input &= ~INPUT_A_PRESSED;
 	}
 
-	if(common_landing_cancels(&sLongJumpLandAction, &PlayerRecord::set_jumping_action))
+	if(common_landing_cancels(&sLongJumpLandAction, &PlayerRecord::changePlayerJumping))
 	{
 		return TRUE;
 	}
 
 	if(!(input & INPUT_NONZERO_ANALOG))
 	{
-		play_sound_if_no_flag(SOUND_MARIO_UH2_2, MARIO_MARIO_SOUND_PLAYED);
+		startSoundEffect(SOUND_MARIO_UH2_2, MARIO_MARIO_SOUND_PLAYED);
 	}
 
 	common_landing_action(!marioObj->oMarioLongJumpIsSlow ? MARIO_ANIM_CROUCH_FROM_FAST_LONGJUMP : MARIO_ANIM_CROUCH_FROM_SLOW_LONGJUMP, ACT_FREEFALL);
@@ -2267,7 +2267,7 @@ s32 PlayerRecord::act_triple_jump_land()
 	{
 		input &= ~INPUT_A_PRESSED;
 
-		if(common_landing_cancels(&sTripleJumpLandAction, &PlayerRecord::set_jumping_action))
+		if(common_landing_cancels(&sTripleJumpLandAction, &PlayerRecord::changePlayerJumping))
 		{
 			return TRUE;
 		}
@@ -2275,7 +2275,7 @@ s32 PlayerRecord::act_triple_jump_land()
 
 	if(!(input & INPUT_NONZERO_ANALOG))
 	{
-		play_sound_if_no_flag(SOUND_MARIO_HAHA, MARIO_MARIO_SOUND_PLAYED);
+		startSoundEffect(SOUND_MARIO_HAHA, MARIO_MARIO_SOUND_PLAYED);
 	}
 
 	common_landing_action(MARIO_ANIM_TRIPLE_JUMP_LAND, ACT_FREEFALL);
@@ -2289,14 +2289,14 @@ s32 PlayerRecord::act_backflip_land()
 		input &= ~INPUT_A_PRESSED;
 	}
 
-	if(common_landing_cancels(&sBackflipLandAction, &PlayerRecord::set_jumping_action))
+	if(common_landing_cancels(&sBackflipLandAction, &PlayerRecord::changePlayerJumping))
 	{
 		return TRUE;
 	}
 
 	if(!(input & INPUT_NONZERO_ANALOG))
 	{
-		play_sound_if_no_flag(SOUND_MARIO_HAHA, MARIO_MARIO_SOUND_PLAYED);
+		startSoundEffect(SOUND_MARIO_HAHA, MARIO_MARIO_SOUND_PLAYED);
 	}
 
 	common_landing_action(MARIO_ANIM_TRIPLE_JUMP_LAND, ACT_FREEFALL);
@@ -2313,8 +2313,8 @@ s32 PlayerRecord::quicksand_jump_land_action(s32 animation1, s32 animation2, u32
 			sinking = 1.1f;
 		}
 
-		play_mario_jump_sound();
-		set_mario_animation(animation1);
+		startJumpVoice();
+		setAnimation(animation1);
 	}
 	else
 	{
@@ -2323,11 +2323,11 @@ s32 PlayerRecord::quicksand_jump_land_action(s32 animation1, s32 animation2, u32
 			return ChangePlayerStatus(endAction, 0);
 		}
 
-		set_mario_animation(animation2);
+		setAnimation(animation2);
 	}
 
 	apply_landing_accel(0.95f);
-	if(perform_ground_step() == GROUND_STEP_LEFT_GROUND)
+	if(walkProcess() == GROUND_STEP_LEFT_GROUND)
 	{
 		ChangePlayerStatus(airAction, 0);
 	}
@@ -2351,31 +2351,31 @@ s32 PlayerRecord::check_common_moving_cancels()
 {
 	if(pos[1] < waterLevel - 100)
 	{
-		return set_water_plunge_action();
+		return changeWaterMode();
 	}
 
 	if(!(status & ACT_FLAG_INVULNERABLE) && (input & INPUT_UNKNOWN_10))
 	{
-		return drop_and_set_mario_action(ACT_UNKNOWN_026, 0);
+		return changePlayerDropping(ACT_UNKNOWN_026, 0);
 	}
 
 	if(input & INPUT_SQUISHED)
 	{
-		return drop_and_set_mario_action(ACT_SQUISHED, 0);
+		return changePlayerDropping(ACT_SQUISHED, 0);
 	}
 
 	if(!(status & ACT_FLAG_INVULNERABLE))
 	{
 		if(health < 0x100)
 		{
-			return drop_and_set_mario_action(ACT_STANDING_DEATH, 0);
+			return changePlayerDropping(ACT_STANDING_DEATH, 0);
 		}
 	}
 
 	return FALSE;
 }
 
-s32 PlayerRecord::mario_execute_moving_action()
+s32 PlayerRecord::playerMoveMain()
 {
 	s32 cancel;
 
@@ -2384,7 +2384,7 @@ s32 PlayerRecord::mario_execute_moving_action()
 		return TRUE;
 	}
 
-	if(mario_update_quicksand(0.25f))
+	if(checkPlayerSinking(0.25f))
 	{
 		return TRUE;
 	}

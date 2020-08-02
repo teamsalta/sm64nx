@@ -845,7 +845,7 @@ static s32 obj_die_if_above_lava_and_health_non_positive(void)
 {
 	if(o->oMoveFlags & OBJ_MOVE_UNDERWATER_ON_GROUND)
 	{
-		if(o->oGravity + o->oBuoyancy > 0.0f || find_water_level(o->oPosX, o->oPosZ) - o->oPosY < 150.0f)
+		if(o->oGravity + o->oBuoyancy > 0.0f || mcWaterCheck(o->oPosX, o->oPosZ) - o->oPosY < 150.0f)
 		{
 			return FALSE;
 		}

@@ -12,7 +12,7 @@
 /**
  * Move the arrow lift away from its original position.
  */
-static s32 arrow_lift_move_away(void)
+static s32 moveblock_GO(void)
 {
 	s8 status = ARROW_LIFT_NOT_DONE_MOVING;
 
@@ -31,14 +31,14 @@ static s32 arrow_lift_move_away(void)
 		status			  = ARROW_LIFT_DONE_MOVING;
 	}
 
-	obj_move_xyz_using_fvel_and_yaw(o);
+	ObjSpeedOn(o);
 	return status;
 }
 
 /**
  * Move the arrow lift back to its original position.
  */
-static s8 arrow_lift_move_back(void)
+static s8 moveblock_BACK(void)
 {
 	s8 status = ARROW_LIFT_NOT_DONE_MOVING;
 
@@ -55,14 +55,14 @@ static s8 arrow_lift_move_back(void)
 		status			  = ARROW_LIFT_DONE_MOVING;
 	}
 
-	obj_move_xyz_using_fvel_and_yaw(o);
+	ObjSpeedOn(o);
 	return status;
 }
 
 /**
  * Arrow lift update function.
  */
-void bhv_arrow_lift_loop(void)
+void s_po_moveblock_main(void)
 {
 	switch(o->oAction)
 	{
@@ -79,7 +79,7 @@ void bhv_arrow_lift_loop(void)
 			break;
 
 		case ARROW_LIFT_ACT_MOVING_AWAY:
-			if(arrow_lift_move_away() == ARROW_LIFT_DONE_MOVING)
+			if(moveblock_GO() == ARROW_LIFT_DONE_MOVING)
 			{
 				o->oAction = ARROW_LIFT_ACT_MOVING_BACK;
 			}
@@ -90,7 +90,7 @@ void bhv_arrow_lift_loop(void)
 			// Wait 61 frames before moving (after stopping after moving forwards).
 			if(o->oTimer > 60 * FRAME_RATE_SCALER_INV)
 			{
-				if(arrow_lift_move_back() == ARROW_LIFT_DONE_MOVING)
+				if(moveblock_BACK() == ARROW_LIFT_DONE_MOVING)
 				{
 					o->oAction = ARROW_LIFT_ACT_IDLE;
 				}

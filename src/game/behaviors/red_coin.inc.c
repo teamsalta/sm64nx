@@ -22,7 +22,7 @@ static struct ObjectHitbox sRedCoinHitbox = {
 /**
  * Red coin initialization function. Sets the coin's hitbox and parent object.
  */
-void bhv_red_coin_init(void)
+void s_coin_appear_init(void)
 {
 	// This floor and floor height are size. Perhaps for orange number spawns originally?
 	struct Surface* dummyFloor;
@@ -54,7 +54,7 @@ void bhv_red_coin_init(void)
  * Main behavior for red coins. Primarily controls coin collection noise and spawning
  * the orange number counter.
  */
-void bhv_red_coin_loop(void)
+void s_coin_appear_main(void)
 {
 	// If Mario interacted with the object...
 	if(o->oInteractStatus & INT_STATUS_INTERACTED)

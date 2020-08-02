@@ -66,7 +66,7 @@ EXTERN_Gfx(rr_seg7_dl_07015C68);
 EXTERN_Gfx(rr_seg7_dl_07017530);
 EXTERN_Gfx(rr_seg7_dl_07018B58);
 EXTERN_Gfx(rr_seg7_dl_070191A0);
-EXTERN_s16(flying_carpet_static_vertex_data);
+EXTERN_s16(arajin_vtx);
 EXTERN_Gfx(dl_flying_carpet_begin);
 EXTERN_Gfx(dl_flying_carpet_model_half);
 EXTERN_Gfx(dl_flying_carpet_end);

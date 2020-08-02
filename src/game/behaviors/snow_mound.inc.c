@@ -1,6 +1,6 @@
 // snow_mound.c.inc
 
-void bhv_sliding_snow_mound_loop(void)
+void s_iwanami_parts_main(void)
 {
 	switch(o->oAction)
 	{
@@ -29,7 +29,7 @@ void bhv_sliding_snow_mound_loop(void)
 	}
 }
 
-void bhv_snow_mound_spawn_loop(void)
+void s_iwanami_main(void)
 {
 	struct Object* sp1C;
 

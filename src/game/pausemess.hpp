@@ -5,7 +5,7 @@ void initiateWarp(u16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3);
 
 extern void iwaStageInit()
 {
-	gRedCoinsCollected = 0;
+	redcoin_num = 0;
 }
 
 static void change_dialog_camera_angle()
@@ -65,7 +65,7 @@ static void DrawRedCoinNumber()
 {
 	s8 x;
 
-	for(x = 0; x < gRedCoinsCollected; x++)
+	for(x = 0; x < redcoin_num; x++)
 	{
 		DrawRedCoin(GFX_DIMENSIONS_FROM_RIGHT_EDGE(30) - x * 20, 16);
 	}

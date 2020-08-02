@@ -18,7 +18,7 @@ static void handle_merry_go_round_music(void)
 		if(gMarioCurrentRoom == BBH_NEAR_MERRY_GO_ROUND_ROOM)
 		{
 			// Play the merry-go-round and BBH music at the same time
-			play_secondary_music(SEQ_EVENT_MERRY_GO_ROUND, 45, 20, 200);
+			Na_AddSeq(SEQ_EVENT_MERRY_GO_ROUND, 45, 20, 200);
 			// Set to TRUE
 			o->oMerryGoRoundMusicShouldPlay++;
 		}
@@ -47,14 +47,14 @@ static void handle_merry_go_round_music(void)
 		if(s_rideon_player() || marioFloorType == SURFACE_MGR_MUSIC)
 		{
 			// If Mario is in the merry-go-round's enclosure, play only the merry-go-round music.
-			play_secondary_music(SEQ_EVENT_MERRY_GO_ROUND, 0, 78, 50);
+			Na_AddSeq(SEQ_EVENT_MERRY_GO_ROUND, 0, 78, 50);
 			gMarioOnMerryGoRound = TRUE;
 		}
 		else
 		{
 			// If Mario is not in the merry-go-round's enclosure,
 			// i.e. he's around it, play both the merry-go-round music and the BBH music.
-			play_secondary_music(SEQ_EVENT_MERRY_GO_ROUND, 45, 20, 200);
+			Na_AddSeq(SEQ_EVENT_MERRY_GO_ROUND, 45, 20, 200);
 			gMarioOnMerryGoRound = FALSE;
 		}
 
@@ -65,7 +65,7 @@ static void handle_merry_go_round_music(void)
 		    // The merry-go-round is a dynamic surface.
 		    gMarioCurrentRoom != BBH_DYNAMIC_SURFACE_ROOM && gMarioCurrentRoom != BBH_NEAR_MERRY_GO_ROUND_ROOM)
 		{
-			func_80321080(300); // Switch to BBH music? FIXME: Audio needs labelling
+			Na_SubSeq(300); // Switch to BBH music? FIXME: Audio needs labelling
 			o->oMerryGoRoundMusicShouldPlay = FALSE;
 		}
 		else
@@ -117,6 +117,6 @@ void bhv_merry_go_round_loop(void)
 	else
 	{
 		o->oAngleVelYaw = 0;
-		func_80321080(300); // Switch to BBH music? FIXME: Audio needs labelling
+		Na_SubSeq(300); // Switch to BBH music? FIXME: Audio needs labelling
 	}
 }

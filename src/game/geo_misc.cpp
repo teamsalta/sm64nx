@@ -38,7 +38,7 @@ s8 gFlyingCarpetState;
  *
  * Texture coordinates are s10.5 fixed-point, which means you should left-shift the actual coordinates by 5.
  */
-void make_vertex(Vtx* vtx, s32 n, f32 x, f32 y, f32 z, s16 tx, s16 ty, u8 r, u8 g, u8 b, u8 a)
+void Tani_SetOneVtxData(Vtx* vtx, s32 n, f32 x, f32 y, f32 z, s16 tx, s16 ty, u8 r, u8 g, u8 b, u8 a)
 {
 	vtx[n].v.ob[0] = x;
 	vtx[n].v.ob[1] = y;
@@ -58,7 +58,7 @@ void make_vertex(Vtx* vtx, s32 n, f32 x, f32 y, f32 z, s16 tx, s16 ty, u8 r, u8 
 /**
  * Round `num` to the nearest `s16`.
  */
-s16 round_float(f32 num)
+s16 Tani_RoundOff(f32 num)
 {
 	// Note that double literals are used here, rather than float literals.
 	if(num >= 0.0)
@@ -75,7 +75,7 @@ s16 round_float(f32 num)
  * Create a display list for the light in the castle lobby that shows the
  * player where to look to enter Tower of the Wing Cap.
  */
-Gfx* geo_exec_inside_castle_light(s32 callContext, struct GraphNode* node, UNUSED f32 mtx[4][4])
+Gfx* SelRoomEffect(s32 callContext, struct GraphNode* node, UNUSED f32 mtx[4][4])
 {
 	s32 flags;
 	struct GraphNodeGenerated* generatedNode;
@@ -112,7 +112,7 @@ Gfx* geo_exec_inside_castle_light(s32 callContext, struct GraphNode* node, UNUSE
 /**
  * Update static timer variables that control the flying carpets' ripple effect.
  */
-Gfx* geo_exec_flying_carpet_timer_update(s32 callContext, UNUSED struct GraphNode* node, UNUSED f32 mtx[4][4])
+Gfx* ArajinInit(s32 callContext, UNUSED struct GraphNode* node, UNUSED f32 mtx[4][4])
 {
 	if(callContext != GEO_CONTEXT_RENDER)
 	{
@@ -137,13 +137,13 @@ Gfx* geo_exec_flying_carpet_timer_update(s32 callContext, UNUSED struct GraphNod
 /**
  * Create a display list for a flying carpet with dynamic ripples.
  */
-Gfx* geo_exec_flying_carpet_create(s32 callContext, struct GraphNode* node, UNUSED f32 mtx[4][4])
+Gfx* ArajinWave(s32 callContext, struct GraphNode* node, UNUSED f32 mtx[4][4])
 {
 	s16 n, row, col, x, y, z, tx, ty;
 	Vtx* verts;
 	struct GraphNodeGenerated* generatedNode = (struct GraphNodeGenerated*)node;
 
-	s16* sp64	     = (s16*)segmented_to_virtual(&flying_carpet_static_vertex_data);
+	s16* sp64	     = (s16*)segmented_to_virtual(&arajin_vtx);
 	Gfx* displayList     = NULL;
 	Gfx* displayListHead = NULL;
 	struct Object* curGraphNodeObject;
@@ -167,12 +167,12 @@ Gfx* geo_exec_flying_carpet_create(s32 callContext, struct GraphNode* node, UNUS
 			col = n % 3;
 
 			x  = sp64[n * 4 + 0];
-			y  = round_float(sins(sFlyingCarpetRippleTimer + (row << 12) + (col << 14)) * 20.0);
+			y  = Tani_RoundOff(sins(sFlyingCarpetRippleTimer + (row << 12) + (col << 14)) * 20.0);
 			z  = sp64[n * 4 + 1];
 			tx = sp64[n * 4 + 2];
 			ty = sp64[n * 4 + 3];
 
-			make_vertex(verts, n, x, y, z, tx, ty, 0, 127, 0, 255);
+			Tani_SetOneVtxData(verts, n, x, y, z, tx, ty, 0, 127, 0, 255);
 		}
 
 		gSPDisplayList(displayListHead++, dl_flying_carpet_begin);
@@ -209,7 +209,7 @@ Gfx* geo_exec_flying_carpet_create(s32 callContext, struct GraphNode* node, UNUS
 /**
  * Create a display list for the end screen with Peach's delicious cake.
  */
-Gfx* geo_exec_cake_end_screen(s32 callContext, struct GraphNode* node, UNUSED f32 mtx[4][4])
+Gfx* EndingBGDraw(s32 callContext, struct GraphNode* node, UNUSED f32 mtx[4][4])
 {
 	struct GraphNodeGenerated* generatedNode = (struct GraphNodeGenerated*)node;
 	Gfx* displayList			 = NULL;
@@ -222,8 +222,8 @@ Gfx* geo_exec_cake_end_screen(s32 callContext, struct GraphNode* node, UNUSED f3
 
 		generatedNode->fnNode.node.flags = (generatedNode->fnNode.node.flags & 0xFF) | 0x100;
 
-		gSPDisplayList(displayListHead++, dl_proj_mtx_fullscreen);
-		gSPDisplayList(displayListHead++, dl_cake_end_screen);
+		gSPDisplayList(displayListHead++, wipe_gfx_init);
+		gSPDisplayList(displayListHead++, gfx_ending);
 		gSPEndDisplayList(displayListHead);
 	}
 

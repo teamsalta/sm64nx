@@ -29,7 +29,7 @@ optional arguments:
 # sm64.py
 builds python scripts which, when ran, build external files for use with packaging into pak files.  When the python script is ran, it  will generate quite a few excess files, typically you would not want to distribute the gfx files, and the geo files contain all gfx and textures referenced inside of them.
 
-## Example
+## Example Model
 
 sm64.py actors/myactor/model.inc.c actors/myactor/geo.inc.c > myactor.py
 
@@ -37,3 +37,8 @@ sm64.py actors/myactor/model.inc.c actors/myactor/geo.inc.c > myactor.py
 
 # encode_images.py
 converts all png's in the cwd to c files used by sm64 mods
+
+### Example Texture Pak
+cd into nx scripts folder then run:
+
+pak.py --source "C:\Users\john\Downloads\p3st\gfx" --output p3st.pak

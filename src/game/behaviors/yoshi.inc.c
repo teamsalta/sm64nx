@@ -5,14 +5,14 @@
 // so o->oHomeY is never updated.
 static s16 sYoshiHomeLocations[] = {0, -5625, -1364, -5912, -1403, -4609, -1004, -5308};
 
-void bhv_yoshi_init(void)
+void s_yoshi_init(void)
 {
 	o->oGravity	       = 2.0f;
 	o->oFriction	       = 0.9f;
 	o->oBuoyancy	       = 1.3f;
 	o->oInteractionSubtype = INT_SUBTYPE_NPC;
 
-	if(BuGetSumStars(activePlayerNo - 1, 0, 24) < 120 || sYoshiDead == TRUE)
+	if(BuGetSumStars(activePlayerNo - 1, 0, 24) < 120 || yoshi_destFlag == TRUE)
 	{
 		o->activeFlags = 0;
 	}
@@ -26,7 +26,7 @@ void yoshi_walk_loop(void)
 	o->oForwardVel	 = 10.0f;
 	sp26		 = ObjMoveEvent();
 	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oYoshiTargetYaw, 0x500 / FRAME_RATE_SCALER_INV);
-	if(is_point_close_to_object(o, o->oHomeX, 3174.0f, o->oHomeZ, 200))
+	if(ObjApproach(o, o->oHomeX, 3174.0f, o->oHomeZ, 200))
 		o->oAction = YOSHI_ACT_IDLE;
 
 	stSetSkelAnimeNumber(1);
@@ -38,7 +38,7 @@ void yoshi_walk_loop(void)
 
 	if(o->oPosY < 2100.0f)
 	{
-		create_respawner(MODEL_YOSHI, sm64::bhv::bhvYoshi(), 3000);
+		Obj_reset(MODEL_YOSHI, sm64::bhv::bhvYoshi(), 3000);
 		o->activeFlags = 0;
 	}
 }
@@ -88,7 +88,7 @@ void yoshi_talk_loop(void)
 		if(CtrlPlayerDialog(1) == 2)
 		{
 			o->activeFlags |= 0x20;
-			if(cutscene_object_with_dialog(CUTSCENE_DIALOG, o, DIALOG_161))
+			if(cameraDemoStratMsgNum(CUTSCENE_DIALOG, o, DIALOG_161))
 			{
 				o->activeFlags &= ~0x20;
 				o->oInteractStatus = 0;
@@ -118,7 +118,7 @@ void yoshi_walk_and_jump_off_roof_loop(void)
 		cutscene_object(CUTSCENE_STAR_SPAWN, o);
 
 	o->oMoveAngleYaw = s_chase_angle(o->oMoveAngleYaw, o->oYoshiTargetYaw, 0x500 / FRAME_RATE_SCALER_INV);
-	if(is_point_close_to_object(o, o->oHomeX, 3174.0f, o->oHomeZ, 200))
+	if(ObjApproach(o, o->oHomeX, 3174.0f, o->oHomeZ, 200))
 	{
 		stSetSkelAnimeNumber(2);
 		objsound(SOUND_GENERAL_ENEMY_ALERT1);
@@ -137,13 +137,13 @@ void yoshi_walk_and_jump_off_roof_loop(void)
 void yoshi_finish_jumping_and_despawn_loop(void)
 {
 	s_stop_animeend();
-	obj_move_xyz_using_fvel_and_yaw(o);
+	ObjSpeedOn(o);
 	o->oVelY -= 2.0;
 	if(o->oPosY < 2100.0f)
 	{
 		CtrlPlayerDialog(0);
-		gObjCutsceneDone = TRUE;
-		sYoshiDead	 = 1;
+		demoseqcode = TRUE;
+		yoshi_destFlag	 = 1;
 		o->activeFlags	 = 0;
 	}
 }
@@ -155,7 +155,7 @@ void yoshi_give_present_loop(void)
 	if(playerMeter.lives == 100)
 	{
 		AudStartSound(SOUND_GENERAL_COLLECT_1UP, gDefaultSoundArgs);
-		gSpecialTripleJump = 1;
+		buYosshiJump = 1;
 		o->oAction	   = YOSHI_ACT_WALK_JUMP_OFF_ROOF;
 		return;
 	}
@@ -170,7 +170,7 @@ void yoshi_give_present_loop(void)
 	}
 }
 
-void BehYoshiLoop(void)
+void s_yoshi_main(void)
 {
 	switch(o->oAction)
 	{

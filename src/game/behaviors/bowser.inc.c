@@ -1690,7 +1690,7 @@ void ActionFallingBowserPlatform2()
 	{
 		sp22 = D_8032F698[o->oBehParams2ndByte].unk3 + (gDebugInfo[4][1] << 8);
 		sp1C = -((o->oTimer / FRAME_RATE_SCALER_INV) / 2) * 290 + 1740;
-		func_802B8F7C(sp24, &o->oPosX);
+		s_copy_f(sp24, &o->oPosX);
 		o->oPosX = D_8032F698[o->oBehParams2ndByte].unk1 + sins(sp22 + 5296) * sp1C;
 		o->oPosZ = D_8032F698[o->oBehParams2ndByte].unk2 + coss(sp22 + 5296) * sp1C;
 		o->oPosY = 307.0f;
@@ -1698,7 +1698,7 @@ void ActionFallingBowserPlatform2()
 		o->oPosX = D_8032F698[o->oBehParams2ndByte].unk1 + sins(sp22 - 5296) * sp1C;
 		o->oPosZ = D_8032F698[o->oBehParams2ndByte].unk2 + coss(sp22 - 5296) * sp1C;
 		s_burneffect(4, 0, 100);
-		func_802B8F7C(&o->oPosX, sp24);
+		s_copy_f(&o->oPosX, sp24);
 	}
 	s_optionmove_F();
 	if(o->oTimer > 300 * FRAME_RATE_SCALER_INV)

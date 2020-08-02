@@ -90,7 +90,7 @@ void ActionHeaveHo3(void) // actually throw mario
 void ActionHeaveHo0(void)
 {
 	s_copy_initpos();
-	if(find_water_level(o->oPosX, o->oPosZ) < o->oPosY && (o->oDistanceToMario < 4000.0f || sm64::config().camera().disableDistanceClip()))
+	if(mcWaterCheck(o->oPosX, o->oPosZ) < o->oPosY && (o->oDistanceToMario < 4000.0f || sm64::config().camera().disableDistanceClip()))
 	{
 		s_hitON();
 		s_shape_disp();

@@ -1,6 +1,6 @@
 // butterfly.c.inc
 
-void bhv_butterfly_init(void)
+void s_butterflyInit(void)
 {
 	stSetSkelAnimeNumber(1);
 
@@ -13,7 +13,7 @@ void bhv_butterfly_init(void)
 
 // sp28 = speed
 
-void ButterflyStep(s32 speed)
+void ButterflyWorldMove(s32 speed)
 {
 	struct FloorGeometry* sp24;
 	s16 yaw	   = o->oMoveAngleYaw;
@@ -33,7 +33,7 @@ void ButterflyStep(s32 speed)
 	else
 		o->oPosY -= o->oVelY * FRAME_RATE_SCALER;
 
-	floorY = find_floor_height_and_data(o->oPosX, o->oPosY, o->oPosZ, &sp24);
+	floorY = GroundCheck(o->oPosX, o->oPosY, o->oPosZ, &sp24);
 
 	if(o->oPosY < floorY + 2.0f)
 		o->oPosY = floorY + 2.0f;
@@ -43,7 +43,7 @@ void ButterflyStep(s32 speed)
 		o->oButterflyYPhase = 0;
 }
 
-void CalculateButterflyAngle(void)
+void ButterflyDirection(void)
 {
 	gMarioObject->oPosX += 5 * o->oButterflyYPhase / (4 * FRAME_RATE_SCALER_INV);
 	gMarioObject->oPosZ += 5 * o->oButterflyYPhase / (4 * FRAME_RATE_SCALER_INV);
@@ -56,7 +56,7 @@ void CalculateButterflyAngle(void)
 	gMarioObject->oPosY -= (5 * o->oButterflyYPhase + 0x100) / (4 * FRAME_RATE_SCALER_INV);
 }
 
-void ButterflyRestingLoop(void)
+void ButterflyStay(void)
 {
 	if(PlayerApproach(o->oPosX, o->oPosY, o->oPosZ, 1000))
 	{
@@ -67,17 +67,17 @@ void ButterflyRestingLoop(void)
 	}
 }
 
-void ButterflyFollowMarioLoop(void)
+void ButterflyTakeOff(void)
 {
-	CalculateButterflyAngle();
+	ButterflyDirection();
 
-	ButterflyStep(7);
+	ButterflyWorldMove(7);
 
 	if(!PlayerApproach(o->oHomeX, o->oHomeY, o->oHomeZ, 1200))
 		o->oAction = BUTTERFLY_ACT_RETURN_HOME;
 }
 
-void ButterflyReturnHomeLoop(void)
+void ButterflyComeback(void)
 {
 	f32 homeDistX	 = o->oHomeX - o->oPosX;
 	f32 homeDistY	 = o->oHomeY - o->oPosY;
@@ -88,7 +88,7 @@ void ButterflyReturnHomeLoop(void)
 	o->oMoveAngleYaw   = s_chase_angle(o->oMoveAngleYaw, hAngleToHome, 0x800 / FRAME_RATE_SCALER_INV);
 	o->oMoveAnglePitch = s_chase_angle(o->oMoveAnglePitch, vAngleToHome, 0x50 / FRAME_RATE_SCALER_INV);
 
-	ButterflyStep(7);
+	ButterflyWorldMove(7);
 
 	if(homeDistX * homeDistX + homeDistY * homeDistY + homeDistZ * homeDistZ < 144.0f)
 	{
@@ -101,20 +101,20 @@ void ButterflyReturnHomeLoop(void)
 	}
 }
 
-void bhv_butterfly_loop(void)
+void s_butterflyfunc(void)
 {
 	switch(o->oAction)
 	{
 		case BUTTERFLY_ACT_RESTING:
-			ButterflyRestingLoop();
+			ButterflyStay();
 			break;
 
 		case BUTTERFLY_ACT_FOLLOW_MARIO:
-			ButterflyFollowMarioLoop();
+			ButterflyTakeOff();
 			break;
 
 		case BUTTERFLY_ACT_RETURN_HOME:
-			ButterflyReturnHomeLoop();
+			ButterflyComeback();
 			break;
 	}
 

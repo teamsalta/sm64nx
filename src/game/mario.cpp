@@ -96,7 +96,7 @@ struct Surface* resolve_and_return_wall_collisions(Vec3f pos, f32 offset, f32 ra
 /**
  * Finds the ceiling from a vec3f horizontally and a height (with 80 vertical buffer).
  */
-f32 vec3f_find_ceil(Vec3f pos, f32 height, struct Surface** ceil)
+f32 PL_CheckRoofPlane(Vec3f pos, f32 height, struct Surface** ceil)
 {
 	UNUSED f32 unused;
 
@@ -136,8 +136,8 @@ s32 execute_mario_action(struct Object* o)
 		marioWorks->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
 		marioWorks->mario_reset_bodystate();
 		marioWorks->update_mario_inputs();
-		mario_handle_special_floors(marioWorks);
-		mario_process_interactions(marioWorks);
+		PL_CheckGroundCondition(marioWorks);
+		PL_CollisionCheck(marioWorks);
 
 		// If Mario is OOB, stop executing actions.
 		if(marioWorks->floor == NULL)
@@ -153,31 +153,31 @@ s32 execute_mario_action(struct Object* o)
 			switch(marioWorks->status & ACT_GROUP_MASK)
 			{
 				case ACT_GROUP_STATIONARY:
-					inLoop = marioWorks->mario_execute_stationary_action();
+					inLoop = marioWorks->playerWaitMain();
 					break;
 
 				case ACT_GROUP_MOVING:
-					inLoop = marioWorks->mario_execute_moving_action();
+					inLoop = marioWorks->playerMoveMain();
 					break;
 
 				case ACT_GROUP_AIRBORNE:
-					inLoop = marioWorks->mario_execute_airborne_action();
+					inLoop = marioWorks->playerJumpMain();
 					break;
 
 				case ACT_GROUP_SUBMERGED:
-					inLoop = marioWorks->mario_execute_submerged_action();
+					inLoop = marioWorks->PL_PlayerSwimMain();
 					break;
 
 				case ACT_GROUP_CUTSCENE:
-					inLoop = marioWorks->mario_execute_cutscene_action();
+					inLoop = marioWorks->playerDemoMain();
 					break;
 
 				case ACT_GROUP_AUTOMATIC:
-					inLoop = marioWorks->mario_execute_automatic_action();
+					inLoop = marioWorks->playerSpecMain();
 					break;
 
 				case ACT_GROUP_OBJECT:
-					inLoop = marioWorks->mario_execute_object_action();
+					inLoop = marioWorks->playerActnMain();
 					break;
 			}
 		}
@@ -193,17 +193,17 @@ s32 execute_mario_action(struct Object* o)
 		// non-Japanese releases.
 		if(marioWorks->floor->type == SURFACE_HORIZONTAL_WIND)
 		{
-			func_802ADC20(0, (marioWorks->floor->force << 8));
+			s_make_effectwind(0, (marioWorks->floor->force << 8));
 			AudStartSound(SOUND_ENV_WIND2, marioWorks->marioObj->header.gfx.cameraToObject);
 		}
 
 		if(marioWorks->floor->type == SURFACE_VERTICAL_WIND)
 		{
-			func_802ADC20(1, 0);
+			s_make_effectwind(1, 0);
 			AudStartSound(SOUND_ENV_WIND2, marioWorks->marioObj->header.gfx.cameraToObject);
 		}
 
-		play_infinite_stairs_music();
+		AudUnlimitedMusic();
 		marioWorks->marioObj->oInteractStatus = 0;
 		func_sh_8025574C();
 

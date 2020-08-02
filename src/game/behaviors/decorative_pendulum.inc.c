@@ -3,7 +3,7 @@
  * This controls the pendulum that lies underneath the Tick Tock Clock painting.
  */
 
-void bhv_decorative_pendulum_init(void)
+void s_clock_furiko_init(void)
 {
 	o->oAngleVelRoll = 0x100;
 	s_areastage_init();
@@ -13,7 +13,7 @@ void bhv_decorative_pendulum_init(void)
  * Smoothly swing the decorative pendulum back and forth using constant angular
  * acceleration.
  */
-void bhv_decorative_pendulum_loop(void)
+void s_clock_furiko_main(void)
 {
 	if(o->oFaceAngleRoll > 0)
 	{

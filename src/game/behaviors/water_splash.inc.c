@@ -9,7 +9,7 @@ void bhv_water_splash_loop(void)
 {
 	s32 i;
 	if(o->oTimer == 0)
-		o->oPosY = find_water_level(o->oPosX, o->oPosZ);
+		o->oPosY = mcWaterCheck(o->oPosX, o->oPosZ);
 	if(o->oPosY > -10000.0f)
 		for(i = 0; i < 3; i++)
 			s_makeobj_initdata(o, &D_8032FDAC);
@@ -18,7 +18,7 @@ void bhv_water_splash_loop(void)
 void bhv_water_drops_loop(void)
 {
 	UNUSED s32 unused;
-	f32 waterLevel = find_water_level(o->oPosX, o->oPosZ);
+	f32 waterLevel = mcWaterCheck(o->oPosX, o->oPosZ);
 	if(o->oTimer == 0)
 	{
 		if(s_check_shapename(MODEL_FISH))
@@ -61,7 +61,7 @@ void bhv_water_surface_white_wave_init(void)
 
 void bhv_object_bubble_ripples_init(void)
 {
-	f32 sp1C = find_water_level(o->oPosX, o->oPosZ);
+	f32 sp1C = mcWaterCheck(o->oPosX, o->oPosZ);
 	stSetScale(o, 0.5f, 1.0f, 0.5f);
 	o->oPosY = sp1C + 5.0f;
 }
@@ -78,7 +78,7 @@ void bhv_surface_wave_shrinking_init(void)
 
 void bhv_wave_trail_loop(void)
 {
-	f32 sp1C = find_water_level(o->oPosX, o->oPosZ);
+	f32 sp1C = mcWaterCheck(o->oPosX, o->oPosZ);
 	if(o->oTimer == 0)
 		if(frameCounter & 1)
 			s_remove_obj(o);

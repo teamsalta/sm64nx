@@ -169,7 +169,7 @@ void DrawStaffRoll(void)
 	}
 }
 
-void BehEndPeachLoop(void)
+void DoPeachProcess(void)
 {
 	s_set_skelanimeNo(sEndPeachAnimation);
 	if(s_check_animeend())
@@ -182,7 +182,7 @@ void BehEndPeachLoop(void)
 	}
 }
 
-void BehEndToadLoop(void)
+void DoKinopioProcess(void)
 {
 	s32 toadAnimIndex = (gCurrentObject->oPosX >= 0.0f);
 
@@ -367,7 +367,7 @@ void PlayerRecord::handle_save_menu()
 	s32 dialogID;
 	// wait for the menu to show up
 	// mario_finished_animation() ? (not my file, not my problem)
-	if(this->is_anim_past_end() && mesgLatch != 0)
+	if(this->isLast2AnimeFrame() && mesgLatch != 0)
 	{
 		// save and continue / save and quit
 		if(mesgLatch == SAVE_OPT_SAVE_AND_CONTINUE || mesgLatch == SAVE_OPT_SAVE_AND_QUIT)
@@ -389,7 +389,7 @@ void PlayerRecord::handle_save_menu()
 			dialogID = get_star_collection_dialog();
 			if(dialogID != 0)
 			{
-				play_peachs_jingle();
+				Na_NewDoorMessageBgm();
 				// look up for dialog
 				this->ChangePlayerStatus(ACT_READING_AUTOMATIC_DIALOG, dialogID);
 			}
@@ -468,12 +468,12 @@ s32 PlayerRecord::act_reading_npc_dialog()
 	if(this->actionState < 8)
 	{
 		// turn to NPC
-		angleToNPC	   = mario_angle_to_object(this, this->usedObj);
+		angleToNPC	   = PL_GetPlayerAttackAngle(this, this->usedObj);
 		this->faceAngle[1] = angleToNPC - approach_s32((angleToNPC - this->faceAngle[1]) << 16 >> 16, 0, 2048 / FRAME_RATE_SCALER_INV, 2048 / FRAME_RATE_SCALER_INV);
 		// turn head to npc
 		this->actionTimer += headTurnAmount;
 		// set animation
-		this->set_mario_animation(this->heldObj == NULL ? MARIO_ANIM_FIRST_PERSON : MARIO_ANIM_IDLE_WITH_LIGHT_OBJ);
+		this->setAnimation(this->heldObj == NULL ? MARIO_ANIM_FIRST_PERSON : MARIO_ANIM_IDLE_WITH_LIGHT_OBJ);
 	}
 	else if(this->actionState >= 9 && this->actionState < 17)
 	{
@@ -491,9 +491,9 @@ s32 PlayerRecord::act_reading_npc_dialog()
 			this->ChangePlayerStatus(this->heldObj == NULL ? ACT_IDLE : ACT_HOLD_IDLE, 0);
 		}
 	}
-	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
-	vec3s_set(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
-	vec3s_set(this->marioBodyState->headAngle, this->actionTimer, 0, 0);
+	CopyFVector(this->marioObj->header.gfx.pos, this->pos);
+	SetSVector(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+	SetSVector(this->marioBodyState->headAngle, this->actionTimer, 0, 0);
 
 	if(this->actionState != 8)
 	{
@@ -506,17 +506,17 @@ s32 PlayerRecord::act_reading_npc_dialog()
 // puts mario in a state where he's waiting for (npc) dialog; doesn't do much
 s32 PlayerRecord::act_waiting_for_dialog()
 {
-	this->set_mario_animation(this->heldObj == NULL ? MARIO_ANIM_FIRST_PERSON : MARIO_ANIM_IDLE_WITH_LIGHT_OBJ);
-	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
-	vec3s_set(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+	this->setAnimation(this->heldObj == NULL ? MARIO_ANIM_FIRST_PERSON : MARIO_ANIM_IDLE_WITH_LIGHT_OBJ);
+	CopyFVector(this->marioObj->header.gfx.pos, this->pos);
+	SetSVector(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 	return FALSE;
 }
 
 // makes mario disappear and triggers warp
 s32 PlayerRecord::act_disappeared()
 {
-	this->set_mario_animation(MARIO_ANIM_A_POSE);
-	stop_and_set_height_to_floor();
+	this->setAnimation(MARIO_ANIM_A_POSE);
+	stopProcess();
 	this->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
 	if(this->actionArg)
 	{
@@ -540,7 +540,7 @@ s32 PlayerRecord::act_reading_automatic_dialog()
 	}
 	if(this->actionState < 9)
 	{
-		this->set_mario_animation(this->oldstatus == ACT_STAR_DANCE_WATER ? MARIO_ANIM_WATER_IDLE : MARIO_ANIM_FIRST_PERSON);
+		this->setAnimation(this->oldstatus == ACT_STAR_DANCE_WATER ? MARIO_ANIM_WATER_IDLE : MARIO_ANIM_FIRST_PERSON);
 		// always look up for automatic dialogs
 		this->actionTimer -= 1024;
 	}
@@ -593,7 +593,7 @@ s32 PlayerRecord::act_reading_automatic_dialog()
 		}
 	}
 	// apply head turn
-	vec3s_set(this->marioBodyState->headAngle, this->actionTimer, 0, 0);
+	SetSVector(this->marioBodyState->headAngle, this->actionTimer, 0, 0);
 	return FALSE;
 }
 
@@ -601,7 +601,7 @@ s32 PlayerRecord::act_reading_sign()
 {
 	struct Object* marioObj = this->marioObj;
 
-	this->play_sound_if_no_flag(SOUND_ACTION_READ_SIGN, MARIO_ACTION_SOUND_PLAYED);
+	this->startSoundEffect(SOUND_ACTION_READ_SIGN, MARIO_ACTION_SOUND_PLAYED);
 
 	switch(this->actionState)
 	{
@@ -610,7 +610,7 @@ s32 PlayerRecord::act_reading_sign()
 			ViewingCam(1);
 			s_begin_demomode();
 			// reading sign
-			this->set_mario_animation(MARIO_ANIM_FIRST_PERSON);
+			this->setAnimation(MARIO_ANIM_FIRST_PERSON);
 			this->actionState = 1;
 			// intentional fall through
 		// turn toward sign
@@ -636,8 +636,8 @@ s32 PlayerRecord::act_reading_sign()
 			break;
 	}
 
-	vec3f_copy(marioObj->header.gfx.pos, this->pos);
-	vec3s_set(marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+	CopyFVector(marioObj->header.gfx.pos, this->pos);
+	SetSVector(marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 	return FALSE;
 }
 
@@ -657,8 +657,8 @@ s32 PlayerRecord::act_debug_free_move()
 		speed = 0.01f;
 	}
 
-	this->set_mario_animation(MARIO_ANIM_A_POSE);
-	vec3f_copy(pos, this->pos);
+	this->setAnimation(MARIO_ANIM_A_POSE);
+	CopyFVector(pos, this->pos);
 
 	if(sm64::player(0).controller().buttonDown & sm64::hid::U_JPAD)
 	{
@@ -684,12 +684,12 @@ s32 PlayerRecord::act_debug_free_move()
 		{
 			pos[1] = floorHeight;
 		}
-		vec3f_copy(this->pos, pos);
+		CopyFVector(this->pos, pos);
 	}
 
 	this->faceAngle[1] = this->intendedYaw;
-	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
-	vec3s_set(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+	CopyFVector(this->marioObj->header.gfx.pos, this->pos);
+	SetSVector(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 
 	if(sm64::player(0).controller().buttonPressed == sm64::hid::A_BUTTON)
 	{
@@ -720,7 +720,7 @@ void PlayerRecord::general_star_dance_handler(s32 isInWater)
 				func_80248D48();
 				if(this->actionArg & 1)
 				{
-					play_course_clear();
+					Na_ClearFanfare();
 				}
 				else
 				{
@@ -761,7 +761,7 @@ void PlayerRecord::general_star_dance_handler(s32 isInWater)
 		}
 		this->actionState = 2;
 	}
-	else if(this->actionState == 2 && this->is_anim_at_end())
+	else if(this->actionState == 2 && this->isLast1AnimeFrame())
 	{
 		s_end_demomode();
 		AudUnlockSound();
@@ -788,22 +788,22 @@ void PlayerRecord::general_star_dance_handler(s32 isInWater)
 s32 PlayerRecord::act_star_dance()
 {
 	this->faceAngle[1] = this->area->camera->yaw;
-	this->set_mario_animation(this->actionState == 2 ? MARIO_ANIM_RETURN_FROM_STAR_DANCE : MARIO_ANIM_STAR_DANCE);
+	this->setAnimation(this->actionState == 2 ? MARIO_ANIM_RETURN_FROM_STAR_DANCE : MARIO_ANIM_STAR_DANCE);
 	general_star_dance_handler(0);
 	if(this->actionState != 2 && this->actionTimer >= 40 * FRAME_RATE_SCALER_INV)
 	{
 		this->marioBodyState->handState = MARIO_HAND_PEACE_SIGN;
 	}
-	stop_and_set_height_to_floor();
+	stopProcess();
 	return FALSE;
 }
 
 s32 PlayerRecord::act_star_dance_water()
 {
 	this->faceAngle[1] = this->area->camera->yaw;
-	this->set_mario_animation(this->actionState == 2 ? MARIO_ANIM_RETURN_FROM_WATER_STAR_DANCE : MARIO_ANIM_WATER_STAR_DANCE);
-	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
-	vec3s_set(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+	this->setAnimation(this->actionState == 2 ? MARIO_ANIM_RETURN_FROM_WATER_STAR_DANCE : MARIO_ANIM_WATER_STAR_DANCE);
+	CopyFVector(this->marioObj->header.gfx.pos, this->pos);
+	SetSVector(this->marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 	general_star_dance_handler(1);
 	if(this->actionState != 2 && this->actionTimer >= 62 * FRAME_RATE_SCALER_INV)
 	{
@@ -820,25 +820,25 @@ s32 PlayerRecord::act_fall_after_star_grab()
 		this->particleFlags |= PARTICLE_WATER_SPLASH;
 		return this->ChangePlayerStatus(ACT_STAR_DANCE_WATER, this->actionArg);
 	}
-	if(perform_air_step(1) == AIR_STEP_LANDED)
+	if(jumpProcess(1) == AIR_STEP_LANDED)
 	{
-		this->play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+		this->startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 		this->ChangePlayerStatus(this->actionArg & 1 ? ACT_STAR_DANCE_NO_EXIT : ACT_STAR_DANCE_EXIT, this->actionArg);
 	}
-	this->set_mario_animation(MARIO_ANIM_GENERAL_FALL);
+	this->setAnimation(MARIO_ANIM_GENERAL_FALL);
 	return FALSE;
 }
 
 // general death hander
 s32 PlayerRecord::common_death_handler(s32 animation, s32 frameToDeathWarp)
 {
-	s32 animFrame = this->set_mario_animation(animation);
+	s32 animFrame = this->setAnimation(animation);
 	if(animFrame == frameToDeathWarp)
 	{
 		PL_StartFadeout(this, PL_FADE_LOSING);
 	}
 	this->marioBodyState->eyeState = MARIO_EYES_DEAD;
-	stop_and_set_height_to_floor();
+	stopProcess();
 	return animFrame;
 }
 
@@ -849,45 +849,45 @@ s32 PlayerRecord::act_standing_death()
 		return this->ChangePlayerStatus(ACT_SUFFOCATION, 0);
 	}
 
-	this->play_sound_if_no_flag(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
+	this->startSoundEffect(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
 	common_death_handler(MARIO_ANIM_DYING_FALL_OVER, 80);
 	if(this->marioObj->header.gfx.unk38.frame() == 77)
 	{
-		this->play_mario_landing_sound(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
+		this->startLandingEffect(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
 	}
 	return FALSE;
 }
 
 s32 PlayerRecord::act_electrocution()
 {
-	this->play_sound_if_no_flag(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
+	this->startSoundEffect(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
 	common_death_handler(MARIO_ANIM_ELECTROCUTION, 43);
 	return FALSE;
 }
 
 s32 PlayerRecord::act_suffocation()
 {
-	this->play_sound_if_no_flag(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
+	this->startSoundEffect(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
 	common_death_handler(MARIO_ANIM_SUFFOCATING, 86);
 	return FALSE;
 }
 
 s32 PlayerRecord::act_death_on_back()
 {
-	this->play_sound_if_no_flag(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
+	this->startSoundEffect(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
 	if(common_death_handler(MARIO_ANIM_DYING_ON_BACK, 54) == 40)
 	{
-		this->play_mario_heavy_landing_sound(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
+		this->startDowningEffect(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
 	}
 	return FALSE;
 }
 
 s32 PlayerRecord::act_death_on_stomach()
 {
-	this->play_sound_if_no_flag(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
+	this->startSoundEffect(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
 	if(common_death_handler(MARIO_ANIM_DYING_ON_STOMACH, 37) == 37)
 	{
-		this->play_mario_heavy_landing_sound(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
+		this->startDowningEffect(SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
 	}
 	return FALSE;
 }
@@ -896,7 +896,7 @@ s32 PlayerRecord::act_quicksand_death()
 {
 	if(this->actionState == 0)
 	{
-		this->set_mario_animation(MARIO_ANIM_DYING_IN_QUICKSAND);
+		this->setAnimation(MARIO_ANIM_DYING_IN_QUICKSAND);
 		this->set_anim_to_frame(60);
 		this->actionState = 1;
 	}
@@ -904,7 +904,7 @@ s32 PlayerRecord::act_quicksand_death()
 	{
 		if(this->sinking >= 100.0f)
 		{
-			this->play_sound_if_no_flag(SOUND_MARIO_WAAAOOOW, MARIO_ACTION_SOUND_PLAYED);
+			this->startSoundEffect(SOUND_MARIO_WAAAOOOW, MARIO_ACTION_SOUND_PLAYED);
 		}
 		if((this->sinking += 5.0f * FRAME_RATE_SCALER) >= 180.0f)
 		{
@@ -912,15 +912,15 @@ s32 PlayerRecord::act_quicksand_death()
 			this->actionState = 2;
 		}
 	}
-	stationary_ground_step();
+	waitProcess();
 	AudStartSound(SOUND_MOVING_QUICKSAND_DEATH, this->marioObj->header.gfx.cameraToObject);
 	return FALSE;
 }
 
 s32 PlayerRecord::act_eaten_by_bubba()
 {
-	this->play_sound_if_no_flag(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
-	this->set_mario_animation(MARIO_ANIM_A_POSE);
+	this->startSoundEffect(SOUND_MARIO_DYING, MARIO_ACTION_SOUND_PLAYED);
+	this->setAnimation(MARIO_ANIM_A_POSE);
 	this->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
 	this->health = 0xFF;
 	if(this->actionTimer++ == 60 * FRAME_RATE_SCALER_INV)
@@ -930,14 +930,14 @@ s32 PlayerRecord::act_eaten_by_bubba()
 	return FALSE;
 }
 
-// set animation and forwardVel; when perform_air_step returns AIR_STEP_LANDED,
+// set animation and forwardVel; when jumpProcess returns AIR_STEP_LANDED,
 // set the new action
 s32 PlayerRecord::launch_mario_until_land(s32 endAction, s32 animation, f32 forwardVel)
 {
 	s32 airStepLanded;
-	this->mario_set_forward_vel(forwardVel);
-	this->set_mario_animation(animation);
-	airStepLanded = (perform_air_step(0) == AIR_STEP_LANDED);
+	this->setPlayerVelocity(forwardVel);
+	this->setAnimation(animation);
+	airStepLanded = (jumpProcess(0) == AIR_STEP_LANDED);
 	if(airStepLanded)
 	{
 		this->ChangePlayerStatus(endAction, 0);
@@ -960,7 +960,7 @@ s32 PlayerRecord::act_unlocking_key_door()
 	if(this->actionTimer == 0)
 	{
 		spawn_obj_at_mario_rel_yaw(MODEL_BOWSER_KEY_CUTSCENE, sm64::bhv::bhvBowserKeyUnlockDoor(), 0);
-		this->set_mario_animation(MARIO_ANIM_UNLOCK_DOOR);
+		this->setAnimation(MARIO_ANIM_UNLOCK_DOOR);
 	}
 
 	switch(this->marioObj->header.gfx.unk38.frame())
@@ -974,9 +974,9 @@ s32 PlayerRecord::act_unlocking_key_door()
 	}
 
 	this->update_mario_pos_for_anim();
-	stop_and_set_height_to_floor();
+	stopProcess();
 
-	if(this->is_anim_at_end())
+	if(this->isLast1AnimeFrame())
 	{
 		if(this->usedObj->oBehParams >> 24 == 1)
 		{
@@ -1007,11 +1007,11 @@ s32 PlayerRecord::act_unlocking_star_door()
 			}
 			this->marioObj->oMarioReadingSignDPosX = this->pos[0];
 			this->marioObj->oMarioReadingSignDPosZ = this->pos[2];
-			this->set_mario_animation(MARIO_ANIM_SUMMON_STAR);
+			this->setAnimation(MARIO_ANIM_SUMMON_STAR);
 			this->actionState++;
 			break;
 		case 1:
-			if(this->is_anim_at_end())
+			if(this->isLast1AnimeFrame())
 			{
 				s_makeobj_nowpos(this->marioObj, MODEL_STAR, sm64::bhv::bhvUnlockDoorStar());
 				this->actionState++;
@@ -1020,14 +1020,14 @@ s32 PlayerRecord::act_unlocking_star_door()
 		case 2:
 			if(this->actionTimer++ == 70 * FRAME_RATE_SCALER_INV)
 			{
-				this->set_mario_animation(MARIO_ANIM_RETURN_STAR_APPROACH_DOOR);
+				this->setAnimation(MARIO_ANIM_RETURN_STAR_APPROACH_DOOR);
 				this->actionState++;
 			}
 			break;
 		case 3:
-			if(this->is_anim_at_end())
+			if(this->isLast1AnimeFrame())
 			{
-				BuSetItemFlag(get_door_save_file_flag(this->usedObj));
+				BuSetItemFlag(PL_GetStarDoorFlag(this->usedObj));
 				this->ChangePlayerStatus(ACT_READING_AUTOMATIC_DIALOG, DIALOG_038);
 			}
 			break;
@@ -1037,7 +1037,7 @@ s32 PlayerRecord::act_unlocking_star_door()
 	this->pos[2] = this->marioObj->oMarioReadingSignDPosZ;
 
 	this->update_mario_pos_for_anim();
-	stop_and_set_height_to_floor();
+	stopProcess();
 
 	return FALSE;
 }
@@ -1075,7 +1075,7 @@ s32 PlayerRecord::act_entering_star_door()
 	// set mario's animation
 	if(this->actionTimer < 15 * FRAME_RATE_SCALER_INV)
 	{
-		this->set_mario_animation(MARIO_ANIM_FIRST_PERSON);
+		this->setAnimation(MARIO_ANIM_FIRST_PERSON);
 	}
 
 	// go through door? for 20 frames
@@ -1084,7 +1084,7 @@ s32 PlayerRecord::act_entering_star_door()
 		this->pos[0] += this->marioObj->oMarioReadingSignDPosX * FRAME_RATE_SCALER;
 		this->pos[2] += this->marioObj->oMarioReadingSignDPosZ * FRAME_RATE_SCALER;
 
-		this->set_mario_anim_with_accel(MARIO_ANIM_WALKING, 0x00028000);
+		this->setAnimation(MARIO_ANIM_WALKING, 0x00028000);
 	}
 
 	else
@@ -1099,10 +1099,10 @@ s32 PlayerRecord::act_entering_star_door()
 		this->pos[0] += 12.0f * FRAME_RATE_SCALER * sins(this->faceAngle[1]);
 		this->pos[2] += 12.0f * FRAME_RATE_SCALER * coss(this->faceAngle[1]);
 
-		this->set_mario_anim_with_accel(MARIO_ANIM_WALKING, 0x00028000);
+		this->setAnimation(MARIO_ANIM_WALKING, 0x00028000);
 	}
 
-	stop_and_set_height_to_floor();
+	stopProcess();
 
 	if(this->actionTimer == 48 * FRAME_RATE_SCALER_INV)
 	{
@@ -1119,12 +1119,12 @@ s32 PlayerRecord::act_going_through_door()
 		if(this->actionArg & 1)
 		{
 			this->interactObj->oInteractStatus = 0x00010000;
-			this->set_mario_animation(MARIO_ANIM_PULL_DOOR_WALK_IN);
+			this->setAnimation(MARIO_ANIM_PULL_DOOR_WALK_IN);
 		}
 		else
 		{
 			this->interactObj->oInteractStatus = 0x00020000;
-			this->set_mario_animation(MARIO_ANIM_PUSH_DOOR_WALK_IN);
+			this->setAnimation(MARIO_ANIM_PUSH_DOOR_WALK_IN);
 		}
 	}
 	this->faceAngle[1] = this->usedObj->oMoveAngleYaw;
@@ -1132,7 +1132,7 @@ s32 PlayerRecord::act_going_through_door()
 	this->pos[2]	   = this->usedObj->oPosZ;
 
 	this->update_mario_pos_for_anim();
-	stop_and_set_height_to_floor();
+	stopProcess();
 
 	if(this->actionArg & 4)
 	{
@@ -1143,7 +1143,7 @@ s32 PlayerRecord::act_going_through_door()
 	}
 	else
 	{
-		if(this->is_anim_at_end())
+		if(this->isLast1AnimeFrame())
 		{
 			if(this->actionArg & 2)
 			{
@@ -1182,8 +1182,8 @@ s32 PlayerRecord::act_warp_door_spawn()
 			this->ChangePlayerStatus(ACT_IDLE, 0);
 		}
 	}
-	this->set_mario_animation(MARIO_ANIM_FIRST_PERSON);
-	stop_and_set_height_to_floor();
+	this->setAnimation(MARIO_ANIM_FIRST_PERSON);
+	stopProcess();
 	return FALSE;
 }
 
@@ -1199,24 +1199,24 @@ s32 PlayerRecord::act_emerge_from_pipe()
 
 	marioObj->header.gfx.node.flags |= GRAPH_RENDER_ACTIVE;
 
-	this->play_sound_if_no_flag(SOUND_MARIO_YAHOO, MARIO_MARIO_SOUND_PLAYED);
+	this->startSoundEffect(SOUND_MARIO_YAHOO, MARIO_MARIO_SOUND_PLAYED);
 
 	if(activeStageNo == 13)
 	{
 		if(activeSceneNo == 2)
 		{
-			this->play_sound_if_no_flag(SOUND_MENU_EXIT_PIPE, MARIO_ACTION_SOUND_PLAYED);
+			this->startSoundEffect(SOUND_MENU_EXIT_PIPE, MARIO_ACTION_SOUND_PLAYED);
 		}
 		else
 		{
-			this->play_sound_if_no_flag(SOUND_MENU_ENTER_PIPE, MARIO_ACTION_SOUND_PLAYED);
+			this->startSoundEffect(SOUND_MENU_ENTER_PIPE, MARIO_ACTION_SOUND_PLAYED);
 		}
 	}
 
 	if(launch_mario_until_land(ACT_JUMP_LAND_STOP, MARIO_ANIM_SINGLE_JUMP, 8.0f))
 	{
-		this->mario_set_forward_vel(0.0f);
-		this->play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+		this->setPlayerVelocity(0.0f);
+		this->startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 	}
 	return FALSE;
 }
@@ -1227,23 +1227,23 @@ s32 PlayerRecord::act_spawn_spin_airborne()
 	if(this->pos[1] < this->waterLevel - 100)
 	{
 		PL_DisplayMessage(0);
-		return this->set_water_plunge_action();
+		return this->changeWaterMode();
 	}
 
 	// updates all velocity variables based on this->forwardVel
-	this->mario_set_forward_vel(this->forwardVel);
+	this->setPlayerVelocity(this->forwardVel);
 
 	// landed on floor, play spawn land animation
-	if(perform_air_step(0.0) == AIR_STEP_LANDED)
+	if(jumpProcess(0.0) == AIR_STEP_LANDED)
 	{
-		this->play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+		this->startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 		this->ChangePlayerStatus(ACT_SPAWN_SPIN_LANDING, 0);
 	}
 
 	// is 300 units above floor, spin and play woosh sounds
 	if(this->actionState == 0 && this->pos[1] - this->floorHeight > 300.0f)
 	{
-		if(this->set_mario_animation(MARIO_ANIM_FORWARD_SPINNING) == 0)
+		if(this->setAnimation(MARIO_ANIM_FORWARD_SPINNING) == 0)
 		{ // first anim frame
 			AudStartSound(SOUND_ACTION_SPIN, this->marioObj->header.gfx.cameraToObject);
 		}
@@ -1253,7 +1253,7 @@ s32 PlayerRecord::act_spawn_spin_airborne()
 	else
 	{
 		this->actionState = 1;
-		this->set_mario_animation(MARIO_ANIM_GENERAL_FALL);
+		this->setAnimation(MARIO_ANIM_GENERAL_FALL);
 	}
 
 	return FALSE;
@@ -1261,9 +1261,9 @@ s32 PlayerRecord::act_spawn_spin_airborne()
 
 s32 PlayerRecord::act_spawn_spin_landing()
 {
-	stop_and_set_height_to_floor();
-	this->set_mario_animation(MARIO_ANIM_GENERAL_LAND);
-	if(this->is_anim_at_end())
+	stopProcess();
+	this->setAnimation(MARIO_ANIM_GENERAL_LAND);
+	if(this->isLast1AnimeFrame())
 	{
 		PL_DisplayMessage(0);
 		this->ChangePlayerStatus(ACT_IDLE, 0);
@@ -1311,15 +1311,15 @@ s32 PlayerRecord::act_falling_exit_airborne()
 s32 PlayerRecord::act_exit_land_save_dialog()
 {
 	s32 animFrame;
-	stationary_ground_step();
-	this->play_mario_landing_sound_once(SOUND_ACTION_TERRAIN_LANDING);
+	waitProcess();
+	this->trigStartLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 
 	switch(this->actionState)
 	{
 		// determine type of exit
 		case 0:
-			this->set_mario_animation(this->actionArg == 0 ? MARIO_ANIM_GENERAL_LAND : MARIO_ANIM_LAND_FROM_SINGLE_JUMP);
-			if(this->is_anim_past_end())
+			this->setAnimation(this->actionArg == 0 ? MARIO_ANIM_GENERAL_LAND : MARIO_ANIM_LAND_FROM_SINGLE_JUMP);
+			if(this->isLast2AnimeFrame())
 			{
 				if(gLastCompletedCourseNum != COURSE_BITDW && gLastCompletedCourseNum != COURSE_BITFS)
 				{
@@ -1342,7 +1342,7 @@ s32 PlayerRecord::act_exit_land_save_dialog()
 			break;
 			// key exit
 		case 1:
-			animFrame = this->set_mario_animation(MARIO_ANIM_THROW_CATCH_KEY);
+			animFrame = this->setAnimation(MARIO_ANIM_THROW_CATCH_KEY);
 			switch(animFrame)
 			{
 				case -1:
@@ -1362,7 +1362,7 @@ s32 PlayerRecord::act_exit_land_save_dialog()
 			break;
 			// exit without cap
 		case 2:
-			animFrame = this->set_mario_animation(MARIO_ANIM_MISSING_CAP);
+			animFrame = this->setAnimation(MARIO_ANIM_MISSING_CAP);
 			if((animFrame >= 18 && animFrame < 55) || (animFrame >= 112 && animFrame < 134))
 			{
 				this->marioBodyState->handState = MARIO_HAND_OPEN;
@@ -1376,7 +1376,7 @@ s32 PlayerRecord::act_exit_land_save_dialog()
 			break;
 			// exit with cap
 		case 3:
-			animFrame = this->set_mario_animation(MARIO_ANIM_TAKE_CAP_OFF_THEN_ON);
+			animFrame = this->setAnimation(MARIO_ANIM_TAKE_CAP_OFF_THEN_ON);
 			switch(animFrame)
 			{
 				case 12:
@@ -1457,7 +1457,7 @@ s32 PlayerRecord::act_special_exit_airborne()
 {
 	struct Object* marioObj = this->marioObj;
 
-	this->play_sound_if_no_flag(SOUND_MARIO_YAHOO, MARIO_MARIO_SOUND_PLAYED);
+	this->startSoundEffect(SOUND_MARIO_YAHOO, MARIO_MARIO_SOUND_PLAYED);
 
 	if(this->actionTimer++ < 11 * FRAME_RATE_SCALER_INV)
 	{
@@ -1513,17 +1513,17 @@ s32 PlayerRecord::act_spawn_no_spin_airborne()
 	launch_mario_until_land(ACT_SPAWN_NO_SPIN_LANDING, MARIO_ANIM_GENERAL_FALL, 0.0f);
 	if(this->pos[1] < this->waterLevel - 100)
 	{
-		this->set_water_plunge_action();
+		this->changeWaterMode();
 	}
 	return FALSE;
 }
 
 s32 PlayerRecord::act_spawn_no_spin_landing()
 {
-	this->play_mario_landing_sound_once(SOUND_ACTION_TERRAIN_LANDING);
-	this->set_mario_animation(MARIO_ANIM_GENERAL_LAND);
-	stop_and_set_height_to_floor();
-	if(this->is_anim_at_end())
+	this->trigStartLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
+	this->setAnimation(MARIO_ANIM_GENERAL_LAND);
+	stopProcess();
+	if(this->isLast1AnimeFrame())
 	{
 		PL_DisplayMessage(0);
 		this->ChangePlayerStatus(ACT_IDLE, 0);
@@ -1569,15 +1569,15 @@ s32 PlayerRecord::act_bbh_enter_spin()
 
 		case 1:
 			this->faceAngle[1] = atan2s(cageDZ, cageDX);
-			this->mario_set_forward_vel(forwardVel);
+			this->setPlayerVelocity(forwardVel);
 
-			if(this->set_mario_animation(MARIO_ANIM_FORWARD_SPINNING) == 0)
+			if(this->setAnimation(MARIO_ANIM_FORWARD_SPINNING) == 0)
 			{
 				AudStartSound(SOUND_ACTION_SPIN, this->marioObj->header.gfx.cameraToObject);
 			}
 
 			this->flags &= ~MARIO_UNKNOWN_08;
-			perform_air_step(0);
+			jumpProcess(0);
 			if(this->vel[1] <= 0)
 			{
 				this->actionState = 2;
@@ -1588,9 +1588,9 @@ s32 PlayerRecord::act_bbh_enter_spin()
 			// fall through
 		case 3:
 			this->faceAngle[1] = atan2s(cageDZ, cageDX);
-			this->mario_set_forward_vel(forwardVel);
+			this->setPlayerVelocity(forwardVel);
 			this->flags &= ~MARIO_UNKNOWN_08;
-			if(perform_air_step(0) == AIR_STEP_LANDED)
+			if(jumpProcess(0) == AIR_STEP_LANDED)
 			{
 				PL_StartFadeout(this, PL_FADE_TRIPKAGO);
 				SendMotorEvent(15, 80);
@@ -1605,8 +1605,8 @@ s32 PlayerRecord::act_bbh_enter_spin()
 			}
 			else
 			{
-				this->play_sound_if_no_flag(SOUND_ACTION_SHRINK_INTO_BBH, MARIO_ACTION_SOUND_PLAYED);
-				this->set_mario_animation(MARIO_ANIM_DIVE);
+				this->startSoundEffect(SOUND_ACTION_SHRINK_INTO_BBH, MARIO_ACTION_SOUND_PLAYED);
+				this->setAnimation(MARIO_ANIM_DIVE);
 				this->marioObj->header.gfx.angle[0] = atan2s(this->forwardVel, -this->vel[1]);
 			}
 
@@ -1621,7 +1621,7 @@ s32 PlayerRecord::act_bbh_enter_spin()
 			break;
 
 		case 4:
-			stop_and_set_height_to_floor();
+			stopProcess();
 			this->marioObj->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 			break;
 	}
@@ -1635,8 +1635,8 @@ s32 PlayerRecord::act_bbh_enter_jump()
 	f32 cageDZ;
 	f32 cageDist;
 
-	this->play_mario_action_sound(this->flags & MARIO_METAL_CAP ? SOUND_ACTION_METAL_JUMP : SOUND_ACTION_TERRAIN_JUMP, 1);
-	this->play_mario_jump_sound();
+	this->trigSpecialEffect(this->flags & MARIO_METAL_CAP ? SOUND_ACTION_METAL_JUMP : SOUND_ACTION_TERRAIN_JUMP, 1);
+	this->startJumpVoice();
 
 	if(this->actionState == 0)
 	{
@@ -1646,14 +1646,14 @@ s32 PlayerRecord::act_bbh_enter_jump()
 
 		this->vel[1]	   = 60.0f;
 		this->faceAngle[1] = atan2s(cageDZ, cageDX);
-		this->mario_set_forward_vel(cageDist / 20.0f);
+		this->setPlayerVelocity(cageDist / 20.0f);
 
 		this->flags &= ~MARIO_UNKNOWN_08;
 		this->actionState = 1;
 	}
 
-	this->set_mario_animation(MARIO_ANIM_DOUBLE_JUMP_RISE);
-	perform_air_step(0);
+	this->setAnimation(MARIO_ANIM_DOUBLE_JUMP_RISE);
+	jumpProcess(0);
 
 	if(this->vel[1] <= 0.0f)
 	{
@@ -1665,8 +1665,8 @@ s32 PlayerRecord::act_bbh_enter_jump()
 
 s32 PlayerRecord::act_teleport_fade_out()
 {
-	this->play_sound_if_no_flag(SOUND_ACTION_TELEPORT, MARIO_ACTION_SOUND_PLAYED);
-	this->set_mario_animation(this->oldstatus == ACT_CROUCHING ? MARIO_ANIM_CROUCHING : MARIO_ANIM_FIRST_PERSON);
+	this->startSoundEffect(SOUND_ACTION_TELEPORT, MARIO_ACTION_SOUND_PLAYED);
+	this->setAnimation(this->oldstatus == ACT_CROUCHING ? MARIO_ANIM_CROUCHING : MARIO_ANIM_FIRST_PERSON);
 
 	if(this->actionTimer == 0)
 	{
@@ -1685,15 +1685,15 @@ s32 PlayerRecord::act_teleport_fade_out()
 		PL_StartFadeout(this, PL_FADE_WARPIN);
 	}
 
-	stop_and_set_height_to_floor();
+	stopProcess();
 
 	return FALSE;
 }
 
 s32 PlayerRecord::act_teleport_fade_in()
 {
-	this->play_sound_if_no_flag(SOUND_ACTION_TELEPORT, MARIO_ACTION_SOUND_PLAYED);
-	this->set_mario_animation(MARIO_ANIM_FIRST_PERSON);
+	this->startSoundEffect(SOUND_ACTION_TELEPORT, MARIO_ACTION_SOUND_PLAYED);
+	this->setAnimation(MARIO_ANIM_FIRST_PERSON);
 
 	if(this->actionTimer == 0)
 	{
@@ -1717,7 +1717,7 @@ s32 PlayerRecord::act_teleport_fade_in()
 			// Check if the camera is not underwater.
 			if(this->area->camera->mode != CAMERA_MODE_WATER_SURFACE)
 			{
-				set_camera_mode(this->area->camera, CAMERA_MODE_WATER_SURFACE, 1);
+				ChangeGameCamera(this->area->camera, CAMERA_MODE_WATER_SURFACE, 1);
 			}
 			this->ChangePlayerStatus(ACT_WATER_IDLE, 0);
 		}
@@ -1727,7 +1727,7 @@ s32 PlayerRecord::act_teleport_fade_in()
 		}
 	}
 
-	stop_and_set_height_to_floor();
+	stopProcess();
 
 	return FALSE;
 }
@@ -1735,11 +1735,11 @@ s32 PlayerRecord::act_teleport_fade_in()
 // act shocked :omega:
 s32 PlayerRecord::act_shocked()
 {
-	this->play_sound_if_no_flag(SOUND_MARIO_WAAAOOOW, MARIO_ACTION_SOUND_PLAYED);
+	this->startSoundEffect(SOUND_MARIO_WAAAOOOW, MARIO_ACTION_SOUND_PLAYED);
 	AudStartSound(SOUND_MOVING_SHOCKED, this->marioObj->header.gfx.cameraToObject);
 	Vieweffect(SHAKE_SHOCK);
 
-	if(this->set_mario_animation(MARIO_ANIM_SHOCKED) == 0)
+	if(this->setAnimation(MARIO_ANIM_SHOCKED) == 0)
 	{
 		this->actionTimer++;
 		this->flags |= MARIO_METAL_SHOCK;
@@ -1747,10 +1747,10 @@ s32 PlayerRecord::act_shocked()
 
 	if(this->actionArg == 0)
 	{
-		this->mario_set_forward_vel(0.0f);
-		if(perform_air_step(1) == AIR_STEP_LANDED)
+		this->setPlayerVelocity(0.0f);
+		if(jumpProcess(1) == AIR_STEP_LANDED)
 		{
-			this->play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+			this->startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 			this->actionArg = 1;
 		}
 	}
@@ -1761,7 +1761,7 @@ s32 PlayerRecord::act_shocked()
 			this->invincTimer = 30 * FRAME_RATE_SCALER_INV;
 			this->ChangePlayerStatus(this->health < 0x0100 ? ACT_ELECTROCUTION : ACT_IDLE, 0);
 		}
-		stop_and_set_height_to_floor();
+		stopProcess();
 	}
 
 	return FALSE;
@@ -1803,7 +1803,7 @@ s32 PlayerRecord::act_squished()
 				{
 					// cap on: 3 units; cap off: 4.5 units
 					this->hurtCounter += this->flags & MARIO_CAP_ON_HEAD ? 12 : 18;
-					this->play_sound_if_no_flag(SOUND_MARIO_ATTACKED, MARIO_MARIO_SOUND_PLAYED);
+					this->startSoundEffect(SOUND_MARIO_ATTACKED, MARIO_MARIO_SOUND_PLAYED);
 				}
 
 				// Both of the 1.8's are really floats, but one of them has to
@@ -1860,7 +1860,7 @@ s32 PlayerRecord::act_squished()
 		this->vel[1] = 0;
 
 		// check if there's no floor 10 units away from the surface
-		if(perform_ground_step() == GROUND_STEP_LEFT_GROUND)
+		if(walkProcess() == GROUND_STEP_LEFT_GROUND)
 		{
 			// instant un-squish
 			this->squishTimer = 0;
@@ -1879,14 +1879,14 @@ s32 PlayerRecord::act_squished()
 		// woosh, he's gone!
 		this->ChangePlayerStatus(ACT_DISAPPEARED, 0);
 	}
-	stop_and_set_height_to_floor();
-	this->set_mario_animation(MARIO_ANIM_A_POSE);
+	stopProcess();
+	this->setAnimation(MARIO_ANIM_A_POSE);
 	return FALSE;
 }
 
 s32 PlayerRecord::act_putting_on_cap()
 {
-	s32 animFrame = this->set_mario_animation(MARIO_ANIM_PUT_CAP_ON);
+	s32 animFrame = this->setAnimation(MARIO_ANIM_PUT_CAP_ON);
 
 	if(animFrame == 0)
 	{
@@ -1898,19 +1898,19 @@ s32 PlayerRecord::act_putting_on_cap()
 		cutscene_put_cap_on();
 	}
 
-	if(this->is_anim_at_end())
+	if(this->isLast1AnimeFrame())
 	{
 		this->ChangePlayerStatus(ACT_IDLE, 0);
 		s_end_demomode();
 	}
 
-	stationary_ground_step();
+	waitProcess();
 	return FALSE;
 }
 
 void PlayerRecord::stuck_in_ground_handler(s32 animation, s32 unstuckFrame, s32 target2, s32 target3, s32 endAction)
 {
-	s32 animFrame = this->set_mario_animation(animation);
+	s32 animFrame = this->setAnimation(animation);
 
 	if(this->input & INPUT_A_PRESSED)
 	{
@@ -1922,23 +1922,23 @@ void PlayerRecord::stuck_in_ground_handler(s32 animation, s32 unstuckFrame, s32 
 		}
 	}
 
-	stop_and_set_height_to_floor();
+	stopProcess();
 
 	if(animFrame == -1)
 	{
-		this->play_sound_and_spawn_particles(SOUND_ACTION_TERRAIN_STUCK_IN_GROUND, 1);
+		this->specialEffect(SOUND_ACTION_TERRAIN_STUCK_IN_GROUND, 1);
 	}
 	else if(animFrame == unstuckFrame)
 	{
 		SendMotorEvent(5, 80);
-		this->play_sound_and_spawn_particles(SOUND_ACTION_UNSTUCK_FROM_GROUND, 1);
+		this->specialEffect(SOUND_ACTION_UNSTUCK_FROM_GROUND, 1);
 	}
 	else if(animFrame == target2 || animFrame == target3)
 	{
-		this->play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+		this->startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 	}
 
-	if(this->is_anim_at_end())
+	if(this->isLast1AnimeFrame())
 	{
 		this->ChangePlayerStatus(endAction, 0);
 	}
@@ -2021,15 +2021,15 @@ void PlayerRecord::intro_cutscene_jump_out_of_pipe()
 	{
 		this->marioObj->header.gfx.node.flags |= GRAPH_RENDER_ACTIVE;
 
-		this->play_sound_if_no_flag(SOUND_MARIO_YAHOO, MARIO_MARIO_SOUND_PLAYED);
-		this->play_sound_if_no_flag(SOUND_ACTION_HIT_3, MARIO_ACTION_SOUND_PLAYED);
+		this->startSoundEffect(SOUND_MARIO_YAHOO, MARIO_MARIO_SOUND_PLAYED);
+		this->startSoundEffect(SOUND_ACTION_HIT_3, MARIO_ACTION_SOUND_PLAYED);
 
-		this->set_mario_animation(MARIO_ANIM_SINGLE_JUMP);
-		this->mario_set_forward_vel(10.0f);
-		if(perform_air_step(0) == AIR_STEP_LANDED)
+		this->setAnimation(MARIO_ANIM_SINGLE_JUMP);
+		this->setPlayerVelocity(10.0f);
+		if(jumpProcess(0) == AIR_STEP_LANDED)
 		{
-			sound_banks_enable(2, 0x0330);
-			this->play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+			Na_PortUnlock(2, 0x0330);
+			this->startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 			AudStartSound(SOUND_MARIO_HAHA, this->marioObj->header.gfx.cameraToObject);
 			advance_cutscene_step();
 		}
@@ -2038,14 +2038,14 @@ void PlayerRecord::intro_cutscene_jump_out_of_pipe()
 
 void PlayerRecord::intro_cutscene_land_outside_pipe()
 {
-	this->set_mario_animation(MARIO_ANIM_LAND_FROM_SINGLE_JUMP);
+	this->setAnimation(MARIO_ANIM_LAND_FROM_SINGLE_JUMP);
 
-	if(this->is_anim_at_end())
+	if(this->isLast1AnimeFrame())
 	{
 		advance_cutscene_step();
 	}
 
-	stop_and_set_height_to_floor();
+	stopProcess();
 }
 
 void PlayerRecord::intro_cutscene_lower_pipe()
@@ -2053,7 +2053,7 @@ void PlayerRecord::intro_cutscene_lower_pipe()
 	if(this->actionTimer++ == 0)
 	{
 		AudStartSound(SOUND_MENU_ENTER_PIPE, sIntroWarpPipeObj->header.gfx.cameraToObject);
-		this->set_mario_animation(MARIO_ANIM_FIRST_PERSON);
+		this->setAnimation(MARIO_ANIM_FIRST_PERSON);
 	}
 
 	sIntroWarpPipeObj->oPosY -= 5.0f;
@@ -2063,7 +2063,7 @@ void PlayerRecord::intro_cutscene_lower_pipe()
 		advance_cutscene_step();
 	}
 
-	stop_and_set_height_to_floor();
+	stopProcess();
 }
 
 void PlayerRecord::intro_cutscene_set_mario_to_idle()
@@ -2074,7 +2074,7 @@ void PlayerRecord::intro_cutscene_set_mario_to_idle()
 		this->ChangePlayerStatus(ACT_IDLE, 0);
 	}
 
-	stop_and_set_height_to_floor();
+	stopProcess();
 }
 
 enum
@@ -2129,20 +2129,20 @@ void PlayerRecord::jumbo_star_cutscene_falling()
 		this->pos[0]	   = 0.0f;
 		this->pos[2]	   = 0.0f;
 
-		this->mario_set_forward_vel(0.0f);
-		this->set_mario_animation(MARIO_ANIM_GENERAL_FALL);
+		this->setPlayerVelocity(0.0f);
+		this->setAnimation(MARIO_ANIM_GENERAL_FALL);
 
-		if(perform_air_step(1) == AIR_STEP_LANDED)
+		if(jumpProcess(1) == AIR_STEP_LANDED)
 		{
 			play_cutscene_music(SEQUENCE_ARGS(15, SEQ_EVENT_CUTSCENE_VICTORY));
-			this->play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+			this->startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 			this->actionState++;
 		}
 	}
 	else
 	{
-		this->set_mario_animation(MARIO_ANIM_GENERAL_LAND);
-		if(this->is_anim_at_end())
+		this->setAnimation(MARIO_ANIM_GENERAL_LAND);
+		if(this->isLast1AnimeFrame())
 		{
 			this->statusForCamera->cameraEvent = CAM_EVENT_START_GRAND_STAR;
 			advance_cutscene_step();
@@ -2158,12 +2158,12 @@ s32 PlayerRecord::jumbo_star_cutscene_taking_off()
 
 	if(this->actionState == 0)
 	{
-		this->set_mario_animation(MARIO_ANIM_FINAL_BOWSER_RAISE_HAND_SPIN);
+		this->setAnimation(MARIO_ANIM_FINAL_BOWSER_RAISE_HAND_SPIN);
 		marioObj->rawData.asF32[0x22] = 0.0f;
 
-		if(this->is_anim_past_end())
+		if(this->isLast2AnimeFrame())
 		{
-			this->play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+			this->startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 			this->actionState++;
 		}
 	}
@@ -2171,10 +2171,10 @@ s32 PlayerRecord::jumbo_star_cutscene_taking_off()
 	{
 		if(!this->marioObj->header.gfx.unk38.isPartialFrame())
 		{
-			animFrame = this->set_mario_animation(MARIO_ANIM_FINAL_BOWSER_WING_CAP_TAKE_OFF);
+			animFrame = this->setAnimation(MARIO_ANIM_FINAL_BOWSER_WING_CAP_TAKE_OFF);
 			if(animFrame == 3 || animFrame == 28 || animFrame == 60)
 			{
-				this->play_sound_and_spawn_particles(SOUND_ACTION_TERRAIN_JUMP, 1);
+				this->specialEffect(SOUND_ACTION_TERRAIN_JUMP, 1);
 			}
 			if(animFrame >= 3)
 			{
@@ -2198,7 +2198,7 @@ s32 PlayerRecord::jumbo_star_cutscene_taking_off()
 		}
 		this->particleFlags |= PARTICLE_SPARKLES;
 
-		if(this->is_anim_past_end())
+		if(this->isLast2AnimeFrame())
 		{
 			advance_cutscene_step();
 		}
@@ -2206,8 +2206,8 @@ s32 PlayerRecord::jumbo_star_cutscene_taking_off()
 
 	vec3f_set(this->pos, 0.0f, 307.0, marioObj->rawData.asF32[0x22]);
 	this->update_mario_pos_for_anim();
-	vec3f_copy(marioObj->header.gfx.pos, this->pos);
-	vec3s_set(marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
+	CopyFVector(marioObj->header.gfx.pos, this->pos);
+	SetSVector(marioObj->header.gfx.angle, 0, this->faceAngle[1], 0);
 
 	// not sure why they did this, probably was from being used to action
 	// functions
@@ -2228,7 +2228,7 @@ s32 PlayerRecord::jumbo_star_cutscene_flying()
 	switch(this->actionState)
 	{
 		case 0:
-			this->set_mario_animation(MARIO_ANIM_WING_CAP_FLY);
+			this->setAnimation(MARIO_ANIM_WING_CAP_FLY);
 			anim_spline_init(sJumboStarKeyframes);
 			this->actionState++;
 			// fall through
@@ -2247,7 +2247,7 @@ s32 PlayerRecord::jumbo_star_cutscene_flying()
 				targetHyp   = sqrtf(targetDX * targetDX + targetDZ * targetDZ);
 				targetAngle = atan2s(targetDZ, targetDX);
 
-				vec3f_copy(this->pos, targetPos);
+				CopyFVector(this->pos, targetPos);
 				this->marioObj->header.gfx.angle[0] = -atan2s(targetHyp, targetDY);
 				this->marioObj->header.gfx.angle[1] = targetAngle;
 				this->marioObj->header.gfx.angle[2] = ((this->faceAngle[1] - targetAngle) << 16 >> 16) * 20;
@@ -2260,7 +2260,7 @@ s32 PlayerRecord::jumbo_star_cutscene_flying()
 	}
 
 	this->marioBodyState->handState = MARIO_HAND_RIGHT_OPEN;
-	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
+	CopyFVector(this->marioObj->header.gfx.pos, this->pos);
 	this->particleFlags |= PARTICLE_SPARKLES;
 
 	if(this->actionTimer++ == 500 * FRAME_RATE_SCALER_INV)
@@ -2306,12 +2306,12 @@ void PlayerRecord::end_peach_cutscene_mario_falling()
 	this->input |= INPUT_A_DOWN;
 	this->flags |= (MARIO_WING_CAP | MARIO_CAP_ON_HEAD);
 
-	this->set_mario_animation(MARIO_ANIM_GENERAL_FALL);
-	this->mario_set_forward_vel(0.0f);
+	this->setAnimation(MARIO_ANIM_GENERAL_FALL);
+	this->setPlayerVelocity(0.0f);
 
-	if(perform_air_step(0) == AIR_STEP_LANDED)
+	if(jumpProcess(0) == AIR_STEP_LANDED)
 	{
-		this->play_mario_landing_sound(SOUND_ACTION_TERRAIN_LANDING);
+		this->startLandingEffect(SOUND_ACTION_TERRAIN_LANDING);
 		advance_cutscene_step();
 	}
 }
@@ -2319,10 +2319,10 @@ void PlayerRecord::end_peach_cutscene_mario_falling()
 // set mario on the ground, wait and spawn the jumbo star outside the castle.
 void PlayerRecord::end_peach_cutscene_mario_landing()
 {
-	this->set_mario_animation(MARIO_ANIM_GENERAL_LAND);
-	stop_and_set_height_to_floor();
+	this->setAnimation(MARIO_ANIM_GENERAL_LAND);
+	stopProcess();
 
-	if(this->is_anim_at_end())
+	if(this->isLast1AnimeFrame())
 	{
 		// make wing cap run out
 		this->capTimer = 60 * FRAME_RATE_SCALER_INV;
@@ -2336,9 +2336,9 @@ void PlayerRecord::end_peach_cutscene_mario_landing()
 // raise hand animation, lower hand animation, do some special effects
 void PlayerRecord::end_peach_cutscene_summon_jumbo_star()
 {
-	this->set_mario_animation(this->actionState == 0 ? MARIO_ANIM_CREDITS_RAISE_HAND : MARIO_ANIM_CREDITS_LOWER_HAND);
+	this->setAnimation(this->actionState == 0 ? MARIO_ANIM_CREDITS_RAISE_HAND : MARIO_ANIM_CREDITS_LOWER_HAND);
 
-	if(this->actionState == 0 && this->is_anim_past_end())
+	if(this->actionState == 0 && this->isLast2AnimeFrame())
 	{
 		this->actionState++;
 	}
@@ -2432,7 +2432,7 @@ void PlayerRecord::end_peach_cutscene_descend_peach()
 		{
 			this->actionState -= 2;
 		}
-		this->set_mario_animation(MARIO_ANIM_CREDITS_RETURN_FROM_LOOK_UP);
+		this->setAnimation(MARIO_ANIM_CREDITS_RETURN_FROM_LOOK_UP);
 	}
 
 	if((sEndPeachObj->oPosY -= this->actionState / 10) <= 907.0f)
@@ -2466,10 +2466,10 @@ void PlayerRecord::end_peach_cutscene_run_to_peach()
 
 	this->pos[1] = mcBGGroundCheck(this->pos[0], this->pos[1], this->pos[2], &surf);
 
-	this->set_mario_anim_with_accel(MARIO_ANIM_RUNNING, 0x00080000 / FRAME_RATE_SCALER_INV);
-	func_80263AD4(9, 45);
+	this->setAnimation(MARIO_ANIM_RUNNING, 0x00080000 / FRAME_RATE_SCALER_INV);
+	playerRunningSound(9, 45);
 
-	vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
+	CopyFVector(this->marioObj->header.gfx.pos, this->pos);
 	this->particleFlags |= PARTICLE_DUST;
 }
 
@@ -2478,7 +2478,7 @@ void PlayerRecord::end_peach_cutscene_run_to_peach()
 // "The power of the Stars is restored to the castle..."
 void PlayerRecord::end_peach_cutscene_dialog_1()
 {
-	s32 animFrame = this->set_mario_animation(this->actionState == 0 ? MARIO_ANIM_CREDITS_TAKE_OFF_CAP : MARIO_ANIM_CREDITS_LOOK_UP);
+	s32 animFrame = this->setAnimation(this->actionState == 0 ? MARIO_ANIM_CREDITS_TAKE_OFF_CAP : MARIO_ANIM_CREDITS_LOOK_UP);
 
 	if(this->actionState == 0)
 	{
@@ -2487,7 +2487,7 @@ void PlayerRecord::end_peach_cutscene_dialog_1()
 			cutscene_take_cap_off();
 		}
 
-		if(this->is_anim_at_end())
+		if(this->isLast1AnimeFrame())
 		{
 			this->actionState++;
 		}
@@ -2616,7 +2616,7 @@ void PlayerRecord::end_peach_cutscene_kiss_from_peach()
 
 void PlayerRecord::end_peach_cutscene_star_dance()
 {
-	s32 animFrame = this->set_mario_animation(MARIO_ANIM_CREDITS_PEACE_SIGN);
+	s32 animFrame = this->setAnimation(MARIO_ANIM_CREDITS_PEACE_SIGN);
 
 	if(animFrame == 77)
 	{
@@ -2671,7 +2671,7 @@ void PlayerRecord::end_peach_cutscene_star_dance()
 // "...for Mario..."
 void PlayerRecord::end_peach_cutscene_dialog_3()
 {
-	this->set_mario_animation(MARIO_ANIM_FIRST_PERSON);
+	this->setAnimation(MARIO_ANIM_FIRST_PERSON);
 
 	sEndPeachObj->oPosY	= func_8025BC14(sEndPeachObj);
 	sEndRightToadObj->oPosY = func_8025BC14(sEndRightToadObj);
@@ -2707,11 +2707,11 @@ void PlayerRecord::end_peach_cutscene_dialog_3()
 // "Mario!"
 void PlayerRecord::end_peach_cutscene_run_to_castle()
 {
-	this->set_mario_animation(this->actionState == 0 ? MARIO_ANIM_CREDITS_START_WALK_LOOK_UP : MARIO_ANIM_CREDITS_LOOK_BACK_THEN_RUN);
+	this->setAnimation(this->actionState == 0 ? MARIO_ANIM_CREDITS_START_WALK_LOOK_UP : MARIO_ANIM_CREDITS_LOOK_BACK_THEN_RUN);
 
 	this->marioObj->header.gfx.pos[1] = func_8025BC14(this->marioObj);
 
-	if(this->actionState == 0 && this->is_anim_past_end())
+	if(this->actionState == 0 && this->isLast2AnimeFrame())
 	{
 		this->actionState = 1;
 	}
@@ -2821,20 +2821,20 @@ s32 PlayerRecord::act_credits_cutscene()
 	{
 		if(this->area->camera->mode != CAMERA_MODE_BEHIND_MARIO)
 		{
-			set_camera_mode(this->area->camera, CAMERA_MODE_BEHIND_MARIO, 1);
+			ChangeGameCamera(this->area->camera, CAMERA_MODE_BEHIND_MARIO, 1);
 		}
-		this->set_mario_animation(MARIO_ANIM_WATER_IDLE);
-		vec3f_copy(this->marioObj->header.gfx.pos, this->pos);
+		this->setAnimation(MARIO_ANIM_WATER_IDLE);
+		CopyFVector(this->marioObj->header.gfx.pos, this->pos);
 		// will copy over roll and pitch, if set
 		vec3s_copy(this->marioObj->header.gfx.angle, this->faceAngle);
 		this->particleFlags |= PARTICLE_WATER_BUBBLES;
 	}
 	else
 	{
-		this->set_mario_animation(MARIO_ANIM_FIRST_PERSON);
+		this->setAnimation(MARIO_ANIM_FIRST_PERSON);
 		if(this->actionTimer > 0)
 		{
-			stop_and_set_height_to_floor();
+			stopProcess();
 		}
 	}
 
@@ -2899,8 +2899,8 @@ s32 PlayerRecord::act_end_waving_cutscene()
 		this->actionState = 1;
 	}
 
-	this->set_mario_animation(MARIO_ANIM_CREDITS_WAVING);
-	stop_and_set_height_to_floor();
+	this->setAnimation(MARIO_ANIM_CREDITS_WAVING);
+	stopProcess();
 
 	this->marioObj->header.gfx.angle[1] += 0x8000;
 	this->marioObj->header.gfx.pos[0] -= 60.0f * FRAME_RATE_SCALER;
@@ -2918,13 +2918,13 @@ s32 PlayerRecord::check_for_instant_quicksand()
 {
 	if(this->floor->type == SURFACE_INSTANT_QUICKSAND && this->status & ACT_FLAG_INVULNERABLE && this->status != ACT_QUICKSAND_DEATH)
 	{
-		this->update_mario_sound_and_camera();
-		return this->drop_and_set_mario_action(ACT_QUICKSAND_DEATH, 0);
+		this->resetSpecialCameraMode();
+		return this->changePlayerDropping(ACT_QUICKSAND_DEATH, 0);
 	}
 	return FALSE;
 }
 
-s32 PlayerRecord::mario_execute_cutscene_action()
+s32 PlayerRecord::playerDemoMain()
 {
 	s32 cancel;
 

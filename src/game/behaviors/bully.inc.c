@@ -194,7 +194,7 @@ void BullyStep(void)
 	collisionFlags	   = ObjMoveEvent();
 	BullyBackUpCheck(collisionFlags);
 	PlayBullyStompingSound();
-	obj_check_floor_death(collisionFlags, sObjFloor);
+	ObjDangerCheck(collisionFlags, sObjFloor);
 
 	if(o->oBullySubtype & BULLY_STYPE_CHILL)
 	{
@@ -215,7 +215,7 @@ void BullySpawnCoin(void)
 
 void BullyLavaDeath(void)
 {
-	if(obj_lava_death() == 1)
+	if(ObjMeltEvent() == 1)
 	{
 		if(o->oBehParams2ndByte == BULLY_BP_SIZE_SMALL)
 		{
@@ -255,7 +255,7 @@ void bhv_bully_loop(void)
 		case BULLY_ACT_PATROL:
 			o->oForwardVel = 5.0;
 
-			if(obj_return_home_if_safe(o, o->oHomeX, o->oPosY, o->oHomeZ, 800) == 1)
+			if(ShapePatrol(o, o->oHomeX, o->oPosY, o->oHomeZ, 800) == 1)
 			{
 				o->oAction = BULLY_ACT_CHASE_MARIO;
 				stSetSkelAnimeNumber(1);
@@ -318,7 +318,7 @@ void bhv_big_bully_with_minions_init(void)
 
 void BigBullyWithMinionsLavaDeath(void)
 {
-	if(obj_lava_death() == 1)
+	if(ObjMeltEvent() == 1)
 	{
 		s_kemuri();
 		s_enemyset_star(3700.0f, 600.0f, -5500.0f);
@@ -340,7 +340,7 @@ void bhv_big_bully_with_minions_loop(void)
 		case BULLY_ACT_PATROL:
 			o->oForwardVel = 5.0;
 
-			if(obj_return_home_if_safe(o, o->oHomeX, o->oPosY, o->oHomeZ, 1000) == 1)
+			if(ShapePatrol(o, o->oHomeX, o->oPosY, o->oHomeZ, 1000) == 1)
 			{
 				o->oAction = BULLY_ACT_CHASE_MARIO;
 				stSetSkelAnimeNumber(1);

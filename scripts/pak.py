@@ -55,7 +55,7 @@ except:
 	raise
 	
 def stripBasePath(path, base):
-	return path[len(base):]
+	return path[len(base):].strip('/\\ \t')
 	
 def getXXHash64(path, base):
 	name = os.path.basename(path)
@@ -87,7 +87,7 @@ def getXXHash64(path, base):
 			if name == obj['riceName']:
 				return int(obj['xxhash64'], 16)
 
-		cmpPath = os.path.abspath(originalPath).lower()
+		cmpPath = os.path.abspath(os.path.join(base, originalPath)).lower()
 		cmpPath = stripBasePath(cmpPath, base)
 
 		if cmpPath.endswith(absPath):
@@ -102,7 +102,7 @@ def getXXHash64(path, base):
 				if '_'.join(name.split('_')[0:-1]).upper() == '_'.join(obj['riceName'].split('_')[0:-1]).upper():
 					return int(obj['xxhash64'], 16)
 
-		cmpPath = os.path.abspath(originalPath).lower()
+		cmpPath = os.path.abspath(os.path.join(base, originalPath)).lower()
 		cmpPath = stripBasePath(cmpPath, base)
 
 		if cmpPath.endswith(absPath):

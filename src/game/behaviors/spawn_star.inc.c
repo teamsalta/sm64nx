@@ -12,7 +12,7 @@ static struct ObjectHitbox sCollectStarHitbox = {
     /* hurtboxHeight:     */ 0,
 };
 
-void bhv_collect_star_init(void)
+void s_polystar_init(void)
 {
 	s8 sp1F;
 	u8 sp1E;
@@ -31,7 +31,7 @@ void bhv_collect_star_init(void)
 	s_set_hitparam(o, &sCollectStarHitbox);
 }
 
-void bhv_collect_star_loop(void)
+void s_polystar_main(void)
 {
 	o->oFaceAngleYaw += 0x800 / FRAME_RATE_SCALER_INV;
 
@@ -42,7 +42,7 @@ void bhv_collect_star_loop(void)
 	}
 }
 
-void bhv_star_spawn_init(void)
+void s_enemy_star_init(void)
 {
 	o->oMoveAngleYaw	 = atan2s(o->oHomeZ - o->oPosZ, o->oHomeX - o->oPosX);
 	o->oStarSpawnDisFromHome = sqrtf(sqr(o->oHomeX - o->oPosX) + sqr(o->oHomeZ - o->oPosZ));
@@ -59,7 +59,7 @@ void bhv_star_spawn_init(void)
 	s_hitOFF();
 }
 
-void bhv_star_spawn_loop(void)
+void s_enemy_star_main(void)
 {
 	switch(o->oAction)
 	{
@@ -71,7 +71,7 @@ void bhv_star_spawn_loop(void)
 			break;
 
 		case 1:
-			obj_move_xyz_using_fvel_and_yaw(o);
+			ObjSpeedOn(o);
 			o->oStarSpawnY += o->oVelY * FRAME_RATE_SCALER;
 			o->oPosY = o->oStarSpawnY + sins((o->oTimer * 0x8000 / FRAME_RATE_SCALER_INV) / 30) * 400.0f;
 			o->oFaceAngleYaw += 0x1000 / FRAME_RATE_SCALER_INV;
@@ -81,7 +81,7 @@ void bhv_star_spawn_loop(void)
 			{
 				o->oAction     = 2;
 				o->oForwardVel = 0;
-				play_power_star_jingle(TRUE);
+				Na_NewStarAppearBgm(TRUE);
 			}
 			break;
 
@@ -92,7 +92,7 @@ void bhv_star_spawn_loop(void)
 				o->oVelY = -10.0f;
 
 			s_makeobj_nowpos(o, MODEL_NONE, sm64::bhv::bhvSparkleSpawn());
-			obj_move_xyz_using_fvel_and_yaw(o);
+			ObjSpeedOn(o);
 			o->oFaceAngleYaw = o->oFaceAngleYaw - (o->oTimer * 0x10 / FRAME_RATE_SCALER_INV) + 0x1000;
 			objsound_level(SOUND_ENV_STAR);
 
@@ -109,7 +109,7 @@ void bhv_star_spawn_loop(void)
 			o->oFaceAngleYaw += 0x800 * FRAME_RATE_SCALER;
 			if(o->oTimer == 20 * FRAME_RATE_SCALER_INV)
 			{
-				gObjCutsceneDone = TRUE;
+				demoseqcode = TRUE;
 				s_end_enemydemo(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 				o->activeFlags &= ~0x20;
 			}
@@ -123,7 +123,7 @@ void bhv_star_spawn_loop(void)
 	}
 }
 
-struct Object* func_802F1A50(struct Object* sp30, f32 sp34, f32 sp38, f32 sp3C)
+static Object* EnemysetStar(Object* sp30, f32 sp34, f32 sp38, f32 sp3C)
 {
 	sp30		      = s_makeobj_absolute(o, 0, MODEL_STAR, sm64::bhv::bhvStarSpawnCoordinates(), o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
 	sp30->oBehParams      = o->oBehParams;
@@ -138,26 +138,26 @@ struct Object* func_802F1A50(struct Object* sp30, f32 sp34, f32 sp38, f32 sp3C)
 void s_enemyset_star(f32 sp20, f32 sp24, f32 sp28)
 {
 	struct Object* sp1C	= nullptr;
-	sp1C			= func_802F1A50(sp1C, sp20, sp24, sp28);
+	sp1C			= EnemysetStar(sp1C, sp20, sp24, sp28);
 	sp1C->oBehParams2ndByte = 0;
 }
 
-void func_802F1B84(f32 sp20, f32 sp24, f32 sp28)
+void s_coinset_star(f32 sp20, f32 sp24, f32 sp28)
 {
 	Object* sp1C = 0;
-	sp1C			= func_802F1A50(sp1C, sp20, sp24, sp28);
+	sp1C			= EnemysetStar(sp1C, sp20, sp24, sp28);
 	sp1C->oBehParams2ndByte = 1;
 }
 
-void func_802F1BD4(f32 sp20, f32 sp24, f32 sp28)
+void s_extraset_star(f32 sp20, f32 sp24, f32 sp28)
 {
-	struct Object* sp1C;
-	sp1C			= func_802F1A50(sp1C, sp20, sp24, sp28);
+	Object* sp1C = nullptr;
+	sp1C			= EnemysetStar(sp1C, sp20, sp24, sp28);
 	sp1C->oBehParams2ndByte = 1;
 	sp1C->oInteractionSubtype |= INT_SUBTYPE_NO_EXIT;
 }
 
-void bhv_hidden_red_coin_star_init(void)
+void s_getcoins_star_init(void)
 {
 	s16 sp36;
 	struct Object* sp30;
@@ -165,7 +165,7 @@ void bhv_hidden_red_coin_star_init(void)
 	if(activeCourseNo != 3)
 		s_makeobj_nowpos(o, MODEL_TRANSPARENT_STAR, sm64::bhv::bhvRedCoinStarMarker());
 
-	sp36 = count_objects_with_behavior(sm64::bhv::bhvRedCoin());
+	sp36 = s_count_obj(sm64::bhv::bhvRedCoin());
 	if(sp36 == 0)
 	{
 		sp30		 = s_makeobj_absolute(o, 0, MODEL_STAR, sm64::bhv::bhvStar(), o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
@@ -176,9 +176,9 @@ void bhv_hidden_red_coin_star_init(void)
 	o->oHiddenStarTriggerCounter = 8 - sp36;
 }
 
-void bhv_hidden_red_coin_star_loop(void)
+void s_getcoins_star_main(void)
 {
-	gRedCoinsCollected = o->oHiddenStarTriggerCounter;
+	redcoin_num = o->oHiddenStarTriggerCounter;
 	switch(o->oAction)
 	{
 		case 0:
@@ -189,7 +189,7 @@ void bhv_hidden_red_coin_star_loop(void)
 		case 1:
 			if(o->oTimer > 2 * FRAME_RATE_SCALER_INV)
 			{
-				func_802F1B84(o->oPosX, o->oPosY, o->oPosZ);
+				s_coinset_star(o->oPosX, o->oPosY, o->oPosZ);
 				s_kemuri();
 				o->activeFlags = 0;
 			}

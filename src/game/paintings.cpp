@@ -526,7 +526,7 @@ s16 painting_calculate_point_ripple(
 		float rippleHeight = rippleMag * cosf(rippleRate * (2 * M_PI) * (rippleTimer - scaledDistance)); // use a cosine wave to make the ripple go up and down, and
 														 // scale it by the painting's ripple magnitude
 
-		return round_float(rippleHeight); // round it to an int and return it
+		return Tani_RoundOff(rippleHeight); // round it to an int and return it
 	}
 }
 
@@ -687,7 +687,7 @@ void* func_802D3CF0(u8* img, s16 tWidth, s16 tHeight, s16* d, s16 e, s16 f, u8 g
 			sp96 = d[sp98 * 3 + 1];
 			tx   = d[sp98 * 3 + 2];
 			ty   = d[sp98 * 3 + 3];
-			make_vertex(verts, sp9E * 15 + sp9C, D_8035FFA0[sp96].unk0[0], D_8035FFA0[sp96].unk0[1], D_8035FFA0[sp96].unk0[2], tx, ty, D_8035FFA0[sp96].unk6[0], D_8035FFA0[sp96].unk6[1], D_8035FFA0[sp96].unk6[2], g);
+			Tani_SetOneVtxData(verts, sp9E * 15 + sp9C, D_8035FFA0[sp96].unk0[0], D_8035FFA0[sp96].unk0[1], D_8035FFA0[sp96].unk0[2], tx, ty, D_8035FFA0[sp96].unk6[0], D_8035FFA0[sp96].unk6[1], D_8035FFA0[sp96].unk6[2], g);
 		}
 		gSPVertex(sp7C++, VIRTUAL_TO_PHYSICAL(verts + sp9E * 15), 15, 0);
 		gSPDisplayList(sp7C++, dl_paintings_draw_ripples);
@@ -700,7 +700,7 @@ void* func_802D3CF0(u8* img, s16 tWidth, s16 tHeight, s16* d, s16 e, s16 f, u8 g
 		sp96 = d[sp98 * 3 + 1];
 		tx   = d[sp98 * 3 + 2];
 		ty   = d[sp98 * 3 + 3];
-		make_vertex(verts, sp90 * 15 + sp9C, D_8035FFA0[sp96].unk0[0], D_8035FFA0[sp96].unk0[1], D_8035FFA0[sp96].unk0[2], tx, ty, D_8035FFA0[sp96].unk6[0], D_8035FFA0[sp96].unk6[1], D_8035FFA0[sp96].unk6[2], g);
+		Tani_SetOneVtxData(verts, sp90 * 15 + sp9C, D_8035FFA0[sp96].unk0[0], D_8035FFA0[sp96].unk0[1], D_8035FFA0[sp96].unk0[2], tx, ty, D_8035FFA0[sp96].unk6[0], D_8035FFA0[sp96].unk6[1], D_8035FFA0[sp96].unk6[2], g);
 	}
 	gSPVertex(sp7C++, VIRTUAL_TO_PHYSICAL(verts + sp90 * 15), sp8E * 3, 0);
 	for(sp9E = 0; sp9E < sp8E; sp9E++)
@@ -998,7 +998,7 @@ void horizontal_painting_ripple(struct Painting* painting, struct Painting* pain
 	}
 }
 
-Gfx* Geo18_802D5B98(s32 run, struct GraphNode* node, UNUSED void* context)
+Gfx* WaveMove(s32 run, struct GraphNode* node, UNUSED void* context)
 {
 	struct GraphNodeGenerated* sp2C = (struct GraphNodeGenerated*)node;
 	s32 sp28			= (sp2C->parameter >> 8) & 0xFF;
@@ -1033,7 +1033,7 @@ Gfx* Geo18_802D5B98(s32 run, struct GraphNode* node, UNUSED void* context)
 	return sp20;
 }
 
-Gfx* Geo18_802D5D0C(s32 run, UNUSED struct GraphNode* node, UNUSED f32 c[4][4])
+Gfx* WaveInit(s32 run, UNUSED struct GraphNode* node, UNUSED f32 c[4][4])
 {
 	struct Surface* surface;
 
