@@ -28,8 +28,18 @@ DEBUG_BUILD ?= 0
 
 TARGET_RPI ?= 0
 
+####Build with clang
+CLANG := 0
 
-
+ifeq ($(CLANG),1)
+CC := clang
+CXX := clang++
+CPP := clang-cpp -P
+else
+CC := gcc
+CXX := g++
+CPP := cpp -P
+endif
 
 NON_MATCHING := 1
 GRUCODE := f3dex2e
@@ -166,12 +176,13 @@ endif
 
 ifeq ($(DEBUG_BUILD), 1)
 OPT_FLAGS := -g
-OPT_FLAGS := -DDEBUG
 endif
 
 
 ifeq ($(TARGET_RPI), 1)
-OPT_FLAGS := -O3 
+OPT_FLAGS := -O3
+else
+OPT_FLAGS := -O2 
 endif
 
 
@@ -310,12 +321,9 @@ else # TARGET_SWITCH
 
 AS := as
 
-CC := gcc
-CXX := g++
-
 LD := $(CXX)
   
-CPP := cpp -P
+
 OBJDUMP := objdump
 OBJCOPY := objcopy
 
