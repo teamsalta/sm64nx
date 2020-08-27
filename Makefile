@@ -28,7 +28,8 @@ DEBUG_BUILD ?= 0
 
 TARGET_RPI ?= 0
 
-
+# Build for macOS
+OSX_BUILD ?= 0
 
 
 NON_MATCHING := 1
@@ -175,6 +176,10 @@ OPT_FLAGS := -O3
 endif
 
 
+ifeq ($(OSX_BUILD),1) 
+OPT_FLAGS := -DOSX_BUILD
+endif
+
 
 
 # File dependencies and variables for specific files
@@ -288,6 +293,9 @@ APP_ICON := icon.jpg
 ROMFS	:=	romfs
 
 AS := aarch64-none-elf-as
+
+
+
 CC := aarch64-none-elf-gcc
 CXX := aarch64-none-elf-g++
 LD := aarch64-none-elf-g++
@@ -322,6 +330,10 @@ OBJCOPY := objcopy
 ifeq ($(WINDOWS_BUILD),1)
 CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17 -DGLEW_STATIC
 CFLAGS := $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17 -DGLEW_STATIC
+else ifeq ($(OSX_BUILD),1)
+CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -Wno-narrowing -fpermissive -I./external/include -I/usr/local/include
+CFLAGS := $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -Wno-narrowing -fpermissive -I./external/include -I/usr/local/include
+CXXFLAGS := -std=gnu++17
 else
 CC_CHECK := $(CC) -fsyntax-only -fsigned-char $(INCLUDE_CFLAGS) -Wall -Wextra -Wno-format-security $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17
 CFLAGS := $(OPT_FLAGS) $(INCLUDE_CFLAGS) $(VERSION_CFLAGS) $(GRUCODE_CFLAGS) -fno-strict-aliasing -fwrapv `sdl2-config --cflags` -Wno-narrowing -fpermissive -std=gnu++17
@@ -332,6 +344,8 @@ ASFLAGS := -I include -I $(BUILD_DIR) $(VERSION_ASFLAGS)
 
 ifeq ($(WINDOWS_BUILD),1)
 LDFLAGS := -Wl,-Bstatic -lm -lglew32 -lopengl32 -Wl,-Bdynamic `sdl2-config --libs` -no-pie -Wl,-Bstatic -lpthread -static-libgcc -lzstd
+else ifeq ($(OSX_BUILD),1)
+LDFLAGS := -lm -framework OpenGL `pkg-config --libs glew` `sdl2-config --libs` -no-pie -lpthread -lzstd -std=gnu++17
 else
 LDFLAGS := -lm -lGL `sdl2-config --libs` -no-pie -lpthread -lzstd
 endif
@@ -339,7 +353,15 @@ endif
 endif
 
 ######################## Targets #############################
-
+ifeq ($(OSX_BUILD),1)
+  AS := i686-w64-mingw32-as
+  CC := gcc-9
+  CPP := cpp-9 -P
+  CXX := g++-9
+  LD := g++-9
+  OBJDUMP := i686-w64-mingw32-objdump
+  OBJCOPY := i686-w64-mingw32-objcopy
+endif
 ifeq ($(TARGET_SWITCH),1)
 all: $(EXE).nro
 else
@@ -385,16 +407,16 @@ $(GLOBAL_ASM_DEP).$(NON_MATCHING):
 	touch $@
 
 $(BUILD_DIR)/%.o: %.cpp
-	@$(CXX) -fsyntax-only $(CFLAGS) -MMD -MP -MT $@ -MF $(BUILD_DIR)/$*.d $<
-	$(CXX) -c $(CFLAGS) -o $@ $<
+	$(CXX) -fsyntax-only $(CFLAGS) $(CXXFLAGS) -MMD -MP -MT $@ -MF $(BUILD_DIR)/$*.d $<
+	$(CXX) -c $(CFLAGS) $(CXXFLAGS) -o $@ $<
 
 $(BUILD_DIR)/%.o: %.c
-	@$(CC_CHECK) -MMD -MP -MT $@ -MF $(BUILD_DIR)/$*.d $<
+	$(CC_CHECK) -MMD -MP -MT $@ -MF $(BUILD_DIR)/$*.d $<
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 
 $(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c
-	@$(CC_CHECK) -MMD -MP -MT $@ -MF $(BUILD_DIR)/$*.d $<
+	$(CC_CHECK) -MMD -MP -MT $@ -MF $(BUILD_DIR)/$*.d $<
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/%.o: %.s

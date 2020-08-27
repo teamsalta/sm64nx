@@ -10,6 +10,10 @@
 #include <stdio.h>
 #endif
 
+#ifdef OSX_BUILD
+#include <stdio.h>
+#endif
+
 #include "audio_api.h"
 
 static SDL_AudioDeviceID dev;

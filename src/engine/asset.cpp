@@ -4,7 +4,13 @@
 #include <stdio.h>
 #include <string>
 #include <stdlib.h>
+
+#ifdef __APPLE__
+// malloc is apart of stdlib on macOS
+#else
 #include <malloc.h>
+#endif
+
 #include <zstd.h>
 #include <cstdlib>
 #include "xxhash32.h"
