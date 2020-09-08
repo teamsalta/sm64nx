@@ -12,7 +12,7 @@ namespace sm64
 		Player();
 		virtual ~Player();
 
-		std::vector<std::shared_ptr<hid::Controller>>& controllers()
+		std::vector<std::shared_ptr<hid::Controller> >& controllers()
 		{
 			return m_controllers;
 		}
@@ -28,7 +28,7 @@ namespace sm64
 		bool isRebindMode() const;
 
 		protected:
-		std::vector<std::shared_ptr<hid::Controller>> m_controllers;
+		std::vector<std::shared_ptr<hid::Controller> > m_controllers;
 		hid::Controller m_controller;
 		int m_rebindInput;
 	};
