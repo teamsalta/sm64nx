@@ -7,7 +7,7 @@ import sys
 import subprocess
 from PIL import Image
 import os
-import zstd
+import zstandard
 from tqdm import tqdm
 import argparse
 import json
@@ -283,7 +283,7 @@ if args.source:
 
 	for crc in tqdm(crcs):
 		asset = textureData[crc]
-		cctx = zstd.ZstdCompressor(level=22)
+		cctx = zstandard.ZstdCompressor(level=22)
 		data = cctx.compress(asset.buffer)
 		
 		header += crc.to_bytes(8, byteorder='little')
@@ -326,7 +326,7 @@ elif args.extract:
 			f.seek(offset)
 			buffer = f.read(size)
 			
-			cctx = zstd.ZstdDecompressor()
+			cctx = zstandard.ZstdDecompressor()
 			buffer = cctx.decompress(buffer)
 			
 			outputFileName = None
